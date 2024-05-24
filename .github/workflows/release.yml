@@ -31,7 +31,7 @@ jobs:
       - name: Image sync
         run: |
           set -e
-          #./syncrepo os
+          ./syncrepo os
       - name: Create a release snapshot.
         uses: ncipollo/release-action@v1
         with:
