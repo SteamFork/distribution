@@ -1,0 +1,18 @@
+# Based on https://serverfault.com/a/767079
+#
+# This gets triggered from a udev rule, just to run a script Running
+# the script directly from udev apparently wouldn't work because it
+# has no caps, and the service needs to wait for udev rules to
+# complete to talk to udisks.
+#
+# This also allows the 'remove' action to only be invoked if the 'add'
+# action succeeded and the service is running.
+
+[Unit]
+Description=Mount removable drive %i
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/usr/lib/hwsupport/steamos-automount.sh add %i
+ExecStop=/usr/lib/hwsupport/steamos-automount.sh remove %i

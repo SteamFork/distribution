@@ -1,0 +1,6 @@
+#!/bin/sh
+
+### Air Plus doesn't always disable the left RGB on boot.
+LED_HANDLE="/sys/devices/platform/ayaneo-platform/leds/multicolor:chassis/multi_intensity"
+echo "1 1 1" >${LED_HANDLE}
+echo "0 0 0" >${LED_HANDLE}

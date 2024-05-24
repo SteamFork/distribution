@@ -1,0 +1,144 @@
+#!/bin/bash
+
+if [[ $EUID -ne 0 ]];
+then
+    exec pkexec --disable-internal-agent "$0" "$@"
+fi
+
+mirrorfile=/etc/steamos-atomupd/mirror
+source /etc/steamfork-release
+source ${mirrorfile}
+argdata=/tmp/steamos-update-temparg
+ready_watcher=/tmp/steamos-ready-to-deploy
+download_url=${MIRROR}
+
+branchpath=/etc/steamfork-branch
+
+if [[ -f "${branchpath}" ]]; then
+    UPD_BRANCH=$(cat ${branchpath})
+else
+    UPD_BRANCH=${RELEASETYPE}
+fi
+
+if [[ -f "/etc/manual-enroll-override" ]]; then
+    UPDATE_BRANCH_OVERRIDE=$(cat /etc/manual-enroll-override)
+else
+    if [[ -n "${UPDATE_BRANCH_OVERRIDE}" ]]; then
+        echo -e "Update branch override: $UPDATE_BRANCH_OVERRIDE\n"
+    fi
+fi
+
+if [[ -n "${UPDATE_BRANCH_OVERRIDE}" ]]; then
+    downloadendpoint=${download_url}/steamfork-images/${UPDATE_BRANCH_OVERRIDE}
+else
+    downloadendpoint=${download_url}/steamfork-images
+fi
+
+
+preferred_imgtype=".img.zst"
+endpoint=${downloadendpoint}/latest_${UPD_BRANCH}.releasemeta
+downloadpath=/home/.steamos/updatecontainer
+
+clean_progress() {
+	local scale=$1
+	local postfix=$2
+	local last_value=$scale
+	while IFS= read -r line; do
+		value=$(( ${line}*${scale}/100 ))
+		if [ "$last_value" != "$value" ]; then
+			echo ${value}${postfix}
+			last_value=$value
+		fi
+	done
+}
+
+update_mirror(){
+    MIRRORARGPATH="https://github.com/steamfork/postcopy/raw/${UPD_BRANCH}/etc/steamos-atomupd/mirror"
+    curl -Ls "${MIRRORARGPATH}" > ${mirrorfile}
+}
+
+updatecheck(){
+    curl -Ls "${endpoint}" > ${argdata}
+    source ${argdata}
+    if [[ "${STAGING_OS_TAG}" == "${OS_TAG}" ]]; then
+        echo "System up to date."
+        rm -rf ${argdata}
+        exit 7
+    elif [[ ! -s "${argdata}" ]]; then
+        echo "Empty arguments file. Connect to internet or update your OS manually."
+        rm -rf ${argdata}
+        exit 7
+    elif [[ "${STAGING_OS_TAG}" > "${OS_TAG}" ]]; then
+        echo "Update available. OS Update: ${IMAGEFILE}"
+    elif [[ "${STAGING_OS_TAG}" < "${OS_TAG}" ]]; then
+        rm -rf ${argdata}
+        echo -e "Your version (${OS_TAG}) is newer than currently available (${STAGING_OS_TAG}).\nPlease wait for next update to appear available in branch \"${UPD_BRANCH}\" for installation."
+        exit 7
+    fi
+}
+
+verintg(){
+    echo "Verifying update file integrity..."
+    CURR_SHA=$(echo $(sha256sum ${downloadpath}/${IMAGEFILE}/${IMAGEFILE}.img.zst) | awk '{print $1}')
+    if [[ "${CURR_SHA}" == "$(cat ${downloadpath}/${IMAGEFILE}/${IMAGEFILE}.sha256)" ]]; then
+        touch ${ready_watcher}
+        echo "Update file download complete. The system is ready to update."
+    else
+        rm -rf ${downloadpath}/${IMAGEFILE}
+        echo "Verification failed. Download contents erased."
+        exit 1
+    fi
+}
+
+dlupd(){
+    source ${argdata}
+    if [[ -f "${downloadpath}/${IMAGEFILE}/${IMAGEFILE}.img.zst" ]] && [[ -f "${downloadpath}/${IMAGEFILE}/${IMAGEFILE}.sha256" ]]; then
+        verintg
+    else
+        mkdir -p "${downloadpath}/${IMAGEFILE}"
+        curl --http1.1 -# -L -o ${downloadpath}/${IMAGEFILE}/${IMAGEFILE}.img.zst  -C - "${downloadendpoint}/${IMAGEFILE}${preferred_imgtype}" 2>&1 | stdbuf -oL tr '\r' '\n' | grep --line-buffered -oP '[0-9]*+(?=.[0-9])' | clean_progress 100 %
+        curl --http1.1 -# -L -o ${downloadpath}/${IMAGEFILE}/${IMAGEFILE}.sha256  -C - "${downloadendpoint}/${IMAGEFILE}.sha256"
+    fi
+        verintg
+}
+
+
+applyupdate(){
+    dlupd
+    steamos-readonly disable
+    steamos-update-os ${argdata}
+    steamos-readonly enable
+}
+
+if [ -n "$1" ]; then
+    case "$1" in
+    "check")
+        rm -f ${argdata} ${ready_watcher}
+	    updatecheck
+        ;;
+    "--beta")
+        rm -f ${argdata} ${ready_watcher}
+	    updatecheck
+        ;;
+    "--enable-duplicate-detection") 
+        echo "Steam Client stub"
+        exit 7 
+        ;;
+    "--supports-duplicate-detection")
+        echo "This script supports the duplicate detection option"
+        exit 7
+        ;;
+    "update-mirror")
+        echo "Updating mirror..."
+        update_mirror 
+    ;;
+    esac
+    shift
+else
+    if [[ -f "${argdata}" ]]; then
+        applyupdate
+    else
+        echo "Unknown option, Available options: [check|update-mirror]"
+        exit 7
+    fi
+fi

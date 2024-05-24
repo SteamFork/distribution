@@ -1,0 +1,52 @@
+name: Release
+permissions:
+  contents: write
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    timeout-minutes: 1440
+    runs-on: main
+    steps:
+      - uses: actions/checkout@v3
+        name: checkout
+        with:
+          clean: false
+          ref: "${{ steps.branch.outputs.branch }}"
+      - name: Set the version
+        id: version
+        run: echo "version=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+      - name: Build Minimal Images
+        run: |
+          set -e
+          ./build-image.sh minimal "${{ steps.version.outputs.version }}"
+      - name: Build Release Images
+        run: |
+          set -e
+          #./build-image.sh rel "${{ steps.version.outputs.version }}"
+      - name: Image sync
+        run: |
+          set -e
+          #./syncrepo os
+      - name: Create a release snapshot.
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "${{ steps.version.outputs.version }}"
+          body: |
+            ## Downloads
+            This release contains a snapshot of the repository tree.  Downloadable images are available at [SteamFork.org](https://www.steamfork.org/steamfork-images/steamfork-installer/) with updates available OTA.  A download link to the latest installation image can be found below.
+
+            | Branch | URL | Checksum |
+            | -- | -- | -- |
+            | Stable | [LATEST](https://www.steamfork.org/steamfork-images/steamfork-installer/steamfork-rel-latest-x86_64.iso) | [CHECKSUM](https://www.steamfork.org/steamfork-images/steamfork-installer/steamfork-rel-latest-x86_64.iso.sha256) |
+
+            For installation instructions and other documentation, visit the [main project page](https://github.com/SteamFork).
+          prerelease: false
+          draft: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          owner: SteamFork
+          repo: distribution

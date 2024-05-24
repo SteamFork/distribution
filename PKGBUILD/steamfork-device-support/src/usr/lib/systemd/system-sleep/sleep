@@ -1,0 +1,77 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2023-present Fewtarius
+
+HWID="$(echo $(tr -d '\0' </sys/class/dmi/id/sys_vendor 2>/dev/null) $(tr -d '\0' </sys/class/dmi/id/product_name 2>/dev/null) | tr ' ' '-')"
+
+function log() {
+  SOURCE=${1//\/*\//}
+  MESSAGE=${*#${1}}
+  MESSAGE=${MESSAGE# }
+  logger -t ${SOURCE} "${MESSAGE}"
+}
+
+modules() {
+  log $0 "Modules: ${1}"
+  case ${1} in
+    stop)
+      if [ -e "/etc/sleep/modules.bad" ]
+      then
+        for module in $(cat /etc/sleep/modules.bad)
+        do
+          EXISTS=$(lsmod | grep ${module})
+          if [ $? = 0 ]
+          then
+            echo ${module} >>/tmp/modules.load
+            modprobe -r ${module} >/dev/null 2>&1
+          fi
+        done
+      fi
+    ;;
+    start)
+      if [ -e "/tmp/modules.load" ]
+      then
+        for module in $(cat /tmp/modules.load)
+        do
+          MODCNT=0
+          MODATTEMPTS=10
+          while true
+          do
+            if (( "${MODCNT}" < "${MODATTEMPTS}" ))
+            then
+              modprobe ${module%% *} >/dev/null 2>&1
+              if [ $? = 0 ]
+              then
+                break
+              fi
+            else
+              break
+            fi
+            MODCNT=$((${MODCNT} + 1))
+            sleep .5
+          done
+        done
+        rm -f /tmp/modules.load
+      fi
+    ;;
+  esac
+}
+
+quirks() {
+  for QUIRK in /etc/lib/steamfork_hwsupport/him_devicequirks/"${HWID}"/sleep.d/${1}/* \
+               /etc/lib/steamfork_hwsupport/customdevicequirks/"${HWID}"/sleep.d/${1}/*
+  do
+    "${QUIRK}" >/dev/null 2>&1
+  done
+}
+
+case $1 in
+  pre)
+    modules stop
+    quirks ${1}
+  ;;
+  post)
+    modules start
+    quirks ${1}
+  ;;
+esac

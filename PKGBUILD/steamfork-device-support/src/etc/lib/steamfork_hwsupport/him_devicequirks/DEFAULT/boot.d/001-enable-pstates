@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# AMD PStates are not always active on boot until they're switched.
+for STATE in passive active
+do
+  echo ${STATE} >/sys/devices/system/cpu/amd_pstate/status
+done
+

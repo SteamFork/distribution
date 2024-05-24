@@ -1,0 +1,17 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024-Present Fewtarius (https://github.com/fewtarius)
+
+. /etc/profile
+
+case ${0} in
+  *-set-*)
+    set_setting $*
+  ;;
+  *-get-*)
+    get_setting $*
+  ;;
+  *-del-*)
+    del_setting $*
+  ;;
+esac

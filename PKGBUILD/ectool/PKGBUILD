@@ -1,0 +1,25 @@
+# Maintainer: Fewtarius (https://www.github.com/fewtarius)
+# shellcheck disable=SC2034,SC2154
+
+pkgname=ectool
+pkgver=1.0
+pkgrel=1
+pkgdesc="A simple tool for manipulating the embedded controller."
+arch=('any')
+url="https://review.coreboot.org/coreboot/util/ectool"
+license=('GPL')
+depends=(
+	'git'
+)
+provides=('ectool')
+
+build() {
+	cd "${srcdir}" || exit 2
+	export PREFIX=/usr
+	make
+}
+
+package() {
+	cd "${srcdir}" || exit 2
+	install -Dm755 ectool "$pkgdir/usr/bin/ectool"
+}

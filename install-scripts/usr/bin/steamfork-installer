@@ -1,0 +1,101 @@
+#!/bin/bash
+if [[ $EUID -ne 0 ]];
+then
+    exec pkexec --disable-internal-agent "$0" "$@"
+fi
+
+function show_help() {
+  cat <<EOF
+SteamFork Installer
+
+Options:
+  --drive          ...  Specify the disk for installation.
+  --username       ...  Non-root user to create during installation.
+  --password       ...  The password to configure for the non-root user account.
+  --root_password  ...  The password to configure for the root account.
+
+Ex.
+  steamfork-installer --drive sda --username deck --password deck --root_password deck
+
+EOF
+}
+
+if [ ! "$#" > 0 ]
+then
+  show_help
+  exit 1
+fi
+
+while [[ $# -gt 0 ]]
+do
+key="$1"
+case $key in
+    --drive)
+    DEVICE="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --username)
+    HOLOUSER="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --password)
+    HOLOPASS="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --root_password)
+    ROOTPASS="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    *)    # unknown option
+    echo -e "Unknown option: $1\n"
+    show_help
+    exit 1
+    ;;
+esac
+done
+
+ROOTLOCATION=/tmp/sf_root
+INSTALLLOCATION=${ROOTLOCATION}/rootfs
+HOMELOCATION_TEMP=/tmp/sf_home
+SNAPSHOT_FUTURELOC=${HOMELOCATION_TEMP}/.steamos/installcontainer
+SUBVOL=$(ls /etc/steamforkinstall | grep steamfork | sed -s 's/.img.zst//g')
+SUBVOLLOCATION=/tmp/subvol
+	
+echo ${DEVICE} | grep '^/dev' >/dev/null || DEVICE="/dev/${DEVICE}"
+	
+INSTALLDEVICE="${DEVICE}"
+	
+echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop|mmcblk)"
+if [ $? -eq 0 ]; then
+	INSTALLDEVICE="${DEVICE}p"
+fi
+	
+echo -e "\nCreating partitions..."
+sfdisk --delete ${DEVICE}
+wipefs -a ${DEVICE}
+yes | parted ${DEVICE} mklabel gpt
+parted -a optimal ${DEVICE} mkpart primary fat32 2M 256M
+parted ${DEVICE} set 1 boot on
+parted ${DEVICE} set 1 esp on
+parted -a optimal ${DEVICE} mkpart primary btrfs 256M 15G
+parted -a optimal ${DEVICE} mkpart primary ext4 15G 16G
+parted -a optimal ${DEVICE} mkpart primary ext4 16G 100%
+root_partition="${INSTALLDEVICE}2"
+var_partition="${INSTALLDEVICE}3"
+home_partition="${INSTALLDEVICE}4"
+mkfs -t vfat ${INSTALLDEVICE}1
+fatlabel ${INSTALLDEVICE}1 sf_efi
+mkfs -t btrfs -f ${root_partition}
+btrfs filesystem label ${root_partition} sf_root
+mkfs.ext4 -F ${var_partition}
+e2label ${var_partition} sf_var
+mkfs.ext4 -F ${home_partition}
+e2label ${home_partition} sf_home
+
+sync && udevadm trigger && partprobe
+echo "Starting to bootstrap installation..."
+steamfork-bootstrap --username "${HOLOUSER}" --password "${HOLOPASS}" --root_password "${ROOTPASS}"

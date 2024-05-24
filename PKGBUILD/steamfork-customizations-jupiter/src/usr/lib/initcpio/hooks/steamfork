@@ -1,0 +1,22 @@
+#!/usr/bin/ash
+# SPDX-License-Identifier: GPL-2.0-only
+
+run_latehook() {
+    local var_source mountopts passno realtab=/new_root/etc/fstab
+
+    if [ -f "$realtab" ]; then
+        if var_source="$(findmnt -snero source --tab-file="$realtab" -T /var)"; then
+            mountopts="$(findmnt -snero options --tab-file="$realtab" -T /var)"
+
+            # returning the passno column requires util-linux >= 2.23. for
+            # older versions which do not support this column, always fsck.
+            passno="$(findmnt -snero passno --tab-file="$realtab" -T /var 2>/dev/null)"
+            msg ":: mounting '$var_source' on /var"
+            mount "$var_source" /new_root/var -o "$mountopts"
+        fi
+    fi
+    msg ":: mounting /etc overlay"
+    mount -t overlay /new_root/etc -o index=off,metacopy=off,lowerdir=/new_root/etc,upperdir=/new_root/var/overlays/etc/upper,workdir=/new_root/var/overlays/etc/work /new_root/etc
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

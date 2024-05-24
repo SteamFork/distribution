@@ -1,0 +1,20 @@
+#!/bin/bash
+if [[ -d "/var/overlays/etc/" ]]; then
+    echo "Overlays good, continue booting" | systemd-cat -t steamfork-create-overlays -p info
+else
+    echo "No RW overlays, create them" | systemd-cat -t steamfork-create-overlays -p warning
+    mkdir -p /home/.steamos/
+    mkdir -p /home/.steamos/offload/opt
+    mkdir -p /home/.steamos/offload/root
+    mkdir -p /home/.steamos/offload/srv
+    mkdir -p /home/.steamos/offload/usr/lib/debug
+    mkdir -p /home/.steamos/offload/usr/local
+    mkdir -p /home/.steamos/offload/var/lib/flatpak
+    mkdir -p /home/.steamos/offload/var/cache/pacman
+    mkdir -p /home/.steamos/offload/var/lib/docker
+    mkdir -p /home/.steamos/offload/var/lib/systemd/coredump
+    mkdir -p /home/.steamos/offload/var/log
+    mkdir -p /home/.steamos/offload/var/tmp
+    mkdir -p /var/overlays/etc/upper
+    mkdir -p /var/overlays/etc/work
+fi

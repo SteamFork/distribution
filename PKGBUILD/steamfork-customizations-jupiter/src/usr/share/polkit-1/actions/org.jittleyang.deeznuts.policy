@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+
+  <vendor>SteamFork</vendor>
+  <vendor_url>https://github.com/SteamFork/steamfork</vendor_url>
+
+  <action id="org.jittleyang.deeznuts.desktop">
+    <description>Allow firstboot configuration to do it's thing</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamfork-firstboot-config</annotate>
+  </action>
+
+  <action id="org.jittleyang.deeznuts.grub">
+    <description>Allow GRUB updater to run</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamfork-grub-update</annotate>
+  </action>
+
+  <action id="org.jittleyang.deeznuts.ens">
+    <description>Allow enabling sessions</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamfork-enable-sessions</annotate>
+  </action>
+
+  <action id="org.jittleyang.deeznuts.dns">
+    <description>Allow disabling sessions</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamfork-disable-sessions</annotate>
+  </action>
+  <action id="org.jittleyang.deeznuts.oobe">
+    <description>Allow creating OOBE directories</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamfork-create-overlays</annotate>
+  </action>
+  <action id="org.jittleyang.deeznuts.dnsss">
+    <description>Allow controlling read-only instances</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-readonly</annotate>
+  </action>
+</policyconfig>
+  <action id="org.jittleyang.deeznuts.dnas">
+    <description>Allow controlling read-only instances</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-update</annotate>
+  </action>
+</policyconfig>
+  <action id="org.jittleyang.deeznuts.adns">
+    <description>Allow controlling read-only instances</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-update-os</annotate>
+  </action>
+</policyconfig>
+

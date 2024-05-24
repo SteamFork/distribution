@@ -1,0 +1,19 @@
+[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=sudo steamfork-restrap --reset
+GenericName[en_US]=
+GenericName=
+Icon=run-install
+MimeType=
+Name[en_US]=Factory Reset SteamFork
+Name=Factory Reset SteamFork
+Path=
+StartupNotify=true
+Terminal=true
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=

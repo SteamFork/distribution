@@ -1,0 +1,10 @@
+[Unit]
+Description=SteamFork Overlay - Create first boot directories
+Before=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/steamfork-create-overlays
+
+[Install]
+WantedBy=local-fs.target

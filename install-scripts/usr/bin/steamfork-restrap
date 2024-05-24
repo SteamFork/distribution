@@ -1,0 +1,35 @@
+#!/bin/bash
+while [[ $# -gt 0 ]]
+do
+key="$1"
+case $key in
+    --upgrade)
+    IS_REINSTALL="1"
+    shift # past argument
+    shift # past value
+    ;;
+    --reset)
+    IS_RESET="1"
+    shift # past argument
+    shift # past value
+    ;;
+    *)    # unknown option
+    echo "Unknown option: $1"
+    exit 1
+    ;;
+esac
+done
+
+if [[ "${IS_REINSTALL}" == "1" ]]; then
+    if kdialog --warningyesno "This will upgrade SteamFork installation on $(blkid -L sf_root)\nDo you want to continue?"
+    then
+    steamfork-bootstrap
+    sleep 5
+    fi
+elif [[ "${IS_RESET}" == "1" ]]; then
+    if kdialog --warningyesno "This will reset SteamFork installation on $(blkid -L sf_root) to system defaults\nYour username and password will stay intact, but\nyour apps, games, user data, Wi-Fi connections will be lost.\nDo you want to continue?"
+    then
+    steamfork-bootstrap --reset
+    sleep 5
+    fi
+fi

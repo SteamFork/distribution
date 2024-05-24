@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+. steamfork-devicequirk-set
+case ${STEAMFORK_SUPPORTED_DEVICE} in
+  false)
+    echo "Supported: no"
+    exit 1
+  ;;
+  *)
+    echo "Supported: yes"
+    exit 0
+  ;;
+esac

@@ -1,0 +1,74 @@
+diff -rupN linux-6.8.7.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linux-6.8.7/drivers/gpu/drm/drm_panel_orientation_quirks.c
+--- linux-6.8.7.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c	2024-04-22 21:20:19.661898805 +0000
++++ linux-6.8.7/drivers/gpu/drm/drm_panel_orientation_quirks.c	2024-04-22 21:22:08.387026459 +0000
+@@ -147,6 +147,12 @@ static const struct drm_dmi_panel_orient
+ 	.orientation = DRM_MODE_PANEL_ORIENTATION_RIGHT_UP,
+ };
+ 
++static const struct drm_dmi_panel_orientation_data lcd1200x1920_leftside_up = {
++	.width = 1200,
++	.height = 1920,
++	.orientation = DRM_MODE_PANEL_ORIENTATION_LEFT_UP,
++};
++
+ static const struct dmi_system_id orientation_data[] = {
+ 	{	/* Acer One 10 (S1003) */
+ 		.matches = {
+@@ -184,24 +190,54 @@ static const struct dmi_system_id orient
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "T103HAF"),
+ 		},
+ 		.driver_data = (void *)&lcd800x1280_rightside_up,
+-	}, {	/* AYA NEO 2021 */
++	}, {	/* AYA NEO 2021 and Founder */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYADEVICE"),
+-		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "AYA NEO 2021"),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "AYA NEO"),
+ 		},
+ 		.driver_data = (void *)&lcd800x1280_rightside_up,
+-	}, {	/* AYA NEO AIR */
++	}, {	/* AYA NEO AIR, AIR Pro, AIR Plus*/
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYANEO"),
+ 		  DMI_MATCH(DMI_PRODUCT_NAME, "AIR"),
+ 		},
+ 		.driver_data = (void *)&lcd1080x1920_leftside_up,
++        }, {    /* AYA NEO FLIP KB and DS*/
++                .matches = {
++                  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYANEO"),
++                  DMI_MATCH(DMI_PRODUCT_NAME, "FLIP"),
++                },
++                .driver_data = (void *)&lcd1080x1920_leftside_up,
+ 	}, {	/* AYA NEO NEXT */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
+ 		  DMI_MATCH(DMI_BOARD_NAME, "NEXT"),
+ 		},
+ 		.driver_data = (void *)&lcd800x1280_rightside_up,
++        }, {    /* AYA NEO GEEK */
++                .matches = {
++                  DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
++                  DMI_MATCH(DMI_BOARD_NAME, "GEEK"),
++                },
++                .driver_data = (void *)&lcd800x1280_rightside_up,
++        }, {    /* AYANEO AYANEO 2, 2S */
++                .matches = {
++                  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYANEO"),
++                  DMI_MATCH(DMI_PRODUCT_NAME, "AYANEO 2"),
++                },
++                .driver_data = (void *)&lcd1200x1920_rightside_up,
++        }, {    /* AOKZOE A1 Pro */
++                .matches = {
++                  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AOKZOE"),
++                  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "AOKZOE A1 Pro"),
++                },
++		.driver_data = (void *)&lcd1200x1920_leftside_up,
++        }, {    /* AYN Loki Zero, Max, Max Pro */
++                .matches = {
++                  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ayn"),
++                  DMI_MATCH(DMI_PRODUCT_NAME, "Loki"),
++                },
++                .driver_data = (void *)&lcd1080x1920_leftside_up,
+ 	}, {	/* Chuwi HiBook (CWI514) */
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "Hampoo"),

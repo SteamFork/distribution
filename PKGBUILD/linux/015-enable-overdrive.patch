@@ -1,0 +1,26 @@
+From 5b9fda00f70f422e0cacbf88b990ddedd6956727 Mon Sep 17 00:00:00 2001
+From: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
+Date: Tue, 12 Dec 2023 23:53:36 +0100
+Subject: [PATCH] amdgpu: enable overdrive by default
+
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+index 64b1bb2404242a..7a1c602cd05a07 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -167,10 +167,10 @@ char *amdgpu_disable_cu;
+ char *amdgpu_virtual_display;
+ bool enforce_isolation;
+ /*
+- * OverDrive(bit 14) disabled by default
++ * OverDrive(bit 14) enabled by default
+  * GFX DCS(bit 19) disabled by default
+  */
+-uint amdgpu_pp_feature_mask = 0xfff7bfff;
++uint amdgpu_pp_feature_mask = 0xfff7ffff;
+ uint amdgpu_force_long_training;
+ int amdgpu_lbpw = -1;
+ int amdgpu_compute_multipipe = -1;

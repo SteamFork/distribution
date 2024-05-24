@@ -1,0 +1,12 @@
+[Unit]
+Description=Simple Fan Control Service
+Before=display-manager.service
+
+[Service]
+User=root
+Group=wheel
+ExecStart=/usr/bin/steamfork-fancontrol
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

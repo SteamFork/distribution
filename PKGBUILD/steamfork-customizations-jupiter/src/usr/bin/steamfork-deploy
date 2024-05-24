@@ -1,0 +1,161 @@
+#!/bin/bash
+source /etc/steamfork-release
+source /etc/os-release
+
+ROOT_CONTAINER_PATH="/sf_root"
+SUBVOLUME_CONTAINER_PATH="${ROOT_CONTAINER_PATH}/rootfs"
+
+function need_root() {
+  if [ ${EUID} -ne 0 ]; then
+      echo "Subvolume operations can be only done by invoking ${0} as root."
+      exit 1
+  fi
+}
+
+# Function to decompress a .zst file
+function decompress_zst() {
+    local file="${1}"
+    zstd -d "${file}" -o "${file%.zst}"
+}
+
+# Function to trim BTRFS subvolumes
+function trim_subvolumes() {
+    need_root
+    local MYSUBVOLUME="$(cat /proc/cmdline | sed 's/.*subvol=//g' | cut -d ' ' -f 1)"
+    cd ${ROOT_CONTAINER_PATH}
+    steamos-readonly disable
+    if [ "${1}" ]
+    then
+        echo "Trimming ${1}."
+        btrfs subvolume delete "${1}"
+    else
+      for VOLUME in $(btrfs subvolume list /sf_root | sed 's~^.*path ~~g' | head -n -1)
+      do
+          if [[ ! "${VOLUME}" =~ ${MYSUBVOLUME} ]]
+          then
+              echo "Trimming ${VOLUME}."
+              btrfs subvolume delete ${VOLUME}
+          fi
+      done
+    fi
+}
+
+# Function to install BTRFS subvolumes
+function install_subvolume() {
+    need_root
+    local file="${1}"
+
+    if [[ -z "${file}" ]]; then
+        echo "Error: No file specified for installation."
+        exit 1
+    fi
+
+    if [[ ${file: -4} == ".zst" ]]; then
+        decompress_zst "${file}"
+        file="${file%.zst}"
+    fi
+
+    if [[ ! "$(file ${file} | cut -d ' ' -f 2)" == "BTRFS" ]]; then
+        echo "File ${file} is not a valid BTRFS subvolume."
+        rm ${file}
+    fi
+
+    trim_subvolumes
+    btrfs receive ${SUBVOLUME_CONTAINER_PATH} < "${file}"
+    rm ${file}
+    echo "Subvolume installed successfully."
+}
+
+function subvolumeselect() {
+    # Check if subvolume actually exists before wrapping into it
+    if [[ -e "${ROOT_CONTAINER_PATH}/${subvolume}" ]]; then
+        tmpmount=/tmp/subvol
+        echo "Switching to subvolume: ${subvolume}"
+	steamos-readonly disable
+        mkdir -p ${tmpmount}
+        mount -t btrfs -o subvol=${subvolume} -L sf_root ${tmpmount}
+        arch-chroot ${tmpmount} <<EOF
+steamos-readonly disable
+steamfork-grub-update
+EOF
+        umount -l ${tmpmount}
+        echo "Switched to subvolume: ${subvolume}"
+    else
+        echo "Error switching: subvolume ${subvolume} does not exist."
+    fi
+}
+
+# Function to switch between BTRFS subvolumes
+function switch_subvolume() {
+    need_root
+    subvolume="${1}"
+    if [[ -z "${subvolume}" ]]; then
+        # Get list of subvolumes
+        subvolumes=($(btrfs subvolume list "${ROOT_CONTAINER_PATH}" | awk '{print $9}'))
+
+        # Display menu
+        PS3="Select subvolume to switch to: "
+        select subvol_option in "${subvolumes[@]}"; do
+            if [[ -n "${subvol_option}" ]]; then
+                subvolume=${subvol_option}
+                subvolumeselect
+                break
+            else
+                echo "Invalid option. Please select a subvolume."
+            fi
+        done
+    else
+        subvolumeselect
+    fi
+}
+
+
+
+# Function to display status
+function display_status() {
+    echo "SteamFork ${VERSION_ID}, branch: ${VARIANT_ID}, image version: ${BUILD_ID}"
+    echo "Built on: $(stat -c %y /etc/steamfork-release | cut -d '.' -f 1)"
+    echo
+    echo "Current Subvolume: $(cat /proc/cmdline | sed 's/.*subvol=//g' | cut -d ' ' -f 1)"
+    echo "Readonly Status: $(btrfs property get / 2>/dev/null | grep ro)"
+    echo "Kernel Version: $(uname -r) (from package: $(cat /lib/modules/$(uname -r)/pkgbase))"
+    echo "Uptime: $(uptime -p)"
+    echo "CPU:$(cat /proc/cpuinfo | grep -i "model name" | cut -d ':' -f 2 | uniq) ($(nproc) core(s))"
+    echo "GPU:$(lspci | grep -i vga | cut -d ':' -f 3)"
+    echo
+    echo "Boot command line: $(cat /proc/cmdline)"
+}
+
+# Main function
+function main() {
+    if [[ $# -lt 1 ]]; then
+        echo "Usage: ${0} <command> [install|switch|status]"
+        exit 1
+    fi
+
+    local command="${1}"
+    shift
+
+    case "${command}" in
+        install)
+            install_subvolume "${1}"
+            ;;
+        switch)
+            switch_subvolume "${1}"
+            ;;
+        status)
+            display_status "${1}"
+            ;;
+        trim)
+            trim_subvolumes "${1}"
+            ;;
+        *)
+            echo "Unknown command: ${command}"
+            exit 1
+            ;;
+    esac
+}
+
+steamos-readonly disable
+main "$@"
+steamos-readonly enable

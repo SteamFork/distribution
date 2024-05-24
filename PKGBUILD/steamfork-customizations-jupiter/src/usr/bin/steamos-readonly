@@ -1,0 +1,15 @@
+#!/bin/bash
+if [[ $EUID -ne 0 ]];
+then
+    exec pkexec --disable-internal-agent "$0" "$@"
+fi
+ARG=$1
+if [[ "${ARG}" == "enable" ]]; then
+    btrfs property set -f / ro true
+    mount -o ro,remount /
+elif [[ "${ARG}" == "disable" ]]; then
+    mount -o rw,remount /
+    btrfs property set -f / ro false
+else
+    echo "Unrecognized option."
+fi

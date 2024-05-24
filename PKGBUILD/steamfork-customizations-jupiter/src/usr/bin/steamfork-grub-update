@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [[ $EUID -ne 0 ]];
+then
+    exec pkexec --disable-internal-agent "$0" "$@"
+fi
+
+. /usr/bin/steamfork-devicequirk-set
+
+EFI_LOCATION=$(realpath /dev/disk/by-label/sf_efi)
+
+EFI_STORAGE="/dev/$(lsblk -no pkname ${EFI_LOCATION} | tr -d '[:space:]')"
+echo ${EFI_LOCATION} | grep -q -P "^/dev/(nvme|loop|mmcblk)"
+if [ $? -eq 0 ]; then
+    EFI_PARTNUM=$(echo ${EFI_LOCATION} | cut -d "p" -f 2)
+else
+    EFI_PARTNUM=$(echo ${EFI_LOCATION} | rev | cut -c 1 | rev)
+fi
+
+mount ${EFI_LOCATION} /boot/efi
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=steamos --removable
+grub-mkconfig -o /boot/grub/grub.cfg
+echo "Installing grub entry on ${EFI_STORAGE}, partition number ${EFI_PARTNUM}"
+for ENTRY in $(efibootmgr | awk '/[Ss]team[Ff]ork/ {print $1}' | sed -e 's~Boot~~g;s~\W$~~g')
+do
+  echo "Removing stale EFI entry ${ENTRY}"
+  efibootmgr -B -b ${ENTRY}
+done
+efibootmgr -c -d ${EFI_STORAGE} -p ${EFI_PARTNUM} -L "SteamFork (GRUB)" -l '\EFI\steamos\grubx64.efi'
+umount -l /boot/efi

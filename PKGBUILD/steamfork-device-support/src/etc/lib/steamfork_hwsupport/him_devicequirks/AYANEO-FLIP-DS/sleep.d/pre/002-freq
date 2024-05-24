@@ -1,0 +1,29 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 Fewtarius
+
+. /etc/profile
+
+set_setting sleep.cpugovernor $(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_governor)
+set_setting sleep.gpulevel $(cat /sys/class/drm/card*/device/power_dpm_force_performance_level | tail -n 1)
+
+for CORE in $(find /sys/devices/system/cpu/cpufreq -name policy*)
+do
+  echo powersave >${CORE}/scaling_governor
+done
+
+for CARD in $(find /sys/class/drm/card* -name power_dpm_force_performance_level)
+do
+  echo low >${CARD}
+done
+
+COUNT=1
+for CORE in $(find /sys/devices/system/cpu/cpu* -name online)
+do
+  if (( ${COUNT} <= 2 ))
+  then
+    COUNT=$(( ${COUNT} + 1 ))
+    continue
+  fi
+  echo 0 > ${CORE}
+done

@@ -1,0 +1,13 @@
+[Unit]
+Description=A simple quirk execution service.
+Before=display-manager.service
+
+[Service]
+User=root
+Group=wheel
+ExecStart=/usr/bin/steamfork-boot-quirks
+Type=oneshot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

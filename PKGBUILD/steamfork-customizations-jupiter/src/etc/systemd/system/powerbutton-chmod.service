@@ -1,0 +1,9 @@
+[Unit]
+Description=Allow reading powerbutton events on /dev/input/event0
+
+[Service]
+Type=oneshot
+ExecStart=/bin/chmod 777 /dev/input/event0
+
+[Install]
+WantedBy=graphical.target

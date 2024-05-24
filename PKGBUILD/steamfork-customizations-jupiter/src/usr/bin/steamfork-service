@@ -1,0 +1,22 @@
+#!/bin/bash
+if [[ $EUID -ne 0 ]];
+then
+    echo "$0 must be ran as root."
+fi
+
+MOUNTDIR=/tmp/mounts/steamfork-service
+source /etc/steamfork-release
+
+RUNTIMECOMMANDS="start:restart:stop:list-units:status"
+REALROOTCOMMANDS="enable:disable:enable-now"
+if [[ ":$1:" =~ ":${RUNTIMECOMMANDS}:" ]]; then
+    systemctl $1 $2
+elif [[ ":$1:" =~ ":${REALROOTCOMMANDS}:" ]]; then
+    mkdir -p ${MOUNTDIR}
+    mount -L sf_root -o subvol=/rootfs/${IMAGE_ID} ${MOUNTDIR}
+    arch-chroot ${MOUNTDIR} systemctl $1 $2
+    umount -L ${MOUNTDIR} && rm -rf ${MOUNTDIR}s
+else
+    echo -e "Currently tested commands to be fully working:\n\nFor overlaid image (current working instance): ${RUNTIMECOMMANDS}\nFor real root operations: ${REALROOTCOMMANDS}"
+fi
+

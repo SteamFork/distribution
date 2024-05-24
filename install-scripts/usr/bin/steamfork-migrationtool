@@ -1,0 +1,85 @@
+#!/bin/bash
+
+if [[ $EUID -ne 0 ]];
+then
+    echo "This must be ran via sudo"
+    exit 127
+fi
+
+PRE_IMMUTABLE_ROOT="/dev/disk/by-label/steamfork-root"
+PRE_IMMUTABLE_HOME="/dev/disk/by-label/steamfork-home"
+
+if [[ -L "${PRE_IMMUTABLE_ROOT}" ]] && [[ -L "${PRE_IMMUTABLE_HOME}" ]]; then
+    REAL_ROOT_PATH=$(realpath ${PRE_IMMUTABLE_ROOT})
+    REAL_HOME_PATH=$(realpath ${PRE_IMMUTABLE_HOME})
+    if [[ "$(echo -n ${REAL_ROOT_PATH} | tail -c 1)" -ne "2" ]]; then
+        echo -e "Dual-booted installations are not supported.\nRead https://steamfork.ru.eu.org/get/migrate/ on how to migrate your installation."
+        echo -e "\nInstaller will close in 15 seconds."
+        sleep 15
+        exit 125
+    fi
+    REAL_DEVICE="/dev/$(lsblk -no pkname ${REAL_ROOT_PATH} | tr -d '[:space:]')"
+    if kdialog --warningyesno "Pre-immutable installation of SteamFork was detected on ${REAL_DEVICE}.\nDo you want to continue to migrate your installation?"
+    then
+        echo "Searching for valid users to migrate..."
+        mkdir /tmp/oldroot
+        mount ${REAL_ROOT_PATH} /tmp/oldroot
+        HOLOUSER=$(cat /tmp/oldroot/etc/passwd | grep home | awk -F':' '{ print $1}')
+        echo "User ${HOLOUSER} detected."
+        while true
+        do
+            echo -n "Enter password for user ${HOLOUSER}: "
+            read HOLOPASS
+            if [[ -n "${HOLOPASS}" ]]; then
+                break
+            fi
+        done
+        while true
+        do
+            echo -n "Enter root user password: "
+            read ROOTPASS
+            if [[ -n "${ROOTPASS}" ]]; then
+                break
+            fi
+        done
+
+        INSTALLDEVICE="${REAL_DEVICE}"
+        DRIVENODE=$(echo $INSTALLDEVICE | cut -d '/' -f 3)
+	    echo ${REAL_DEVICE} | grep -q -P "^/dev/(nvme|loop|mmcblk)"
+	    if [ $? -eq 0 ]; then
+		    INSTALLDEVICE="${REAL_DEVICE}p"
+            DRIVENODE=$(echo $INSTALLDEVICE | cut -d '/' -f 3)
+	    fi
+        umount /tmp/oldroot
+        e2label ${REAL_HOME_PATH} sf_home
+        sync && udevadm trigger
+        parted ${REAL_DEVICE} rm 2
+        parted ${REAL_DEVICE} rm 1
+        sync
+        # A little hack to make the home partition at the end of drive
+        sfdisk -d ${REAL_DEVICE} > /tmp/parttable
+        sed -i "s/${DRIVENODE}3/${DRIVENODE}4/g" /tmp/parttable
+        sfdisk --force ${REAL_DEVICE} < /tmp/parttable
+        sync && udevadm trigger 
+        parted ${REAL_DEVICE} mkpart primary fat32 2M 256M
+	    parted ${REAL_DEVICE} set 1 boot on
+	    parted ${REAL_DEVICE} set 1 esp on
+	    parted ${REAL_DEVICE} mkpart primary btrfs 256M 23G
+        parted ${REAL_DEVICE} mkpart primary ext4 23G 24G
+        root_partition="${INSTALLDEVICE}2"
+        var_partition="${INSTALLDEVICE}3"
+	    mkfs -t vfat ${INSTALLDEVICE}1
+	    fatlabel ${INSTALLDEVICE}1 sf_efi
+	    mkfs -t btrfs -f ${root_partition}
+	    btrfs filesystem label ${root_partition} sf_root
+        mkfs.ext4 -F ${var_partition}
+        e2label ${var_partition} sf_var
+        sync && udevadm trigger
+        sleep 2
+        steamfork-bootstrap --username "${HOLOUSER}" --password "${HOLOPASS}" --root_password "${ROOTPASS}"
+    fi
+else
+    echo "Nothing to migrate."
+    sleep 5
+    exit 0
+fi

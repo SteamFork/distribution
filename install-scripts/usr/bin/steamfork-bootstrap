@@ -1,0 +1,162 @@
+#!/bin/bash
+## Installation bootstrapper
+
+sync && udevadm trigger
+
+while [[ $# -gt 0 ]]
+do
+key="$1"
+case $key in
+    --username)
+    HOLOUSER="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --password)
+    HOLOPASS="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --root_password)
+    ROOTPASS="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --reinstall)
+    IS_REINSTALL="1"
+    shift # past argument
+    shift # past value
+    ;;
+    --reset)
+    IS_RESET="1"
+    shift # past argument
+    shift # past value
+    ;;
+    --keepdata)
+    IS_KEEPDATA="1"
+    shift # past argument
+    shift # past value
+    ;;
+    *)    # unknown option
+    echo "Unknown option: $1"
+    exit 1
+    ;;
+esac
+done
+
+if [[ -n "$(blkid | grep sf)" ]]; then
+ROOTLOCATION=/tmp/sf_root
+INSTALLLOCATION=${ROOTLOCATION}/rootfs
+HOMELOCATION_TEMP=/tmp/sf_home
+SNAPSHOT_FUTURELOC=${HOMELOCATION_TEMP}/.steamos/installcontainer
+SUBVOL=$(ls /etc/steamforkinstall | grep steamfork | sed -s 's/.img.zst//g')
+SUBVOLLOCATION=/tmp/subvol
+
+echo "Bootstrapping SteamFork image $SUBVOL on $(blkid -L sf_root)..."
+
+mkdir -p ${ROOTLOCATION} ${HOMELOCATION_TEMP}
+
+mount -L sf_root -o compress-force=zstd:1,discard,noatime,nodiratime ${ROOTLOCATION}
+mount -L sf_home ${HOMELOCATION_TEMP}
+
+# Start build deploying here
+mkdir -p ${SNAPSHOT_FUTURELOC} ${INSTALLLOCATION} ${HOMELOCATION_TEMP} ${SNAPSHOT_FUTURELOC} ${SUBVOLLOCATION}
+if [[ ! -d "${INSTALLLOCATION}/${SUBVOL}" ]]; then
+    echo "Copying image file to home partition..."
+    cp /etc/steamforkinstall/${SUBVOL}.img.zst ${SNAPSHOT_FUTURELOC}/
+    echo "Decompressing image file..."
+    zstd -df ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst
+    echo "Removing container file..."
+    rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst
+    echo "Installing image file on root partition..."
+    btrfs receive ${INSTALLLOCATION} < ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img
+    echo "Removing install file..."
+    rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img
+elif [[ "${IS_RESET}" == "1" ]]; then
+    echo "Removing current copy of subvolume..."
+    btrfs subvolume delete ${INSTALLLOCATION}/${SUBVOL}
+    echo "Copying image file to home partition..."
+    cp /etc/steamforkinstall/${SUBVOL}.img.zst ${SNAPSHOT_FUTURELOC}/
+    echo "Decompressing image file..."
+    zstd -df ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst
+    echo "Removing container file..."
+    rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst
+    echo "Installing image file on root partition..."
+    btrfs receive ${INSTALLLOCATION} < ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img
+    echo "Removing install file..."
+    rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img
+else
+    echo "Installer subvolume already exists on container, skipping bootstrap..."
+fi
+mount -L sf_root -o subvol=rootfs/${SUBVOL},compress-force=zstd:1,discard,noatime,nodiratime ${SUBVOLLOCATION}
+mount -L sf_efi ${SUBVOLLOCATION}/boot/efi
+mount -L sf_home ${SUBVOLLOCATION}/home
+mount -L sf_var ${SUBVOLLOCATION}/var
+
+arch-chroot ${SUBVOLLOCATION} steamos-readonly disable
+arch-chroot ${SUBVOLLOCATION} mkinitcpio -P
+arch-chroot ${SUBVOLLOCATION} steamfork-grub-update
+
+mkdir -p ${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/var/overlays/etc/upper
+mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc
+echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${SUBVOLLOCATION} passwd root
+
+if [[ ! -z "${HOLOUSER}" ]]; then
+    echo -e "\nCreating user ${HOLOUSER}..."
+    ### If the user exists, kill it with fire
+    for file in /etc/group /etc/shadow /etc/passwd
+    do
+      arch-chroot ${SUBVOLLOCATION} sed -i '/^'${HOLOUSER}':/d' ${file}
+    done
+    arch-chroot ${SUBVOLLOCATION} rm -rf /home/${HOLOUSER}
+
+    arch-chroot ${SUBVOLLOCATION} groupadd -g 1000 ${HOLOUSER}
+    arch-chroot ${SUBVOLLOCATION} useradd --create-home -d /home/${HOLOUSER} -c "Steam Deck User" -s /bin/bash -u 1000 -g 1000 ${HOLOUSER}
+    arch-chroot ${SUBVOLLOCATION} usermod -aG wheel ${HOLOUSER}
+    arch-chroot ${SUBVOLLOCATION} usermod -aG video ${HOLOUSER}
+    arch-chroot ${SUBVOLLOCATION} usermod -aG steamos-log-submitter ${HOLOUSER}
+    arch-chroot ${SUBVOLLOCATION} cp -f /usr/share/icons/steam/${HOLOUSER}-face.icon /home/${HOLOUSER}/.face.icon
+    arch-chroot ${SUBVOLLOCATION} chown ${HOLOUSER}:${HOLOUSER} /home/${HOLOUSER}/.face.icon
+
+    echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${SUBVOLLOCATION} passwd ${HOLOUSER}
+
+    ### Remove the local build repo
+    arch-chroot ${SUBVOLLOCATION} sed -ie '/^\[repo\]/,+3d' /etc/pacman.conf
+
+    echo "Setting gamescope autologin for ${HOLOUSER}..."
+    mkdir -p ${SUBVOLLOCATION}/etc/sddm.conf.d/
+    echo -e "[General]\nDisplayServer=wayland\n\n[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop\nRelogin=true\n\n[X11]\n# Janky workaround for wayland sessions not stopping in sddm, kills\n# all active sddm-helper sessions on teardown\nDisplayStopCommand=/usr/bin/gamescope-wayland-teardown-workaround" >> ${SUBVOLLOCATION}/etc/sddm.conf.d/autologin.conf
+elif [[ "${IS_RESET}" == "1" ]]; then
+    mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc
+    echo "Restoring this installation to system defaults..."
+    RESIDUE=$(find ${SUBVOLLOCATION}/var/overlays/etc/upper | sed 1d | grep -v group | grep -v passwd | grep -v shadow | grep -v sddm.conf.d | grep -v .pwd.lock)
+    if [[ ! -z "${RESIDUE}" ]]; then
+        echo "Removing residue in /etc..."
+        rm -rf ${RESIDUE}
+    fi
+    echo "Removing user folder residue..."
+    rm -rf ${SUBVOLLOCATION}/home/{*,.*}
+    USER=$(cat ${SUBVOLLOCATION}/var/overlays/etc/upper/passwd | grep /home/ | cut -d ':' -f 1)
+    arch-chroot ${SUBVOLLOCATION} mkhomedir_helper ${USER}
+else
+    echo "No user added, assuming upgrade..."    
+fi
+
+REALEXITCODE="$?"
+
+if [[ "${REALEXITCODE}" -ne "0" ]]; then
+	echo "Installation failed."
+	exit 127
+    sleep 5
+fi
+
+echo "Finished, unmounting filesystems..."
+echo "You may now close this window and reboot your device..."
+for drive in $(echo "sf_home sf_var sf_root sf_efi"); do umount -f $(blkid -L $drive); done
+umount -l ${SUBVOLLOCATION} && umount -l ${HOMELOCATION_TEMP}
+exit 0
+else
+echo "Partition layout not detected. Aborting bootstrap"
+exit 127
+sleep 5
+fi

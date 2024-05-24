@@ -1,0 +1,50 @@
+#!/bin/bash
+
+case ${1} in
+  *verbose*)
+     VERBOSE="true"
+  ;;
+esac
+
+function puts() {
+  if [ "${VERBOSE}" = "true" ]
+  then
+    echo ${*}
+  fi
+}
+
+if [ -f "/etc/lib/steamfork_hwsupport/him_devicequirks/DEFAULT/hardware_quirks.sh" ]
+then
+  puts "> Loading default quirks..."
+  source /etc/lib/steamfork_hwsupport/him_devicequirks/DEFAULT/hardware_quirks.sh
+fi
+
+DEVICE_NAME="$(echo $(tr -d '\0' </sys/class/dmi/id/sys_vendor 2>/dev/null) $(tr -d '\0' </sys/class/dmi/id/product_name 2>/dev/null) | tr ' ' '-')"
+puts "Found device \"${DEVICE_NAME}\"..."
+case ${DEVICE_NAME} in
+  *Jupiter*)
+    export STEAMFORK_GAMESCOPE_RES="-w 1280 -h 800"
+    export STEAMFORK_X11_ROTATION=right
+  ;;
+  *Gallileo*)
+    export STEAMFORK_GAMESCOPE_RES="-w 1280 -h 800"
+    export STEAMFORK_X11_ROTATION=right
+  ;;
+  *)
+    for QUIRKPATH in /etc/lib/steamfork_hwsupport/customdevicequirks /etc/lib/steamfork_hwsupport/him_devicequirks
+    do
+        if [ -e "${QUIRKPATH}/${DEVICE_NAME}/hardware_quirks.sh" ]
+        then
+            puts "Found \"${DEVICE_NAME}\" in ${QUIRKPATH}, loading..."
+            source "${QUIRKPATH}/${DEVICE_NAME}/hardware_quirks.sh"
+            break
+	fi
+    done
+  ;;
+esac
+
+if [ -z "${STEAMFORK_GAMESCOPE_RES}" ]
+then
+    puts "Gamescope resolution data not found, setting default..."
+    export STEAMFORK_GAMESCOPE_RES="-w 1280 -h 720"
+fi

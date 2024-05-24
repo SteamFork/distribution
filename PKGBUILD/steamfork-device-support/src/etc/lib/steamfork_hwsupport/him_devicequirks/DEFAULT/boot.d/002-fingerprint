@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Set power saving mode on fingerprint readers and then disable them since we can't use them.
+
+READER=$(grep -i Fing /sys/bus/usb/devices/*/product 2>/dev/null | awk 'BEGIN {FS="/"} {printf $6}')
+echo auto > /sys/bus/usb/devices/${READER}/power/control 2>/dev/null
+echo ${READER} >/sys/bus/usb/drivers/usb/unbind

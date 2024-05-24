@@ -1,0 +1,4 @@
+#!/bin/sh
+
+### Disable the touch display until issues can be resolved.
+echo 1 >$(find /sys/devices/platform -name inhibited | grep GDIX)

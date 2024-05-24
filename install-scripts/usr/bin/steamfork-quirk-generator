@@ -1,0 +1,150 @@
+#!/bin/bash
+
+function show_help() {
+    cat <<EOF
+SteamFork device quirk generator
+A simple tool to generate display and system metadata for SteamFork.
+
+Options:
+  Gamemode options:
+    --gamescope_rotation: (left, right, normal, upsidedown)
+        Rotates the internal display in game mode.
+
+    --gamescope_resolution: (1280x720)
+        Configures the resolution for gamescope while gaming.
+
+    --gamescope_displaysize: (1280x720)
+        Forces the display resolution to the specified size, can significantly improve performance.
+
+  Desktop options:
+    --desktop_rotation: (left, right, normal, inverted)
+        Rotates the internal display while in desktop mode.
+
+  General and additional options:
+    --supported: (true/false)
+        Defines a device to be supported or not, a message appears in Steam notifying of unsupported devices.  Default is true.
+    --grub_additional_options: ("DESIRED OPTIONS")
+        Adds additional GRUB options the next time the bootloader is built.
+
+Example:
+  steamfork-quirk-generator --gamescope_rotation left  --gamescope_resolution 1280x720 --gamescope_displaysize 1280x720 --desktop_rotation left --grub_additional_options "amd_pstate=active iomem=relaxed"
+EOF
+}
+
+if [ $# -eq 0 ]
+then
+  show_help
+  exit 0
+fi
+
+HWID="$(echo $(tr -d '\0' </sys/class/dmi/id/sys_vendor 2>/dev/null) $(tr -d '\0' </sys/class/dmi/id/product_name 2>/dev/null) | tr ' ' '-')"
+while [[ $# -gt 0 ]]
+do
+    key="${1}"
+    case $key in
+        --gamescope_rotation)
+            OPTIONS_GR="left:right:normal:upsidedown"
+            if [[ ":$OPTIONS_GR:" =~ ":${2}:"  ]]
+            then
+                GAMESCOPE_ORIENTATION="--force-orientation ${2}"
+            else
+                echo "Unrecognized value for Gamescope orientation Usage: \"left:right:normal:upsidedown\""
+                exit 0
+            fi
+            shift # past argument
+            shift # past value
+        ;;
+        --gamescope_resolution)
+            if [[ "${2}" == *"x"* ]]
+            then
+                GAMESCOPE_RESOLUTION="${GAMESCOPE_RESOLUTION} -w $(echo ${2} | cut -d 'x' -f 1) -h $(echo ${2} | cut -d 'x' -f 2)"
+            else
+                echo "Resolution must be specified like this: 1920x1080"
+                exit 0
+            fi
+            shift # past argument
+            shift # past value
+        ;;
+        --gamescope_displaysize)
+            if [[ "${2}" == *"x"* ]]
+            then
+                GAMESCOPE_RESOLUTION="${GAMESCOPE_RESOLUTION} -W $(echo ${2} | cut -d 'x' -f 1) -H $(echo ${2} | cut -d 'x' -f 2)"
+            else
+                echo "Resolution must be specified like this: 1920x1080"
+                exit 0
+            fi
+            shift # past argument
+            shift # past value
+        ;;
+        --desktop_rotation)
+            OPTIONS_XR="left:right:normal:inverted"
+            if [[ ":$OPTIONS_XR:" =~ ":${2}:"  ]]
+            then
+                XRANDR_ORIENTATION="${2}"
+            else
+                echo "Unrecognized value for Desktop orientation Usage: \"left:right:normal:inverted\""
+                exit 0
+            fi
+            shift # past argument
+            shift # past value
+        ;;
+        --grub_additional_options)
+            GRUB_OPTIONS="${2}"
+            shift # past argument
+            shift # past value
+        ;;
+        --supported)
+            STEAMFORK_SUPPORTED_DEVICE="${2}"
+            shift # past argument
+            shift # past value
+        ;;
+        --help)
+            show_help
+            exit 0
+        ;;
+        *)    # unknown option
+            echo "Unknown option: ${1}"
+            show_help
+            exit 1
+        ;;
+    esac
+done
+
+if [[ -z "${GAMESCOPE_ORIENTATION}" ]] && [[ -z "${GAMESCOPE_RESOLUTION}" ]] && [[ -z "${XRANDR_ORIENTATION}" ]] && [[ -z "${GRUB_OPTIONS}" ]]; then
+    echo "Whatcha gonna generate with nothing? :)"
+    exit 0
+fi
+
+QUIRKPATH="/etc/lib/steamfork_hwsupport/customdevicequirks/${HWID}/hardware_quirks.sh"
+cat <<EOF
+#!/bin/bash
+# Generated quirk for \`${HWID}\`
+# Save to: \`${QUIRKPATH}\`
+# Optional: Submit to the SteamFork project for official support.
+###################################################################
+EOF
+
+if [ ! -z "${GAMESCOPE_ORIENTATION}" ]
+then
+    echo -e "export STEAMFORK_GAMESCOPE_ADDITIONAL_OPTIONS=\"${GAMESCOPE_ORIENTATION}\""
+fi
+if [ ! -z "${GAMESCOPE_RESOLUTION}" ]
+then
+    echo -e "export STEAMFORK_GAMESCOPE_RES=\"${GAMESCOPE_RESOLUTION}\""
+fi
+if [ ! -z "${XRANDR_ORIENTATION}" ]
+then
+    echo -e "export STEAMFORK_X11_ROTATION=\"${XRANDR_ORIENTATION}\""
+fi
+if [ ! -z "${STEAMFORK_SUPPORTED_DEVICE}" ]
+then
+    echo -e "export STEAMFORK_SUPPORTED_DEVICE=\"${STEAMFORK_SUPPORTED_DEVICE,,}\""
+fi
+if [ ! -z "${GRUB_OPTIONS}" ]
+then
+    echo -e "export STEAMFORK_GRUB_ADDITIONAL_CMDLINEOPTIONS=\"${GRUB_OPTIONS}\""
+fi
+
+cat <<EOF
+###################################################################
+EOF

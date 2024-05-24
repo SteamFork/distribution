@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [[ $EUID -ne 0 ]];
+then
+    echo "This must be ran via sudo."
+    exit 1
+fi
+
+echo -n "Enter development branch you would like to opt-in to: "
+read branch
+echo $branch > /etc/manual-enroll-override
