@@ -2,7 +2,10 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
 
-. /etc/profile
+if [ -f "${HOME}/.SteamFork/options" ]
+then
+ source "${HOME}/.SteamFork/options"
+fi
 
 for KEY in WWWHOST WWWUSER WWWROOT SIGNKEY
 do
