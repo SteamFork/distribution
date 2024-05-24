@@ -7,7 +7,7 @@
 
 pkgbase=linux               # Build stock -ARCH kernel
 pkgver=6.9.1
-pkgrel=3
+pkgrel=5
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -44,11 +44,14 @@ source=(
   '009-ayaneo-audio.patch'
   '010-optimize-harder-O3.patch'
   '011-add-aw87xxx-codec.patch'
-  '012-aw87xxx-use-strscpy.patch'
-  '013-aw87xxx-fixes.patch'
-  '014-BMI260-driver.patch'
-  '015-enable-overdrive.patch'
-  '016-color-management-props.patch'
+  '012-aw87xxx-verbose-debugging.patch'
+  '013-aw87xxx-enumeration.patch'
+  '014-aw87xxx-suspend-resume.patch'
+  '015-bmi260-driver.patch'
+  '020-enable-overdrive.patch'
+  '030-color-management-props.patch'
+  '099-platform-drivers.patch'
+
 )
 validpgpkeys=(
   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
@@ -56,22 +59,24 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
 )
 sha256sums=('SKIP'
-            'a13c1c05cff8372724b00e51108f46010a2907a253af646890b374f9c27f9812'
+            'b792d198907c840800038b8bdaecaee2150546eb58753d1c7e4729a3283b5c83'
             'd0b54d0eda600ec68bea766a327a34acf1bc45a115c1bb7ed52e344f3080600c'
             '97e87daffcb689c1763ef72ab9cadb66d7be174856885df3c278baf0cc80a9f6'
             '7dfd730e7773ed71abcdaae6adaa6a725eae89828aa71e0c9aa6c78c90cd9c97'
             'cb700b2bb7a15fa7303455113884334232b3efde8272ac6698641c72c57e9b18'
             '99b7665111f5f7788442d6aee089279fb9386b2dc8fe02d96854921f1b0bb095'
             'c1d08ed1bb31b5ada9b905ab49098024b567abc4966c31836f73fe4321459858'
-            '2fd1ceaf3189cadab6d4336189319714af7760bbbfee19470490993c864bf917'
-            'af2daac06856630ed0987415390637e8a3e4aa7fcf0e053d2a4383c939aa8029'
-            'd66f2f8d63ca60fae876c278fc47445fa412b98ba96bd49efa9c93bf80aee96c'
+            '2c4dff38d71884e998a8edae0b8c4906f4432f58de27f7c6df3ac948dc41837b'
+            '9f185e01ef1d4d75779c701f3aafbb11c8870c40c30537902854f0e080fd0e62'
+            '172146f1db5f684091cd936b01fffa66bdf76712f65f3db9ca76d67e66aa05e5'
+            '9e6a5380f754d20d251153e7c937583e684377a4955f8c2496f728dddfaea218'
             '4e41f289e187de9a80776898901b093b950f7de15f0094270d53ccd16a80cc67'
             'e503ba1484972990eb06eae6dbdb231628d00c3f96744f51f4054abb29dfd060'
             '79e4a2da142c761d3e3da12f709b4707c158cd3c6510e4c191d57db3025f2d1e'
+            'f1cf80786eddf2a9a16b6774e2dc315377d4635171ca18faebe73745882f593d'
 )
 
-export KBUILD_BUILD_HOST=fewtarius
+export KBUILD_BUILD_HOST=$(hostnamectl hostname)
 export KBUILD_BUILD_USER=$pkgbase
 export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
 
@@ -81,7 +86,10 @@ _make() {
 }
 
 prepare() {
-  cd ${_srcname}
+  cd ${_srcname}/drivers
+  git clone https://github.com/ShadowBlip/ayaneo-platform.git
+  git clone https://github.com/ShadowBlip/ayn-platform.git
+  cd ..
 
   echo "Setting version..."
   echo "-$pkgrel" > localversion.10-pkgrel

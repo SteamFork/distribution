@@ -1,15 +1,18 @@
-From 84579066979ff67fddb89bf7dbca6645b730c183 Mon Sep 17 00:00:00 2001
+From cf880cc538320df0cbddfdcdd69e1b50d3f2521e Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Thu, 25 Apr 2024 09:39:40 -0500
 Subject: [PATCH] Codec: Add aw87xxx codec with partial acpi implementation
  Contribution by CVMagic (https://github.com/CVMagic)
 
+aw87xxx: Use strscpy instead of strlcpy
+
+awinic: i2c_driver cleanup and fixes
 ---
  sound/soc/codecs/Kconfig                      |    2 +
  sound/soc/codecs/Makefile                     |    1 +
  sound/soc/codecs/aw87xxx/Kconfig              |    5 +
  sound/soc/codecs/aw87xxx/Makefile             |    4 +
- sound/soc/codecs/aw87xxx/aw87xxx.c            | 1480 +++++
+ sound/soc/codecs/aw87xxx/aw87xxx.c            | 1457 +++++
  sound/soc/codecs/aw87xxx/aw87xxx.h            |  121 +
  sound/soc/codecs/aw87xxx/aw87xxx_acf_bin.c    | 1558 +++++
  sound/soc/codecs/aw87xxx/aw87xxx_acf_bin.h    |  191 +
@@ -30,7 +33,7 @@ Subject: [PATCH] Codec: Add aw87xxx codec with partial acpi implementation
  sound/soc/codecs/aw87xxx/aw87xxx_pid_60_reg.h | 5246 +++++++++++++++++
  sound/soc/codecs/aw87xxx/aw87xxx_pid_76_reg.h | 1205 ++++
  sound/soc/codecs/aw87xxx/aw87xxx_pid_9b_reg.h |   81 +
- 25 files changed, 20058 insertions(+)
+ 25 files changed, 20035 insertions(+)
  create mode 100644 sound/soc/codecs/aw87xxx/Kconfig
  create mode 100644 sound/soc/codecs/aw87xxx/Makefile
  create mode 100644 sound/soc/codecs/aw87xxx/aw87xxx.c
@@ -56,10 +59,10 @@ Subject: [PATCH] Codec: Add aw87xxx codec with partial acpi implementation
  create mode 100644 sound/soc/codecs/aw87xxx/aw87xxx_pid_9b_reg.h
 
 diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index 59f9742e9ff49a..0b5b3155eed50c 100644
+index f78ea2f86fa64f..34d6b290f3827e 100644
 --- a/sound/soc/codecs/Kconfig
 +++ b/sound/soc/codecs/Kconfig
-@@ -2448,4 +2448,6 @@ config SND_SOC_LPASS_TX_MACRO
+@@ -2497,4 +2497,6 @@ config SND_SOC_LPASS_TX_MACRO
  	select SND_SOC_LPASS_MACRO_COMMON
  	tristate "Qualcomm TX Macro in LPASS(Low Power Audio SubSystem)"
  
@@ -67,10 +70,10 @@ index 59f9742e9ff49a..0b5b3155eed50c 100644
 +
  endmenu
 diff --git a/sound/soc/codecs/Makefile b/sound/soc/codecs/Makefile
-index f53baa2b956519..20e23eafc5f9be 100644
+index 7c075539dc476c..23f6d3b750a720 100644
 --- a/sound/soc/codecs/Makefile
 +++ b/sound/soc/codecs/Makefile
-@@ -768,6 +768,7 @@ obj-$(CONFIG_SND_SOC_WSA884X)	+= snd-soc-wsa884x.o
+@@ -781,6 +781,7 @@ obj-$(CONFIG_SND_SOC_WSA884X)	+= snd-soc-wsa884x.o
  obj-$(CONFIG_SND_SOC_ZL38060)	+= snd-soc-zl38060.o
  
  # Amp
@@ -101,10 +104,10 @@ index 00000000000000..d32f319a5b0149
 +
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx.c b/sound/soc/codecs/aw87xxx/aw87xxx.c
 new file mode 100644
-index 00000000000000..63fc415b9d0470
+index 00000000000000..eddb016955e91a
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx.c
-@@ -0,0 +1,1480 @@
+@@ -0,0 +1,1457 @@
 +/*
 + * aw87xxx.c  aw87xxx pa module
 + *
@@ -166,7 +169,7 @@ index 00000000000000..63fc415b9d0470
 +#define AW87XXX_I2C_NAME	"aw87xxx_pa"
 +#define AW87XXX_DRIVER_VERSION	"v2.7.0"
 +#define AW87XXX_FW_BIN_NAME	"aw87xxx_acf.bin"
-+
++#define AW87XXX_PROF_MUSIC	"Music"
 +/*************************************************************************
 + * aw87xxx variable
 + ************************************************************************/
@@ -431,12 +434,12 @@ index 00000000000000..63fc415b9d0470
 +	profile_name = aw87xxx_acf_get_prof_name_form_index(aw87xxx->dev,
 +		&aw87xxx->acf_info, count);
 +	if (profile_name == NULL) {
-+		strlcpy(uinfo->value.enumerated.name, "NULL",
++		strscpy(uinfo->value.enumerated.name, "NULL",
 +			strlen("NULL") + 1);
 +		return 0;
 +	}
 +
-+	strlcpy(name, profile_name, sizeof(uinfo->value.enumerated.name));
++	strscpy(name, profile_name, sizeof(uinfo->value.enumerated.name));
 +
 +	return 0;
 +}
@@ -557,7 +560,7 @@ index 00000000000000..63fc415b9d0470
 +	if (uinfo->value.enumerated.item >= count)
 +		uinfo->value.enumerated.item = count - 1;
 +
-+	strlcpy(uinfo->value.enumerated.name,
++	strscpy(uinfo->value.enumerated.name,
 +		aw87xxx_monitor_switch[uinfo->value.enumerated.item],
 +		strlen(aw87xxx_monitor_switch[uinfo->value.enumerated.item]) + 1);
 +
@@ -605,7 +608,7 @@ index 00000000000000..63fc415b9d0470
 +	if (uinfo->value.enumerated.item >= count)
 +		uinfo->value.enumerated.item = count - 1;
 +
-+	strlcpy(uinfo->value.enumerated.name,
++	strscpy(uinfo->value.enumerated.name,
 +		aw87xxx_spin_switch[uinfo->value.enumerated.item],
 +		strlen(aw87xxx_spin_switch[uinfo->value.enumerated.item]) + 1);
 +
@@ -892,6 +895,9 @@ index 00000000000000..63fc415b9d0470
 +	AW_DEV_LOGI(aw87xxx->dev, "acf parse succeed");
 +	mutex_unlock(&aw87xxx->reg_lock);
 +	release_firmware(fw);
++	// Updating profile to "Music" because the firmware is set to "off" during init
++	aw87xxx_update_profile(aw87xxx, AW87XXX_PROF_MUSIC);
++
 +	return;
 +
 +exit_acf_parse_failed:
@@ -1362,12 +1368,6 @@ index 00000000000000..63fc415b9d0470
 +  { }
 +};
 +
-+static const struct acpi_device_id aw87xxx_acpi_match[] = {
-+        { "AWDZ8830", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(acpi, aw87xxx_acpi_match);
-+
 +static struct aw87xxx *aw87xxx_malloc_init(struct i2c_client *client)
 +{
 +	struct aw87xxx *aw87xxx = NULL;
@@ -1398,13 +1398,13 @@ index 00000000000000..63fc415b9d0470
 +	return aw87xxx;
 +}
 +
-+static int aw87xxx_i2c_probe(struct i2c_client *client) //,	const struct i2c_device_id *id)
++static int aw87xxx_i2c_probe(struct i2c_client *client)
 +{
 +	struct device_node *dev_node = client->dev.of_node;
 +	struct aw87xxx *aw87xxx = NULL;
 +	struct gpio_desc *gpiod = NULL;
 +	int ret = -1;
-+	
++
 +
 +// To do, add this function
 +//acpi_dev_add_driver_gpios()
@@ -1422,8 +1422,8 @@ index 00000000000000..63fc415b9d0470
 +
 +	i2c_set_clientdata(client, aw87xxx);
 +
-+    aw87xxx_device_parse_port_id_dt(&aw87xxx->aw_dev);
-+    aw87xxx_device_parse_topo_id_dt(&aw87xxx->aw_dev);
++	aw87xxx_device_parse_port_id_dt(&aw87xxx->aw_dev);
++	aw87xxx_device_parse_topo_id_dt(&aw87xxx->aw_dev);
 +
 +	/* aw87xxx Get ACPI GPIO */
 +/*
@@ -1486,8 +1486,9 @@ index 00000000000000..63fc415b9d0470
 +	mutex_lock(&g_aw87xxx_mutex_lock);
 +	g_aw87xxx_dev_cnt++;
 +	list_add(&aw87xxx->list, &g_aw87xxx_list);
-+	mutex_unlock(&g_aw87xxx_mutex_lock);
++	aw87xxx->dev_index = g_aw87xxx_dev_cnt;
 +
++	mutex_unlock(&g_aw87xxx_mutex_lock);
 +	AW_DEV_LOGI(aw87xxx->dev, "succeed, dev_index=[%d], g_aw87xxx_dev_cnt= [%d]",
 +			aw87xxx->dev_index, g_aw87xxx_dev_cnt);
 +
@@ -1535,14 +1536,15 @@ index 00000000000000..63fc415b9d0470
 +	aw87xxx_update_profile(aw87xxx, aw87xxx->prof_off_name);
 +}
 +
++static const struct acpi_device_id aw87xxx_acpi_match[] = {
++        { "AWDZ8830", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, aw87xxx_acpi_match);
 +
++// This is not necessary if the acpi match probes correctly. This is needed for userspace `new_device() functionality
 +static const struct i2c_device_id aw87xxx_i2c_id[] = {
 +	{AW87XXX_I2C_NAME, 0},
-+	{},
-+};
-+
-+static const struct of_device_id extpa_of_match[] = {
-+	{.compatible = "awinic,aw87xxx_pa"},
 +	{},
 +};
 +
@@ -1550,7 +1552,6 @@ index 00000000000000..63fc415b9d0470
 +	.driver = {
 +		.owner = THIS_MODULE,
 +		.name = AW87XXX_I2C_NAME,
-+		.of_match_table = extpa_of_match,
 +		.acpi_match_table = aw87xxx_acpi_match,
 +		},
 +	.probe = aw87xxx_i2c_probe,
@@ -1559,28 +1560,7 @@ index 00000000000000..63fc415b9d0470
 +	.id_table = aw87xxx_i2c_id,
 +};
 +
-+static int __init aw87xxx_pa_init(void)
-+{
-+	int ret;
-+
-+	AW_LOGI("driver version: %s", AW87XXX_DRIVER_VERSION);
-+
-+	ret = i2c_add_driver(&aw87xxx_i2c_driver);
-+	if (ret < 0) {
-+		AW_LOGE("Unable to register driver, ret= %d", ret);
-+		return ret;
-+	}
-+	return 0;
-+}
-+
-+static void __exit aw87xxx_pa_exit(void)
-+{
-+	AW_LOGI("enter");
-+	i2c_del_driver(&aw87xxx_i2c_driver);
-+}
-+
-+module_init(aw87xxx_pa_init);
-+module_exit(aw87xxx_pa_exit);
++module_i2c_driver(aw87xxx_i2c_driver)
 +
 +MODULE_AUTHOR("<zhaozhongbo@awinic.com>");
 +MODULE_DESCRIPTION("awinic aw87xxx pa driver");

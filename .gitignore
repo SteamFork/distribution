@@ -2,3 +2,4 @@ images/
 packages/
 installer-root/airootfs/root/install-scripts/
 installer-root/packages.x86_64
+installer-root/airootfs/etc/steamforkinstall/

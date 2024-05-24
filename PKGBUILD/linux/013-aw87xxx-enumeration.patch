@@ -1,0 +1,150 @@
+From 6c957c3caa8a555e5f07e78cf0592bbbd103c9e0 Mon Sep 17 00:00:00 2001
+From: CVMagic <546352+CVMagic@users.noreply.github.com>
+Date: Sun, 19 May 2024 21:37:37 +0200
+Subject: [PATCH] Updated AW87xxx driver to automatically enumerate a second
+ I2C chip if specified in ACPI
+
+---
+ sound/soc/codecs/aw87xxx/aw87xxx.c | 80 ++++++++++++++++++++++--------
+ 1 file changed, 58 insertions(+), 22 deletions(-)
+
+diff --git a/sound/soc/codecs/aw87xxx/aw87xxx.c b/sound/soc/codecs/aw87xxx/aw87xxx.c
+index 7f44d9b9dd0ff0..8b3e74a7b37b0e 100644
+--- a/sound/soc/codecs/aw87xxx/aw87xxx.c
++++ b/sound/soc/codecs/aw87xxx/aw87xxx.c
+@@ -82,6 +82,22 @@ static struct aw_componet_codec_ops aw_componet_codec_ops = {
+ };
+ #endif
+ 
++enum smi_bus_type {
++	SMI_I2C,
++	SMI_SPI,
++	SMI_AUTO_DETECT,
++};
++
++struct smi_instance {
++	const char *type;
++	unsigned int flags;
++	int irq_idx;
++};
++
++struct smi_node {
++	enum smi_bus_type bus_type;
++	struct smi_instance instances[];
++};
+ 
+ /************************************************************************
+  *
+@@ -1291,13 +1307,20 @@ static struct aw87xxx *aw87xxx_malloc_init(struct i2c_client *client)
+ static int aw87xxx_i2c_probe(struct i2c_client *client)
+ {
+ 	struct device_node *dev_node = client->dev.of_node;
++	const struct smi_node *node;
++        struct acpi_device *adev = ACPI_COMPANION(&client->dev);
+ 	struct aw87xxx *aw87xxx = NULL;
+ 	struct gpio_desc *gpiod = NULL;
++	struct i2c_board_info board_info = {};
++	char i2c_name[32];
+ 	int ret = -1;
++	int acpi_dev_count = 0;
+ 
+-
+-// To do, add this function
+-//acpi_dev_add_driver_gpios()
++	/* aw87xxx Get APCI I2C device count */
++	if(g_aw87xxx_dev_cnt == 0){
++		acpi_dev_count = i2c_acpi_client_count(adev);
++		AW_DEV_LOGI(&client->dev, "I2C_ACPI_CLIENT_COUNT returned [%d]", acpi_dev_count);
++	}
+ 
+ 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
+ 		AW_DEV_LOGE(&client->dev, "check_functionality failed");
+@@ -1316,18 +1339,15 @@ static int aw87xxx_i2c_probe(struct i2c_client *client)
+ 	aw87xxx_device_parse_topo_id_dt(&aw87xxx->aw_dev);
+ 
+ 	/* aw87xxx Get ACPI GPIO */
+-/*
+-	ret = devm_acpi_dev_add_driver_gpios(aw87xxx->dev, reset_acpi_gpios);
+-	if(ret){
+-		AW_DEV_LOGE(aw87xxx->dev, "Unable to add GPIO mapping table");
+-		goto exit_device_init_failed;
+-	}
+-
+-	gpiod = gpiod_get_optional(aw87xxx->dev, "reset", GPIOD_OUT_LOW);
+-*/
+ 
+ 	if (g_aw87xxx_dev_cnt == 0){
+-		gpiod = gpiod_get(aw87xxx->dev, NULL, GPIOD_OUT_LOW);
++	        ret = devm_acpi_dev_add_driver_gpios(aw87xxx->dev, reset_acpi_gpios);
++        	if(ret){
++                	AW_DEV_LOGE(aw87xxx->dev, "Unable to add GPIO mapping table");
++                	goto exit_device_init_failed;
++        	}
++
++	        gpiod = devm_gpiod_get(aw87xxx->dev, "reset", GPIOD_OUT_LOW);
+ 		if (gpiod == NULL){
+ 	                AW_DEV_LOGE(aw87xxx->dev, "Gpiod returned NULL failing gracefully.");
+ 	                goto exit_device_init_failed;
+@@ -1342,13 +1362,7 @@ static int aw87xxx_i2c_probe(struct i2c_client *client)
+ 	        aw87xxx->aw_dev.hwen_status = AW_DEV_HWEN_OFF;
+ 	        AW_DEV_LOGI(aw87xxx->dev, "reset gpio[%x] parse succeed", aw87xxx->aw_dev.rst_gpio);
+ 
+-	        if (gpio_is_valid(aw87xxx->aw_dev.rst_gpio)) {
+-	                ret = devm_gpio_request_one(aw87xxx->dev, aw87xxx->aw_dev.rst_gpio, GPIOF_OUT_INIT_LOW, "aw87xxx_reset");
+-	                if ((ret < 0) && (ret != -EBUSY)) {
+-	                        AW_DEV_LOGE(aw87xxx->dev, "reset request failed, returned [%d]", ret);
+-	                        goto exit_device_init_failed;
+-	                }
+-	        }else{
++		if (!gpio_is_valid(aw87xxx->aw_dev.rst_gpio)) {
+ 			/*Disabling RESET GPIO*/
+ 	        	AW_DEV_LOGI(aw87xxx->dev, "no reset gpio provided, hardware reset unavailable");
+ 	        	aw87xxx->aw_dev.rst_gpio = AW_NO_RESET_GPIO;
+@@ -1356,8 +1370,11 @@ static int aw87xxx_i2c_probe(struct i2c_client *client)
+ 		}
+ 
+ 	}
++
+ 	/*hw power on PA*/
+-	aw87xxx_dev_hw_pwr_ctrl(&aw87xxx->aw_dev, true);
++	if(g_aw87xxx_dev_cnt == 0) {
++		aw87xxx_dev_hw_pwr_ctrl(&aw87xxx->aw_dev, true);
++	}
+ 
+ 	/* aw87xxx devices private attributes init */
+ 	ret = aw87xxx_dev_init(&aw87xxx->aw_dev);
+@@ -1368,7 +1385,9 @@ static int aw87xxx_i2c_probe(struct i2c_client *client)
+ 	aw87xxx_dev_soft_reset(&aw87xxx->aw_dev);
+ 
+ 	/*hw power off */
+-	aw87xxx_dev_hw_pwr_ctrl(&aw87xxx->aw_dev, false);
++	if(g_aw87xxx_dev_cnt == 0) {
++		aw87xxx_dev_hw_pwr_ctrl(&aw87xxx->aw_dev, false);
++	}
+ 
+ 	/* create debug attrbute nodes */
+ 	ret = sysfs_create_group(&aw87xxx->dev->kobj, &aw87xxx_attribute_group);
+@@ -1391,6 +1410,23 @@ static int aw87xxx_i2c_probe(struct i2c_client *client)
+ 	AW_DEV_LOGI(aw87xxx->dev, "succeed, dev_index=[%d], g_aw87xxx_dev_cnt= [%d]",
+ 			aw87xxx->dev_index, g_aw87xxx_dev_cnt);
+ 
++	AW_DEV_LOGI(aw87xxx->dev, "acpi_c=[%d] dev_c=[%d]", acpi_dev_count, g_aw87xxx_dev_cnt);
++
++	/* Attempt to add other I2C AMPs */
++	if ((acpi_dev_count > 1) && (g_aw87xxx_dev_cnt == 1)){
++                /* power on the chip */
++                aw87xxx_dev_hw_pwr_ctrl(&aw87xxx->aw_dev, true);
++
++		node = device_get_match_data(aw87xxx->dev);
++		memset(&board_info, 0, sizeof(board_info));
++		strscpy(board_info.type, client->name, I2C_NAME_SIZE);
++		snprintf(i2c_name, sizeof(i2c_name), "%s.%d", client->name, 1);
++		board_info.dev_name = i2c_name;
++
++		aw87xxx_i2c_probe(i2c_acpi_new_device_by_fwnode(acpi_fwnode_handle(adev), 1, &board_info));
++
++	}
++
+ 	return 0;
+ 
+ exit_device_init_failed:
