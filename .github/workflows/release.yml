@@ -27,7 +27,7 @@ jobs:
       - name: Build Release Images
         run: |
           set -e
-          #./build-image.sh rel "${{ steps.version.outputs.version }}"
+          ./build-image.sh rel "${{ steps.version.outputs.version }}"
       - name: Image sync
         run: |
           set -e
