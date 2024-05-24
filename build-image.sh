@@ -38,6 +38,9 @@ function cleanup() {
 # Clean up from any previous builds.
 cleanup
 
+# Update cache
+sudo pacman -Sy
+
 # Push the installation scripts into the installer image.
 cp -rf install-scripts ${SCRIPTPATH}/airootfs/root/
 

@@ -76,6 +76,7 @@ function subvolumeselect() {
         mount -t btrfs -o subvol=${subvolume} -L sf_root ${tmpmount}
         arch-chroot ${tmpmount} <<EOF
 steamos-readonly disable
+mkinitcpio -P
 steamfork-grub-update
 EOF
         umount -l ${tmpmount}
