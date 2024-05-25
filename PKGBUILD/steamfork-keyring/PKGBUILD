@@ -1,0 +1,36 @@
+# Maintainer: Fewtarius <fewtarius@steamfork.org>
+
+pkgname=steamfork-keyring
+pkgver=20240525
+pkgrel=2
+pkgdesc='SteamFork PGP keyring'
+arch=('any')
+url='https://github.com/SteamFork/steamfork-keyring'
+license=('GPL-3.0-or-later')
+install=$pkgname.install
+depends=('pacman')
+makedepends=('git' 'python' 'sequoia-sq' 'pkgconf' 'systemd')
+checkdepends=('python-coverage' 'python-pytest')
+source=("git+https://github.com/SteamFork/steamfork-keyring.git")
+sha256sums=('SKIP')
+validpgpkeys=('A33991EE2981A3B05368EF5E75C1E5647441B94C')  # Fewtarius <fewtarius@steamfork.org>
+
+build() {
+  cd steamfork-keyring/
+  git checkout compat
+  mkdir -p keyring/main
+
+  make build
+}
+
+check() {
+  cd steamfork-keyring/
+
+  make check
+}
+
+package() {
+  cd steamfork-keyring/
+
+  make PREFIX='/usr' DESTDIR="${pkgdir}" install
+}

@@ -377,6 +377,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   zenity
                   steamfork-device-support
                   steamfork-customizations-jupiter
+		  steamfork-keyring
                   jupiter-hw-support
                   jupiter-legacy-support"
 

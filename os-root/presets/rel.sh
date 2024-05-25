@@ -1036,6 +1036,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   ryzenadj
                   steamfork-customizations-jupiter
                   steamfork-device-support
+		  steamfork-keyring
                   vi
                   vlc
                   wlroots
