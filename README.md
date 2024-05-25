@@ -7,7 +7,7 @@ Visit the SteamFork Organization root for basic information and usage instructio
 
 ## Building SteamFork
 ### Installing Minimal SteamFork
-Install SteamFork using the release or minimal image onto a PC or in a virtual machine.  Building the OS requires ~20GB of free space.  To install a minimal SteamFork instance using the minimal image, boot the image and then install using the `steamfork-installer` tool.
+Install SteamFork using the [release or minimal image](https://www.steamfork.org/steamfork-images/steamfork-installer/) onto a PC or in a virtual machine.  Building the OS requires ~20GB of free space.  To install a minimal SteamFork instance using the minimal image, boot the image and then install using the `steamfork-installer` tool.
 
 Ex. `steamfork-installer --drive /dev/sda --username builder --password SteamFork --root_password SteamFork`
 
