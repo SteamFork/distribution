@@ -161,5 +161,5 @@ jupiter-hw-support
 jupiter-legacy-support
 bc
 ectool
-holo-keychain
-steamfork-keychain
+holo-keyring
+steamfork-keyring

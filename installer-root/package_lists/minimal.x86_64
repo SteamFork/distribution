@@ -134,5 +134,5 @@ steamfork-device-support
 steamfork-customizations-jupiter
 jupiter-hw-support
 jupiter-legacy-support
-holo-keychain
-steamfork-keychain
+holo-keyring
+steamfork-keyring
