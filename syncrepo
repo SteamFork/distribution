@@ -42,17 +42,19 @@ EOF
     ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/; rm -rf steamfork-images-new ||:; cp -rf steamfork-images steamfork-images-new"
     for REL in rel
     do
-      BUILDDIR="$(pwd)/builds/${REL}/steamfork-images"
+      BUILDDIR="$(pwd)/images/${REL}/steamfork-images"
       if [ -e "${BUILDDIR}/latest_${REL}.releasemeta" ]
       then
+	echo "Syncing ${REL}."
         source ${BUILDDIR}/latest_${REL}.releasemeta
         IMAGEFILE="$(echo ${IMAGEFILE} | sed 's~_~-~g')"
 	ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/steamfork-images-new; rm -f \$(ls | grep steamfork_${REL}_ | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
         ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/steamfork-images-new/steamfork-installer; rm -f \$(ls | grep steamfork-${REL}- | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
-        rsync -av --progress --stats builds/${REL}/steamfork-images/* ${WWWUSER}@${WWWHOST}:${WWWROOT}/steamfork-images-new/
+        rsync -av --progress --stats images/${REL}/steamfork-images/* ${WWWUSER}@${WWWHOST}:${WWWROOT}/steamfork-images-new/
         ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/steamfork-images-new/steamfork-installer/; sha256sum ${IMAGEFILE}-x86_64.iso | tee -a ${IMAGEFILE}-x86_64.iso.sha256"
         ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/steamfork-images-new/steamfork-installer/; ln -sf ${IMAGEFILE}-x86_64.iso steamfork-${REL}-latest-x86_64.iso"
         ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/steamfork-images-new/steamfork-installer/; ln -sf ${IMAGEFILE}-x86_64.iso.sha256 steamfork-${REL}-latest-x86_64.iso.sha256"
+	echo "Add ${REL} to index."
         cat <<EOF >>/tmp/index.html
 <p>
 SteamFork v${STAGING_OS_TAG} (${REL}) installation image: <a href="/steamfork-images/steamfork-installer/${IMAGEFILE}-x86_64.iso">${IMAGEFILE}-x86_64.iso</a>
@@ -68,7 +70,7 @@ cat <<EOF >>/tmp/index.html
 EOF
     scp /tmp/index.html ${WWWUSER}@${WWWHOST}:${WWWROOT}/steamfork-images-new/steamfork-installer/
     ssh -ttq ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/steamfork-images-new"
-    ssh -ttq ${WWWUSER}@${WWWHOST} "rm -rf ${WWWROOT}/steamfork-images; mv ${WWWROOT}/steamfork-images-new/ ${WWWROOT}/steamfork-images"
+    ssh -ttq ${WWWUSER}@${WWWHOST} "mv ${WWWROOT}/steamfork-images ${WWWROOT}/steamfork-images-old; mv ${WWWROOT}/steamfork-images-new/ ${WWWROOT}/steamfork-images; rm -rf ${WWWROOT}/steamfork-images-old"
   ;;
   *)
     ./syncrepo pkgs
