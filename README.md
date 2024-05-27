@@ -5,6 +5,12 @@ SteamFork is a personal project to create an immutable Linux distribution that i
 Visit the SteamFork Organization root for basic information and usage instructions:
   - [SteamFork Organization](https://github.com/SteamFork)
 
+## Build Features
+* Fully automated CI/CD based releases triggered by new release tags.
+* Signed package repositories.
+* Minimal changes from upstream SteamOS for compatibility.
+* Simplified build process as described below.
+
 ## Building SteamFork
 ### Installing Minimal SteamFork
 Install SteamFork using the [release or minimal image](https://www.steamfork.org/steamfork-images/steamfork-installer/) onto a PC or in a virtual machine.  Building the OS requires ~20GB of free space.  To install a minimal SteamFork instance using the minimal image, boot the image and then install using the `steamfork-installer` tool.
