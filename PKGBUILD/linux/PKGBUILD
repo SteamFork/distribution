@@ -7,7 +7,7 @@
 
 pkgbase=linux               # Build stock -ARCH kernel
 pkgver=6.9.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -49,6 +49,7 @@ source=(
   '014-aw87xxx-suspend-resume.patch'
   '015-bmi260-driver.patch'
   '020-enable-overdrive.patch'
+  '021-gfxoff-atari-vcs.patch'
   '030-color-management-props.patch'
   '099-platform-drivers.patch'
 
@@ -72,6 +73,7 @@ sha256sums=('SKIP'
             '9e6a5380f754d20d251153e7c937583e684377a4955f8c2496f728dddfaea218'
             '4e41f289e187de9a80776898901b093b950f7de15f0094270d53ccd16a80cc67'
             'e503ba1484972990eb06eae6dbdb231628d00c3f96744f51f4054abb29dfd060'
+            'cc5e550a0e4825d587cae38a9ce4c686494b0d4ea54e00ca65b79f2371cca7d0'
             '79e4a2da142c761d3e3da12f709b4707c158cd3c6510e4c191d57db3025f2d1e'
             'f1cf80786eddf2a9a16b6774e2dc315377d4635171ca18faebe73745882f593d'
 )
