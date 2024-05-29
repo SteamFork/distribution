@@ -40,7 +40,7 @@ case ${1} in
 <body>
 EOF
     ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/; rm -rf steamfork-images-new ||:; cp -rf steamfork-images steamfork-images-new"
-    for REL in rel
+    for REL in rel beta minimal
     do
       BUILDDIR="$(pwd)/images/${REL}/steamfork-images"
       if [ -e "${BUILDDIR}/latest_${REL}.releasemeta" ]
