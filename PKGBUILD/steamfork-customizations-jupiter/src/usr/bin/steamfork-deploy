@@ -43,7 +43,7 @@ function trim_subvolumes() {
 # Function to install BTRFS subvolumes
 function install_subvolume() {
     need_root
-    local file="$(dirname ${1})/${1}"
+    local file="${1}"
 
     if [[ -z "${file}" ]]; then
         echo "Error: No file specified for installation."
