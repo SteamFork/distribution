@@ -52,11 +52,6 @@ clean_progress() {
 	done
 }
 
-update_mirror(){
-    MIRRORARGPATH="https://github.com/steamfork/postcopy/raw/${UPD_BRANCH}/etc/steamos-atomupd/mirror"
-    curl -Ls "${MIRRORARGPATH}" > ${mirrorfile}
-}
-
 updatecheck(){
     curl -Ls "${endpoint}" > ${argdata}
     source ${argdata}
@@ -128,17 +123,13 @@ if [ -n "$1" ]; then
         echo "This script supports the duplicate detection option"
         exit 7
         ;;
-    "update-mirror")
-        echo "Updating mirror..."
-        update_mirror 
-    ;;
     esac
     shift
 else
     if [[ -f "${argdata}" ]]; then
         applyupdate
     else
-        echo "Unknown option, Available options: [check|update-mirror]"
+        echo "Unknown option, Available options: [check]"
         exit 7
     fi
 fi
