@@ -40,6 +40,7 @@ BUILDUSER=${USER}
 WORKDIR="$(pwd)/packages/build-${1}"
 REPODIR="$(pwd)/packages/steamfork/${RELEASETYPE}"
 
+sudo steamos-readonly disable
 sudo rm -rf /var/lib/pacman/db.lck ${WORKDIR}
 
 sudo mkdir -p ${WORKDIR} ${REPODIR} 2>/dev/null
