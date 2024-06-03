@@ -7,7 +7,7 @@
 
 pkgbase=linux               # Build stock -ARCH kernel
 pkgver=6.9.3
-pkgrel=1
+pkgrel=2
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -42,13 +42,11 @@ source=(
   '003-steamdeck-acpi.patch'
   '005-winmax2-gyro.patch'
   '009-ayaneo-audio.patch'
-  '010-optimize-harder-O3.patch'
   '011-add-aw87xxx-codec.patch'
   '012-aw87xxx-verbose-debugging.patch'
   '013-aw87xxx-enumeration.patch'
   '014-aw87xxx-suspend-resume.patch'
   '015-bmi260-driver.patch'
-  '020-enable-overdrive.patch'
   '021-gfxoff-atari-vcs.patch'
   '030-color-management-props.patch'
   '099-platform-drivers.patch'
@@ -66,13 +64,11 @@ sha256sums=('SKIP'
             '7dfd730e7773ed71abcdaae6adaa6a725eae89828aa71e0c9aa6c78c90cd9c97'
             'cb700b2bb7a15fa7303455113884334232b3efde8272ac6698641c72c57e9b18'
             '99b7665111f5f7788442d6aee089279fb9386b2dc8fe02d96854921f1b0bb095'
-            'c1d08ed1bb31b5ada9b905ab49098024b567abc4966c31836f73fe4321459858'
             '2c4dff38d71884e998a8edae0b8c4906f4432f58de27f7c6df3ac948dc41837b'
             '9f185e01ef1d4d75779c701f3aafbb11c8870c40c30537902854f0e080fd0e62'
             '172146f1db5f684091cd936b01fffa66bdf76712f65f3db9ca76d67e66aa05e5'
             '9e6a5380f754d20d251153e7c937583e684377a4955f8c2496f728dddfaea218'
             '4e41f289e187de9a80776898901b093b950f7de15f0094270d53ccd16a80cc67'
-            'e503ba1484972990eb06eae6dbdb231628d00c3f96744f51f4054abb29dfd060'
             'cc5e550a0e4825d587cae38a9ce4c686494b0d4ea54e00ca65b79f2371cca7d0'
             '79e4a2da142c761d3e3da12f709b4707c158cd3c6510e4c191d57db3025f2d1e'
             'f1cf80786eddf2a9a16b6774e2dc315377d4635171ca18faebe73745882f593d'
