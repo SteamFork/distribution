@@ -191,7 +191,13 @@ do
   arch-chroot ${ROOT_WORKDIR} systemctl enable ${CHROOT_SCRIPT}
 done
 
-echo "(4.7/6) Delete conflicting files..."
+echo "(4.7/6) Enable nopasswd sudo (req by steam and other tools)"
+  arch-chroot ${ROOT_WORKDIR} sed -i 's~ALL$~NOPASSWD: ALL~g' /etc/sudoers.d/wheel
+
+echo "(4.8/6) Patch Audio output to add generic devices to the filter."
+  arch-chroot ${ROOT_WORKDIR} sed -i '/matches = \[/a \      {\n\        node.name = "~alsa_output.*"\n\        alsa.card_name = "HD-Audio Generic"\n\      }' /usr/share/wireplumber/hardware-profiles/valve-jupiter/wireplumber.conf.d/alsa-card1.conf
+
+echo "(4.9/6) Delete conflicting files..."
 # Delete conflicting files
 for CONFLICT in etc/X11/Xsession.d/50rotate-screen \
                 etc/sddm.conf.d/steamdeck.conf
