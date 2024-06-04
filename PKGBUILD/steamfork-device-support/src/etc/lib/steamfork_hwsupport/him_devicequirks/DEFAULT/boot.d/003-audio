@@ -5,9 +5,3 @@ do
   echo 1 >/sys/module/${CODEC}/parameters/power_save
 done
 
-### SteamOS introduced services to configure audio, however
-### user and system services cannot interact so there is no
-### good way to order them.  Until we find a better solution:
-
-/usr/share/pipewire/hardware-profiles/pipewire-hwconfig
-/usr/share/wireplumber/hardware-profiles/wireplumber-hwconfig
