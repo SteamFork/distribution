@@ -178,6 +178,10 @@ for binary in ${POSTCOPY_BIN_EXECUTION}; do arch-chroot ${ROOT_WORKDIR} $binary 
 echo -e "${PACMAN_ONLOAD}" > ${ROOT_WORKDIR}/usr/lib/systemd/system/var-lib-pacman.mount
 arch-chroot ${ROOT_WORKDIR} systemctl enable ${CHROOT_SCRIPTS}
 arch-chroot ${ROOT_WORKDIR} systemctl disable ${DISABLED_SERVICES}
+for SERVICE in ${DISABLED_SERVICES}
+do
+  arch-chroot ${ROOT_WORKDIR} rm -f /usr/lib/systemd/system/multi-user.target.wants/${SERVICE}
+done
 
 echo "(4.5/6) Generating en_US.UTF-8 locale..."
 sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' ${ROOT_WORKDIR}/etc/locale.gen
