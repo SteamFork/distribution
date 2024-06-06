@@ -8,8 +8,8 @@
 
 . /etc/profile
 
-HWID="$(echo $(tr -d '\0' </sys/class/dmi/id/sys_vendor 2>/dev/null) $(tr -d '\0' </sys/class/dmi/id/product_name 2>/dev/null) | tr ' ' '-')"
-FAN_CONTROL_DAEMON="/etc/lib/steamfork_hwsupport/him_devicequirks/${HWID}/bin/fancontrol"
+HWID="$(/usr/bin/steamfork-device-id)"
+FAN_CONTROL_DAEMON="/etc/lib/steamfork_hwsupport/devicequirks/${HWID}/bin/fancontrol"
 if [ -f "${FAN_CONTROL_DAEMON}" ]
 then
  "${FAN_CONTROL_DAEMON}" $*

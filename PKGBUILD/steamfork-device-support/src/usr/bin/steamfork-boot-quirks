@@ -1,15 +1,15 @@
 #!/bin/bash
 
-if [ -d "/etc/lib/steamfork_hwsupport/him_devicequirks/DEFAULT/boot.d" ]
+if [ -d "/etc/lib/steamfork_hwsupport/devicequirks/DEFAULT/boot.d" ]
 then
-    for SCRIPT in "/etc/lib/steamfork_hwsupport/him_devicequirks/DEFAULT/boot.d"/*
+    for SCRIPT in "/etc/lib/steamfork_hwsupport/devicequirks/DEFAULT/boot.d"/*
     do
         ./"${SCRIPT}"
     done
 fi
 
-DEVICE_NAME="$(echo $(tr -d '\0' </sys/class/dmi/id/sys_vendor 2>/dev/null) $(tr -d '\0' </sys/class/dmi/id/product_name 2>/dev/null) | tr ' ' '-')"
-for QUIRKPATH in /etc/lib/steamfork_hwsupport/him_devicequirks /etc/lib/steamfork_hwsupport/customdevicequirks
+DEVICE_NAME="$(/usr/bin/steamfork-device-id)"
+for QUIRKPATH in /etc/lib/steamfork_hwsupport/devicequirks /etc/lib/steamfork_hwsupport/customdevicequirks
 do
     if [ -d "${QUIRKPATH}/${DEVICE_NAME}/boot.d" ]
     then

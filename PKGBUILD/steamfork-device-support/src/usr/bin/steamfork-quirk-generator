@@ -37,7 +37,7 @@ then
   exit 0
 fi
 
-HWID="$(echo $(tr -d '\0' </sys/class/dmi/id/sys_vendor 2>/dev/null) $(tr -d '\0' </sys/class/dmi/id/product_name 2>/dev/null) | tr ' ' '-')"
+HWID="$(/usr/bin/steamfork-device-id)"
 while [[ $# -gt 0 ]]
 do
     key="${1}"

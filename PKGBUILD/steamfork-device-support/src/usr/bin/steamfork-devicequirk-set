@@ -13,13 +13,13 @@ function puts() {
   fi
 }
 
-if [ -f "/etc/lib/steamfork_hwsupport/him_devicequirks/DEFAULT/hardware_quirks.sh" ]
+if [ -f "/etc/lib/steamfork_hwsupport/devicequirks/DEFAULT/hardware_quirks.sh" ]
 then
   puts "> Loading default quirks..."
-  source /etc/lib/steamfork_hwsupport/him_devicequirks/DEFAULT/hardware_quirks.sh
+  source /etc/lib/steamfork_hwsupport/devicequirks/DEFAULT/hardware_quirks.sh
 fi
 
-DEVICE_NAME="$(echo $(tr -d '\0' </sys/class/dmi/id/sys_vendor 2>/dev/null) $(tr -d '\0' </sys/class/dmi/id/product_name 2>/dev/null) | tr ' ' '-')"
+DEVICE_NAME="$(/usr/bin/steamfork-device-id)"
 puts "Found device \"${DEVICE_NAME}\"..."
 case ${DEVICE_NAME} in
   *Jupiter*)
@@ -31,7 +31,7 @@ case ${DEVICE_NAME} in
     export STEAMFORK_X11_ROTATION=right
   ;;
   *)
-    for QUIRKPATH in /etc/lib/steamfork_hwsupport/customdevicequirks /etc/lib/steamfork_hwsupport/him_devicequirks
+    for QUIRKPATH in /etc/lib/steamfork_hwsupport/customdevicequirks /etc/lib/steamfork_hwsupport/devicequirks
     do
         if [ -e "${QUIRKPATH}/${DEVICE_NAME}/hardware_quirks.sh" ]
         then

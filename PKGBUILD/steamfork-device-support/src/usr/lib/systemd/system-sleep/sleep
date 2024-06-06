@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2023-present Fewtarius
 
-HWID="$(echo $(tr -d '\0' </sys/class/dmi/id/sys_vendor 2>/dev/null) $(tr -d '\0' </sys/class/dmi/id/product_name 2>/dev/null) | tr ' ' '-')"
+HWID="$(/usr/bin/steamfork-device-id)"
 
 function log() {
   SOURCE=${1//\/*\//}
@@ -58,7 +58,7 @@ modules() {
 }
 
 quirks() {
-  for QUIRK in /etc/lib/steamfork_hwsupport/him_devicequirks/"${HWID}"/sleep.d/${1}/* \
+  for QUIRK in /etc/lib/steamfork_hwsupport/devicequirks/"${HWID}"/sleep.d/${1}/* \
                /etc/lib/steamfork_hwsupport/customdevicequirks/"${HWID}"/sleep.d/${1}/*
   do
     "${QUIRK}" >/dev/null 2>&1
