@@ -46,6 +46,8 @@ sudo rm -rf /var/lib/pacman/db.lck ${WORKDIR}
 sudo mkdir -p ${WORKDIR} ${REPODIR} 2>/dev/null
 sudo chown ${BUILDUSER}:${BUILDUSER} ${WORKDIR} ${REPODIR}
 
+rm ${REPODIR}/${1}-[0-9]*
+
 case ${PKGSOURCE} in
   aur)
     git clone --depth=1 https://aur.archlinux.org/${1}.git ${WORKDIR}
