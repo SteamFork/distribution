@@ -1,0 +1,73 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
+
+###
+### Watch battery status and flash the LEDs on low power states.
+###
+
+. /etc/profile
+
+if [ ! -d "/sys/class/leds/multicolor:chassis" ]
+then
+  exit 0
+fi
+
+BATCNT=0
+FLASHDELAY=20
+LED_PATH="/sys/class/leds/multicolor:chassis"
+
+unset CURRENT_MODE
+unset AC_STATUS
+
+### Enable logging
+case $(get_setting system.loglevel) in
+  verbose)
+    DEBUG=true
+  ;;
+  *)
+    DEBUG=false
+  ;;
+esac
+
+function set_rgb() {
+  log ${0} "multi_intensity: ${1} brightness: ${2}"
+  echo "${1}" >${LED_PATH}/multi_intensity
+  echo "${2}" >${LED_PATH}/brightness
+}
+
+function led_flash() {
+  for i in $(seq 1 1 3)
+  do
+    set_rgb "255 0 0" "255"
+    sleep .5
+    set_rgb "0 0 0" "0"
+    sleep .5
+  done
+}
+
+while true
+do
+  BATLEFT=$(awk 'BEGIN {FS="="} /POWER_SUPPLY_CAPACITY=/ {print $2}' /sys/class/power_supply/[Bb][Aa][Tt]*/uevent 2>/dev/null)
+  AC_STATUS="$(cat /sys/class/power_supply/[bB][aA][tT]*/status 2>/dev/null)"
+  log ${0} "AC Status: ${AC_STATUS} Bat Capacity: ${BATLEFT} Flash Delay: ${FLASHDELAY}"
+  if (( "${BATCNT}" >= "${FLASHDELAY}" )) &&
+     [[ "${AC_STATUS}" =~ Disch ]]
+  then
+    if (( ${BATLEFT} < "20" ))
+    then
+      led_flash
+      FLASHDELAY=${BATLEFT}
+      BATCNT=0
+    fi
+  elif (( "${BATLEFT}" > "97" ))
+  then
+    if [[ "${AC_STATUS}" =~ ^Charg ]]
+    then
+      # Reset the LED as if the battery was full.
+      set_rgb "0 0 0" "0"
+    fi
+  fi
+  BATCNT=$(( ${BATCNT} + 1 ))
+  sleep 2
+done

@@ -1,0 +1,13 @@
+[Unit]
+Description=Simple battery watcher that flashes RGB when low.
+Before=display-manager.service
+ConditionPathIsDirectory=/sys/class/leds/multicolor:chassis
+
+[Service]
+User=root
+Group=wheel
+ExecStart=/usr/bin/steamfork-battery-watchdog
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
