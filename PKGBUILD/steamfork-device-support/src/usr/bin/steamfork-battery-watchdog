@@ -31,7 +31,7 @@ case $(get_setting system.loglevel) in
 esac
 
 function set_rgb() {
-  log ${0} "multi_intensity: ${1} brightness: ${2}"
+  $DEBUG && log ${0} "multi_intensity: ${1} brightness: ${2}"
   echo "${1}" >${LED_PATH}/multi_intensity
   echo "${2}" >${LED_PATH}/brightness
 }
@@ -50,7 +50,7 @@ while true
 do
   BATLEFT=$(awk 'BEGIN {FS="="} /POWER_SUPPLY_CAPACITY=/ {print $2}' /sys/class/power_supply/[Bb][Aa][Tt]*/uevent 2>/dev/null)
   AC_STATUS="$(cat /sys/class/power_supply/[bB][aA][tT]*/status 2>/dev/null)"
-  log ${0} "AC Status: ${AC_STATUS} Bat Capacity: ${BATLEFT} Flash Delay: ${FLASHDELAY}"
+  $DEBUG && log ${0} "AC Status: ${AC_STATUS} Bat Capacity: ${BATLEFT} Flash Delay: ${FLASHDELAY}"
   if (( "${BATCNT}" >= "${FLASHDELAY}" )) &&
      [[ "${AC_STATUS}" =~ Disch ]]
   then
