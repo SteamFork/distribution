@@ -1,8 +1,8 @@
-From cf880cc538320df0cbddfdcdd69e1b50d3f2521e Mon Sep 17 00:00:00 2001
+From bc44322a7d19cf6f8b32526d433e755a3c697f26 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Thu, 25 Apr 2024 09:39:40 -0500
-Subject: [PATCH] Codec: Add aw87xxx codec with partial acpi implementation
- Contribution by CVMagic (https://github.com/CVMagic)
+Subject: [PATCH 33/41] Codec: Add aw87xxx codec with partial acpi
+ implementation Contribution by CVMagic (https://github.com/CVMagic)
 
 aw87xxx: Use strscpy instead of strlcpy
 
@@ -59,7 +59,7 @@ awinic: i2c_driver cleanup and fixes
  create mode 100644 sound/soc/codecs/aw87xxx/aw87xxx_pid_9b_reg.h
 
 diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index f78ea2f86fa64f..34d6b290f3827e 100644
+index f78ea2f86fa6..34d6b290f382 100644
 --- a/sound/soc/codecs/Kconfig
 +++ b/sound/soc/codecs/Kconfig
 @@ -2497,4 +2497,6 @@ config SND_SOC_LPASS_TX_MACRO
@@ -70,7 +70,7 @@ index f78ea2f86fa64f..34d6b290f3827e 100644
 +
  endmenu
 diff --git a/sound/soc/codecs/Makefile b/sound/soc/codecs/Makefile
-index 7c075539dc476c..23f6d3b750a720 100644
+index 7c075539dc47..23f6d3b750a7 100644
 --- a/sound/soc/codecs/Makefile
 +++ b/sound/soc/codecs/Makefile
 @@ -781,6 +781,7 @@ obj-$(CONFIG_SND_SOC_WSA884X)	+= snd-soc-wsa884x.o
@@ -83,7 +83,7 @@ index 7c075539dc476c..23f6d3b750a720 100644
  obj-$(CONFIG_SND_SOC_SIMPLE_AMPLIFIER)	+= snd-soc-simple-amplifier.o
 diff --git a/sound/soc/codecs/aw87xxx/Kconfig b/sound/soc/codecs/aw87xxx/Kconfig
 new file mode 100644
-index 00000000000000..bd0f208e2cfedb
+index 000000000000..bd0f208e2cfe
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/Kconfig
 @@ -0,0 +1,5 @@
@@ -94,7 +94,7 @@ index 00000000000000..bd0f208e2cfedb
 +	  This option enables support for AW87XXX Smart K PA.
 diff --git a/sound/soc/codecs/aw87xxx/Makefile b/sound/soc/codecs/aw87xxx/Makefile
 new file mode 100644
-index 00000000000000..d32f319a5b0149
+index 000000000000..d32f319a5b01
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/Makefile
 @@ -0,0 +1,4 @@
@@ -104,7 +104,7 @@ index 00000000000000..d32f319a5b0149
 +
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx.c b/sound/soc/codecs/aw87xxx/aw87xxx.c
 new file mode 100644
-index 00000000000000..eddb016955e91a
+index 000000000000..eddb016955e9
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx.c
 @@ -0,0 +1,1457 @@
@@ -1567,7 +1567,7 @@ index 00000000000000..eddb016955e91a
 +MODULE_LICENSE("GPL v2");
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx.h b/sound/soc/codecs/aw87xxx/aw87xxx.h
 new file mode 100644
-index 00000000000000..45d3cea7779a57
+index 000000000000..45d3cea7779a
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx.h
 @@ -0,0 +1,121 @@
@@ -1694,7 +1694,7 @@ index 00000000000000..45d3cea7779a57
 +#endif
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_acf_bin.c b/sound/soc/codecs/aw87xxx/aw87xxx_acf_bin.c
 new file mode 100644
-index 00000000000000..00c7aedb7c1133
+index 000000000000..00c7aedb7c11
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_acf_bin.c
 @@ -0,0 +1,1558 @@
@@ -3258,7 +3258,7 @@ index 00000000000000..00c7aedb7c1133
 +
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_acf_bin.h b/sound/soc/codecs/aw87xxx/aw87xxx_acf_bin.h
 new file mode 100644
-index 00000000000000..ebe0c77f5674bc
+index 000000000000..ebe0c77f5674
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_acf_bin.h
 @@ -0,0 +1,191 @@
@@ -3455,7 +3455,7 @@ index 00000000000000..ebe0c77f5674bc
 +#endif
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_bin_parse.c b/sound/soc/codecs/aw87xxx/aw87xxx_bin_parse.c
 new file mode 100644
-index 00000000000000..7eab9efde14767
+index 000000000000..7eab9efde147
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_bin_parse.c
 @@ -0,0 +1,515 @@
@@ -3976,7 +3976,7 @@ index 00000000000000..7eab9efde14767
 +}
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_bin_parse.h b/sound/soc/codecs/aw87xxx/aw87xxx_bin_parse.h
 new file mode 100644
-index 00000000000000..c6e6eaa8a7f735
+index 000000000000..c6e6eaa8a7f7
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_bin_parse.h
 @@ -0,0 +1,73 @@
@@ -4055,7 +4055,7 @@ index 00000000000000..c6e6eaa8a7f735
 +#endif
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_device.c b/sound/soc/codecs/aw87xxx/aw87xxx_device.c
 new file mode 100644
-index 00000000000000..087770857ca4ab
+index 000000000000..087770857ca4
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_device.c
 @@ -0,0 +1,977 @@
@@ -5038,7 +5038,7 @@ index 00000000000000..087770857ca4ab
 +
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_device.h b/sound/soc/codecs/aw87xxx/aw87xxx_device.h
 new file mode 100644
-index 00000000000000..b063218e3fc83f
+index 000000000000..b063218e3fc8
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_device.h
 @@ -0,0 +1,149 @@
@@ -5193,7 +5193,7 @@ index 00000000000000..b063218e3fc83f
 +#endif
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_dsp.c b/sound/soc/codecs/aw87xxx/aw87xxx_dsp.c
 new file mode 100644
-index 00000000000000..bd9896cd172bee
+index 000000000000..bd9896cd172b
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_dsp.c
 @@ -0,0 +1,355 @@
@@ -5554,7 +5554,7 @@ index 00000000000000..bd9896cd172bee
 +
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_dsp.h b/sound/soc/codecs/aw87xxx/aw87xxx_dsp.h
 new file mode 100644
-index 00000000000000..2668170f152d32
+index 000000000000..2668170f152d
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_dsp.h
 @@ -0,0 +1,65 @@
@@ -5625,7 +5625,7 @@ index 00000000000000..2668170f152d32
 +#endif
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_log.h b/sound/soc/codecs/aw87xxx/aw87xxx_log.h
 new file mode 100644
-index 00000000000000..67263484d6d9d2
+index 000000000000..67263484d6d9
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_log.h
 @@ -0,0 +1,33 @@
@@ -5664,7 +5664,7 @@ index 00000000000000..67263484d6d9d2
 +#endif
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_monitor.c b/sound/soc/codecs/aw87xxx/aw87xxx_monitor.c
 new file mode 100644
-index 00000000000000..92305f9c426c39
+index 000000000000..92305f9c426c
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_monitor.c
 @@ -0,0 +1,1208 @@
@@ -6878,7 +6878,7 @@ index 00000000000000..92305f9c426c39
 +
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_monitor.h b/sound/soc/codecs/aw87xxx/aw87xxx_monitor.h
 new file mode 100644
-index 00000000000000..4b0282b4148cf4
+index 000000000000..4b0282b4148c
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_monitor.h
 @@ -0,0 +1,96 @@
@@ -6980,7 +6980,7 @@ index 00000000000000..4b0282b4148cf4
 +#endif
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_pid_18_reg.h b/sound/soc/codecs/aw87xxx/aw87xxx_pid_18_reg.h
 new file mode 100644
-index 00000000000000..7b95d2252e6ca2
+index 000000000000..7b95d2252e6c
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_pid_18_reg.h
 @@ -0,0 +1,2315 @@
@@ -9302,7 +9302,7 @@ index 00000000000000..7b95d2252e6ca2
 \ No newline at end of file
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_pid_39_reg.h b/sound/soc/codecs/aw87xxx/aw87xxx_pid_39_reg.h
 new file mode 100644
-index 00000000000000..3391673f9bfbec
+index 000000000000..3391673f9bfb
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_pid_39_reg.h
 @@ -0,0 +1,67 @@
@@ -9375,7 +9375,7 @@ index 00000000000000..3391673f9bfbec
 +#endif
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_pid_59_3x9_reg.h b/sound/soc/codecs/aw87xxx/aw87xxx_pid_59_3x9_reg.h
 new file mode 100644
-index 00000000000000..46a88aea5f3a2b
+index 000000000000..46a88aea5f3a
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_pid_59_3x9_reg.h
 @@ -0,0 +1,93 @@
@@ -9474,7 +9474,7 @@ index 00000000000000..46a88aea5f3a2b
 +#endif
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_pid_59_5x9_reg.h b/sound/soc/codecs/aw87xxx/aw87xxx_pid_59_5x9_reg.h
 new file mode 100644
-index 00000000000000..819761b5c63a09
+index 000000000000..819761b5c63a
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_pid_59_5x9_reg.h
 @@ -0,0 +1,94 @@
@@ -9574,7 +9574,7 @@ index 00000000000000..819761b5c63a09
 +#endif
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_pid_5a_reg.h b/sound/soc/codecs/aw87xxx/aw87xxx_pid_5a_reg.h
 new file mode 100644
-index 00000000000000..e56922a3c0aff0
+index 000000000000..e56922a3c0af
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_pid_5a_reg.h
 @@ -0,0 +1,4124 @@
@@ -13705,7 +13705,7 @@ index 00000000000000..e56922a3c0aff0
 \ No newline at end of file
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_pid_60_reg.h b/sound/soc/codecs/aw87xxx/aw87xxx_pid_60_reg.h
 new file mode 100644
-index 00000000000000..b878aad8c647d3
+index 000000000000..b878aad8c647
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_pid_60_reg.h
 @@ -0,0 +1,5246 @@
@@ -18958,7 +18958,7 @@ index 00000000000000..b878aad8c647d3
 \ No newline at end of file
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_pid_76_reg.h b/sound/soc/codecs/aw87xxx/aw87xxx_pid_76_reg.h
 new file mode 100644
-index 00000000000000..00af86e5dd2e27
+index 000000000000..00af86e5dd2e
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_pid_76_reg.h
 @@ -0,0 +1,1205 @@
@@ -20170,7 +20170,7 @@ index 00000000000000..00af86e5dd2e27
 \ No newline at end of file
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_pid_9b_reg.h b/sound/soc/codecs/aw87xxx/aw87xxx_pid_9b_reg.h
 new file mode 100644
-index 00000000000000..c8d146ef54ccac
+index 000000000000..c8d146ef54cc
 --- /dev/null
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_pid_9b_reg.h
 @@ -0,0 +1,81 @@
@@ -20255,3 +20255,6 @@ index 00000000000000..c8d146ef54ccac
 +	(AW87XXX_PID_9B_SPK_MODE_ENABLE << AW87XXX_PID_9B_SPK_MODE_START_BIT)
 +
 +#endif
+-- 
+2.43.2
+

@@ -1,7 +1,7 @@
-From 0d95066de2b3defb573182c98051a02e1a3cf20c Mon Sep 17 00:00:00 2001
+From 29924333a53598790c08f53d1183bc788ca275f0 Mon Sep 17 00:00:00 2001
 From: Justin Weiss <justin@justinweiss.com>
 Date: Tue, 13 Feb 2024 21:28:09 -0800
-Subject: [PATCH] iio: imu: Add driver for Bosch BMI260 IMU
+Subject: [PATCH 32/41] iio: imu: Add driver for Bosch BMI260 IMU
 
 The ultra-low power BMI260 is an IMU consisting of a 16-bit tri-axial
 gyroscope and a 16-bit tri-axial accelerometer combining precise
@@ -31,7 +31,7 @@ reading, as well as data ready interrupts.
  create mode 100644 drivers/iio/imu/bmi260/third_party/bmi260_config.h
 
 diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
-index 52a155ff325047..1797f67c2a576c 100644
+index 52a155ff3250..1797f67c2a57 100644
 --- a/drivers/iio/imu/Kconfig
 +++ b/drivers/iio/imu/Kconfig
 @@ -53,6 +53,7 @@ config ADIS16480
@@ -43,7 +43,7 @@ index 52a155ff325047..1797f67c2a576c 100644
  source "drivers/iio/imu/bno055/Kconfig"
  
 diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
-index 7e2d7d5c3b7bc7..1d833ee7b9d7ad 100644
+index 7e2d7d5c3b7b..1d833ee7b9d7 100644
 --- a/drivers/iio/imu/Makefile
 +++ b/drivers/iio/imu/Makefile
 @@ -15,6 +15,7 @@ adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_buffer.o
@@ -56,7 +56,7 @@ index 7e2d7d5c3b7bc7..1d833ee7b9d7ad 100644
  
 diff --git a/drivers/iio/imu/bmi260/Kconfig b/drivers/iio/imu/bmi260/Kconfig
 new file mode 100644
-index 00000000000000..5b4e56f28ead68
+index 000000000000..5b4e56f28ead
 --- /dev/null
 +++ b/drivers/iio/imu/bmi260/Kconfig
 @@ -0,0 +1,21 @@
@@ -83,7 +83,7 @@ index 00000000000000..5b4e56f28ead68
 +	  called bmi260_i2c.
 diff --git a/drivers/iio/imu/bmi260/Makefile b/drivers/iio/imu/bmi260/Makefile
 new file mode 100644
-index 00000000000000..4cb94188e941a6
+index 000000000000..4cb94188e941
 --- /dev/null
 +++ b/drivers/iio/imu/bmi260/Makefile
 @@ -0,0 +1,6 @@
@@ -95,7 +95,7 @@ index 00000000000000..4cb94188e941a6
 +obj-$(CONFIG_BMI260_I2C) += bmi260_i2c.o
 diff --git a/drivers/iio/imu/bmi260/bmi260.h b/drivers/iio/imu/bmi260/bmi260.h
 new file mode 100644
-index 00000000000000..171d2759607a01
+index 000000000000..171d2759607a
 --- /dev/null
 +++ b/drivers/iio/imu/bmi260/bmi260.h
 @@ -0,0 +1,38 @@
@@ -139,7 +139,7 @@ index 00000000000000..171d2759607a01
 +#endif  /* BMI260_H_ */
 diff --git a/drivers/iio/imu/bmi260/bmi260_core.c b/drivers/iio/imu/bmi260/bmi260_core.c
 new file mode 100644
-index 00000000000000..8f346ff6de0a70
+index 000000000000..8f346ff6de0a
 --- /dev/null
 +++ b/drivers/iio/imu/bmi260/bmi260_core.c
 @@ -0,0 +1,980 @@
@@ -1125,7 +1125,7 @@ index 00000000000000..8f346ff6de0a70
 +MODULE_LICENSE("GPL v2");
 diff --git a/drivers/iio/imu/bmi260/bmi260_i2c.c b/drivers/iio/imu/bmi260/bmi260_i2c.c
 new file mode 100644
-index 00000000000000..d57828af4bb669
+index 000000000000..d57828af4bb6
 --- /dev/null
 +++ b/drivers/iio/imu/bmi260/bmi260_i2c.c
 @@ -0,0 +1,76 @@
@@ -1207,7 +1207,7 @@ index 00000000000000..d57828af4bb669
 +MODULE_IMPORT_NS(IIO_BMI260);
 diff --git a/drivers/iio/imu/bmi260/third_party/LICENSE b/drivers/iio/imu/bmi260/third_party/LICENSE
 new file mode 100644
-index 00000000000000..cfb347b17ee8af
+index 000000000000..cfb347b17ee8
 --- /dev/null
 +++ b/drivers/iio/imu/bmi260/third_party/LICENSE
 @@ -0,0 +1,32 @@
@@ -1246,7 +1246,7 @@ index 00000000000000..cfb347b17ee8af
 \ No newline at end of file
 diff --git a/drivers/iio/imu/bmi260/third_party/bmi260_config.h b/drivers/iio/imu/bmi260/third_party/bmi260_config.h
 new file mode 100644
-index 00000000000000..1309c1bcd4cf37
+index 000000000000..1309c1bcd4cf
 --- /dev/null
 +++ b/drivers/iio/imu/bmi260/third_party/bmi260_config.h
 @@ -0,0 +1,693 @@
@@ -1943,3 +1943,6 @@ index 00000000000000..1309c1bcd4cf37
 +	0x00, 0xc1, 0x80, 0x2e, 0x00, 0xc1, 0x80, 0x2e, 0x00, 0xc1, 0x80, 0x2e,
 +	0x00, 0xc1, 0x80, 0x2e, 0x00, 0xc1, 0xfd, 0x2d
 +};
+-- 
+2.43.2
+

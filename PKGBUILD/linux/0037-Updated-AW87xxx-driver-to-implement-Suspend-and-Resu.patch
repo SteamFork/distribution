@@ -1,14 +1,14 @@
-From 123ddfc29973cd9dfa9288417f37033354964bdf Mon Sep 17 00:00:00 2001
+From 93ec07e7e5b5a5d005351880e09f2dd3aa6ea82c Mon Sep 17 00:00:00 2001
 From: CVMagic <546352+CVMagic@users.noreply.github.com>
 Date: Wed, 22 May 2024 02:42:40 +0000
-Subject: [PATCH] Updated AW87xxx driver to implement Suspend and Resume.
+Subject: [PATCH 37/41] Updated AW87xxx driver to implement Suspend and Resume.
 
 ---
  sound/soc/codecs/aw87xxx/aw87xxx.c | 39 ++++++++++++++++++++++++++++++
  1 file changed, 39 insertions(+)
 
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx.c b/sound/soc/codecs/aw87xxx/aw87xxx.c
-index 8b3e74a7b37b0e..134a9a75059021 100644
+index 8b3e74a7b37b..134a9a750590 100644
 --- a/sound/soc/codecs/aw87xxx/aw87xxx.c
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx.c
 @@ -1471,6 +1471,44 @@ static void aw87xxx_i2c_shutdown(struct i2c_client *client)
@@ -64,3 +64,6 @@ index 8b3e74a7b37b0e..134a9a75059021 100644
  		},
  	.probe = aw87xxx_i2c_probe,
  	.remove = aw87xxx_i2c_remove,
+-- 
+2.43.2
+

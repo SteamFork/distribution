@@ -1,7 +1,7 @@
-From fc783d21ec24c3d16aca3f1c04e6a87c91fda8de Mon Sep 17 00:00:00 2001
+From fa0416682640e348ae0238c3b24c8e6f5c8810d8 Mon Sep 17 00:00:00 2001
 From: CVMagic <546352+CVMagic@users.noreply.github.com>
 Date: Thu, 16 May 2024 04:57:32 +0000
-Subject: [PATCH] Updated AW87xxx driver to be more verbose for debugging
+Subject: [PATCH 34/41] Updated AW87xxx driver to be more verbose for debugging
  purposes, but also fixed Reset Pin GPIO initialization issue with Ayn Loki
  Mini
 
@@ -11,7 +11,7 @@ Subject: [PATCH] Updated AW87xxx driver to be more verbose for debugging
  2 files changed, 1470 insertions(+), 1461 deletions(-)
 
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx.c b/sound/soc/codecs/aw87xxx/aw87xxx.c
-index eddb016955e91a..7f44d9b9dd0ff0 100644
+index eddb016955e9..7f44d9b9dd0f 100644
 --- a/sound/soc/codecs/aw87xxx/aw87xxx.c
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx.c
 @@ -1,1457 +1,1466 @@
@@ -2939,7 +2939,7 @@ index eddb016955e91a..7f44d9b9dd0ff0 100644
 +MODULE_DESCRIPTION("awinic aw87xxx pa driver");
 +MODULE_LICENSE("GPL v2");
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx_device.c b/sound/soc/codecs/aw87xxx/aw87xxx_device.c
-index 087770857ca4ab..5874c598a1bc07 100644
+index 087770857ca4..5874c598a1bc 100644
 --- a/sound/soc/codecs/aw87xxx/aw87xxx_device.c
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx_device.c
 @@ -102,8 +102,8 @@ int aw87xxx_dev_i2c_write_byte(struct aw_device *aw_dev,
@@ -2964,3 +2964,6 @@ index 087770857ca4ab..5874c598a1bc07 100644
  		} else {
  			*reg_data = ret;
  			break;
+-- 
+2.43.2
+

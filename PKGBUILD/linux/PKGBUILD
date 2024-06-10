@@ -7,7 +7,7 @@
 
 pkgbase=linux               # Build stock -ARCH kernel
 pkgver=6.9.3
-pkgrel=2
+pkgrel=6
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -37,20 +37,28 @@ _srcname=linux-${pkgver}
 source=(
   "https://cdn.kernel.org/pub/linux/kernel/v6.x/${_srcname}.tar.xz"
   config         # the main kernel config file
-  '001-oxp-add-2s.patch'
-  '002-display-quirks.patch'
-  '003-steamdeck-acpi.patch'
-  '005-winmax2-gyro.patch'
-  '009-ayaneo-audio.patch'
-  '011-add-aw87xxx-codec.patch'
-  '012-aw87xxx-verbose-debugging.patch'
-  '013-aw87xxx-enumeration.patch'
-  '014-aw87xxx-suspend-resume.patch'
-  '015-bmi260-driver.patch'
-  '021-gfxoff-atari-vcs.patch'
-  '030-color-management-props.patch'
-  '099-platform-drivers.patch'
-
+  0001-drm-panel-orientation-quirks.patch
+  0006-Ayaneo-geek-headset-patch.patch
+  0007-ayaneo-2-headphone-fix.patch
+  0012-HACK-add-KConfig-to-enable-driver-specific-color-mgm.patch
+  0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
+  0014-drm-Add-GPU-reset-sysfs-event.patch
+  0015-drm-amdgpu-add-work-function-for-GPU-reset-event.patch
+  0016-drm-amdgpu-schedule-GPU-reset-event-work-function.patch
+  0017-oxp-sensors-hwmon-Add-OrangePi-Neo-PWM-fan-control.patch
+  0018-oxp-sensors-hwmon-Add-OneXPlayer-2-and-OneXFly.patch
+  0019-oxp-sensors-hwmon-Add-support-for-AYANEO-2s-air-1s-g.patch
+  0020-oxp-sensors-hwmon-Add-GPD-Win-Mini.patch
+  0021-oxp-sensors-hwmon-Add-support-for-AYANEO-Flip.patch
+  0031-IIO-add-aya-neo-tablet-identifier.patch
+  0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
+  0033-Codec-Add-aw87xxx-codec-with-partial-acpi-implementa.patch
+  0034-Updated-AW87xxx-driver-to-be-more-verbose-for-debugg.patch
+  0035-drm-nouveau-use-tile_mode-and-pte_kind-for-VM_BIND-b.patch
+  0036-Updated-AW87xxx-driver-to-automatically-enumerate-a-.patch
+  0037-Updated-AW87xxx-driver-to-implement-Suspend-and-Resu.patch
+  0040-Add-Atari-VCS-quirk.patch
+  0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 validpgpkeys=(
   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
@@ -58,20 +66,29 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
 )
 sha256sums=('SKIP'
-            'b792d198907c840800038b8bdaecaee2150546eb58753d1c7e4729a3283b5c83'
-            'd0b54d0eda600ec68bea766a327a34acf1bc45a115c1bb7ed52e344f3080600c'
-            '97e87daffcb689c1763ef72ab9cadb66d7be174856885df3c278baf0cc80a9f6'
-            '7dfd730e7773ed71abcdaae6adaa6a725eae89828aa71e0c9aa6c78c90cd9c97'
-            'cb700b2bb7a15fa7303455113884334232b3efde8272ac6698641c72c57e9b18'
-            '99b7665111f5f7788442d6aee089279fb9386b2dc8fe02d96854921f1b0bb095'
-            '2c4dff38d71884e998a8edae0b8c4906f4432f58de27f7c6df3ac948dc41837b'
-            '9f185e01ef1d4d75779c701f3aafbb11c8870c40c30537902854f0e080fd0e62'
-            '172146f1db5f684091cd936b01fffa66bdf76712f65f3db9ca76d67e66aa05e5'
-            '9e6a5380f754d20d251153e7c937583e684377a4955f8c2496f728dddfaea218'
-            '4e41f289e187de9a80776898901b093b950f7de15f0094270d53ccd16a80cc67'
-            'cc5e550a0e4825d587cae38a9ce4c686494b0d4ea54e00ca65b79f2371cca7d0'
-            '79e4a2da142c761d3e3da12f709b4707c158cd3c6510e4c191d57db3025f2d1e'
-            'f1cf80786eddf2a9a16b6774e2dc315377d4635171ca18faebe73745882f593d'
+'b792d198907c840800038b8bdaecaee2150546eb58753d1c7e4729a3283b5c83' # config
+'97e87daffcb689c1763ef72ab9cadb66d7be174856885df3c278baf0cc80a9f6' # 0001-drm-panel-orientation-quirks.patch
+'783da391e0f45635eefb583b8b3acc29cd62a0c9eeefedf7f790dc2f89c7e279' # 0006-Ayaneo-geek-headset-patch.patch
+'33edff1a51ceb763c47b3ae485f5857a716a1dac9f1e8b65c3b93c6e88a4838f' # 0007-ayaneo-2-headphone-fix.patch
+'f3a54e5bde55f8481cb4e9e3c8fce7a28ae7a7e42208c5f76bdcc6d8dcf6fc08' # 0012-HACK-add-KConfig-to-enable-driver-specific-color-mgm.patch
+'683128d044f4df12dcb0a7b2858075f510d870460dc71f0d60f69df89cf62419' # 0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
+'6cca4901dddae922bf5e697919a5f7be13f6e8b2416602c9393aa120c8a708e0' # 0014-drm-Add-GPU-reset-sysfs-event.patch
+'15e8387d977cf5acff77d8aeb98dc0752930723b60efe3d57d0d7045c27c6ada' # 0015-drm-amdgpu-add-work-function-for-GPU-reset-event.patch
+'06587c52eeb1f7847c2436452a73ea6275393bf3ffacbc8f7c0b0cb6777a3354' # 0016-drm-amdgpu-schedule-GPU-reset-event-work-function.patch
+'8a939dd982d740ba5b69e2db34e5ebca520e4288d164dcf58911d60bef3117bf' # 0017-oxp-sensors-hwmon-Add-OrangePi-Neo-PWM-fan-control.patch
+'731b6c89a7bdd480a364640ead87b8dc9743ab1e748c97b94b16e5cf7cb8e897' # 0018-oxp-sensors-hwmon-Add-OneXPlayer-2-and-OneXFly.patch
+'99bc0b66469d59cb567f750027b8e6c738e4194fb04000a4f6e5f4f00e821a60' # 0019-oxp-sensors-hwmon-Add-support-for-AYANEO-2s-air-1s-g.patch
+'25edf8d027bc73faa4bde61b82a4bb99946a3670f7261e4921abf87285d0f658' # 0020-oxp-sensors-hwmon-Add-GPD-Win-Mini.patch
+'96db0dadfcc0a474911f21f6ae61ef3e16e4140147b44d44739258b2ff964113' # 0021-oxp-sensors-hwmon-Add-support-for-AYANEO-Flip.patch
+'d4bc9044e7e3290d6885d08b8360b61744dc4227a723aa178f9041284e062f08' # 0031-IIO-add-aya-neo-tablet-identifier.patch
+'603a97edcfd170674d96d02f1fe01751ccf947ed0673cc5615b1850eb616384b' # 0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
+'849649888ce53dcc425485ae35d2a196d3a68c65559295b1070eaf2c3f6affe9' # 0033-Codec-Add-aw87xxx-codec-with-partial-acpi-implementa.patch
+'d2d93d6b6d6bf5f57e3a2fc22f754dcf9917b261fec4830f7d3c2d470b372ebc' # 0034-Updated-AW87xxx-driver-to-be-more-verbose-for-debugg.patch
+'edf292c32d7c71865f62c921b35bd101d5d4eb64c7fab4c8cbb9b3b0160872c4' # 0035-drm-nouveau-use-tile_mode-and-pte_kind-for-VM_BIND-b.patch
+'ee2a5e6301f27d408500df190829a88f7ad5bcaf56a8a60f5d731bae5bdd4588' # 0036-Updated-AW87xxx-driver-to-automatically-enumerate-a-.patch
+'82de086c40976157d0c15301bab5593e953d1633625e19f7e930a20618e06196' # 0037-Updated-AW87xxx-driver-to-implement-Suspend-and-Resu.patch
+'1822769c05fd3b2126870a853c41ab167a95cf91d23f0d50bb103838857489eb' # 0040-Add-Atari-VCS-quirk.patch
+'23673c33ea69f3508ff9265d27171e2e58899950d563a1726a6049afe9e92067' # 0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 
 export KBUILD_BUILD_HOST=$(hostnamectl hostname)

@@ -1,0 +1,86 @@
+From 893856c1aa20f67975f7177babbd1819237d6e85 Mon Sep 17 00:00:00 2001
+From: fewtarius <fewtarius@steamfork.org>
+Date: Mon, 10 Jun 2024 10:48:31 +0000
+Subject: [PATCH] Adds support for Ayaneo Flip KB/DS.
+
+---
+ drivers/hwmon/oxp-sensors.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/hwmon/oxp-sensors.c b/drivers/hwmon/oxp-sensors.c
+index 11dec1b31523..e3ca0e305010 100644
+--- a/drivers/hwmon/oxp-sensors.c
++++ b/drivers/hwmon/oxp-sensors.c
+@@ -47,6 +47,7 @@ enum oxp_board {
+ 	aya_neo_air_1s,
+ 	aya_neo_air_plus_mendo,
+ 	aya_neo_air_pro,
++	aya_neo_flip,
+ 	aya_neo_geek,
+ 	aya_neo_geek_1s,
+ 	aya_neo_kun,
+@@ -152,6 +153,13 @@ static const struct dmi_system_id dmi_table[] = {
+ 		},
+ 		.driver_data = (void *)aya_neo_air_pro,
+ 	},
++        {
++                .matches = {
++                        DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
++                        DMI_MATCH(DMI_BOARD_NAME, "FLIP"),
++                },
++                .driver_data = (void *)aya_neo_flip,
++        },
+ 	{
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
+@@ -421,6 +429,7 @@ static int oxp_pwm_enable(void)
+ 	case aya_neo_air_1s:
+ 	case aya_neo_air_plus_mendo:
+ 	case aya_neo_air_pro:
++	case aya_neo_flip:
+ 	case aya_neo_geek:
+ 	case aya_neo_geek_1s:
+ 	case aya_neo_kun:
+@@ -449,6 +458,7 @@ static int oxp_pwm_disable(void)
+ 	case aya_neo_air_1s:
+ 	case aya_neo_air_plus_mendo:
+ 	case aya_neo_air_pro:
++	case aya_neo_flip:
+ 	case aya_neo_geek:
+ 	case aya_neo_geek_1s:
+ 	case aya_neo_kun:
+@@ -497,6 +507,7 @@ static int oxp_platform_read(struct device *dev, enum hwmon_sensor_types type,
+ 			case aya_neo_air_1s:
+ 			case aya_neo_air_plus_mendo:
+ 			case aya_neo_air_pro:
++			case aya_neo_flip:
+ 			case aya_neo_geek:
+ 			case aya_neo_geek_1s:
+ 			case aya_neo_kun:
+@@ -536,6 +547,7 @@ static int oxp_platform_read(struct device *dev, enum hwmon_sensor_types type,
+ 			case aya_neo_air:
+ 			case aya_neo_air_plus_mendo:
+ 			case aya_neo_air_pro:
++			case aya_neo_flip:
+ 			case aya_neo_geek:
+ 			case oxp_mini_amd:
+ 			case oxp_mini_amd_a07:
+@@ -570,6 +582,7 @@ static int oxp_platform_read(struct device *dev, enum hwmon_sensor_types type,
+ 			case aya_neo_air_1s:
+ 			case aya_neo_air_plus_mendo:
+ 			case aya_neo_air_pro:
++			case aya_neo_flip:
+ 			case aya_neo_geek:
+ 			case aya_neo_geek_1s:
+ 			case aya_neo_kun:
+@@ -620,6 +633,7 @@ static int oxp_platform_write(struct device *dev, enum hwmon_sensor_types type,
+ 			case aya_neo_air:
+ 			case aya_neo_air_plus_mendo:
+ 			case aya_neo_air_pro:
++			case aya_neo_flip:
+ 			case aya_neo_geek:
+ 			case oxp_mini_amd:
+ 			case oxp_mini_amd_a07:
+-- 
+2.43.2
+

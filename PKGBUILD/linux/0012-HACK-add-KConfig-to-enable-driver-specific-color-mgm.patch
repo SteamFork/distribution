@@ -1,7 +1,8 @@
-From 7a076357e0e316f4e223afe68e0ca383f33f421c Mon Sep 17 00:00:00 2001
+From f580aa6853513e58e38bd5f5fb4705deec6ed501 Mon Sep 17 00:00:00 2001
 From: Melissa Wen <mwen@igalia.com>
 Date: Sat, 22 Apr 2023 14:08:47 -0100
-Subject: [PATCH] HACK: add KConfig to enable driver-specific color mgmt props
+Subject: [PATCH 12/41] HACK: add KConfig to enable driver-specific color mgmt
+ props
 
 We are enabling a large set of color calibration features to enhance KMS
 color mgmt but these properties are specific of AMD display HW, and
@@ -20,7 +21,7 @@ Signed-off-by: Melissa Wen <mwen@igalia.com>
  5 files changed, 15 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/gpu/drm/amd/display/Kconfig b/drivers/gpu/drm/amd/display/Kconfig
-index 901d1961b73927..49523fa82f92a6 100644
+index 901d1961b739..49523fa82f92 100644
 --- a/drivers/gpu/drm/amd/display/Kconfig
 +++ b/drivers/gpu/drm/amd/display/Kconfig
 @@ -51,4 +51,11 @@ config DRM_AMD_SECURE_DISPLAY
@@ -36,7 +37,7 @@ index 901d1961b73927..49523fa82f92a6 100644
 +
  endmenu
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index d6e71aa808d881..c00d09584bbec0 100644
+index d6e71aa808d8..c00d09584bbe 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 @@ -4099,7 +4099,7 @@ static int amdgpu_dm_mode_config_init(struct amdgpu_device *adev)
@@ -49,7 +50,7 @@ index d6e71aa808d881..c00d09584bbec0 100644
  		return -ENOMEM;
  #endif
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_color.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_color.c
-index c87b64e464ed5c..9355eff9b167d4 100644
+index c87b64e464ed..9355eff9b167 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_color.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_color.c
 @@ -97,7 +97,7 @@ static inline struct fixed31_32 amdgpu_dm_fixpt_from_s3132(__u64 x)
@@ -62,7 +63,7 @@ index c87b64e464ed5c..9355eff9b167d4 100644
   *
   * AMD driver supports pre-defined mathematical functions for transferring
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
-index e23a0a276e330d..d424df95276ed5 100644
+index e23a0a276e33..d424df95276e 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
 @@ -338,7 +338,7 @@ static int amdgpu_dm_crtc_late_register(struct drm_crtc *crtc)
@@ -93,7 +94,7 @@ index e23a0a276e330d..d424df95276ed5 100644
  #endif
  	return 0;
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c
-index 8a4c40b4c27e4f..5d87c24f0461f2 100644
+index 8a4c40b4c27e..5d87c24f0461 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c
 @@ -1468,7 +1468,7 @@ static void amdgpu_dm_plane_drm_plane_destroy_state(struct drm_plane *plane,
@@ -123,3 +124,6 @@ index 8a4c40b4c27e4f..5d87c24f0461f2 100644
  	dm_atomic_plane_attach_color_mgmt_properties(dm, plane);
  #endif
  	/* Create (reset) the plane state */
+-- 
+2.43.2
+

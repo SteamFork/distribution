@@ -1,0 +1,24 @@
+From 48963d061d72e495efde89db12a64346941de535 Mon Sep 17 00:00:00 2001
+From: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
+Date: Wed, 10 Apr 2024 20:44:14 +0200
+Subject: [PATCH 31/41] IIO: add aya neo tablet identifier
+
+---
+ drivers/iio/imu/bmi160/bmi160_i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c b/drivers/iio/imu/bmi160/bmi160_i2c.c
+index a081305254db..229a70ec106c 100644
+--- a/drivers/iio/imu/bmi160/bmi160_i2c.c
++++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
+@@ -53,6 +53,7 @@ static const struct acpi_device_id bmi160_acpi_match[] = {
+ 	 */
+ 	{"10EC5280", 0},
+ 	{"BMI0160", 0},
++	{"10EC5280", 0}, /* AYA NEO tablet */
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
+-- 
+2.43.2
+

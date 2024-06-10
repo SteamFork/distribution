@@ -1,15 +1,15 @@
-From 6c957c3caa8a555e5f07e78cf0592bbbd103c9e0 Mon Sep 17 00:00:00 2001
+From b6ae17dbece820b58dc1c56dad36de58e3723eff Mon Sep 17 00:00:00 2001
 From: CVMagic <546352+CVMagic@users.noreply.github.com>
 Date: Sun, 19 May 2024 21:37:37 +0200
-Subject: [PATCH] Updated AW87xxx driver to automatically enumerate a second
- I2C chip if specified in ACPI
+Subject: [PATCH 36/41] Updated AW87xxx driver to automatically enumerate a
+ second I2C chip if specified in ACPI
 
 ---
  sound/soc/codecs/aw87xxx/aw87xxx.c | 80 ++++++++++++++++++++++--------
  1 file changed, 58 insertions(+), 22 deletions(-)
 
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx.c b/sound/soc/codecs/aw87xxx/aw87xxx.c
-index 7f44d9b9dd0ff0..8b3e74a7b37b0e 100644
+index 7f44d9b9dd0f..8b3e74a7b37b 100644
 --- a/sound/soc/codecs/aw87xxx/aw87xxx.c
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx.c
 @@ -82,6 +82,22 @@ static struct aw_componet_codec_ops aw_componet_codec_ops = {
@@ -148,3 +148,6 @@ index 7f44d9b9dd0ff0..8b3e74a7b37b0e 100644
  	return 0;
  
  exit_device_init_failed:
+-- 
+2.43.2
+
