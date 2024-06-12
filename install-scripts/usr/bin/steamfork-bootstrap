@@ -93,9 +93,14 @@ mount -L sf_efi ${SUBVOLLOCATION}/boot/efi
 mount -L sf_home ${SUBVOLLOCATION}/home
 mount -L sf_var ${SUBVOLLOCATION}/var
 
+echo -e "\nInstalling bootloader..."
+
 arch-chroot ${SUBVOLLOCATION} steamos-readonly disable
 arch-chroot ${SUBVOLLOCATION} mkinitcpio -P
 arch-chroot ${SUBVOLLOCATION} steamfork-grub-update
+
+echo -e "\nConfiguring swap..."
+arch-chroot ${SUBVOLLOCATION} steamfork-enable-swap
 
 mkdir -p ${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/var/overlays/etc/upper
 mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc
