@@ -7,7 +7,7 @@
 
 pkgbase=linux               # Build stock -ARCH kernel
 pkgver=6.9.4
-pkgrel=1
+pkgrel=3
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -45,12 +45,7 @@ source=(
   0014-drm-Add-GPU-reset-sysfs-event.patch
   0015-drm-amdgpu-add-work-function-for-GPU-reset-event.patch
   0016-drm-amdgpu-schedule-GPU-reset-event-work-function.patch
-  0017-oxp-sensors-hwmon-Add-OrangePi-Neo-PWM-fan-control.patch
-  0018-oxp-sensors-hwmon-Add-OneXPlayer-2-and-OneXFly.patch
-  0019-oxp-sensors-hwmon-Add-support-for-AYANEO-2s-air-1s-g.patch
-  0020-oxp-sensors-hwmon-Add-GPD-Win-Mini.patch
-  0021-oxp-sensors-hwmon-Add-support-for-AYANEO-Flip.patch
-  0022-oxp-sensors-hwmon-Fix-broken-sensors.patch
+  0020-add-devices-to-oxp-sensors.patch
   0031-IIO-add-aya-neo-tablet-identifier.patch
   0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
   0033-Codec-Add-aw87xxx-codec-with-partial-acpi-implementa.patch
@@ -76,12 +71,7 @@ sha256sums=('SKIP'
 '6cca4901dddae922bf5e697919a5f7be13f6e8b2416602c9393aa120c8a708e0' # 0014-drm-Add-GPU-reset-sysfs-event.patch
 '15e8387d977cf5acff77d8aeb98dc0752930723b60efe3d57d0d7045c27c6ada' # 0015-drm-amdgpu-add-work-function-for-GPU-reset-event.patch
 '06587c52eeb1f7847c2436452a73ea6275393bf3ffacbc8f7c0b0cb6777a3354' # 0016-drm-amdgpu-schedule-GPU-reset-event-work-function.patch
-'8a939dd982d740ba5b69e2db34e5ebca520e4288d164dcf58911d60bef3117bf' # 0017-oxp-sensors-hwmon-Add-OrangePi-Neo-PWM-fan-control.patch
-'731b6c89a7bdd480a364640ead87b8dc9743ab1e748c97b94b16e5cf7cb8e897' # 0018-oxp-sensors-hwmon-Add-OneXPlayer-2-and-OneXFly.patch
-'99bc0b66469d59cb567f750027b8e6c738e4194fb04000a4f6e5f4f00e821a60' # 0019-oxp-sensors-hwmon-Add-support-for-AYANEO-2s-air-1s-g.patch
-'25edf8d027bc73faa4bde61b82a4bb99946a3670f7261e4921abf87285d0f658' # 0020-oxp-sensors-hwmon-Add-GPD-Win-Mini.patch
-'96db0dadfcc0a474911f21f6ae61ef3e16e4140147b44d44739258b2ff964113' # 0021-oxp-sensors-hwmon-Add-support-for-AYANEO-Flip.patch
-'7fd092f390f56a2e7c5b4f33b7173e4137daa62dd9ceabfad333be04cf24095e' # 0022-oxp-sensors-hwmon-Fix-broken-sensors.patch
+'8187cd5f2ccc19ee0c4b7e3a17569fdde7adfc4d7dbfc70f8b628293b9a7342c' # 0020-add-devices-to-oxp-sensors.patch
 'd4bc9044e7e3290d6885d08b8360b61744dc4227a723aa178f9041284e062f08' # 0031-IIO-add-aya-neo-tablet-identifier.patch
 '603a97edcfd170674d96d02f1fe01751ccf947ed0673cc5615b1850eb616384b' # 0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
 '849649888ce53dcc425485ae35d2a196d3a68c65559295b1070eaf2c3f6affe9' # 0033-Codec-Add-aw87xxx-codec-with-partial-acpi-implementa.patch

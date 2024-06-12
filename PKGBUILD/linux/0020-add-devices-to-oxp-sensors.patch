@@ -1,477 +1,498 @@
-diff -rupN linux-6.9.4.orig/drivers/hwmon/oxp-sensors.c linux-6.9.4/drivers/hwmon/oxp-sensors.c
---- linux-6.9.4.orig/drivers/hwmon/oxp-sensors.c	2024-06-12 17:21:50.166876756 +0000
-+++ linux-6.9.4/drivers/hwmon/oxp-sensors.c	2024-06-12 17:40:11.134168591 +0000
-@@ -42,10 +42,19 @@ static bool unlock_global_acpi_lock(void
- enum oxp_board {
- 	aok_zoe_a1 = 1,
- 	aya_neo_2,
-+	aya_neo_2s,
- 	aya_neo_air,
-+	aya_neo_air_1s,
- 	aya_neo_air_plus_mendo,
- 	aya_neo_air_pro,
-+	aya_neo_flip,
- 	aya_neo_geek,
-+	aya_neo_geek_1s,
-+	aya_neo_kun,
-+	gpd_win_mini,
-+	orange_pi_neo,
-+	oxp_2,
-+	oxp_fly,
- 	oxp_mini_amd,
- 	oxp_mini_amd_a07,
- 	oxp_mini_amd_pro,
-@@ -54,21 +63,38 @@ enum oxp_board {
- static enum oxp_board board;
- 
- /* Fan reading and PWM */
--#define OXP_SENSOR_FAN_REG		0x76 /* Fan reading is 2 registers long */
--#define OXP_SENSOR_PWM_ENABLE_REG	0x4A /* PWM enable is 1 register long */
--#define OXP_SENSOR_PWM_REG		0x4B /* PWM reading is 1 register long */
--
-+#define OXP_SENSOR_FAN_REG              0x76 /* Fan reading is 2 registers long */
-+#define OXP_SENSOR_PWM_ENABLE_REG       0x4A /* PWM enable is 1 register long */
-+#define OXP_SENSOR_PWM_REG              0x4B /* PWM reading is 1 register long */
-+
-+#define ORANGEPI_SENSOR_FAN_REG         0x78 /* Fan reading is 2 registers long */
-+#define ORANGEPI_SENSOR_PWM_ENABLE_REG  0x40 /* PWM enable is 1 register long */
-+#define ORANGEPI_SENSOR_PWM_REG         0x38 /* PWM reading is 1 register long */
-+
-+/* GPD devices don't have a separate enable register for the fan.
-+ * For the PWM register, 0 is auto, 1+ is a manual value, up to 255
-+ * depending on the specific model. This driver will scale to 0-255
-+ * and treat PWM enable without a value as "set to manual, 70%."
-+ * The mini uses the same fan register as the OrangePi NEO.
-+ */
-+#define GPD_MINI_SENSOR_PWM_REG         0x7A /* PWM reading is 1 register long */
-+/* Values for fan auto mode */
-+#define PWM_MODE_AUTO                   0x00
-+
-+ /* Values for fan manual mode */
-+#define PWM_MODE_MANUAL                 0x01
-+#define GPD_MINI_PWM_MODE_MANUAL        0xAA /* 70% */
- /* Turbo button takeover function
-- * Older boards have different values and EC registers
-+ * Different boards have different values and EC registers
-  * for the same function
-  */
--#define OXP_OLD_TURBO_SWITCH_REG	0x1E
--#define OXP_OLD_TURBO_TAKE_VAL		0x01
--#define OXP_OLD_TURBO_RETURN_VAL	0x00
--
--#define OXP_TURBO_SWITCH_REG		0xF1
--#define OXP_TURBO_TAKE_VAL		0x40
--#define OXP_TURBO_RETURN_VAL		0x00
-+#define OXP_TURBO_SWITCH_REG            0xF1
-+#define OXP_TURBO_TAKE_VAL              0x40
-+#define OXP_TURBO_RETURN_VAL            0x00 /* Common return val */
-+
-+#define OXP_2_TURBO_SWITCH_REG          0xEB /* OXP2 and OXP2 Pro */
-+#define OXP_MINI_TURBO_SWITCH_REG       0x1E /* Mini AO7 */
-+#define OXP_MINI_TURBO_TAKE_VAL         0x01
- 
- static const struct dmi_system_id dmi_table[] = {
- 	{
-@@ -95,6 +121,13 @@ static const struct dmi_system_id dmi_ta
- 	{
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "AYANEO 2S"),
-+		},
-+		.driver_data = (void *)aya_neo_2s,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
- 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "AIR"),
- 		},
- 		.driver_data = (void *)aya_neo_air,
-@@ -109,10 +142,24 @@ static const struct dmi_system_id dmi_ta
- 	{
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "AIR 1S"),
-+		},
-+		.driver_data = (void *)aya_neo_air_1s,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
- 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "AIR Pro"),
- 		},
- 		.driver_data = (void *)aya_neo_air_pro,
- 	},
-+        {
-+                .matches = {
-+                        DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
-+                        DMI_MATCH(DMI_BOARD_NAME, "FLIP"),
-+                },
-+                .driver_data = (void *)aya_neo_flip,
-+        },
- 	{
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
-@@ -122,6 +169,34 @@ static const struct dmi_system_id dmi_ta
- 	},
- 	{
- 		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "GEEK 1S"),
-+		},
-+		.driver_data = (void *)aya_neo_geek_1s,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "KUN"),
-+		},
-+		.driver_data = (void *)aya_neo_kun,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "GPD"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "G1617-01"),
-+		},
-+		.driver_data = (void *)gpd_win_mini,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "OrangePi"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "NEO-01"),
-+		},
-+		.driver_data = (void *)orange_pi_neo,
-+	},
-+	{
-+		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
- 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONE XPLAYER"),
- 		},
-@@ -130,6 +205,34 @@ static const struct dmi_system_id dmi_ta
- 	{
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER 2 ARP23"),
-+		},
-+		.driver_data = (void *)oxp_2,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER 2 PRO ARP23P"),
-+		},
-+		.driver_data = (void *)oxp_2,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER 2 PRO ARP23P EVA-01"),
-+		},
-+		.driver_data = (void *)oxp_2,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER F1"),
-+		},
-+		.driver_data = (void *)oxp_fly,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
- 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER mini A07"),
- 		},
- 		.driver_data = (void *)oxp_mini_amd_a07,
-@@ -192,14 +295,19 @@ static int tt_toggle_enable(void)
- 
- 	switch (board) {
- 	case oxp_mini_amd_a07:
--		reg = OXP_OLD_TURBO_SWITCH_REG;
--		val = OXP_OLD_TURBO_TAKE_VAL;
-+		reg = OXP_MINI_TURBO_SWITCH_REG;
-+		val = OXP_MINI_TURBO_TAKE_VAL;
- 		break;
--	case oxp_mini_amd_pro:
- 	case aok_zoe_a1:
-+	case oxp_fly:
-+	case oxp_mini_amd_pro:
- 		reg = OXP_TURBO_SWITCH_REG;
- 		val = OXP_TURBO_TAKE_VAL;
- 		break;
-+	case oxp_2:
-+		reg = OXP_2_TURBO_SWITCH_REG;
-+		val = OXP_TURBO_TAKE_VAL;
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -213,14 +321,19 @@ static int tt_toggle_disable(void)
- 
- 	switch (board) {
- 	case oxp_mini_amd_a07:
--		reg = OXP_OLD_TURBO_SWITCH_REG;
--		val = OXP_OLD_TURBO_RETURN_VAL;
-+		reg = OXP_MINI_TURBO_SWITCH_REG;
-+		val = OXP_TURBO_RETURN_VAL;
- 		break;
--	case oxp_mini_amd_pro:
- 	case aok_zoe_a1:
-+	case oxp_fly:
-+	case oxp_mini_amd_pro:
- 		reg = OXP_TURBO_SWITCH_REG;
- 		val = OXP_TURBO_RETURN_VAL;
- 		break;
-+	case oxp_2:
-+		reg = OXP_2_TURBO_SWITCH_REG;
-+		val = OXP_TURBO_RETURN_VAL;
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -233,6 +346,8 @@ static umode_t tt_toggle_is_visible(stru
- {
- 	switch (board) {
- 	case aok_zoe_a1:
-+	case oxp_2:
-+	case oxp_fly:
- 	case oxp_mini_amd_a07:
- 	case oxp_mini_amd_pro:
- 		return attr->mode;
-@@ -273,12 +388,16 @@ static ssize_t tt_toggle_show(struct dev
- 
- 	switch (board) {
- 	case oxp_mini_amd_a07:
--		reg = OXP_OLD_TURBO_SWITCH_REG;
-+		reg = OXP_MINI_TURBO_SWITCH_REG;
- 		break;
--	case oxp_mini_amd_pro:
- 	case aok_zoe_a1:
-+	case oxp_fly:
-+	case oxp_mini_amd_pro:
- 		reg = OXP_TURBO_SWITCH_REG;
- 		break;
-+	case oxp_2:
-+		reg = OXP_2_TURBO_SWITCH_REG;
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -295,12 +414,63 @@ static DEVICE_ATTR_RW(tt_toggle);
- /* PWM enable/disable functions */
- static int oxp_pwm_enable(void)
- {
--	return write_to_ec(OXP_SENSOR_PWM_ENABLE_REG, 0x01);
-+	switch (board) {
-+	/* GPD has no separate enable register, instead, set the fan to
-+	 * a safe default.
-+	 */
-+	case gpd_win_mini:
-+		return write_to_ec(GPD_MINI_SENSOR_PWM_REG, GPD_MINI_PWM_MODE_MANUAL);
-+	case orange_pi_neo:
-+		return write_to_ec(ORANGEPI_SENSOR_PWM_ENABLE_REG, PWM_MODE_MANUAL);
-+	case aok_zoe_a1:
-+	case aya_neo_2:
-+	case aya_neo_2s:
-+	case aya_neo_air:
-+	case aya_neo_air_1s:
-+	case aya_neo_air_plus_mendo:
-+	case aya_neo_air_pro:
-+	case aya_neo_flip:
-+	case aya_neo_geek:
-+	case aya_neo_geek_1s:
-+	case aya_neo_kun:
-+	case oxp_mini_amd:
-+	case oxp_mini_amd_a07:
-+	case oxp_2:
-+	case oxp_fly:
-+	case oxp_mini_amd_pro:
-+		return write_to_ec(OXP_SENSOR_PWM_ENABLE_REG, PWM_MODE_MANUAL);
-+	default:
-+		return -EINVAL;
-+	}
- }
- 
- static int oxp_pwm_disable(void)
- {
--	return write_to_ec(OXP_SENSOR_PWM_ENABLE_REG, 0x00);
-+	switch (board) {
-+	case gpd_win_mini:
-+		return write_to_ec(GPD_MINI_SENSOR_PWM_REG, PWM_MODE_AUTO);
-+	case orange_pi_neo:
-+		return write_to_ec(ORANGEPI_SENSOR_PWM_ENABLE_REG, PWM_MODE_AUTO);
-+	case aok_zoe_a1:
-+	case aya_neo_2:
-+	case aya_neo_2s:
-+	case aya_neo_air:
-+	case aya_neo_air_1s:
-+	case aya_neo_air_plus_mendo:
-+	case aya_neo_air_pro:
-+	case aya_neo_flip:
-+	case aya_neo_geek:
-+	case aya_neo_geek_1s:
-+	case aya_neo_kun:
-+	case oxp_mini_amd:
-+	case oxp_mini_amd_a07:
-+	case oxp_2:
-+	case oxp_fly:
-+	case oxp_mini_amd_pro:
-+		return write_to_ec(OXP_SENSOR_PWM_ENABLE_REG, PWM_MODE_AUTO);
-+	default:
-+		return -EINVAL;
-+	}
- }
- 
- /* Callbacks for hwmon interface */
-@@ -326,7 +496,30 @@ static int oxp_platform_read(struct devi
- 	case hwmon_fan:
- 		switch (attr) {
- 		case hwmon_fan_input:
--			return read_from_ec(OXP_SENSOR_FAN_REG, 2, val);
-+			switch (board) {
-+			case gpd_win_mini:
-+			case orange_pi_neo:
-+				return read_from_ec(ORANGEPI_SENSOR_FAN_REG, 2, val);
-+			case aok_zoe_a1:
-+			case aya_neo_2:
-+			case aya_neo_2s:
-+			case aya_neo_air:
-+			case aya_neo_air_1s:
-+			case aya_neo_air_plus_mendo:
-+			case aya_neo_air_pro:
-+			case aya_neo_flip:
-+			case aya_neo_geek:
-+			case aya_neo_geek_1s:
-+			case aya_neo_kun:
-+			case oxp_mini_amd:
-+			case oxp_mini_amd_a07:
-+			case oxp_2:
-+			case oxp_fly:
-+			case oxp_mini_amd_pro:
-+				return read_from_ec(OXP_SENSOR_FAN_REG, 2, val);
-+			default:
-+				break;
-+			}
- 		default:
- 			break;
- 		}
-@@ -334,27 +527,78 @@ static int oxp_platform_read(struct devi
- 	case hwmon_pwm:
- 		switch (attr) {
- 		case hwmon_pwm_input:
--			ret = read_from_ec(OXP_SENSOR_PWM_REG, 1, val);
--			if (ret)
--				return ret;
- 			switch (board) {
-+			case gpd_win_mini:
-+				ret = read_from_ec(GPD_MINI_SENSOR_PWM_REG, 1, val);
-+				if (ret)
-+					return ret;
-+				if (*val != PWM_MODE_AUTO)
-+					/* scale from range [1-244] */
-+					*val = ((*val - 1) * 254 / 243) + 1;
-+				break;
-+			case orange_pi_neo:
-+				ret = read_from_ec(ORANGEPI_SENSOR_PWM_REG, 1, val);
-+				if (ret)
-+					return ret;
-+				/* scale from range [1-244] */
-+				*val = ((*val - 1) * 254 / 243) + 1;
-+				break;
- 			case aya_neo_2:
-+			case aya_neo_2s:
- 			case aya_neo_air:
-+			case aya_neo_air_1s:
- 			case aya_neo_air_plus_mendo:
- 			case aya_neo_air_pro:
-+			case aya_neo_flip:
- 			case aya_neo_geek:
-+			case aya_neo_geek_1s:
-+			case aya_neo_kun:
- 			case oxp_mini_amd:
- 			case oxp_mini_amd_a07:
-+				ret = read_from_ec(OXP_SENSOR_PWM_REG, 1, val);
-+				if (ret)
-+					return ret;
- 				*val = (*val * 255) / 100;
- 				break;
--			case oxp_mini_amd_pro:
- 			case aok_zoe_a1:
-+			case oxp_2:
-+			case oxp_fly:
-+			case oxp_mini_amd_pro:
- 			default:
-+				ret = read_from_ec(OXP_SENSOR_PWM_REG, 1, val);
-+				if (ret)
-+					return ret;
- 				break;
- 			}
- 			return 0;
- 		case hwmon_pwm_enable:
--			return read_from_ec(OXP_SENSOR_PWM_ENABLE_REG, 1, val);
-+			switch (board) {
-+			case gpd_win_mini:
-+				ret = read_from_ec(GPD_MINI_SENSOR_PWM_REG, 1, val);
-+				*val = (*val != PWM_MODE_AUTO);
-+				return ret;
-+			case orange_pi_neo:
-+				return read_from_ec(ORANGEPI_SENSOR_PWM_ENABLE_REG, 1, val);
-+			case aok_zoe_a1:
-+			case aya_neo_2:
-+			case aya_neo_2s:
-+			case aya_neo_air:
-+			case aya_neo_air_1s:
-+			case aya_neo_air_plus_mendo:
-+			case aya_neo_air_pro:
-+			case aya_neo_flip:
-+			case aya_neo_geek:
-+			case aya_neo_geek_1s:
-+			case aya_neo_kun:
-+			case oxp_mini_amd:
-+			case oxp_mini_amd_a07:
-+			case oxp_2:
-+			case oxp_fly:
-+			case oxp_mini_amd_pro:
-+				return read_from_ec(OXP_SENSOR_PWM_ENABLE_REG, 1, val);
-+			default:
-+				break;
-+			}
- 		default:
- 			break;
- 		}
-@@ -381,21 +625,34 @@ static int oxp_platform_write(struct dev
- 			if (val < 0 || val > 255)
- 				return -EINVAL;
- 			switch (board) {
-+			case gpd_win_mini:
-+				/* scale to range [1-244] */
-+				val = ((val - 1) * 243 / 254) + 1;
-+				return write_to_ec(GPD_MINI_SENSOR_PWM_REG, val);
-+			case orange_pi_neo:
-+				/* scale to range [1-244] */
-+				val = ((val - 1) * 243 / 254) + 1;
-+				return write_to_ec(ORANGEPI_SENSOR_PWM_REG, val);
- 			case aya_neo_2:
-+			case aya_neo_2s:
- 			case aya_neo_air:
-+			case aya_neo_air_1s:
- 			case aya_neo_air_plus_mendo:
- 			case aya_neo_air_pro:
-+			case aya_neo_flip:
- 			case aya_neo_geek:
-+			case aya_neo_geek_1s:
-+			case aya_neo_kun:
- 			case oxp_mini_amd:
- 			case oxp_mini_amd_a07:
--				val = (val * 100) / 255;
--				break;
- 			case aok_zoe_a1:
-+			case oxp_2:
-+			case oxp_fly:
- 			case oxp_mini_amd_pro:
-+				return write_to_ec(OXP_SENSOR_PWM_REG, val);
- 			default:
- 				break;
- 			}
--			return write_to_ec(OXP_SENSOR_PWM_REG, val);
- 		default:
- 			break;
- 		}
+From 7c61949122072cab6b1b73a94775aeb0edc739f6 Mon Sep 17 00:00:00 2001
+From: fewtarius <fewtarius@steamfork.org>
+Date: Wed, 12 Jun 2024 18:07:11 +0000
+Subject: [PATCH] Rebase OXP sensors patches authored by @pastaq and myself,
+ and fix a few bugs that prevented manual fan control from working in
+ SteamFork on multiple devices.
+
+---
+ .../0020-add-devices-to-oxp-sensors.patch     | 477 ++++++++++++++++++
+ 1 file changed, 477 insertions(+)
+ create mode 100644 PKGBUILD/linux/0020-add-devices-to-oxp-sensors.patch
+
+diff --git a/PKGBUILD/linux/0020-add-devices-to-oxp-sensors.patch b/PKGBUILD/linux/0020-add-devices-to-oxp-sensors.patch
+new file mode 100644
+index 0000000..2de8155
+--- /dev/null
++++ b/PKGBUILD/linux/0020-add-devices-to-oxp-sensors.patch
+@@ -0,0 +1,477 @@
++diff -rupN linux-6.9.4.orig/drivers/hwmon/oxp-sensors.c linux-6.9.4/drivers/hwmon/oxp-sensors.c
++--- linux-6.9.4.orig/drivers/hwmon/oxp-sensors.c	2024-06-12 17:21:50.166876756 +0000
+++++ linux-6.9.4/drivers/hwmon/oxp-sensors.c	2024-06-12 17:40:11.134168591 +0000
++@@ -42,10 +42,19 @@ static bool unlock_global_acpi_lock(void
++ enum oxp_board {
++ 	aok_zoe_a1 = 1,
++ 	aya_neo_2,
+++	aya_neo_2s,
++ 	aya_neo_air,
+++	aya_neo_air_1s,
++ 	aya_neo_air_plus_mendo,
++ 	aya_neo_air_pro,
+++	aya_neo_flip,
++ 	aya_neo_geek,
+++	aya_neo_geek_1s,
+++	aya_neo_kun,
+++	gpd_win_mini,
+++	orange_pi_neo,
+++	oxp_2,
+++	oxp_fly,
++ 	oxp_mini_amd,
++ 	oxp_mini_amd_a07,
++ 	oxp_mini_amd_pro,
++@@ -54,21 +63,38 @@ enum oxp_board {
++ static enum oxp_board board;
++ 
++ /* Fan reading and PWM */
++-#define OXP_SENSOR_FAN_REG		0x76 /* Fan reading is 2 registers long */
++-#define OXP_SENSOR_PWM_ENABLE_REG	0x4A /* PWM enable is 1 register long */
++-#define OXP_SENSOR_PWM_REG		0x4B /* PWM reading is 1 register long */
++-
+++#define OXP_SENSOR_FAN_REG              0x76 /* Fan reading is 2 registers long */
+++#define OXP_SENSOR_PWM_ENABLE_REG       0x4A /* PWM enable is 1 register long */
+++#define OXP_SENSOR_PWM_REG              0x4B /* PWM reading is 1 register long */
+++
+++#define ORANGEPI_SENSOR_FAN_REG         0x78 /* Fan reading is 2 registers long */
+++#define ORANGEPI_SENSOR_PWM_ENABLE_REG  0x40 /* PWM enable is 1 register long */
+++#define ORANGEPI_SENSOR_PWM_REG         0x38 /* PWM reading is 1 register long */
+++
+++/* GPD devices don't have a separate enable register for the fan.
+++ * For the PWM register, 0 is auto, 1+ is a manual value, up to 255
+++ * depending on the specific model. This driver will scale to 0-255
+++ * and treat PWM enable without a value as "set to manual, 70%."
+++ * The mini uses the same fan register as the OrangePi NEO.
+++ */
+++#define GPD_MINI_SENSOR_PWM_REG         0x7A /* PWM reading is 1 register long */
+++/* Values for fan auto mode */
+++#define PWM_MODE_AUTO                   0x00
+++
+++ /* Values for fan manual mode */
+++#define PWM_MODE_MANUAL                 0x01
+++#define GPD_MINI_PWM_MODE_MANUAL        0xAA /* 70% */
++ /* Turbo button takeover function
++- * Older boards have different values and EC registers
+++ * Different boards have different values and EC registers
++  * for the same function
++  */
++-#define OXP_OLD_TURBO_SWITCH_REG	0x1E
++-#define OXP_OLD_TURBO_TAKE_VAL		0x01
++-#define OXP_OLD_TURBO_RETURN_VAL	0x00
++-
++-#define OXP_TURBO_SWITCH_REG		0xF1
++-#define OXP_TURBO_TAKE_VAL		0x40
++-#define OXP_TURBO_RETURN_VAL		0x00
+++#define OXP_TURBO_SWITCH_REG            0xF1
+++#define OXP_TURBO_TAKE_VAL              0x40
+++#define OXP_TURBO_RETURN_VAL            0x00 /* Common return val */
+++
+++#define OXP_2_TURBO_SWITCH_REG          0xEB /* OXP2 and OXP2 Pro */
+++#define OXP_MINI_TURBO_SWITCH_REG       0x1E /* Mini AO7 */
+++#define OXP_MINI_TURBO_TAKE_VAL         0x01
++ 
++ static const struct dmi_system_id dmi_table[] = {
++ 	{
++@@ -95,6 +121,13 @@ static const struct dmi_system_id dmi_ta
++ 	{
++ 		.matches = {
++ 			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
+++			DMI_EXACT_MATCH(DMI_BOARD_NAME, "AYANEO 2S"),
+++		},
+++		.driver_data = (void *)aya_neo_2s,
+++	},
+++	{
+++		.matches = {
+++			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
++ 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "AIR"),
++ 		},
++ 		.driver_data = (void *)aya_neo_air,
++@@ -109,10 +142,24 @@ static const struct dmi_system_id dmi_ta
++ 	{
++ 		.matches = {
++ 			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
+++			DMI_EXACT_MATCH(DMI_BOARD_NAME, "AIR 1S"),
+++		},
+++		.driver_data = (void *)aya_neo_air_1s,
+++	},
+++	{
+++		.matches = {
+++			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
++ 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "AIR Pro"),
++ 		},
++ 		.driver_data = (void *)aya_neo_air_pro,
++ 	},
+++        {
+++                .matches = {
+++                        DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
+++                        DMI_MATCH(DMI_BOARD_NAME, "FLIP"),
+++                },
+++                .driver_data = (void *)aya_neo_flip,
+++        },
++ 	{
++ 		.matches = {
++ 			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
++@@ -122,6 +169,34 @@ static const struct dmi_system_id dmi_ta
++ 	},
++ 	{
++ 		.matches = {
+++			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
+++			DMI_EXACT_MATCH(DMI_BOARD_NAME, "GEEK 1S"),
+++		},
+++		.driver_data = (void *)aya_neo_geek_1s,
+++	},
+++	{
+++		.matches = {
+++			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
+++			DMI_EXACT_MATCH(DMI_BOARD_NAME, "KUN"),
+++		},
+++		.driver_data = (void *)aya_neo_kun,
+++	},
+++	{
+++		.matches = {
+++			DMI_MATCH(DMI_BOARD_VENDOR, "GPD"),
+++			DMI_EXACT_MATCH(DMI_BOARD_NAME, "G1617-01"),
+++		},
+++		.driver_data = (void *)gpd_win_mini,
+++	},
+++	{
+++		.matches = {
+++			DMI_MATCH(DMI_BOARD_VENDOR, "OrangePi"),
+++			DMI_EXACT_MATCH(DMI_BOARD_NAME, "NEO-01"),
+++		},
+++		.driver_data = (void *)orange_pi_neo,
+++	},
+++	{
+++		.matches = {
++ 			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
++ 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONE XPLAYER"),
++ 		},
++@@ -130,6 +205,34 @@ static const struct dmi_system_id dmi_ta
++ 	{
++ 		.matches = {
++ 			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
+++			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER 2 ARP23"),
+++		},
+++		.driver_data = (void *)oxp_2,
+++	},
+++	{
+++		.matches = {
+++			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
+++			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER 2 PRO ARP23P"),
+++		},
+++		.driver_data = (void *)oxp_2,
+++	},
+++	{
+++		.matches = {
+++			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
+++			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER 2 PRO ARP23P EVA-01"),
+++		},
+++		.driver_data = (void *)oxp_2,
+++	},
+++	{
+++		.matches = {
+++			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
+++			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER F1"),
+++		},
+++		.driver_data = (void *)oxp_fly,
+++	},
+++	{
+++		.matches = {
+++			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
++ 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER mini A07"),
++ 		},
++ 		.driver_data = (void *)oxp_mini_amd_a07,
++@@ -192,14 +295,19 @@ static int tt_toggle_enable(void)
++ 
++ 	switch (board) {
++ 	case oxp_mini_amd_a07:
++-		reg = OXP_OLD_TURBO_SWITCH_REG;
++-		val = OXP_OLD_TURBO_TAKE_VAL;
+++		reg = OXP_MINI_TURBO_SWITCH_REG;
+++		val = OXP_MINI_TURBO_TAKE_VAL;
++ 		break;
++-	case oxp_mini_amd_pro:
++ 	case aok_zoe_a1:
+++	case oxp_fly:
+++	case oxp_mini_amd_pro:
++ 		reg = OXP_TURBO_SWITCH_REG;
++ 		val = OXP_TURBO_TAKE_VAL;
++ 		break;
+++	case oxp_2:
+++		reg = OXP_2_TURBO_SWITCH_REG;
+++		val = OXP_TURBO_TAKE_VAL;
+++		break;
++ 	default:
++ 		return -EINVAL;
++ 	}
++@@ -213,14 +321,19 @@ static int tt_toggle_disable(void)
++ 
++ 	switch (board) {
++ 	case oxp_mini_amd_a07:
++-		reg = OXP_OLD_TURBO_SWITCH_REG;
++-		val = OXP_OLD_TURBO_RETURN_VAL;
+++		reg = OXP_MINI_TURBO_SWITCH_REG;
+++		val = OXP_TURBO_RETURN_VAL;
++ 		break;
++-	case oxp_mini_amd_pro:
++ 	case aok_zoe_a1:
+++	case oxp_fly:
+++	case oxp_mini_amd_pro:
++ 		reg = OXP_TURBO_SWITCH_REG;
++ 		val = OXP_TURBO_RETURN_VAL;
++ 		break;
+++	case oxp_2:
+++		reg = OXP_2_TURBO_SWITCH_REG;
+++		val = OXP_TURBO_RETURN_VAL;
+++		break;
++ 	default:
++ 		return -EINVAL;
++ 	}
++@@ -233,6 +346,8 @@ static umode_t tt_toggle_is_visible(stru
++ {
++ 	switch (board) {
++ 	case aok_zoe_a1:
+++	case oxp_2:
+++	case oxp_fly:
++ 	case oxp_mini_amd_a07:
++ 	case oxp_mini_amd_pro:
++ 		return attr->mode;
++@@ -273,12 +388,16 @@ static ssize_t tt_toggle_show(struct dev
++ 
++ 	switch (board) {
++ 	case oxp_mini_amd_a07:
++-		reg = OXP_OLD_TURBO_SWITCH_REG;
+++		reg = OXP_MINI_TURBO_SWITCH_REG;
++ 		break;
++-	case oxp_mini_amd_pro:
++ 	case aok_zoe_a1:
+++	case oxp_fly:
+++	case oxp_mini_amd_pro:
++ 		reg = OXP_TURBO_SWITCH_REG;
++ 		break;
+++	case oxp_2:
+++		reg = OXP_2_TURBO_SWITCH_REG;
+++		break;
++ 	default:
++ 		return -EINVAL;
++ 	}
++@@ -295,12 +414,63 @@ static DEVICE_ATTR_RW(tt_toggle);
++ /* PWM enable/disable functions */
++ static int oxp_pwm_enable(void)
++ {
++-	return write_to_ec(OXP_SENSOR_PWM_ENABLE_REG, 0x01);
+++	switch (board) {
+++	/* GPD has no separate enable register, instead, set the fan to
+++	 * a safe default.
+++	 */
+++	case gpd_win_mini:
+++		return write_to_ec(GPD_MINI_SENSOR_PWM_REG, GPD_MINI_PWM_MODE_MANUAL);
+++	case orange_pi_neo:
+++		return write_to_ec(ORANGEPI_SENSOR_PWM_ENABLE_REG, PWM_MODE_MANUAL);
+++	case aok_zoe_a1:
+++	case aya_neo_2:
+++	case aya_neo_2s:
+++	case aya_neo_air:
+++	case aya_neo_air_1s:
+++	case aya_neo_air_plus_mendo:
+++	case aya_neo_air_pro:
+++	case aya_neo_flip:
+++	case aya_neo_geek:
+++	case aya_neo_geek_1s:
+++	case aya_neo_kun:
+++	case oxp_mini_amd:
+++	case oxp_mini_amd_a07:
+++	case oxp_2:
+++	case oxp_fly:
+++	case oxp_mini_amd_pro:
+++		return write_to_ec(OXP_SENSOR_PWM_ENABLE_REG, PWM_MODE_MANUAL);
+++	default:
+++		return -EINVAL;
+++	}
++ }
++ 
++ static int oxp_pwm_disable(void)
++ {
++-	return write_to_ec(OXP_SENSOR_PWM_ENABLE_REG, 0x00);
+++	switch (board) {
+++	case gpd_win_mini:
+++		return write_to_ec(GPD_MINI_SENSOR_PWM_REG, PWM_MODE_AUTO);
+++	case orange_pi_neo:
+++		return write_to_ec(ORANGEPI_SENSOR_PWM_ENABLE_REG, PWM_MODE_AUTO);
+++	case aok_zoe_a1:
+++	case aya_neo_2:
+++	case aya_neo_2s:
+++	case aya_neo_air:
+++	case aya_neo_air_1s:
+++	case aya_neo_air_plus_mendo:
+++	case aya_neo_air_pro:
+++	case aya_neo_flip:
+++	case aya_neo_geek:
+++	case aya_neo_geek_1s:
+++	case aya_neo_kun:
+++	case oxp_mini_amd:
+++	case oxp_mini_amd_a07:
+++	case oxp_2:
+++	case oxp_fly:
+++	case oxp_mini_amd_pro:
+++		return write_to_ec(OXP_SENSOR_PWM_ENABLE_REG, PWM_MODE_AUTO);
+++	default:
+++		return -EINVAL;
+++	}
++ }
++ 
++ /* Callbacks for hwmon interface */
++@@ -326,7 +496,30 @@ static int oxp_platform_read(struct devi
++ 	case hwmon_fan:
++ 		switch (attr) {
++ 		case hwmon_fan_input:
++-			return read_from_ec(OXP_SENSOR_FAN_REG, 2, val);
+++			switch (board) {
+++			case gpd_win_mini:
+++			case orange_pi_neo:
+++				return read_from_ec(ORANGEPI_SENSOR_FAN_REG, 2, val);
+++			case aok_zoe_a1:
+++			case aya_neo_2:
+++			case aya_neo_2s:
+++			case aya_neo_air:
+++			case aya_neo_air_1s:
+++			case aya_neo_air_plus_mendo:
+++			case aya_neo_air_pro:
+++			case aya_neo_flip:
+++			case aya_neo_geek:
+++			case aya_neo_geek_1s:
+++			case aya_neo_kun:
+++			case oxp_mini_amd:
+++			case oxp_mini_amd_a07:
+++			case oxp_2:
+++			case oxp_fly:
+++			case oxp_mini_amd_pro:
+++				return read_from_ec(OXP_SENSOR_FAN_REG, 2, val);
+++			default:
+++				break;
+++			}
++ 		default:
++ 			break;
++ 		}
++@@ -334,27 +527,78 @@ static int oxp_platform_read(struct devi
++ 	case hwmon_pwm:
++ 		switch (attr) {
++ 		case hwmon_pwm_input:
++-			ret = read_from_ec(OXP_SENSOR_PWM_REG, 1, val);
++-			if (ret)
++-				return ret;
++ 			switch (board) {
+++			case gpd_win_mini:
+++				ret = read_from_ec(GPD_MINI_SENSOR_PWM_REG, 1, val);
+++				if (ret)
+++					return ret;
+++				if (*val != PWM_MODE_AUTO)
+++					/* scale from range [1-244] */
+++					*val = ((*val - 1) * 254 / 243) + 1;
+++				break;
+++			case orange_pi_neo:
+++				ret = read_from_ec(ORANGEPI_SENSOR_PWM_REG, 1, val);
+++				if (ret)
+++					return ret;
+++				/* scale from range [1-244] */
+++				*val = ((*val - 1) * 254 / 243) + 1;
+++				break;
++ 			case aya_neo_2:
+++			case aya_neo_2s:
++ 			case aya_neo_air:
+++			case aya_neo_air_1s:
++ 			case aya_neo_air_plus_mendo:
++ 			case aya_neo_air_pro:
+++			case aya_neo_flip:
++ 			case aya_neo_geek:
+++			case aya_neo_geek_1s:
+++			case aya_neo_kun:
++ 			case oxp_mini_amd:
++ 			case oxp_mini_amd_a07:
+++				ret = read_from_ec(OXP_SENSOR_PWM_REG, 1, val);
+++				if (ret)
+++					return ret;
++ 				*val = (*val * 255) / 100;
++ 				break;
++-			case oxp_mini_amd_pro:
++ 			case aok_zoe_a1:
+++			case oxp_2:
+++			case oxp_fly:
+++			case oxp_mini_amd_pro:
++ 			default:
+++				ret = read_from_ec(OXP_SENSOR_PWM_REG, 1, val);
+++				if (ret)
+++					return ret;
++ 				break;
++ 			}
++ 			return 0;
++ 		case hwmon_pwm_enable:
++-			return read_from_ec(OXP_SENSOR_PWM_ENABLE_REG, 1, val);
+++			switch (board) {
+++			case gpd_win_mini:
+++				ret = read_from_ec(GPD_MINI_SENSOR_PWM_REG, 1, val);
+++				*val = (*val != PWM_MODE_AUTO);
+++				return ret;
+++			case orange_pi_neo:
+++				return read_from_ec(ORANGEPI_SENSOR_PWM_ENABLE_REG, 1, val);
+++			case aok_zoe_a1:
+++			case aya_neo_2:
+++			case aya_neo_2s:
+++			case aya_neo_air:
+++			case aya_neo_air_1s:
+++			case aya_neo_air_plus_mendo:
+++			case aya_neo_air_pro:
+++			case aya_neo_flip:
+++			case aya_neo_geek:
+++			case aya_neo_geek_1s:
+++			case aya_neo_kun:
+++			case oxp_mini_amd:
+++			case oxp_mini_amd_a07:
+++			case oxp_2:
+++			case oxp_fly:
+++			case oxp_mini_amd_pro:
+++				return read_from_ec(OXP_SENSOR_PWM_ENABLE_REG, 1, val);
+++			default:
+++				break;
+++			}
++ 		default:
++ 			break;
++ 		}
++@@ -381,21 +625,34 @@ static int oxp_platform_write(struct dev
++ 			if (val < 0 || val > 255)
++ 				return -EINVAL;
++ 			switch (board) {
+++			case gpd_win_mini:
+++				/* scale to range [1-244] */
+++				val = ((val - 1) * 243 / 254) + 1;
+++				return write_to_ec(GPD_MINI_SENSOR_PWM_REG, val);
+++			case orange_pi_neo:
+++				/* scale to range [1-244] */
+++				val = ((val - 1) * 243 / 254) + 1;
+++				return write_to_ec(ORANGEPI_SENSOR_PWM_REG, val);
++ 			case aya_neo_2:
+++			case aya_neo_2s:
++ 			case aya_neo_air:
+++			case aya_neo_air_1s:
++ 			case aya_neo_air_plus_mendo:
++ 			case aya_neo_air_pro:
+++			case aya_neo_flip:
++ 			case aya_neo_geek:
+++			case aya_neo_geek_1s:
+++			case aya_neo_kun:
++ 			case oxp_mini_amd:
++ 			case oxp_mini_amd_a07:
++-				val = (val * 100) / 255;
++-				break;
++ 			case aok_zoe_a1:
+++			case oxp_2:
+++			case oxp_fly:
++ 			case oxp_mini_amd_pro:
+++				return write_to_ec(OXP_SENSOR_PWM_REG, val);
++ 			default:
++ 				break;
++ 			}
++-			return write_to_ec(OXP_SENSOR_PWM_REG, val);
++ 		default:
++ 			break;
++ 		}
+-- 
+2.43.2
+
