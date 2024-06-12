@@ -1,0 +1,31 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024-Present Fewtarius (https://github.com/fewtarius)
+
+. /etc/profile
+
+SWAPFILE="/home/.steamos/swapfile"
+
+function add_fstab() {
+  cat <<EOF | sudo tee -a /etc/fstab
+${SWAPFILE} swap swap defaults 0 0
+EOF
+}
+
+if [ ! -e "${SWAPFILE}" ]
+then
+  SWAPSIZE=$(echo $(awk '/MemTotal:/ {print $2}' /proc/meminfo) / 1024 | bc)
+  sudo dd if=/dev/zero of=${SWAPFILE} bs=1M count=${SWAPSIZE}
+  sudo chmod 0600 ${SWAPFILE}
+  sudo mkswap ${SWAPFILE}
+  sudo swapon ${SWAPFILE}
+  add_fstab
+else
+  grep ${SWAPFILE} /etc/fstab >/dev/null 2>&1
+  if [ ! $? = 0 ]
+  then
+    add_fstab
+  fi
+fi
+
+sudo mount -a

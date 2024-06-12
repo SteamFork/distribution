@@ -1,0 +1,11 @@
+[Unit]
+Description=SteamFork swap space enabler.
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/steamfork-postupdate.service
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

@@ -4,5 +4,14 @@ steamos-readonly disable 2>/dev/null
 if [[ "$1" == "update" ]]; then
     steamfork-grub-update
 fi
+
+if [ -d "/usr/lib/steamfork-post-update" ]
+then
+  for UPDATE in /usr/lib/steamfork-post-update/*
+  do
+    ${UPDATE}
+  done
+fi
+
 steamos-readonly enable 2>/dev/null
 exit 0
