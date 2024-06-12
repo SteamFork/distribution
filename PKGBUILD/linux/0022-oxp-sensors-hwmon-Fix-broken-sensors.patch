@@ -1,0 +1,36 @@
+diff -rupN linux-6.9.4.orig/drivers/hwmon/oxp-sensors.c linux-6.9.4/drivers/hwmon/oxp-sensors.c
+--- linux-6.9.4.orig/drivers/hwmon/oxp-sensors.c	2024-06-12 15:26:37.711475152 +0000
++++ linux-6.9.4/drivers/hwmon/oxp-sensors.c	2024-06-12 15:27:47.111094325 +0000
+@@ -544,11 +544,14 @@ static int oxp_platform_read(struct devi
+ 				*val = ((*val - 1) * 254 / 243) + 1;
+ 				break;
+ 			case aya_neo_2:
++			case aya_neo_2s:
+ 			case aya_neo_air:
++			case aya_neo_air_1s:
+ 			case aya_neo_air_plus_mendo:
+ 			case aya_neo_air_pro:
+ 			case aya_neo_flip:
+ 			case aya_neo_geek:
++			case aya_neo_geek_1s:
+ 			case oxp_mini_amd:
+ 			case oxp_mini_amd_a07:
+ 				ret = read_from_ec(OXP_SENSOR_PWM_REG, 1, val);
+@@ -629,12 +632,17 @@ static int oxp_platform_write(struct dev
+ 				/* scale to range [1-244] */
+ 				val = ((val - 1) * 243 / 254) + 1;
+ 				return write_to_ec(ORANGEPI_SENSOR_PWM_REG, val);
++			case aok_zoe_a1:
+ 			case aya_neo_2:
++			case aya_neo_2s:
+ 			case aya_neo_air:
++			case aya_neo_air_1s:
+ 			case aya_neo_air_plus_mendo:
+ 			case aya_neo_air_pro:
+ 			case aya_neo_flip:
+ 			case aya_neo_geek:
++			case aya_neo_geek_1s:
++			case aya_neo_kun:
+ 			case oxp_mini_amd:
+ 			case oxp_mini_amd_a07:
+ 				val = (val * 100) / 255;
