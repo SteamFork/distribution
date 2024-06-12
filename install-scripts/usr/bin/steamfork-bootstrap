@@ -101,6 +101,7 @@ arch-chroot ${SUBVOLLOCATION} steamfork-grub-update
 
 echo -e "\nConfiguring swap..."
 arch-chroot ${SUBVOLLOCATION} steamfork-enable-swap
+arch-chroot ${SUBVOLLOCATION} swapoff -a
 
 mkdir -p ${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/var/overlays/etc/upper
 mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc
