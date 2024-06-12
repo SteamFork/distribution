@@ -1,48 +1,67 @@
-diff -rupN linux-6.9.4.orig/sound/soc/codecs/aw87xxx/aw87xxx.c linux-6.9.4/sound/soc/codecs/aw87xxx/aw87xxx.c
---- linux-6.9.4.orig/sound/soc/codecs/aw87xxx/aw87xxx.c	2024-06-12 16:07:14.861434755 +0000
-+++ linux-6.9.4/sound/soc/codecs/aw87xxx/aw87xxx.c	2024-06-12 16:14:01.399203901 +0000
-@@ -247,7 +247,7 @@ int aw87xxx_update_profile_esd(struct aw
- 	return ret;
- }
- 
--char *aw87xxx_show_current_profile(int dev_index)
-+extern char *aw87xxx_show_current_profile(int dev_index)
- {
- 	struct list_head *pos = NULL;
- 	struct aw87xxx *aw87xxx = NULL;
-@@ -266,7 +266,7 @@ char *aw87xxx_show_current_profile(int d
- }
- EXPORT_SYMBOL(aw87xxx_show_current_profile);
- 
--int aw87xxx_set_profile(int dev_index, char *profile)
-+extern int aw87xxx_set_profile(int dev_index, char *profile)
- {
- 	struct list_head *pos = NULL;
- 	struct aw87xxx *aw87xxx = NULL;
-@@ -285,7 +285,7 @@ int aw87xxx_set_profile(int dev_index, c
- }
- EXPORT_SYMBOL(aw87xxx_set_profile);
- 
--int aw87xxx_set_profile_by_id(int dev_index, int profile_id)
-+extern int aw87xxx_set_profile_by_id(int dev_index, int profile_id)
- {
- 	char *profile = NULL;
- 
-@@ -684,7 +684,7 @@ static int aw87xxx_public_kcontrol_creat
-  *aw87xxx kcontrol create
-  *
-  ****************************************************************************/
--int aw87xxx_add_codec_controls(void *codec)
-+extern int aw87xxx_add_codec_controls(void *codec)
- {
- 	struct list_head *pos = NULL;
- 	struct aw87xxx *aw87xxx = NULL;
-@@ -1015,7 +1015,7 @@ static ssize_t aw87xxx_attr_set_hwen(str
- 	return len;
- }
- 
--int aw87xxx_awrw_write(struct aw87xxx *aw87xxx,
-+extern int aw87xxx_awrw_write(struct aw87xxx *aw87xxx,
- 			const char *buf, size_t count)
- {
- 	int i = 0, ret = -1;
+From 2054bf14fab00fdb3c54017c1bd365800c0d6aaf Mon Sep 17 00:00:00 2001
+From: fewtarius <fewtarius@steamfork.org>
+Date: Wed, 12 Jun 2024 16:53:28 +0000
+Subject: [PATCH] Fix AW87xxx module build on kernel 6.9.4.
+
+---
+ PKGBUILD/linux/0038-Fix-AW87xxx-6.9.4.patch | 48 +++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+ create mode 100644 PKGBUILD/linux/0038-Fix-AW87xxx-6.9.4.patch
+
+diff --git a/PKGBUILD/linux/0038-Fix-AW87xxx-6.9.4.patch b/PKGBUILD/linux/0038-Fix-AW87xxx-6.9.4.patch
+new file mode 100644
+index 0000000..93a6abd
+--- /dev/null
++++ b/PKGBUILD/linux/0038-Fix-AW87xxx-6.9.4.patch
+@@ -0,0 +1,48 @@
++diff -rupN linux-6.9.4.orig/sound/soc/codecs/aw87xxx/aw87xxx.c linux-6.9.4/sound/soc/codecs/aw87xxx/aw87xxx.c
++--- linux-6.9.4.orig/sound/soc/codecs/aw87xxx/aw87xxx.c	2024-06-12 16:07:14.861434755 +0000
+++++ linux-6.9.4/sound/soc/codecs/aw87xxx/aw87xxx.c	2024-06-12 16:14:01.399203901 +0000
++@@ -247,7 +247,7 @@ int aw87xxx_update_profile_esd(struct aw
++ 	return ret;
++ }
++ 
++-char *aw87xxx_show_current_profile(int dev_index)
+++extern char *aw87xxx_show_current_profile(int dev_index)
++ {
++ 	struct list_head *pos = NULL;
++ 	struct aw87xxx *aw87xxx = NULL;
++@@ -266,7 +266,7 @@ char *aw87xxx_show_current_profile(int d
++ }
++ EXPORT_SYMBOL(aw87xxx_show_current_profile);
++ 
++-int aw87xxx_set_profile(int dev_index, char *profile)
+++extern int aw87xxx_set_profile(int dev_index, char *profile)
++ {
++ 	struct list_head *pos = NULL;
++ 	struct aw87xxx *aw87xxx = NULL;
++@@ -285,7 +285,7 @@ int aw87xxx_set_profile(int dev_index, c
++ }
++ EXPORT_SYMBOL(aw87xxx_set_profile);
++ 
++-int aw87xxx_set_profile_by_id(int dev_index, int profile_id)
+++extern int aw87xxx_set_profile_by_id(int dev_index, int profile_id)
++ {
++ 	char *profile = NULL;
++ 
++@@ -684,7 +684,7 @@ static int aw87xxx_public_kcontrol_creat
++  *aw87xxx kcontrol create
++  *
++  ****************************************************************************/
++-int aw87xxx_add_codec_controls(void *codec)
+++extern int aw87xxx_add_codec_controls(void *codec)
++ {
++ 	struct list_head *pos = NULL;
++ 	struct aw87xxx *aw87xxx = NULL;
++@@ -1015,7 +1015,7 @@ static ssize_t aw87xxx_attr_set_hwen(str
++ 	return len;
++ }
++ 
++-int aw87xxx_awrw_write(struct aw87xxx *aw87xxx,
+++extern int aw87xxx_awrw_write(struct aw87xxx *aw87xxx,
++ 			const char *buf, size_t count)
++ {
++ 	int i = 0, ret = -1;
+-- 
+2.43.2
+
