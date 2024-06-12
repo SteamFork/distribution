@@ -57,6 +57,7 @@ source=(
   0034-Updated-AW87xxx-driver-to-be-more-verbose-for-debugg.patch
   0036-Updated-AW87xxx-driver-to-automatically-enumerate-a-.patch
   0037-Updated-AW87xxx-driver-to-implement-Suspend-and-Resu.patch
+  0038-Fix-AW87xxx-6.9.4.patch
   0040-Add-Atari-VCS-quirk.patch
   0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
@@ -87,6 +88,7 @@ sha256sums=('SKIP'
 'd2d93d6b6d6bf5f57e3a2fc22f754dcf9917b261fec4830f7d3c2d470b372ebc' # 0034-Updated-AW87xxx-driver-to-be-more-verbose-for-debugg.patch
 'ee2a5e6301f27d408500df190829a88f7ad5bcaf56a8a60f5d731bae5bdd4588' # 0036-Updated-AW87xxx-driver-to-automatically-enumerate-a-.patch
 '82de086c40976157d0c15301bab5593e953d1633625e19f7e930a20618e06196' # 0037-Updated-AW87xxx-driver-to-implement-Suspend-and-Resu.patch
+'b47e9af50266bec703093b104ce7e2828823f12dc1ae29df09ae6ccb411d1011' # 0038-Fix-AW87xxx-6.9.4.patch
 '1822769c05fd3b2126870a853c41ab167a95cf91d23f0d50bb103838857489eb' # 0040-Add-Atari-VCS-quirk.patch
 '23673c33ea69f3508ff9265d27171e2e58899950d563a1726a6049afe9e92067' # 0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
