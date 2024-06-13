@@ -1,3 +1,12 @@
+From 82a22269a0ff969247d53709c1b4fed5df4cd3b9 Mon Sep 17 00:00:00 2001
+From: fewtarius <fewtarius@steamfork.org>
+Date: Thu, 13 Jun 2024 10:23:49 +0000
+Subject: [PATCH] Add additional devices to oxp-sensors.
+
+---
+ .../0020-add-devices-to-oxp-sensors.patch     | 68 +++++++++++++++----
+ 1 file changed, 54 insertions(+), 14 deletions(-)
+
 diff -rupN linux-6.9.4.orig/drivers/hwmon/oxp-sensors.c linux-6.9.4/drivers/hwmon/oxp-sensors.c
 --- linux-6.9.4.orig/drivers/hwmon/oxp-sensors.c	2024-06-12 17:21:50.166876756 +0000
 +++ linux-6.9.4/drivers/hwmon/oxp-sensors.c	2024-06-13 10:16:13.826224006 +0000
