@@ -7,7 +7,7 @@
 
 pkgbase=linux               # Build stock -ARCH kernel
 pkgver=6.9.4
-pkgrel=4
+pkgrel=5
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -71,7 +71,7 @@ sha256sums=('SKIP'
 '6cca4901dddae922bf5e697919a5f7be13f6e8b2416602c9393aa120c8a708e0' # 0014-drm-Add-GPU-reset-sysfs-event.patch
 '15e8387d977cf5acff77d8aeb98dc0752930723b60efe3d57d0d7045c27c6ada' # 0015-drm-amdgpu-add-work-function-for-GPU-reset-event.patch
 '06587c52eeb1f7847c2436452a73ea6275393bf3ffacbc8f7c0b0cb6777a3354' # 0016-drm-amdgpu-schedule-GPU-reset-event-work-function.patch
-'d0b54d0eda600ec68bea766a327a34acf1bc45a115c1bb7ed52e344f3080600c' # 0020-add-devices-to-oxp-sensors.patch
+'8d2227b7ec288130fecf575a86c8ba7b874e47658893d62f2195eec854e65151' # 0020-add-devices-to-oxp-sensors.patch
 'd4bc9044e7e3290d6885d08b8360b61744dc4227a723aa178f9041284e062f08' # 0031-IIO-add-aya-neo-tablet-identifier.patch
 '603a97edcfd170674d96d02f1fe01751ccf947ed0673cc5615b1850eb616384b' # 0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
 '849649888ce53dcc425485ae35d2a196d3a68c65559295b1070eaf2c3f6affe9' # 0033-Codec-Add-aw87xxx-codec-with-partial-acpi-implementa.patch
