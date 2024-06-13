@@ -46,7 +46,7 @@ sudo rm -rf /var/lib/pacman/db.lck ${WORKDIR}
 sudo mkdir -p ${WORKDIR} ${REPODIR} 2>/dev/null
 sudo chown ${BUILDUSER}:${BUILDUSER} ${WORKDIR} ${REPODIR}
 
-for STALE_PACKAGE in ${REPODIR}/${1}-[0-9]*
+for STALE_PACKAGE in ${REPODIR}/${1}-[0-9]* ${REPODIR}/${1}-[a-z]*[0-9]*
 do
   rm -f "${STALE_PACKAGE}"
 done
