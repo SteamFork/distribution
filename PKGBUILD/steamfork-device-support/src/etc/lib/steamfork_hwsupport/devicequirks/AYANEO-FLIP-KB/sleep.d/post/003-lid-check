@@ -1,0 +1,12 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 Fewtarius
+
+# The Flip wakes when the lid is closed and the device is suspended
+# so, go back into the sleep state.
+
+LID_STATE=$(awk '{printf $2}' /proc/acpi/button/lid/LID0/state)
+if [ "${LID_STATE}" = "closed" ]
+then
+  echo mem >/sys/power/state
+fi
