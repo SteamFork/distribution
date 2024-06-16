@@ -6,8 +6,8 @@
 #             Mikael Eriksson <mikael_eriksson@miffe.org>
 
 pkgbase=linux               # Build stock -ARCH kernel
-pkgver=6.9.4
-pkgrel=5
+pkgver=6.9.5
+pkgrel=1
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
