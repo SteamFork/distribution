@@ -5,7 +5,7 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 #             Mikael Eriksson <mikael_eriksson@miffe.org>
 
-pkgbase=linux               # Build stock -ARCH kernel
+pkgbase=linux
 pkgver=6.9.5
 pkgrel=1
 pkgdesc="Linux Stable"
