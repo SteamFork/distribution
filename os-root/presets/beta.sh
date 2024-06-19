@@ -1037,7 +1037,6 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   steamfork-customizations-jupiter
                   steamfork-device-support
 		  steamfork-keyring
-                  vi
                   vlc
                   wlroots
                   wlr-randr
