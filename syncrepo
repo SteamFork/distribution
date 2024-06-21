@@ -17,7 +17,7 @@ do
 done
 
 case ${1} in
-  pkgs)
+  pkgs|repo)
     for REPO in rel beta minimal
     do
       REPODIR="$(pwd)/packages/steamfork/${REPO}"
