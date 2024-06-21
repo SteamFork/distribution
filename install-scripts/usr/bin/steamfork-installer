@@ -81,9 +81,9 @@ yes | parted ${DEVICE} mklabel gpt
 parted -a optimal ${DEVICE} mkpart primary fat32 2M 256M
 parted ${DEVICE} set 1 boot on
 parted ${DEVICE} set 1 esp on
-parted -a optimal ${DEVICE} mkpart primary btrfs 256M 15G
-parted -a optimal ${DEVICE} mkpart primary ext4 15G 16G
-parted -a optimal ${DEVICE} mkpart primary ext4 16G 100%
+parted -a optimal ${DEVICE} mkpart primary btrfs 256M 20G
+parted -a optimal ${DEVICE} mkpart primary ext4 20G 21G
+parted -a optimal ${DEVICE} mkpart primary ext4 21G 100%
 root_partition="${INSTALLDEVICE}2"
 var_partition="${INSTALLDEVICE}3"
 home_partition="${INSTALLDEVICE}4"
