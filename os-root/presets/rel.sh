@@ -14,6 +14,7 @@ export CHROOT_SCRIPTS=( sddm
                         systemd-timesyncd
                         NetworkManager
                         steamos-offload.target
+			fstrim.timer
                         var-lib-pacman.mount
                         etc.mount
                         nix.mount

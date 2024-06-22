@@ -12,6 +12,7 @@ export IMAGEFILE="${BUILDVER}"
 export CHROOT_SCRIPTS=( NetworkManager
                         nix.mount
                         steamos-offload.target
+			fstrim.timer
                         var-lib-pacman.mount
                         etc.mount
                         opt.mount
