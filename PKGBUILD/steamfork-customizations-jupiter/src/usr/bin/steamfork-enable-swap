@@ -4,7 +4,8 @@
 
 . /etc/profile
 
-SWAPFILE="/home/.steamos/swapfile"
+OLD_SWAP="/home/.steamos/swapfile"
+SWAPFILE="/home/swapfile"
 
 function add_fstab() {
   cat <<EOF | sudo tee -a /etc/fstab
@@ -14,12 +15,19 @@ EOF
 
 if [ ! -e "${SWAPFILE}" ]
 then
-  SWAPSIZE=$(echo $(awk '/MemTotal:/ {print $2}' /proc/meminfo) / 1024 | bc)
-  sudo dd if=/dev/zero of=${SWAPFILE} bs=1M count=${SWAPSIZE}
-  sudo chmod 0600 ${SWAPFILE}
-  sudo mkswap ${SWAPFILE}
-  sudo swapon ${SWAPFILE}
-  add_fstab
+  if [ -e "${OLD_SWAP}" ]
+  then
+    swapoff -a
+    mv "${OLD_SWAP}" "${SWAPFILE}"
+    sed -e 's~${OLD_SWAP}~${SWAPFILE}~g' /etc/fstab
+  else
+    SWAPSIZE=$(echo $(awk '/MemTotal:/ {print $2}' /proc/meminfo) / 1024 | bc)
+    sudo dd if=/dev/zero of=${SWAPFILE} bs=1M count=${SWAPSIZE}
+    sudo chmod 0600 ${SWAPFILE}
+    sudo mkswap ${SWAPFILE}
+    sudo swapon ${SWAPFILE}
+    add_fstab
+  fi
 else
   grep ${SWAPFILE} /etc/fstab >/dev/null 2>&1
   if [ ! $? = 0 ]
@@ -27,5 +35,3 @@ else
     add_fstab
   fi
 fi
-
-sudo mount -a

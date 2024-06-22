@@ -12,14 +12,14 @@ Description=Create Swap File
 DefaultDependencies=no
 Before=shutdown.target home-swapfile.swap
 Conflicts=shutdown.target
-ConditionFileIsExecutable=/usr/bin/mkswapfile
+ConditionFileIsExecutable=/usr/bin/steamfork-enable-swap
 ConditionPathExists=!/home/swapfile
 RequiresMountsFor=/home/swapfile
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/bin/mkswapfile /home/swapfile 1024
+ExecStart=/usr/bin/steamfork-enable-swap
 
 [Install]
 WantedBy=swap.target

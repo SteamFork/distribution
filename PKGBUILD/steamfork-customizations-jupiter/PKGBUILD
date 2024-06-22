@@ -1,7 +1,7 @@
 # Maintainer: Fewtarius
 
 pkgname=steamfork-customizations-jupiter
-pkgver=2024.06.19
+pkgver=2024.06.22
 pkgrel=1
 pkgdesc='SteamFork customizations provider.'
 arch=('any')
@@ -47,7 +47,7 @@ package() {
 
   mkdir -p ${pkgdir}/usr/lib/systemd/system/multi-user.target.wants
   cd ${pkgdir}/usr/lib/systemd/system/multi-user.target.wants
-  for service in steamfork-enable-swap.service steamfork-postupdate.service
+  for service in swapfile.service steamfork-postupdate.service
   do
     ln -sf ../${service} .
   done
