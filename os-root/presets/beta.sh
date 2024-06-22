@@ -73,7 +73,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     bluedevil
                     bluez
                     bluez-libs
-                    bluez-plugins
                     bluez-utils
                     bolt
                     boost-libs
