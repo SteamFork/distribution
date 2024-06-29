@@ -1,0 +1,13 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 Fewtarius
+
+### If this is a builder, optimize for building.
+if [ -e "/home/.steamos/builder" ]
+then
+  for i in /sys/devices/system/cpu/cpufreq/policy*/scaling_governor
+  do
+    echo performance | sudo tee ${i}
+  done
+  ryzenadj --stapm-limit=45000 --fast-limit=45000 --slow-limit=45000
+fi

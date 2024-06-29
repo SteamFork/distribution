@@ -376,6 +376,7 @@ export STEAMOS_PKGS="acl
 export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   bc
                   zenity
+		  ryzenadj
                   steamfork-device-support
                   steamfork-customizations-jupiter
 		  steamfork-keyring
