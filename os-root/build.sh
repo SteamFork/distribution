@@ -176,12 +176,6 @@ fi
 
 for binary in ${POSTCOPY_BIN_EXECUTION}; do arch-chroot ${ROOT_WORKDIR} $binary && rm -rf ${ROOT_WORKDIR}/usr/bin/$binary; done
 echo -e "${PACMAN_ONLOAD}" > ${ROOT_WORKDIR}/usr/lib/systemd/system/var-lib-pacman.mount
-arch-chroot ${ROOT_WORKDIR} systemctl enable ${CHROOT_SCRIPTS}
-arch-chroot ${ROOT_WORKDIR} systemctl disable ${DISABLED_SERVICES}
-for SERVICE in ${DISABLED_SERVICES}
-do
-  arch-chroot ${ROOT_WORKDIR} rm -f /usr/lib/systemd/system/multi-user.target.wants/${SERVICE}
-done
 
 echo "(4.5/6) Generating en_US.UTF-8 locale..."
 sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' ${ROOT_WORKDIR}/etc/locale.gen
@@ -189,26 +183,33 @@ arch-chroot ${ROOT_WORKDIR} locale-gen
 arch-chroot ${ROOT_WORKDIR} localectl set-locale LANG=en_US.UTF-8
 arch-chroot ${ROOT_WORKDIR} mkdir -p /etc/lib/steamfork_hwsupport/customdevicequirks
 
-for CHROOT_SCRIPT in ${CHROOT_SCRIPTS[@]}
+for ENABLED_SERVICE in ${ENABLED_SERVICES[@]}
 do
-  echo "(4.6/6) Enable service ${CHROOT_SCRIPT}"
-  arch-chroot ${ROOT_WORKDIR} systemctl enable ${CHROOT_SCRIPT}
+  echo "(4.6/6) Enable service ${ENABLED_SERVICE}"
+  arch-chroot ${ROOT_WORKDIR} systemctl enable ${ENABLED_SERVICE}
 done
 
-echo "(4.7/6) Enable nopasswd sudo (req by steam and other tools)"
+for DISABLED_SERVICE in ${DISABLED_SERVICES[@]}
+do
+  echo "(4.7/6) Disable service ${DISABLED_SERVICE}"
+  arch-chroot ${ROOT_WORKDIR} systemctl disable ${DISABLED_SERVICE}
+  arch-chroot ${ROOT_WORKDIR} rm -f /usr/lib/systemd/system/multi-user.target.wants/${DISABLED_SERVICE}
+done
+
+echo "(4.8/6) Enable nopasswd sudo (req by steam and other tools)"
   arch-chroot ${ROOT_WORKDIR} sed -i 's~ALL$~NOPASSWD: ALL~g' /etc/sudoers.d/wheel
 
-echo "(4.8/6) Patch Audio output to add generic devices to the filter."
+echo "(4.9/6) Patch Audio output to add generic devices to the filter."
   arch-chroot ${ROOT_WORKDIR} sed -i '/matches = \[/a \      {\n\        node.name = "~alsa_output.*"\n\        alsa.card_name = "HD-Audio Generic"\n\      }' /usr/share/wireplumber/hardware-profiles/valve-jupiter/wireplumber.conf.d/alsa-card1.conf
 
-echo "(4.9/6) Fix runtime audio configuration."
+echo "(4.10/6) Fix runtime audio configuration."
   for AUDIO_SERVICE in pipewire wireplumber
   do
     arch-chroot ${ROOT_WORKDIR} sed -i 's~multi-user.target~local-fs.target~g' /usr/lib/systemd/system/${AUDIO_SERVICE}-sysconf.service
     arch-chroot ${ROOT_WORKDIR} systemctl enable ${AUDIO_SERVICE}-sysconf.service
   done
 
-echo "(4.10/6) Delete conflicting files..."
+echo "(4.11/6) Delete conflicting files..."
 # Delete conflicting files
 for CONFLICT in etc/X11/Xsession.d/50rotate-screen \
                 etc/sddm.conf.d/steamdeck.conf

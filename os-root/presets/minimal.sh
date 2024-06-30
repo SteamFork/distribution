@@ -9,7 +9,7 @@ echo -e ${RELEASETAG} > /tmp/builder-releasetag
 echo -e "$(echo ${DISTRO_NAME} | tr '[:upper:]' '[:lower:]')_$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')_${RELEASETAG}" > /tmp/build_temp_ver
 export BUILDVER=$(cat /tmp/build_temp_ver)
 export IMAGEFILE="${BUILDVER}"
-export CHROOT_SCRIPTS=( NetworkManager
+export ENABLED_SERVICES=( NetworkManager
                         nix.mount
                         steamos-offload.target
 			fstrim.timer
@@ -26,7 +26,7 @@ export CHROOT_SCRIPTS=( NetworkManager
                         var-lib-systemd-coredump.mount
                         var-log.mount
                         var-tmp.mount )
-export DISABLED_SERVICES=""
+export DISABLED_SERVICES=()
 export PLYMOUTH_THEME=""
 export FINAL_DISTRIB_IMAGE=${BUILDVER}
 export KERNELCHOICE="linux"
