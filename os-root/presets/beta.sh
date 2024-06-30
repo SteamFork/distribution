@@ -14,6 +14,7 @@ export ENABLED_SERVICES=( sddm
                         systemd-timesyncd
                         NetworkManager
 			inputplumber
+			steam-powerbuttond
                         steamos-offload.target
 			fstrim.timer
                         var-lib-pacman.mount
@@ -1036,6 +1037,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   python-setuptools
                   python-wheel
                   ryzenadj
+		  steam-powerbuttond
                   steamfork-customizations-jupiter
                   steamfork-device-support
 		  steamfork-keyring
