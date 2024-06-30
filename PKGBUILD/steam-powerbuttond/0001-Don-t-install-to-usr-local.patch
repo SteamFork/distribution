@@ -1,0 +1,69 @@
+From 44a6364505ee9ad017fa05e7c889facf5ce3e389 Mon Sep 17 00:00:00 2001
+From: fewtarius <fewtarius@steamfork.org>
+Date: Sun, 30 Jun 2024 17:11:22 +0000
+Subject: [PATCH] Don't install to usr/local.
+
+---
+ .gitignore                 | 2 +-
+ bazzite_install.sh         | 4 ++--
+ install.sh                 | 4 ++--
+ steam-powerbuttond.service | 2 +-
+ 4 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index cabce09..1df36c6 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1 +1 @@
+-usr/local/bin/*
++usr/bin/*
+diff --git a/bazzite_install.sh b/bazzite_install.sh
+index a29c01d..daa044d 100755
+--- a/bazzite_install.sh
++++ b/bazzite_install.sh
+@@ -6,9 +6,9 @@ git clone https://github.com/aarron-lee/steam-powerbuttond.git && cd steam-power
+ 
+ chmod +x ./steam-powerbuttond
+ 
+-sudo cp ./steam-powerbuttond /usr/local/bin/
++sudo cp ./steam-powerbuttond /usr/bin/
+ 
+-sudo chcon -u system_u -r object_r --type=bin_t /usr/local/bin/steam-powerbuttond
++sudo chcon -u system_u -r object_r --type=bin_t /usr/bin/steam-powerbuttond
+ 
+ sudo systemctl disable --now steam-powerbuttond
+ 
+diff --git a/install.sh b/install.sh
+index be7a2b2..237ab39 100755
+--- a/install.sh
++++ b/install.sh
+@@ -2,11 +2,11 @@
+ 
+ sudo systemctl disable --now steam-powerbuttond
+ 
+-sudo rm /usr/local/bin/steam-powerbuttond
++sudo rm /usr/bin/steam-powerbuttond
+ sudo rm /etc/systemd/system/steam-powerbuttond.service 
+ 
+ chmod +x ./steam-powerbuttond
+-sudo cp ./steam-powerbuttond /usr/local/bin
++sudo cp ./steam-powerbuttond /usr/bin
+ sudo cp ./steam-powerbuttond.service /etc/systemd/system
+ 
+ sudo systemctl daemon-reload
+diff --git a/steam-powerbuttond.service b/steam-powerbuttond.service
+index 7f7f1dd..324cab8 100755
+--- a/steam-powerbuttond.service
++++ b/steam-powerbuttond.service
+@@ -5,7 +5,7 @@ After=graphical-session.target
+ [Service]
+ Restart=always
+ RestartSec=5
+-ExecStart=/usr/local/bin/steam-powerbuttond
++ExecStart=/usr/bin/steam-powerbuttond
+ 
+ [Install]
+ WantedBy=multi-user.target
+-- 
+2.43.2
+
