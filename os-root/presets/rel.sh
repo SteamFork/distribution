@@ -358,6 +358,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-libxfixes
                     lib32-libxi
                     lib32-libxinerama
+		    lib32-libxkbcommon
                     lib32-libxml2
                     lib32-libxshmfence
                     lib32-libxss
