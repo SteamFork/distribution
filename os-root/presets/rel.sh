@@ -13,6 +13,8 @@ export ENABLED_SERVICES=( sddm
                         bluetooth
                         systemd-timesyncd
                         NetworkManager
+			inputplumber
+			steam-powerbuttond
                         steamos-offload.target
 			fstrim.timer
                         var-lib-pacman.mount
@@ -1016,6 +1018,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   bc
                   ectool
                   hunspell-en_us
+		  inputplumber
                   kdegraphics-thumbnailers
                   kwrite
                   lib32-vulkan-mesa-layers
@@ -1035,6 +1038,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   python-setuptools
                   python-wheel
                   ryzenadj
+		  steam-powerbuttond
                   steamfork-customizations-jupiter
                   steamfork-device-support
 		  steamfork-keyring
@@ -1050,4 +1054,4 @@ export PACMAN_ONLOAD="[Unit]\nDescription=${DISTRO_NAME} onload - /var/lib/pacma
 export MKNEWDIR="nix"
 export FSTAB="\nLABEL=${OS_FS_PREFIX}_root /          btrfs subvol=rootfs/${BUILDVER},compress-force=zstd:1,discard,noatime,nodiratime 0 0\nLABEL=${OS_FS_PREFIX}_root /${OS_FS_PREFIX}_root btrfs rw,compress-force=zstd:1,discard,noatime,nodiratime,nodatacow 0 0\nLABEL=${OS_FS_PREFIX}_var /var       ext4 rw,relatime 0 0\nLABEL=${OS_FS_PREFIX}_home /home      ext4 rw,relatime 0 0\n"
 export IMAGE_HOSTNAME="steamfork"
-export POSTCOPY_BIN_EXECUTION="setup-handycon"
+export POSTCOPY_BIN_EXECUTION=""
