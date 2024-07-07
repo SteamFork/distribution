@@ -13,9 +13,8 @@ fi
 SCRIPT="$(realpath "${0}")"
 IMAGE_DIR="${IMAGE_DIR}/${RELEASETYPE}/images"
 WORK_DIR="${WORK_DIR}/image"
-BUILD_VER="${BUILD_VER:-$(date +%Y%m%d)}"
 
-export IMAGE_DIR WORK_DIR BUILD_VER
+export IMAGE_DIR WORK_DIR
 
 cat <<EOF
 BUILD INFO:
