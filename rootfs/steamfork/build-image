@@ -179,7 +179,6 @@ if [[ -d "${SCRIPTPATH}/postcopy" ]]; then
 	cp -r ${SCRIPTPATH}/postcopy/* ${ROOT_WORKDIR}
 fi
 
-for dirs in ${MKNEWDIR}; do mkdir ${ROOT_WORKDIR}/$dirs; done
 if [[ -n "$PLYMOUTH_THEME" ]]; then
 	echo "Setting $PLYMOUTH_THEME theme for plymouth bootsplash..."
 	arch-chroot ${ROOT_WORKDIR} plymouth-set-default-theme -R $PLYMOUTH_THEME
