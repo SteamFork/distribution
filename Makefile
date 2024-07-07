@@ -8,7 +8,7 @@ export IMAGE_DIR	:= ${BUILD_DIR}/release/images
 export REPO_DIR		:= ${BUILD_DIR}/release/repos
 export BUILD_VER	:= $(shell date +%Y%m%d.%H%M.%S)
 
-world: packages-local packages-aur packages-sync image-minimal image-rel images-sync
+world: packages-local packages-aur packages-sync images-minimal images-rel images-sync
 
 upload: packages-sync images-sync
 
