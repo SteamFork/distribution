@@ -24,11 +24,11 @@ puts "Found device \"${DEVICE_NAME}\"..."
 case ${DEVICE_NAME} in
   *Jupiter*)
     export GAMESCOPE_RES="-w 1280 -h 800"
-    export STEAMFORK_X11_ROTATION=right
+    export X11_ROTATION=right
   ;;
   *Gallileo*)
     export GAMESCOPE_RES="-w 1280 -h 800"
-    export STEAMFORK_X11_ROTATION=right
+    export X11_ROTATION=right
   ;;
   *)
     for QUIRKPATH in /etc/lib/steamfork_hwsupport/customdevicequirks /etc/lib/steamfork_hwsupport/devicequirks

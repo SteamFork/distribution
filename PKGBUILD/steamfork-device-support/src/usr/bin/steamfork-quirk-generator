@@ -16,6 +16,9 @@ Options:
     --gamescope_displaysize: (1280x720)
         Forces the display resolution to the specified size, can significantly improve performance.
 
+    --gamescope_display: (eDP-1)
+        Forces gamescope to use the defined display for output.
+
   Desktop options:
     --desktop_rotation: (left, right, normal, inverted)
         Rotates the internal display while in desktop mode.
@@ -27,7 +30,7 @@ Options:
         Adds additional GRUB options the next time the bootloader is built.
 
 Example:
-  steamfork-quirk-generator --gamescope_rotation left  --gamescope_resolution 1280x720 --gamescope_displaysize 1280x720 --desktop_rotation left --grub_additional_options "amd_pstate=active iomem=relaxed"
+  steamfork-quirk-generator --gamescope_rotation left  --gamescope_resolution 1280x720 --gamescope_displaysize 1280x720 --gamescope_display eDP-1 --desktop_rotation left --grub_additional_options "amd_pstate=active iomem=relaxed"
 EOF
 }
 
@@ -71,6 +74,17 @@ do
                 GAMESCOPE_RESOLUTION="${GAMESCOPE_RESOLUTION} -W $(echo ${2} | cut -d 'x' -f 1) -H $(echo ${2} | cut -d 'x' -f 2)"
             else
                 echo "Resolution must be specified like this: 1920x1080"
+                exit 0
+            fi
+            shift # past argument
+            shift # past value
+        ;;
+        --gamescope_display)
+            if [ -n "${2}" ]
+            then
+	        GAMESCOPE_DISPLAY="${2}"
+            else
+                echo "Display must be specified like this: eDP-1"
                 exit 0
             fi
             shift # past argument
@@ -132,9 +146,13 @@ if [ ! -z "${GAMESCOPE_RESOLUTION}" ]
 then
     echo -e "export GAMESCOPE_RES=\"${GAMESCOPE_RESOLUTION}\""
 fi
+if [ ! -z "${GAMESCOPE_DISPLAY}" ]
+then
+    echo -e "export GAMESCOPE_DISPLAY=\"${GAMESCOPE_DISPLAY}\""
+fi
 if [ ! -z "${XRANDR_ORIENTATION}" ]
 then
-    echo -e "export STEAMFORK_X11_ROTATION=\"${XRANDR_ORIENTATION}\""
+    echo -e "export X11_ROTATION=\"${XRANDR_ORIENTATION}\""
 fi
 if [ ! -z "${STEAMFORK_SUPPORTED_DEVICE}" ]
 then
