@@ -50,7 +50,15 @@ EOF
         IMAGEFILE="$(echo ${IMAGEFILE} | sed 's~_~-~g')"
 	ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/steamfork-images-new; rm -f \$(ls | grep steamfork_${REL}_ | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
         ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/steamfork-images-new/steamfork-installer; rm -f \$(ls | grep steamfork-${REL}- | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
-        rsync -av --progress --stats images/${REL}/steamfork-images/* ${WWWUSER}@${WWWHOST}:${WWWROOT}/steamfork-images-new/
+       while true
+       do
+          rsync -av --progress --stats images/${REL}/steamfork-images/* ${WWWUSER}@${WWWHOST}:${WWWROOT}/steamfork-images-new/
+         if [ $? = 0 ]
+         then
+           break
+         fi
+         sleep 5
+       done
         ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/steamfork-images-new/steamfork-installer/; sha256sum ${IMAGEFILE}-x86_64.iso | tee -a ${IMAGEFILE}-x86_64.iso.sha256"
         ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/steamfork-images-new/steamfork-installer/; ln -sf ${IMAGEFILE}-x86_64.iso steamfork-${REL}-latest-x86_64.iso"
         ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/steamfork-images-new/steamfork-installer/; ln -sf ${IMAGEFILE}-x86_64.iso.sha256 steamfork-${REL}-latest-x86_64.iso.sha256"
