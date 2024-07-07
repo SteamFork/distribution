@@ -23,11 +23,11 @@ DEVICE_NAME="$(/usr/bin/steamfork-device-id)"
 puts "Found device \"${DEVICE_NAME}\"..."
 case ${DEVICE_NAME} in
   *Jupiter*)
-    export STEAMFORK_GAMESCOPE_RES="-w 1280 -h 800"
+    export GAMESCOPE_RES="-w 1280 -h 800"
     export STEAMFORK_X11_ROTATION=right
   ;;
   *Gallileo*)
-    export STEAMFORK_GAMESCOPE_RES="-w 1280 -h 800"
+    export GAMESCOPE_RES="-w 1280 -h 800"
     export STEAMFORK_X11_ROTATION=right
   ;;
   *)
@@ -43,8 +43,8 @@ case ${DEVICE_NAME} in
   ;;
 esac
 
-if [ -z "${STEAMFORK_GAMESCOPE_RES}" ]
+if [ -z "${GAMESCOPE_RES}" ]
 then
     puts "Gamescope resolution data not found, setting default..."
-    export STEAMFORK_GAMESCOPE_RES="-w 1280 -h 720"
+    export GAMESCOPE_RES="-w 1280 -h 720"
 fi

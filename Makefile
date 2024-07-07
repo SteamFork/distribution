@@ -8,6 +8,11 @@ export IMAGE_DIR	:= ${BUILD_DIR}/release/images
 export REPO_DIR		:= ${BUILD_DIR}/release/repos
 export BUILD_VER	:= $(shell date +%Y%m%d.%H%M.%S)
 
+ifeq (package,$(firstword $(MAKECMDGOALS)))
+  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  $(eval $(RUN_ARGS):;@:)
+endif
+
 world: packages-local packages-aur packages-sync images-minimal images-rel images-sync
 
 upload: packages-sync images-sync
@@ -44,6 +49,9 @@ packages-aur:
 	${SCRIPT_DIR}/mkpackage --repo aur ryzenadj
 	${SCRIPT_DIR}/mkpackage --repo aur binder_linux-dkms
 	${SCRIPT_DIR}/mkpackage --repo aur wlr-randr
+
+package:
+	${SCRIPT_DIR}/mkpackage $(RUN_ARGS)
 
 packages-sync:
 	${SCRIPT_DIR}/sync repo

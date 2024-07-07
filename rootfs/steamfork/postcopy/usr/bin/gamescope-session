@@ -261,18 +261,23 @@ else
 fi
 
 source steamfork-devicequirk-set
+if [ -z "${GAMESCOPE_DISPLAY}" ]
+then
+  GAMESCOPE_DISPLAY="eDP-1"
+fi
+
 gamescope \
 	--generate-drm-mode fixed \
 	--xwayland-count 2 \
-	${STEAMFORK_GAMESCOPE_ADDITIONAL_OPTIONS} \
-	${STEAMFORK_GAMESCOPE_RES} \
+	${GAMESCOPE_ADDITIONAL_OPTIONS} \
+	${GAMESCOPE_RES} \
 	--default-touch-mode 4 \
 	--hide-cursor-delay 3000 \
 	--max-scale 2 \
 	--fade-out-duration 200 \
 	--cursor-scale-height 720 \
 	-e -R "$socket" -T "$stats" \
-	-O '*',eDP-1 \
+	-O '*',${GAMESCOPE_DISPLAY} \
 	"${mura_args[@]}" \
 	&
 gamescope_pid="$!"
