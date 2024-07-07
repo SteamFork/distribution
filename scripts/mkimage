@@ -1,0 +1,77 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
+
+# If we don't define a release type, assume it's a stable release.
+if [ -n "${1}" ]
+then
+  RELEASETYPE="${1}"
+else
+  RELEASETYPE="rel"
+fi
+
+SCRIPT="$(realpath "${0}")"
+IMAGE_DIR="${IMAGE_DIR}/${RELEASETYPE}/images"
+WORK_DIR="${WORK_DIR}/image"
+BUILD_VER="${BUILD_VER:-$(date +%Y%m%d)}"
+
+export IMAGE_DIR WORK_DIR BUILD_VER
+
+cat <<EOF
+BUILD INFO:
+===========================================================
+SHELL: "${SHELL}"
+BUILD_DIR: "${BUILD_DIR}"
+BUILD_VER: "${BUILD_VER}"
+INSTALLER_DIR: "${INSTALLER_DIR}"
+OS_DIR: "${OS_DIR}"
+SCRIPT_DIR: "${SCRIPT_DIR}"
+WORK_DIR: "${WORK_DIR}"
+IMAGE_DIR: "${IMAGE_DIR}"
+REPO_DIR: "${REPO_DIR}"
+
+EOF
+
+# Builds are executed via automation using a minimal SteamFork installation.
+if [ -f "/usr/bin/steamos-readonly" ]
+then
+  sudo steamos-readonly disable
+fi
+
+function cleanup() {
+  sudo umount ${WORK_DIR}/buildwork/rootfs_mnt  2>/dev/null ||:
+  sudo rm -rf	${IMAGE_DIR} \
+		${INSTALLER_DIR}/airootfs/etc/install.image \
+		${INSTALLER_DIR}/buildinfo \
+		/tmp/buildinfo \
+		${INSTALLER_DIR}/packages.x86_64 \
+		${WORK_DIR}/image-build
+}
+
+# Clean up from any previous builds.
+cleanup
+
+# Update cache
+sudo pacman -Sy
+
+# If we have an alternate package set, use it.
+if [ -e "${INSTALLER_DIR}/package_lists/${RELEASETYPE}.x86_64" ]
+then
+  PACKAGESET="${RELEASETYPE}"
+else
+  PACKAGESET="full"
+fi
+cp -f ${INSTALLER_DIR}/package_lists/${PACKAGESET}.x86_64 ${INSTALLER_DIR}/packages.x86_64
+
+# Build the SteamFork image
+sudo rootfs/steamfork/build-image --flavor ${RELEASETYPE} --deployment_rel ${RELEASETYPE} --snapshot_ver "${BUILD_VER}" --workdir "${WORK_DIR}" --output-dir "${IMAGE_DIR}" --add-release
+
+# Prep for the installation image
+source ${IMAGE_DIR}/latest_${RELEASETYPE}.releasemeta
+sudo cp ${IMAGE_DIR}/latest_${RELEASETYPE}.releasemeta ${IMAGE_DIR}/buildinfo
+sudo ln -sf ${IMAGE_DIR}/latest_${RELEASETYPE}.releasemeta /tmp/buildinfo
+echo ${IMAGEFILE} | sudo tee ${IMAGE_DIR}/currentcandidate
+${INSTALLER_DIR}/getlatestbuild.sh || exit 1
+
+# Build the installation image
+sudo mkarchiso -v -w ${WORK_DIR}/image-build -o ${IMAGE_DIR}/installer ${INSTALLER_DIR}

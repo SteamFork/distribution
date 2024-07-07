@@ -37,43 +37,43 @@ then
 fi
 
 BUILDUSER=${USER}
-WORKDIR="$(pwd)/packages/build-${1}"
-REPODIR="$(pwd)/packages/steamfork/${RELEASETYPE}"
+WORK_DIR="${WORK_DIR}/packages/${1}"
+REPO_DIR="${REPO_DIR}/${RELEASETYPE}"
 
 sudo steamos-readonly disable
-sudo rm -rf /var/lib/pacman/db.lck ${WORKDIR}
+sudo rm -rf /var/lib/pacman/db.lck ${WORK_DIR}
 
-sudo mkdir -p ${WORKDIR} ${REPODIR} 2>/dev/null
-sudo chown ${BUILDUSER}:${BUILDUSER} ${WORKDIR} ${REPODIR}
+sudo mkdir -p ${WORK_DIR} ${REPO_DIR} 2>/dev/null
+sudo chown ${BUILDUSER}:${BUILDUSER} ${WORK_DIR} ${REPO_DIR}
 
-for STALE_PACKAGE in ${REPODIR}/${1}-[0-9]*
+for STALE_PACKAGE in ${REPO_DIR}/${1}-[0-9]*
 do
   rm -f "${STALE_PACKAGE}"
 done
 
 case ${PKGSOURCE} in
   aur)
-    git clone --depth=1 https://aur.archlinux.org/${1}.git ${WORKDIR}
+    git clone --depth=1 https://aur.archlinux.org/${1}.git ${WORK_DIR}
   ;;
   sf)
-    git clone --depth=1 git@github.com:steamfork/${1}.git ${WORKDIR}
+    git clone --depth=1 git@github.com:steamfork/${1}.git ${WORK_DIR}
   ;;
   local)
     if [ -d "$(pwd)/PKGBUILD/${1}" ]
     then
-      cp -r "$(pwd)/PKGBUILD/${1}/"* ${WORKDIR}
+      cp -r "$(pwd)/PKGBUILD/${1}/"* ${WORK_DIR}
     else
       echo "No local package, don't know what to do."
       exit 1
     fi
   ;;
   *)
-    echo "build-package.sh type repo"
+    echo "scripts/mkpackage type repo"
     exit 1
   ;;
 esac
 
-PIKAUR_CMD="PKGDEST=${REPODIR} pikaur --noconfirm --rebuild --build-gpgdir /etc/pacman.d/gnupg -S -P ${WORKDIR}/PKGBUILD"
+PIKAUR_CMD="PKGDEST=${REPO_DIR} pikaur --noconfirm --rebuild --build-gpgdir /etc/pacman.d/gnupg -S -P ${WORK_DIR}/PKGBUILD"
 PIKAUR_RUN=(bash -c "${PIKAUR_CMD}")
 "${PIKAUR_RUN[@]}"
 # if aur package is not successfully built, exit
@@ -82,4 +82,4 @@ if [ $? -ne 0 ]; then
     exit -1
 fi
 # remove any epoch (:) in name, replace with -- since not allowed in artifacts
-find ${REPODIR}/*.pkg.tar* -type f -name '*:*' -execdir bash -c 'mv "$1" "${1//:/--}"' bash {} \;
+find ${REPO_DIR}/*.pkg.tar* -type f -name '*:*' -execdir bash -c 'mv "$1" "${1//:/--}"' bash {} \;

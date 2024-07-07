@@ -2,11 +2,10 @@
 rm -rf /tmp/builder-releasetag
 rm -rf /tmp/build_temp_ver
 export DISTRO_NAME="SteamFork"
-export OS_CODENAME="Beta"
+export OS_CODENAME="Rel"
 export OS_FS_PREFIX="sf"
-export RELEASETAG=$(date +%Y%m%d.%H%M.%S)
-echo -e ${RELEASETAG} > /tmp/builder-releasetag
-echo -e "$(echo ${DISTRO_NAME} | tr '[:upper:]' '[:lower:]')_$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')_${RELEASETAG}" > /tmp/build_temp_ver
+echo -e ${RELEASE_TAG} > /tmp/builder-releasetag
+echo -e "$(echo ${DISTRO_NAME} | tr '[:upper:]' '[:lower:]')_$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')_${RELEASE_TAG}" > /tmp/build_temp_ver
 export BUILDVER=$(cat /tmp/build_temp_ver)
 export IMAGEFILE="${BUILDVER}"
 export ENABLED_SERVICES=( sddm
@@ -18,8 +17,8 @@ export ENABLED_SERVICES=( sddm
                         steamos-offload.target
 			fstrim.timer
                         var-lib-pacman.mount
-                        nix.mount
                         etc.mount
+                        nix.mount
                         opt.mount
                         root.mount
                         srv.mount
@@ -1047,9 +1046,9 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   wlr-randr
                   xorg-xwayland
                   zenity"
-export OS_RELEASE="NAME=\"SteamOS\"\nPRETTY_NAME="SteamOS"\nVERSION_CODENAME=holo\nID=steamos\nID_LIKE=arch\nANSI_COLOR=\"1;35\"\nHOME_URL=\"https://www.steampowered.com/\"\nDOCUMENTATION_URL=\"https://github.com/steamfork-staging/\"\nSUPPORT_URL=\"https://github.com/steamfork-staging/faq\"\nBUG_REPORT_URL=\"https://github.com/steamfork-staging/issuetracker\"\nLOGO=steamos\nVERSION_ID=\"${SNAPSHOTVERSION}\"\nVARIANT_ID=\"$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')\"\nBUILD_ID=\"${RELEASETAG}\""
-export STEAMFORK_RELEASE="IMAGE_ID=\"${BUILDVER}\"\nOS_TAG=${RELEASETAG}\nRELEASETYPE=$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')\nISINTERNAL=no"
-export UPDATE_METADATA="IMAGEFILE=\"${IMAGEFILE}\"\nSTAGING_OS_TAG=${RELEASETAG}\nSTAGING_RELEASETYPE=$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')\nSTAGING_ISINTERNAL=no"
+export OS_RELEASE="NAME=\"SteamOS\"\nPRETTY_NAME="SteamOS"\nVERSION_CODENAME=holo\nID=steamos\nID_LIKE=arch\nANSI_COLOR=\"1;35\"\nHOME_URL=\"https://www.steampowered.com/\"\nDOCUMENTATION_URL=\"https://github.com/steamfork-staging/\"\nSUPPORT_URL=\"https://github.com/steamfork-staging/faq\"\nBUG_REPORT_URL=\"https://github.com/steamfork-staging/issuetracker\"\nLOGO=steamos\nVERSION_ID=\"${SNAPSHOTVERSION}\"\nVARIANT_ID=\"$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')\"\nBUILD_ID=\"${RELEASE_TAG}\""
+export STEAMFORK_RELEASE="IMAGE_ID=\"${BUILDVER}\"\nOS_TAG=${RELEASE_TAG}\nRELEASETYPE=$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')\nISINTERNAL=no"
+export UPDATE_METADATA="IMAGEFILE=\"${IMAGEFILE}\"\nSTAGING_OS_TAG=${RELEASE_TAG}\nSTAGING_RELEASETYPE=$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')\nSTAGING_ISINTERNAL=no"
 export PACMAN_ONLOAD="[Unit]\nDescription=${DISTRO_NAME} onload - /var/lib/pacman\n\n[Mount]\nWhat=/${OS_FS_PREFIX}_root/rootfs/${FINAL_DISTRIB_IMAGE}/var/lib/pacman\nWhere=/var/lib/pacman\nType=none\nOptions=bind\n\n[Install]\nWantedBy=steamos-offload.target"
 export MKNEWDIR="nix"
 export FSTAB="\nLABEL=${OS_FS_PREFIX}_root /          btrfs subvol=rootfs/${BUILDVER},compress-force=zstd:1,discard,noatime,nodiratime 0 0\nLABEL=${OS_FS_PREFIX}_root /${OS_FS_PREFIX}_root btrfs rw,compress-force=zstd:1,discard,noatime,nodiratime,nodatacow 0 0\nLABEL=${OS_FS_PREFIX}_var /var       ext4 rw,relatime 0 0\nLABEL=${OS_FS_PREFIX}_home /home      ext4 rw,relatime 0 0\n"

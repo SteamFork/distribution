@@ -1,9 +1,5 @@
 #!/bin/bash
 
-cd /root
-cp -R install-scripts/* /
-cd -
-
 plymouth-set-default-theme -R steamos
 
 chmod +x -R /usr/bin /etc/lib /etc/X11 /home/liveuser/Desktop

@@ -1,0 +1,88 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
+
+if [ -f "${HOME}/.SteamFork/options" ]
+then
+ source "${HOME}/.SteamFork/options"
+fi
+
+for KEY in WWWHOST WWWUSER WWWROOT SIGNKEY REPO_DIR IMAGE_DIR
+do
+  if [ -z "${!KEY}" ]
+  then
+    echo "Export ${KEY} before using this script."
+    exit 1
+  fi
+done
+
+case ${1} in
+  pkgs|repo)
+    for REPO in rel minimal
+    do
+      WORKING_REPO="${REPO_DIR}/${REPO}"
+      if [ -d "${WORKING_REPO}" ]
+      then
+        cd ${WORKING_REPO}
+        repo-add --sign -k ${SIGNKEY} steamfork.db.tar.gz *zst
+        cd -
+        ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}; ln -sf ${WWWROOT}/repos/${REPO} steamfork-${REPO}"
+      fi
+    done
+    rsync -av --delete --progress --stats ${REPO_DIR} ${WWWUSER}@${WWWHOST}:${WWWROOT}/
+    ssh -ttq ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/"
+  ;;
+  os)
+      cat <<EOF >/tmp/index.html
+<head>
+<meta name="description" content="SteamFork Linux distribution image hosting.">
+<meta name="keywords" content="SteamFork, SteamOS, HoloISO, Linux, Gaming, Handheld">
+<body>
+EOF
+    ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/; rm -rf images-new ||:; cp -rf images images-new"
+    for REL in rel minimal
+    do
+      IMAGE_DIR="${IMAGE_DIR}/${REL}/images"
+      if [ -e "${IMAGE_DIR}/latest_${REL}.releasemeta" ]
+      then
+	echo "Syncing ${REL}."
+        source ${IMAGE_DIR}/latest_${REL}.releasemeta
+        IMAGEFILE="$(echo ${IMAGEFILE} | sed 's~_~-~g')"
+	ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new; rm -f \$(ls | grep steamfork_${REL}_ | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
+        ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer; rm -f \$(ls | grep steamfork-${REL}- | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
+       while true
+       do
+          rsync -av --progress --stats images/${REL}/images/* ${WWWUSER}@${WWWHOST}:${WWWROOT}/images-new/
+         if [ $? = 0 ]
+         then
+           break
+         fi
+         sleep 5
+       done
+        ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; sha256sum ${IMAGEFILE}-x86_64.iso | tee -a ${IMAGEFILE}-x86_64.iso.sha256"
+        ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso steamfork-${REL}-latest-x86_64.iso"
+        ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso.sha256 steamfork-${REL}-latest-x86_64.iso.sha256"
+	echo "Add ${REL} to index."
+        cat <<EOF >>/tmp/index.html
+<p>
+SteamFork v${STAGING_OS_TAG} (${REL}) installation image: <a href="/images/installer/${IMAGEFILE}-x86_64.iso">${IMAGEFILE}-x86_64.iso</a>
+<br>
+SteamFork v${STAGING_OS_TAG} (${REL}) checksum: <a href="/images/installer/${IMAGEFILE}-x86_64.iso.sha256">${IMAGEFILE}-x86_64.iso.sha256</a>
+<p>
+EOF
+      fi
+    done
+cat <<EOF >>/tmp/index.html
+</body>
+</head>
+EOF
+    scp /tmp/index.html ${WWWUSER}@${WWWHOST}:${WWWROOT}/images-new/installer/
+    ssh -ttq ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/images-new"
+    ssh -ttq ${WWWUSER}@${WWWHOST} "mv ${WWWROOT}/images ${WWWROOT}/images-old; mv ${WWWROOT}/images-new/ ${WWWROOT}/images; rm -rf ${WWWROOT}/images-old"
+  ;;
+  *)
+    ./scripts/sync repo
+    ./scripts/sync os
+  ;;
+esac
+

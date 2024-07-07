@@ -20,21 +20,25 @@ case $key in
 		BUILD_MANIFEST_ID=$(echo $2 | cut -d '-' -f 1)
 		BRANCH_OVERRIDES=$(echo $2 | cut -d '-' -f 2)
 	fi
+	echo "Manifest ID: ${BUILD_MANIFEST_ID}"
 	shift
 	shift
 	;;
 	--deployment_rel)
 	RELEASETYPE="$2.sh"
+	echo "Deployment: ${RELEASETYPE}"
 	shift
 	shift
 	;;
 	--snapshot_ver)
 	SNAPSHOTVERSION="$2"
+	echo "Build version: ${SNAPSHOTVERSION}"
 	shift
 	shift
 	;;
 	--workdir)
 	WORKDIR="$2/buildwork"
+	echo "Working directory: ${WORKDIR}"
 	shift
 	shift
 	;;
@@ -52,8 +56,8 @@ case $key in
 	;;
     --add-release)
 	IS_HOME_BUILD=true
-	if [[ ! "${OUTPUT}" =~ "steamfork-images" ]]; then
-		echo "Specific output directories should be preceeded with steamfork-images for release images."
+	if [[ ! "${OUTPUT}" =~ "images" ]]; then
+		echo "Specific output directories should be preceeded with images for release images."
 		exit 255
 	fi
 	shift
@@ -104,7 +108,14 @@ if [[ -z "${WORKDIR}" ]]; then
 	exit 0
 fi
 
-source $BUILD_MANIFEST
+if [ -n "${SNAPSHOTVERSION}" ]
+then
+  export RELEASE_TAG=${SNAPSHOTVERSION}
+else
+  export RELEASE_TAG=$(date +%Y%m%d.%H%M.%S)
+fi
+
+source ${BUILD_MANIFEST}
 PACCFG=${SCRIPTPATH}/pacman-build-${BUILD_MANIFEST_ID}.conf
 
 

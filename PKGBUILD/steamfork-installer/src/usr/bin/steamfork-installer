@@ -62,7 +62,7 @@ ROOTLOCATION=/tmp/sf_root
 INSTALLLOCATION=${ROOTLOCATION}/rootfs
 HOMELOCATION_TEMP=/tmp/sf_home
 SNAPSHOT_FUTURELOC=${HOMELOCATION_TEMP}/.steamos/installcontainer
-SUBVOL=$(ls /etc/steamforkinstall | grep steamfork | sed -s 's/.img.zst//g')
+SUBVOL=$(ls /etc/install.image | grep steamfork | sed -s 's/.img.zst//g')
 SUBVOLLOCATION=/tmp/subvol
 	
 echo ${DEVICE} | grep '^/dev' >/dev/null || DEVICE="/dev/${DEVICE}"
