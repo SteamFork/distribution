@@ -40,6 +40,7 @@ packages-local:
 	${SCRIPT_DIR}/mkpackage --repo local ectool
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-customizations-jupiter
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-device-support
+	${SCRIPT_DIR}/mkpackage --repo local steamfork-installer
 	${SCRIPT_DIR}/mkpackage --repo local webrtc-audio-processing
 	${SCRIPT_DIR}/mkpackage --repo local inputplumber
 	${SCRIPT_DIR}/mkpackage --repo local steam-powerbuttond
