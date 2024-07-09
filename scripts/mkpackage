@@ -10,7 +10,7 @@ do
   KEY="$1"
   case ${KEY} in
       --branch)
-      RELEASETYPE="$2"
+      RELEASE_TYPE="$2"
       shift # past argument
       shift # past value
       ;;
@@ -26,9 +26,9 @@ do
   esac
 done
 
-if [ -z "${RELEASETYPE}" ]
+if [ -z "${RELEASE_TYPE}" ]
 then
-  RELEASETYPE="rel"
+  RELEASE_TYPE="rel"
 fi
 
 if [ -z "${PKGSOURCE}" ]
@@ -38,7 +38,7 @@ fi
 
 BUILDUSER=${USER}
 WORK_DIR="${WORK_DIR}/packages/${1}"
-REPO_DIR="${REPO_DIR}/${RELEASETYPE}"
+REPO_DIR="${REPO_DIR}/${RELEASE_TYPE}"
 
 sudo steamos-readonly disable
 sudo rm -rf /var/lib/pacman/db.lck ${WORK_DIR}

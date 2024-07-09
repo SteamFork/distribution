@@ -8,25 +8,24 @@ export IMAGE_DIR	:= ${BUILD_DIR}/release/images
 export REPO_DIR		:= ${BUILD_DIR}/release/repos
 export BUILD_VER	:= $(shell date +%Y%m%d.%H%M.%S)
 
-ifeq (package,$(firstword $(MAKECMDGOALS)))
-  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-  $(eval $(RUN_ARGS):;@:)
-endif
+RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+$(eval $(RUN_ARGS):;@:)
 
-world: packages-local packages-aur packages-sync images-minimal images-rel images-sync
+world: packages-local packages-aur packages-sync images images-sync
 
 upload: packages-sync images-sync
 
 clean:
 	rm -rf ${WORK_DIR} ${IMAGE_DIR} ${REPO_DIR}
 
-images-all: images-minimal images-rel
+images-all: images
 
-images-minimal:
-	${SCRIPT_DIR}/mkimage minimal $@
+image:
+	${SCRIPT_DIR}/mkimage $(RUN_ARGS)
 
-images-rel:
-	${SCRIPT_DIR}/mkimage rel $@
+images:
+	${SCRIPT_DIR}/mkimage minimal $(RUN_ARGS)
+	${SCRIPT_DIR}/mkimage rel $(RUN_ARGS)
 
 images-sync:
 	${SCRIPT_DIR}/sync os

@@ -5,13 +5,13 @@
 # If we don't define a release type, assume it's a stable release.
 if [ -n "${1}" ]
 then
-  RELEASETYPE="${1}"
+  RELEASE_TYPE="${1}"
 else
-  RELEASETYPE="rel"
+  RELEASE_TYPE="rel"
 fi
 
 SCRIPT="$(realpath "${0}")"
-IMAGE_DIR="${IMAGE_DIR}/${RELEASETYPE}/images"
+IMAGE_DIR="${IMAGE_DIR}/${RELEASE_TYPE}/images"
 WORK_DIR="${WORK_DIR}/image"
 
 export IMAGE_DIR WORK_DIR
@@ -22,6 +22,7 @@ BUILD INFO:
 SHELL: "${SHELL}"
 BUILD_DIR: "${BUILD_DIR}"
 BUILD_VER: "${BUILD_VER}"
+RELEASE_TYPE: "${RELEASE_TYPE}"
 INSTALLER_DIR: "${INSTALLER_DIR}"
 OS_DIR: "${OS_DIR}"
 SCRIPT_DIR: "${SCRIPT_DIR}"
@@ -54,21 +55,21 @@ cleanup
 sudo pacman -Sy
 
 # If we have an alternate package set, use it.
-if [ -e "${INSTALLER_DIR}/package_lists/${RELEASETYPE}.x86_64" ]
+if [ -e "${INSTALLER_DIR}/package_lists/${RELEASE_TYPE}.x86_64" ]
 then
-  PACKAGESET="${RELEASETYPE}"
+  PACKAGESET="${RELEASE_TYPE}"
 else
   PACKAGESET="full"
 fi
 cp -f ${INSTALLER_DIR}/package_lists/${PACKAGESET}.x86_64 ${INSTALLER_DIR}/packages.x86_64
 
 # Build the SteamFork image
-sudo rootfs/steamfork/build-image --flavor ${RELEASETYPE} --deployment_rel ${RELEASETYPE} --snapshot_ver "${BUILD_VER}" --workdir "${WORK_DIR}" --output-dir "${IMAGE_DIR}" --add-release
+sudo rootfs/steamfork/build-image --flavor ${RELEASE_TYPE} --deployment_rel ${RELEASE_TYPE} --snapshot_ver "${BUILD_VER}" --workdir "${WORK_DIR}" --output-dir "${IMAGE_DIR}" --add-release
 
 # Prep for the installation image
-source ${IMAGE_DIR}/latest_${RELEASETYPE}.releasemeta
-sudo cp ${IMAGE_DIR}/latest_${RELEASETYPE}.releasemeta ${IMAGE_DIR}/buildinfo
-sudo ln -sf ${IMAGE_DIR}/latest_${RELEASETYPE}.releasemeta /tmp/buildinfo
+source ${IMAGE_DIR}/latest_${RELEASE_TYPE}.releasemeta
+sudo cp ${IMAGE_DIR}/latest_${RELEASE_TYPE}.releasemeta ${IMAGE_DIR}/buildinfo
+sudo ln -sf ${IMAGE_DIR}/latest_${RELEASE_TYPE}.releasemeta /tmp/buildinfo
 echo ${IMAGEFILE} | sudo tee ${IMAGE_DIR}/currentcandidate
 ${INSTALLER_DIR}/getlatestbuild.sh || exit 1
 

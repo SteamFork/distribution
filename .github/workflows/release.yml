@@ -23,11 +23,11 @@ jobs:
       - name: Build Minimal Images
         run: |
           set -e
-          make images-minimal BUILD_VER="${{ steps.version.outputs.version }}"
+          make image minimal BUILD_VER="${{ steps.version.outputs.version }}"
       - name: Build Release Images
         run: |
           set -e
-          make images-rel BUILD_VER="${{ steps.version.outputs.version }}"
+          make image rel BUILD_VER="${{ steps.version.outputs.version }}"
       - name: Image sync
         run: |
           set -e
