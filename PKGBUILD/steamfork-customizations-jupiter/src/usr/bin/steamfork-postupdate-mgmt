@@ -1,9 +1,10 @@
 #!/bin/bash
 
+UPDATE_STAMP="/etc/post-update.last"
 source /etc/os-release
-if [ -e "/etc/post-update" ]
+if [ -e "${UPDATE_STAMP}" ]
 then
-  LAST_UPDATE=$(cat /etc/post-update)
+  LAST_UPDATE="$(cat ${UPDATE_STAMP})"
 fi
 
 if [ ! "${LAST_UPDATE}" = "${BUILD_ID}" ]
@@ -17,5 +18,6 @@ then
     done
   fi
   steamos-readonly enable >>/var/log/update.log 2>&1
+  echo "${BUILD_ID}" >${UPDATE_STAMP}
 fi
 exit 0
