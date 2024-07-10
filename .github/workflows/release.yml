@@ -41,11 +41,11 @@ jobs:
           tag: "${{ steps.tag.outputs.tag }}"
           body: |
             ## Downloads
-            This release contains a snapshot of the repository tree.  Downloadable images are available at [SteamFork.org](https://www.steamfork.org/images/steamfork-installer/) with updates available OTA.  A download link to the latest installation image can be found below.
+            This release contains a snapshot of the repository tree.  Downloadable images are available at [SteamFork.org](https://www.steamfork.org/images/installer/) with updates available OTA.  A download link to the latest installation image can be found below.
 
             | Branch | URL | Checksum |
             | -- | -- | -- |
-            | Stable | [LATEST](https://www.steamfork.org/images/steamfork-installer/steamfork-rel-latest-x86_64.iso) | [CHECKSUM](https://www.steamfork.org/images/steamfork-installer/steamfork-rel-latest-x86_64.iso.sha256) |
+            | Stable | [LATEST](https://www.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [CHECKSUM](https://www.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) |
 
             For installation instructions and other documentation, visit the [main project page](https://github.com/SteamFork).
           prerelease: false

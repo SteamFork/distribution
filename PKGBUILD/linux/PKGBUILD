@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.9.8
-pkgrel=2
+pkgrel=3
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -42,9 +42,6 @@ source=(
   0007-ayaneo-2-headphone-fix.patch
   0012-HACK-add-KConfig-to-enable-driver-specific-color-mgm.patch
   0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
-  0014-drm-Add-GPU-reset-sysfs-event.patch
-  0015-drm-amdgpu-add-work-function-for-GPU-reset-event.patch
-  0016-drm-amdgpu-schedule-GPU-reset-event-work-function.patch
   0020-add-devices-to-oxp-sensors.patch
   0031-IIO-add-aya-neo-tablet-identifier.patch
   0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
@@ -67,9 +64,6 @@ sha256sums=('SKIP'
 '33edff1a51ceb763c47b3ae485f5857a716a1dac9f1e8b65c3b93c6e88a4838f' # 0007-ayaneo-2-headphone-fix.patch
 'f3a54e5bde55f8481cb4e9e3c8fce7a28ae7a7e42208c5f76bdcc6d8dcf6fc08' # 0012-HACK-add-KConfig-to-enable-driver-specific-color-mgm.patch
 '683128d044f4df12dcb0a7b2858075f510d870460dc71f0d60f69df89cf62419' # 0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
-'6cca4901dddae922bf5e697919a5f7be13f6e8b2416602c9393aa120c8a708e0' # 0014-drm-Add-GPU-reset-sysfs-event.patch
-'15e8387d977cf5acff77d8aeb98dc0752930723b60efe3d57d0d7045c27c6ada' # 0015-drm-amdgpu-add-work-function-for-GPU-reset-event.patch
-'06587c52eeb1f7847c2436452a73ea6275393bf3ffacbc8f7c0b0cb6777a3354' # 0016-drm-amdgpu-schedule-GPU-reset-event-work-function.patch
 '7a94728e00d15c59e23ad436bffbd1dd463092a8e6b425c6b59832b41e6c1b11' # 0020-add-devices-to-oxp-sensors.patch
 'd4bc9044e7e3290d6885d08b8360b61744dc4227a723aa178f9041284e062f08' # 0031-IIO-add-aya-neo-tablet-identifier.patch
 '603a97edcfd170674d96d02f1fe01751ccf947ed0673cc5615b1850eb616384b' # 0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
