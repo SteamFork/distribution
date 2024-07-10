@@ -52,7 +52,7 @@ EOF
         ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer; rm -f \$(ls | grep steamfork-${REL}- | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
        while true
        do
-          rsync -av --progress --stats images/${REL}/images/* ${WWWUSER}@${WWWHOST}:${WWWROOT}/images-new/
+         rsync -av --progress --stats ${IMAGE_DIR}/* ${WWWUSER}@${WWWHOST}:${WWWROOT}/images-new/
          if [ $? = 0 ]
          then
            break
