@@ -1,17 +1,21 @@
 #!/bin/bash
 
-steamos-readonly disable 2>/dev/null
-if [[ "$1" == "update" ]]; then
-    steamfork-grub-update
-fi
-
-if [ -d "/etc/post-update.d" ]
+source /etc/os-release
+if [ -e "/etc/post-update" ]
 then
-  for UPDATE in /etc/post-update.d/*
-  do
-    ${UPDATE}
-  done
+  LAST_UPDATE=$(cat /etc/post-update)
 fi
 
-steamos-readonly enable 2>/dev/null
+if [ ! "${LAST_UPDATE}" = "${BUILD_ID}" ]
+then
+  steamos-readonly disable >/var/log/update.log 2>&1
+  if [ -d "/etc/post-update.d" ]
+  then
+    for UPDATE in /etc/post-update.d/*
+    do
+      ${UPDATE} >>/var/log/update.log 2>&1
+    done
+  fi
+  steamos-readonly enable >>/var/log/update.log 2>&1
+fi
 exit 0
