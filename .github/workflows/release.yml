@@ -17,9 +17,12 @@ jobs:
         with:
           clean: false
           ref: "${{ steps.branch.outputs.branch }}"
+      - name: Set the tag
+        id: tag
+        run: echo "tag=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
       - name: Set the version
         id: version
-        run: echo "version=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+        run: echo "version=$(date +'%Y%m%d.%H%M.%S')" >> $GITHUB_OUTPUT
       - name: Build Minimal Images
         run: |
           set -e
@@ -35,7 +38,7 @@ jobs:
       - name: Create a release snapshot.
         uses: ncipollo/release-action@v1
         with:
-          tag: "${{ steps.version.outputs.version }}"
+          tag: "${{ steps.tag.outputs.tag }}"
           body: |
             ## Downloads
             This release contains a snapshot of the repository tree.  Downloadable images are available at [SteamFork.org](https://www.steamfork.org/images/steamfork-installer/) with updates available OTA.  A download link to the latest installation image can be found below.
