@@ -1,7 +1,20 @@
-diff -rupN linux-6.8.7.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linux-6.8.7/drivers/gpu/drm/drm_panel_orientation_quirks.c
---- linux-6.8.7.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c	2024-04-22 21:20:19.661898805 +0000
-+++ linux-6.8.7/drivers/gpu/drm/drm_panel_orientation_quirks.c	2024-04-22 21:22:08.387026459 +0000
-@@ -147,6 +147,12 @@ static const struct drm_dmi_panel_orient
+diff -rupN linux-6.9.8.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linux-6.9.8/drivers/gpu/drm/drm_panel_orientation_quirks.c
+--- linux-6.9.8.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c	2024-07-05 07:38:21.000000000 +0000
++++ linux-6.9.8/drivers/gpu/drm/drm_panel_orientation_quirks.c	2024-07-10 20:12:12.854027520 +0000
+@@ -123,6 +123,12 @@ static const struct drm_dmi_panel_orient
+ 	.orientation = DRM_MODE_PANEL_ORIENTATION_RIGHT_UP,
+ };
+ 
++static const struct drm_dmi_panel_orientation_data lcd1080x1920_bottom_up = {
++        .width = 1080,
++        .height = 1920,
++	.orientation = DRM_MODE_PANEL_ORIENTATION_BOTTOM_UP
++};
++
+ static const struct drm_dmi_panel_orientation_data lcd1200x1920_rightside_up = {
+ 	.width = 1200,
+ 	.height = 1920,
+@@ -147,6 +153,12 @@ static const struct drm_dmi_panel_orient
  	.orientation = DRM_MODE_PANEL_ORIENTATION_RIGHT_UP,
  };
  
@@ -14,7 +27,7 @@ diff -rupN linux-6.8.7.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linux
  static const struct dmi_system_id orientation_data[] = {
  	{	/* Acer One 10 (S1003) */
  		.matches = {
-@@ -184,24 +190,54 @@ static const struct dmi_system_id orient
+@@ -184,24 +196,60 @@ static const struct dmi_system_id orient
  		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "T103HAF"),
  		},
  		.driver_data = (void *)&lcd800x1280_rightside_up,
@@ -39,6 +52,12 @@ diff -rupN linux-6.8.7.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linux
 +                  DMI_MATCH(DMI_PRODUCT_NAME, "FLIP"),
 +                },
 +                .driver_data = (void *)&lcd1080x1920_leftside_up,
++        }, {    /* AYA NEO SLIDE */
++                .matches = {
++                  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYANEO"),
++                  DMI_MATCH(DMI_PRODUCT_NAME, "SLIDE"),
++                },
++                .driver_data = (void *)&lcd1080x1920_bottom_up
  	}, {	/* AYA NEO NEXT */
  		.matches = {
  		  DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
