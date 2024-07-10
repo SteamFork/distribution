@@ -1,6 +1,5 @@
 [Unit]
 Description=SteamFork post update service
-Before=display-manager.service
 After=network.target
 
 [Service]

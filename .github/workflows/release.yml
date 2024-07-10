@@ -19,7 +19,7 @@ jobs:
           ref: "${{ steps.branch.outputs.branch }}"
       - name: Set the version
         id: version
-        run: echo "version=$(date +'%Y%m%d.%H%M.%S')" >> $GITHUB_OUTPUT
+        run: echo "version=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
       - name: Build Minimal Images
         run: |
           set -e

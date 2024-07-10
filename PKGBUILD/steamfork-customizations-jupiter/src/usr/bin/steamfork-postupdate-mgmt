@@ -12,19 +12,6 @@ function check_network() {
   fi
 }
 
-### We should wait for network to come online before proceeding so
-### any post-update hooks that need it will succeed.
-
-while true
-do
-  AM_I_ONLINE=$(check_network)
-  if [ "${AM_I_ONLINE}" = "true" ]
-  then
-    break
-  fi
-  sleep 1
-done
-
 ### Check for the last update stamp, and if it isn't a match
 ### run any post-update scripts and then update the stamp.
 
@@ -37,6 +24,27 @@ fi
 
 if [ ! "${LAST_UPDATE}" = "${BUILD_ID}" ]
 then
+  ### We should wait for network to come online before proceeding so
+  ### any post-update hooks that need it will succeed.
+  COUNT=0
+  while true
+  do
+    AM_I_ONLINE=$(check_network)
+    if [ "${AM_I_ONLINE}" = "true" ]
+    then
+      break
+    fi
+
+    ### Test for a condition where the device is started but network is not
+    ### online and break.
+    COUNT=$(( ${COUNT} + 1 ))
+    if [ "${COUNT}" >= 10 ]
+    then
+      exit 0
+    fi
+    sleep 1
+  done
+
   steamos-readonly disable >/var/log/update.log 2>&1
   if [ -d "/etc/post-update.d" ]
   then
