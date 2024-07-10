@@ -5,9 +5,9 @@ if [[ "$1" == "update" ]]; then
     steamfork-grub-update
 fi
 
-if [ -d "/usr/lib/steamfork-post-update" ]
+if [ -d "/etc/post-update.d" ]
 then
-  for UPDATE in /usr/lib/steamfork-post-update/*
+  for UPDATE in /etc/post-update.d/*
   do
     ${UPDATE}
   done
