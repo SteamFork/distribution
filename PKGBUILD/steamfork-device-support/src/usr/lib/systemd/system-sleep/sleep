@@ -15,9 +15,9 @@ modules() {
   log $0 "Modules: ${1}"
   case ${1} in
     stop)
-      if [ -e "/etc/sleep/modules.bad" ]
+      if [ -e "/etc/lib/steamfork_hwsupport/devicequirks/"${HWID}"/modules.bad" ]
       then
-        for module in $(cat /etc/sleep/modules.bad)
+        for module in $(cat /etc/lib/steamfork_hwsupport/devicequirks/"${HWID}"/modules.bad)
         do
           EXISTS=$(lsmod | grep ${module})
           if [ $? = 0 ]
