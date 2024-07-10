@@ -42,17 +42,17 @@ EOF
     ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/; rm -rf images-new ||:; cp -rf images images-new"
     for REL in rel minimal
     do
-      IMAGE_DIR="${IMAGE_DIR}/${REL}/images"
-      if [ -e "${IMAGE_DIR}/latest_${REL}.releasemeta" ]
+      DEPLOY_DIR="${IMAGE_DIR}/${REL}/images"
+      if [ -e "${DEPLOY_DIR}/latest_${REL}.releasemeta" ]
       then
 	echo "Syncing ${REL}."
-        source ${IMAGE_DIR}/latest_${REL}.releasemeta
+        source ${DEPLOY_DIR}/latest_${REL}.releasemeta
         IMAGEFILE="$(echo ${IMAGEFILE} | sed 's~_~-~g')"
 	ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new; rm -f \$(ls | grep steamfork_${REL}_ | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
         ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer; rm -f \$(ls | grep steamfork-${REL}- | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
        while true
        do
-         rsync -av --progress --stats ${IMAGE_DIR}/* ${WWWUSER}@${WWWHOST}:${WWWROOT}/images-new/
+         rsync -av --progress --stats ${DEPLOY_DIR}/* ${WWWUSER}@${WWWHOST}:${WWWROOT}/images-new/
          if [ $? = 0 ]
          then
            break
