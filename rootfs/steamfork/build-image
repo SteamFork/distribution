@@ -219,14 +219,18 @@ echo "(4.10/6) Fix runtime audio configuration."
     arch-chroot ${ROOT_WORKDIR} systemctl enable ${AUDIO_SERVICE}-sysconf.service
   done
 
-echo "(4.11/6) Delete conflicting files..."
+echo "(4.11/6) Enable systemd-resolved."
+rm -f ${ROOT_WORKDIR}/etc/resolv.conf
+ln -sf /run/systemd/resolve/stub-resolv.conf ${ROOT_WORKDIR}/etc/resolv.conf
+
+echo "(4.12/6) Delete conflicting files..."
 # Delete conflicting files
 for CONFLICT in etc/X11/Xsession.d/50rotate-screen \
                 etc/sddm.conf.d/steamdeck.conf
 do
-  if [ -e "${SCRIPTPATH}/airootfs/${CONFLICT}" ]
+  if [ -e "${ROOT_WORKDIR}/${CONFLICT}" ]
   then
-    rm -f "${SCRIPTPATH}/airootfs/${CONFLICT}"
+    rm -f "${ROOT_WORKDIR}/${CONFLICT}"
   fi
 done
 

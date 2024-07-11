@@ -9,6 +9,8 @@ echo -e "$(echo ${DISTRO_NAME} | tr '[:upper:]' '[:lower:]')_$(echo ${OS_CODENAM
 export BUILDVER=$(cat /tmp/build_temp_ver)
 export IMAGEFILE="${BUILDVER}"
 export ENABLED_SERVICES=( NetworkManager
+			firewalld
+			systemd-resolved
                         nix.mount
                         steamos-offload.target
 			fstrim.timer

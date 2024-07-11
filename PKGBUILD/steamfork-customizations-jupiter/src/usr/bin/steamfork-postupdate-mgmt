@@ -12,6 +12,15 @@ function check_network() {
   fi
 }
 
+### Workaround NetworkManager randomly dying until a better solution
+### can be found.
+
+NM_ISACTIVE=$(systemctl is-active NetworkManager)
+if [[ "${NM_ISACTIVE}" =~ inactive ]]
+then
+  systemctl restart NetworkManager
+fi
+
 ### Check for the last update stamp, and if it isn't a match
 ### run any post-update scripts and then update the stamp.
 
@@ -38,7 +47,7 @@ then
     ### Test for a condition where the device is started but network is not
     ### online and break.
     COUNT=$(( ${COUNT} + 1 ))
-    if [ "${COUNT}" >= 10 ]
+    if (( ${COUNT} >= 10 ))
     then
       exit 0
     fi
@@ -46,6 +55,17 @@ then
   done
 
   steamos-readonly disable >/var/log/update.log 2>&1
+
+  ### System provided update directory.
+  if [ -d "/usr/share/post-update.d" ]
+  then
+    for UPDATE in /usr/share/post-update.d/*
+    do
+      ${UPDATE} >>/var/log/update.log 2>&1
+    done
+  fi
+
+  ### User writeable update directory.
   if [ -d "/etc/post-update.d" ]
   then
     for UPDATE in /etc/post-update.d/*
@@ -53,6 +73,7 @@ then
       ${UPDATE} >>/var/log/update.log 2>&1
     done
   fi
+
   steamos-readonly enable >>/var/log/update.log 2>&1
   echo "${BUILD_ID}" >${UPDATE_STAMP}
 fi

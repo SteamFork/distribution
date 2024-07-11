@@ -11,7 +11,9 @@ export IMAGEFILE="${BUILDVER}"
 export ENABLED_SERVICES=( sddm
                         bluetooth
                         systemd-timesyncd
+			systemd-resolved
                         NetworkManager
+			firewalld
 			inputplumber
 			steam-powerbuttond
                         steamos-offload.target
