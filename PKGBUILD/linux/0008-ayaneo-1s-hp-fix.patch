@@ -1,3 +1,9 @@
+From 16b78597b19f691d1e25d6c26a4b77ef11ef2a38 Mon Sep 17 00:00:00 2001
+From: fewtarius <fewtarius@steamfork.org>
+Date: Thu, 11 Jul 2024 18:31:08 +0000
+Subject: [PATCH] Kernel 6.9.9, fix Air 1S audio - thanks in part to @linh1987!
+
+---
 diff -rupN linux-6.9.8.orig/sound/pci/hda/patch_realtek.c linux-6.9.8/sound/pci/hda/patch_realtek.c
 --- linux-6.9.8.orig/sound/pci/hda/patch_realtek.c	2024-07-11 16:08:31.886810579 +0000
 +++ linux-6.9.8/sound/pci/hda/patch_realtek.c	2024-07-11 16:57:05.164157459 +0000
