@@ -5,9 +5,22 @@ then
     exec pkexec --disable-internal-agent "$0" "$@"
 fi
 
-mirrorfile=/etc/steamos-atomupd/mirror
 source /etc/steamfork-release
-source ${mirrorfile}
+
+### Grab a list of mirrors from steamfork.org, and pick one randomly.
+curl -Lo /tmp/mirrors.txt "https://www.steamfork.org/mirrorlist.txt"
+if [ $? = "0" ]
+then
+  readarray -t MIRROR_LIST < /tmp/mirrors.txt
+  MIRROR=$(echo ${MIRROR_LIST[ $RANDOM % ${#MIRROR_LIST[@]}]})
+fi
+
+### If we don't have a mirror for whatever reason, use the system default.
+if [ -z "${MIRROR}" ]
+then
+  source /etc/steamos-atomupd/mirror
+fi
+
 argdata=/tmp/steamos-update-temparg
 ready_watcher=/tmp/steamos-ready-to-deploy
 download_url=${MIRROR}

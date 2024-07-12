@@ -23,10 +23,6 @@ jobs:
       - name: Set the version
         id: version
         run: echo "version=$(date +'%Y%m%d.%H%M.%S')" >> $GITHUB_OUTPUT
-      - name: Build Minimal Images
-        run: |
-          set -e
-          make image minimal BUILD_VER="${{ steps.version.outputs.version }}"
       - name: Build Release Images
         run: |
           set -e
