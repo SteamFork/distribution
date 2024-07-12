@@ -55,3 +55,6 @@ package:
 
 packages-sync:
 	${SCRIPT_DIR}/sync repo
+
+mirror-sync:
+	${SCRIPT_DIR}/sync mirrors
