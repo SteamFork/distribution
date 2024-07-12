@@ -7,7 +7,7 @@ then
  source "${HOME}/.SteamFork/options"
 fi
 
-for KEY in WWWHOST WWWUSER WWWROOT SIGNKEY REPO_DIR IMAGE_DIR
+for KEY in WWWHOST WWWUSER WWWROOT SIGNKEY REPO_DIR IMAGE_DIR MIRROR_HOST
 do
   if [ -z "${!KEY}" ]
   then
@@ -79,6 +79,13 @@ EOF
     scp /tmp/index.html ${WWWUSER}@${WWWHOST}:${WWWROOT}/images-new/installer/
     ssh -ttq ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/images-new"
     ssh -ttq ${WWWUSER}@${WWWHOST} "mv ${WWWROOT}/images ${WWWROOT}/images-old; mv ${WWWROOT}/images-new/ ${WWWROOT}/images; rm -rf ${WWWROOT}/images-old"
+  ;;
+  mirror)
+    for MIRROR_HOST in ${MIRROR_HOSTS}
+    do
+      ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}; rsync -av --delete --exclude=${WWWROOT}/.sync.txt * ${MIRROR_HOST}:${WWWROOT}/"
+      ssh -ttq ${MIRROR_HOST} "chown -R www-data:www-data ${WWWROOT}"
+    done
   ;;
   *)
     ./scripts/sync repo
