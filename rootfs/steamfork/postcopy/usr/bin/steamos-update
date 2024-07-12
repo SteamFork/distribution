@@ -8,12 +8,7 @@ fi
 source /etc/steamfork-release
 
 ### Grab a list of mirrors from steamfork.org, and pick one randomly.
-curl -Lo /tmp/mirrors.txt "https://www.steamfork.org/mirrorlist.txt" 2>/dev/null
-if [ $? = "0" ]
-then
-  readarray -t MIRROR_LIST < /tmp/mirrors.txt
-  MIRROR=$(echo ${MIRROR_LIST[ $RANDOM % ${#MIRROR_LIST[@]}]})
-fi
+MIRROR=$(steamfork-get-mirror random)
 
 ### If we don't have a mirror for whatever reason, use the system default.
 if [ -z "${MIRROR}" ]

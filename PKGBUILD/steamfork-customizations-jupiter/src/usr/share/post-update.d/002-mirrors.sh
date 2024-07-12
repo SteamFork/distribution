@@ -4,13 +4,8 @@
 
 steamos-readonly disable
 sed -i 's~Server = https://www.steamfork.org/repos/rel~Include = /etc/pacman.d/steamfork-mirrorlist~g' /etc/pacman.conf
-cat <<EOF >/tmp/steamfork-mirrorlist
-Server = https://www.steamfork.org
-Server = https://www2.steamfork.org
-Server = https://www3.steamfork.org
-EOF
-
-cat /tmp/steamfork-mirrorlist | sort -R >/etc/pacman.d/steamfork-mirrorlist
-rm -f /tmp/steamfork-mirrorlist
-
+steamfork-get-mirror random | while read line
+do
+  echo "Server = ${line}" >>/etc/pacman.d/steamfork-mirrorlist
+done
 steamos-readonly enable

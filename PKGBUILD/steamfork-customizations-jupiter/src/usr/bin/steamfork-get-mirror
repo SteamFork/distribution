@@ -1,0 +1,30 @@
+#!/bin/bash
+
+STAGING_MIRRORLIST="/tmp/steamfork-mirrors.txt"
+DEFAULT_MIRRORS=( "www.steamfork.org" "www2.steamfork.org" "www3.steamfork.org" )
+for MIRROR in ${DEFAULT_MIRRORS[@]}
+do
+  curl -Lo ${STAGING_MIRRORLIST} https://${MIRROR}/mirrorlist.txt 2>/dev/null
+  if [ "$?" = "0" ]
+  then
+    break
+  else
+    if [ -f "${STAGING_MIRRORLIST}" ]
+    then
+      rm -f ${STAGING_MIRRORLIST}
+    fi
+  fi
+done
+
+case ${1} in
+	list)
+		cat ${STAGING_MIRRORLIST}
+	;;
+	random)
+		cat ${STAGING_MIRRORLIST} | sort -R
+	;;
+	*)
+		readarray -t MIRROR_LIST < ${STAGING_MIRRORLIST}
+		echo ${MIRROR_LIST[ $RANDOM % ${#MIRROR_LIST[@]}]}
+	;;
+esac

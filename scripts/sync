@@ -26,11 +26,11 @@ case ${1} in
         cd ${WORKING_REPO}
         repo-add --sign -k ${SIGNKEY} steamfork.db.tar.gz *zst
         cd -
-        ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}; ln -sf ${WWWROOT}/repos/${REPO} steamfork-${REPO}"
+        ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}; ln -sf ${WWWROOT}/repos/${REPO} steamfork-${REPO}"
       fi
     done
     rsync -av --delete --progress --stats ${REPO_DIR} ${WWWUSER}@${WWWHOST}:${WWWROOT}/
-    ssh -ttq ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/"
+    ssh -tt ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/"
   ;;
   os)
       cat <<EOF >/tmp/index.html
@@ -39,7 +39,7 @@ case ${1} in
 <meta name="keywords" content="SteamFork, SteamOS, HoloISO, Linux, Gaming, Handheld">
 <body>
 EOF
-    ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/; rm -rf images-new ||:; cp -rf images images-new"
+    ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/; rm -rf images-new ||:; cp -rf images images-new"
     for REL in rel minimal
     do
       DEPLOY_DIR="${IMAGE_DIR}/${REL}/images"
@@ -48,8 +48,8 @@ EOF
 	echo "Syncing ${REL}."
         source ${DEPLOY_DIR}/latest_${REL}.releasemeta
         IMAGEFILE="$(echo ${IMAGEFILE} | sed 's~_~-~g')"
-	ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new; rm -f \$(ls | grep steamfork_${REL}_ | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
-        ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer; rm -f \$(ls | grep steamfork-${REL}- | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
+	ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new; rm -f \$(ls | grep steamfork_${REL}_ | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
+        ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer; rm -f \$(ls | grep steamfork-${REL}- | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
        while true
        do
          rsync -av --progress --stats ${DEPLOY_DIR}/* ${WWWUSER}@${WWWHOST}:${WWWROOT}/images-new/
@@ -59,9 +59,9 @@ EOF
          fi
          sleep 5
        done
-        ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; sha256sum ${IMAGEFILE}-x86_64.iso | tee -a ${IMAGEFILE}-x86_64.iso.sha256"
-        ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso steamfork-${REL}-latest-x86_64.iso"
-        ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso.sha256 steamfork-${REL}-latest-x86_64.iso.sha256"
+        ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; sha256sum ${IMAGEFILE}-x86_64.iso | tee -a ${IMAGEFILE}-x86_64.iso.sha256"
+        ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso steamfork-${REL}-latest-x86_64.iso"
+        ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso.sha256 steamfork-${REL}-latest-x86_64.iso.sha256"
 	echo "Add ${REL} to index."
         cat <<EOF >>/tmp/index.html
 <p>
@@ -77,19 +77,15 @@ cat <<EOF >>/tmp/index.html
 </head>
 EOF
     scp /tmp/index.html ${WWWUSER}@${WWWHOST}:${WWWROOT}/images-new/installer/
-    ssh -ttq ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/images-new"
-    ssh -ttq ${WWWUSER}@${WWWHOST} "mv ${WWWROOT}/images ${WWWROOT}/images-old; mv ${WWWROOT}/images-new/ ${WWWROOT}/images; rm -rf ${WWWROOT}/images-old"
+    ssh -tt ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/images-new"
+    ssh -tt ${WWWUSER}@${WWWHOST} "mv ${WWWROOT}/images ${WWWROOT}/images-old; mv ${WWWROOT}/images-new/ ${WWWROOT}/images; rm -rf ${WWWROOT}/images-old"
   ;;
   mirrors)
     for MIRROR_HOST in ${MIRROR_HOSTS}
     do
-      ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}; rsync -av --delete --exclude=${WWWROOT}/.sync.txt * ${MIRROR_HOST}:${WWWROOT}/"
-      ssh -ttq ${MIRROR_HOST} "sudo chown -R www-data:www-data ${WWWROOT}"
+      ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}; rsync -av --delete --exclude=${WWWROOT}/.sync.txt * ${MIRROR_HOST}:${WWWROOT}/"
+      ssh -tt ${MIRROR_HOST} "sudo chown -R www-data:www-data ${WWWROOT}"
     done
-  ;;
-  *)
-    ./scripts/sync repo
-    ./scripts/sync os
   ;;
 esac
 
