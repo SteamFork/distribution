@@ -84,7 +84,7 @@ EOF
     for MIRROR_HOST in ${MIRROR_HOSTS}
     do
       ssh -ttq ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}; rsync -av --delete --exclude=${WWWROOT}/.sync.txt * ${MIRROR_HOST}:${WWWROOT}/"
-      ssh -ttq ${MIRROR_HOST} "chown -R www-data:www-data ${WWWROOT}"
+      ssh -ttq ${MIRROR_HOST} "sudo chown -R www-data:www-data ${WWWROOT}"
     done
   ;;
   *)
