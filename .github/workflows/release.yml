@@ -32,6 +32,7 @@ jobs:
           set -e
           make images-sync
       - name: Mirror sync
+        run: |
           set -e
           make mirror-sync
       - name: Create a release snapshot.
