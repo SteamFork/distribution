@@ -34,7 +34,7 @@ jobs:
       - name: Mirror sync
         run: |
           set -e
-          make mirror-sync
+          make mirrors-sync
       - name: Create a release snapshot.
         uses: ncipollo/release-action@v1
         with:
