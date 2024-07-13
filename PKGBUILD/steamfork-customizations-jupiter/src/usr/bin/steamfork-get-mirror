@@ -3,6 +3,7 @@
 # Copyright (C) 2024-present Fewtarius
 
 STAGING_MIRRORLIST="/tmp/steamfork-mirrors.txt"
+CURL_OPTS="--connect-timeout 2 --max-time 2"
 
 ### Each mirror hashes its repository and provides the hash in the web root. Other
 ### nodes in the pool check each node's hash, and if they match the node is added
@@ -11,7 +12,7 @@ STAGING_MIRRORLIST="/tmp/steamfork-mirrors.txt"
 DEFAULT_MIRRORS=( "www.steamfork.org" "www2.steamfork.org" "www3.steamfork.org" )
 for MIRROR in ${DEFAULT_MIRRORS[@]}
 do
-  curl -Lo ${STAGING_MIRRORLIST} https://${MIRROR}/mirrorlist.txt 2>/dev/null
+  curl -Lo ${STAGING_MIRRORLIST} ${CURL_OPTS} https://${MIRROR}/mirrorlist.txt 2>/dev/null
   if [ "$?" = "0" ]
   then
     break
@@ -38,7 +39,7 @@ case ${1} in
 		for COUNT in $(seq 0 1 ${#MIRROR_LIST[@]})
 		do
 			SELECTED_MIRROR=${MIRROR_LIST[ $RANDOM % ${#MIRROR_LIST[@]}]}
-			curl -Lo /dev/null ${SELECTED_MIRROR}/mirrorlist.txt >/dev/null 2>&1
+			curl -Lo /dev/null ${CURL_OPTS} ${SELECTED_MIRROR}/mirrorlist.txt >/dev/null 2>&1
 			if [ "$?" = "0" ]
 			then
 			  echo ${SELECTED_MIRROR}
