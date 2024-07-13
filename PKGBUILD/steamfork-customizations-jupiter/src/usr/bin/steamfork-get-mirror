@@ -44,6 +44,9 @@ case ${1} in
 			  echo ${SELECTED_MIRROR}
 			  break
 			fi
+			sleep .1
 		done
 	;;
 esac
+
+rm -f ${STAGING_MIRRORLIST}

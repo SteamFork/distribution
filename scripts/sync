@@ -84,7 +84,7 @@ EOF
     for MIRROR_HOST in ${MIRROR_HOSTS}
     do
       ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}; rsync -av --delete --exclude=${WWWROOT}/.sync.txt * ${MIRROR_HOST}:${WWWROOT}/"
-      ssh -tt ${MIRROR_HOST} "sudo chown -R www-data:www-data ${WWWROOT}"
+      ssh -tt ${MIRROR_HOST} "sudo find ${WWWROOT} -type f -exec chown www-data:www-data {} \;; sudo find ${WWWROOT} -type f -exec chmod 664 {} \;; sudo find ${WWWROOT} -type d -exec chmod 775 {} \;;"
     done
   ;;
 esac
