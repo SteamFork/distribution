@@ -3,6 +3,7 @@
 # Copyright (C) 2024-present Fewtarius
 
 steamos-readonly disable
+rm -f /etc/pacman.d/steamfork-mirrorlist
 sed -i 's~Server = https://www.steamfork.org/repos/rel~Include = /etc/pacman.d/steamfork-mirrorlist~g' /etc/pacman.conf
 steamfork-get-mirror random | while read line
 do
