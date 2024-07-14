@@ -53,6 +53,9 @@ packages-aur:
 package:
 	${SCRIPT_DIR}/mkpackage $(RUN_ARGS)
 
+package-aur:
+	${SCRIPT_DIR}/mkpackage --repo aur $(RUN_ARGS)
+
 packages-sync:
 	${SCRIPT_DIR}/sync repo
 
