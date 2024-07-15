@@ -22,16 +22,7 @@ diff -rupN linux-6.9.8.orig/sound/pci/hda/patch_realtek.c linux-6.9.8/sound/pci/
 +	[ALC269VB_FIXUP_AYANEO_SPKR_PIN_FIX] = {
 +		.type = HDA_FIXUP_PINS,
 +		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x12, 0x90a60130 },
-+			{ 0x14, 0x90170110 },
-+			{ 0x17, 0x40000000 },
-+			{ 0x18, 0x03a19020 },
-+			{ 0x19, 0x411111f0 },
 +			{ 0x1a, 0x90170150 },
-+			{ 0x1b, 0x411111f0 },
-+			{ 0x1d, 0x40e69945 },
-+			{ 0x1e, 0x411111f0 },
-+			{ 0x21, 0x90170150 },
 +			{ }
 +		},
 +	},
