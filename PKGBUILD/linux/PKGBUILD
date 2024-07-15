@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.9.9
-pkgrel=5
+pkgrel=6
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -63,7 +63,7 @@ sha256sums=('SKIP'
 '01cde5f8257a638085ebccaf98f112c0360e11697b09782030b97b235cd8c033' # 0001-drm-panel-orientation-quirks.patch
 '783da391e0f45635eefb583b8b3acc29cd62a0c9eeefedf7f790dc2f89c7e279' # 0006-Ayaneo-geek-headset-patch.patch
 '33edff1a51ceb763c47b3ae485f5857a716a1dac9f1e8b65c3b93c6e88a4838f' # 0007-ayaneo-2-headphone-fix.patch
-'d44209d556379c64fd293fa86f85693107a7538d8c6dcc1d0260ef25fc673250' # 0008-ayaneo-1s-hp-fix.patch
+'c6867ab6a95146e796dee888283fdae95837b8f53487e659f6d66bc458054b14' # 0008-ayaneo-1s-hp-fix.patch
 'f3a54e5bde55f8481cb4e9e3c8fce7a28ae7a7e42208c5f76bdcc6d8dcf6fc08' # 0012-HACK-add-KConfig-to-enable-driver-specific-color-mgm.patch
 '683128d044f4df12dcb0a7b2858075f510d870460dc71f0d60f69df89cf62419' # 0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
 'b42fa6bb0e3d93aa8a81f61543c2058fa6f8412b9ad190110ffb49c46e81d5ce' # 0020-add-devices-to-oxp-sensors.patch

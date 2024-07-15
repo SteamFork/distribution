@@ -1,12 +1,14 @@
-From 16b78597b19f691d1e25d6c26a4b77ef11ef2a38 Mon Sep 17 00:00:00 2001
-From: fewtarius <fewtarius@steamfork.org>
-Date: Thu, 11 Jul 2024 18:31:08 +0000
-Subject: [PATCH] Kernel 6.9.9, fix Air 1S audio - thanks in part to @linh1987!
-
----
 diff -rupN linux-6.9.8.orig/sound/pci/hda/patch_realtek.c linux-6.9.8/sound/pci/hda/patch_realtek.c
 --- linux-6.9.8.orig/sound/pci/hda/patch_realtek.c	2024-07-11 16:08:31.886810579 +0000
-+++ linux-6.9.8/sound/pci/hda/patch_realtek.c	2024-07-11 16:57:05.164157459 +0000
++++ linux-6.9.8/sound/pci/hda/patch_realtek.c	2024-07-15 12:59:52.250345438 +0000
+@@ -20,6 +20,7 @@
+ #include <linux/input.h>
+ #include <linux/leds.h>
+ #include <linux/ctype.h>
++#include <linux/dmi.h>
+ #include <sound/core.h>
+ #include <sound/jack.h>
+ #include <sound/hda_codec.h>
 @@ -7300,6 +7301,7 @@ enum {
  	ALC269VB_FIXUP_ASUS_ZENBOOK,
  	ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A,
@@ -15,21 +17,21 @@ diff -rupN linux-6.9.8.orig/sound/pci/hda/patch_realtek.c linux-6.9.8/sound/pci/
  	ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED,
  	ALC269VB_FIXUP_ORDISSIMO_EVE2,
  	ALC283_FIXUP_CHROME_BOOK,
-@@ -8012,6 +8014,22 @@ static const struct hda_fixup alc269_fix
+@@ -8012,6 +8014,13 @@ static const struct hda_fixup alc269_fix
  		.chained = true,
  		.chain_id = ALC269_FIXUP_HEADSET_MIC
  	},
 +	[ALC269VB_FIXUP_AYANEO_SPKR_PIN_FIX] = {
 +		.type = HDA_FIXUP_PINS,
 +		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x1a, 0x90170150 },
++			{ 0x1a, 0x90170110 },
 +			{ }
 +		},
 +	},
  	[ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED] = {
  		.type = HDA_FIXUP_FUNC,
  		.v.func = alc269_fixup_limit_int_mic_boost,
-@@ -10622,6 +10640,7 @@ static const struct snd_pci_quirk alc269
+@@ -10622,6 +10631,7 @@ static const struct snd_pci_quirk alc269
  	SND_PCI_QUIRK(0x2782, 0x1707, "Vaio VJFE-ADL", ALC298_FIXUP_SPK_VOLUME),
  	SND_PCI_QUIRK(0x1f66, 0x0101, "AYANEO 2", ALC269_FIXUP_HEADSET_AYA_2),
  	SND_PCI_QUIRK(0x1f66, 0x0101, "GEEK", ALC269_FIXUP_HEADSET_AYA_GEEK),
@@ -37,7 +39,7 @@ diff -rupN linux-6.9.8.orig/sound/pci/hda/patch_realtek.c linux-6.9.8/sound/pci/
  	SND_PCI_QUIRK(0x8086, 0x2074, "Intel NUC 8", ALC233_FIXUP_INTEL_NUC8_DMIC),
  	SND_PCI_QUIRK(0x8086, 0x2080, "Intel NUC 8 Rugged", ALC256_FIXUP_INTEL_NUC8_RUGGED),
  	SND_PCI_QUIRK(0x8086, 0x2081, "Intel NUC 10", ALC256_FIXUP_INTEL_NUC10),
-@@ -10743,6 +10762,7 @@ static const struct hda_model_fixup alc2
+@@ -10743,6 +10753,7 @@ static const struct hda_model_fixup alc2
  	{.id = ALC269VB_FIXUP_ASUS_ZENBOOK, .name = "asus-zenbook"},
  	{.id = ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A, .name = "asus-zenbook-ux31a"},
  	{.id = ALC269VB_FIXUP_ORDISSIMO_EVE2, .name = "ordissimo"},
