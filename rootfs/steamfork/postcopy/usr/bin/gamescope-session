@@ -141,6 +141,9 @@ export STEAM_GAMESCOPE_FANCY_SCALING_SUPPORT=1
 export STEAM_GAMESCOPE_COLOR_MANAGED=1
 export STEAM_GAMESCOPE_VIRTUAL_WHITE=1
 
+HDMI-CEC support
+export STEAM_ENABLE_CEC=1
+
 # Set input method modules for Qt/GTK that will show the Steam keyboard
 export QT_IM_MODULE=steam
 export GTK_IM_MODULE=Steam
@@ -156,6 +159,9 @@ export QT_QPA_PLATFORM_THEME=kde
 #export vblank_mode=0
 #export MESA_VK_WSI_PRESENT_MODE=immediate
 
+# This is already on by default on Galileo, but this enables it on Jupiter too
+export ENABLE_GAMESCOPE_WSI=1
+
 # To play nice with the short term callback-based limiter for now
 export GAMESCOPE_LIMITER_FILE=$(mktemp /tmp/gamescope-limiter.XXXXXXXX)
 
@@ -164,6 +170,9 @@ export GAMESCOPE_DISABLE_ASYNC_FLIPS=1
 
 export XCURSOR_THEME=steam
 export XCURSOR_SCALE=256
+
+# Chromium (and therefore Steam) ignore XCursor and use on the GTK config
+kwriteconfig5 --file gtk-3.0/settings.ini  --group Settings --key gtk-cursor-theme-name steam
 
 # Workaround for Steam login issue while Steam client change propagates out of Beta
 touch ~/.steam/root/config/SteamAppData.vdf || true
@@ -234,14 +243,6 @@ if [[ "$free_disk_space_megs" -lt "$minimum_free_disk_space_needed_megs" ]]; the
 		[[ "$free_disk_space_megs" -lt "$minimum_free_disk_space_needed_megs" ]] || break
 	done
 fi
-
-# Will be empty if not on Galileo or failed
-mura_args=()
-mura_path=$(galileo-mura-setup)
-if [ $? -eq 0 ]; then
-	mura_args=("--mura-map" "$mura_path")
-fi
-
 
 export GAMESCOPE_STATS="$stats"
 mkfifo -- "$stats"
@@ -314,6 +315,8 @@ if [[ "$short_session_count" -ge "$short_session_count_before_reset" ]]; then
 	# instead of resetting the wrong thing
 	# also could print full list of files and sizes in the Steam dir and save as a diagnostic report
 	echo >&2 "gamescope-session: detected broken Steam, bootstrapping from OS copy..."
+	# at this point, might as well make sure we won't relaunch on a sideloaded build
+	rm -f -- "$HOME/devkit-game/devkit-steam"
 	mkdir -p ~/.local/share/Steam
 	# remove some caches and stateful things known to cause Steam to fail to start if corrupt
 	rm -rf --one-file-system ~/.local/share/Steam/config/widevine
