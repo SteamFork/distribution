@@ -129,9 +129,6 @@ if [[ ! -z "${HOLOUSER}" ]]; then
     ### Remove the local build repo
     arch-chroot ${SUBVOLLOCATION} sed -ie '/^\[repo\]/,+3d' /etc/pacman.conf
 
-    echo "Setting gamescope autologin for ${HOLOUSER}..."
-    mkdir -p ${SUBVOLLOCATION}/etc/sddm.conf.d/
-    echo -e "[General]\nDisplayServer=wayland\n\n[Autologin]\nUser=${HOLOUSER}\nSession=gamescope-wayland.desktop\nRelogin=true\n\n[X11]\n# Janky workaround for wayland sessions not stopping in sddm, kills\n# all active sddm-helper sessions on teardown\nDisplayStopCommand=/usr/bin/gamescope-wayland-teardown-workaround" >> ${SUBVOLLOCATION}/etc/sddm.conf.d/autologin.conf
 elif [[ "${IS_RESET}" == "1" ]]; then
     mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc
     echo "Restoring this installation to system defaults..."

@@ -4,5 +4,5 @@ then
     exec pkexec --disable-internal-agent "$0" "$@"
 fi
 echo "Disabling session switching and autologin..."
-mv /etc/sddm.conf.d/autologin.conf /home/steamfork-autologin.conf
+mv /etc/sddm.conf.d/steamos.conf /home/steamfork-autologin.conf
 echo "Done!"

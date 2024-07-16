@@ -386,6 +386,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-util-linux
                     lib32-vulkan-icd-loader
                     lib32-vulkan-radeon
+		    lib32-vulkan-mesa-layers
                     lib32-wayland
                     lib32-xcb-util-keysyms
                     lib32-xz
@@ -863,6 +864,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     vulkan-icd-loader
                     vulkan-radeon
                     vulkan-tools
+                    vulkan-mesa-layers
                     wayland
                     wayland-utils
                     webrtc-audio-processing
@@ -1022,7 +1024,6 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
 		  inputplumber
                   kdegraphics-thumbnailers
                   kwrite
-                  lib32-vulkan-mesa-layers
                   libcap.so
                   libdisplay-info.so
                   libliftoff.so
