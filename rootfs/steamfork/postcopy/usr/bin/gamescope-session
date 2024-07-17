@@ -26,6 +26,11 @@ export GAMESCOPE_PATCHED_EDID_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/gamescope/
 # and Gamescope will use for now.
 export GAMESCOPE_NV12_COLORSPACE=k_EStreamColorspace_BT601
 
+# Workaround older versions of vkd3d-proton setting this
+# too low (desc.BufferCount), resulting in symptoms that are potentially like
+# swapchain starvation.
+export VKD3D_SWAPCHAIN_LATENCY_FRAMES=3
+
 export STEAM_GAMESCOPE_HDR_SUPPORTED=1
 
 # Make path to gamescope mode save file.
