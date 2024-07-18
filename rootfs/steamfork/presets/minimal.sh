@@ -1,9 +1,17 @@
 #!/bin/bash
 rm -rf /tmp/builder-releasetag
 rm -rf /tmp/build_temp_ver
+
 export DISTRO_NAME="SteamFork"
+export IMAGE_HOSTNAME="steamfork"
 export OS_CODENAME="Minimal"
 export OS_FS_PREFIX="sf"
+
+export HOME_URL="https://www.steamfork.org"
+export DOCUMENTATION_URL="https://wiki.steamfork.org"
+export SUPPORT_URL="${HOME_URL}"
+export BUG_REPORT_URL="https://github.com/SteamFork/bugtracker"
+
 echo -e ${RELEASE_TAG} > /tmp/builder-releasetag
 echo -e "$(echo ${DISTRO_NAME} | tr '[:upper:]' '[:lower:]')_$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')_${RELEASE_TAG}" > /tmp/build_temp_ver
 export BUILDVER=$(cat /tmp/build_temp_ver)
@@ -384,10 +392,4 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   jupiter-hw-support
                   jupiter-legacy-support"
 
-export OS_RELEASE="NAME=\"SteamOS\"\nPRETTY_NAME="SteamOS"\nVERSION_CODENAME=holo\nID=steamos\nID_LIKE=arch\nANSI_COLOR=\"1;35\"\nHOME_URL=\"https://www.steampowered.com/\"\nDOCUMENTATION_URL=\"https://github.com/steamfork-staging/\"\nSUPPORT_URL=\"https://github.com/steamfork-staging/faq\"\nBUG_REPORT_URL=\"https://github.com/steamfork-staging/issuetracker\"\nLOGO=steamos\nVERSION_ID=\"${SNAPSHOTVERSION}\"\nVARIANT_ID=\"$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')\"\nBUILD_ID=\"${RELEASE_TAG}\""
-export STEAMFORK_RELEASE="IMAGE_ID=\"${BUILDVER}\"\nOS_TAG=${RELEASE_TAG}\nRELEASETYPE=$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')\nISINTERNAL=no"
-export UPDATE_METADATA="IMAGEFILE=\"${IMAGEFILE}\"\nSTAGING_OS_TAG=${RELEASE_TAG}\nSTAGING_RELEASETYPE=$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')\nSTAGING_ISINTERNAL=no"
-export PACMAN_ONLOAD="[Unit]\nDescription=${DISTRO_NAME} onload - /var/lib/pacman\n\n[Mount]\nWhat=/${OS_FS_PREFIX}_root/rootfs/${FINAL_DISTRIB_IMAGE}/var/lib/pacman\nWhere=/var/lib/pacman\nType=none\nOptions=bind\n\n[Install]\nWantedBy=steamos-offload.target"
-export FSTAB="\nLABEL=${OS_FS_PREFIX}_root /          btrfs subvol=rootfs/${BUILDVER},compress-force=zstd:1,discard,noatime,nodiratime 0 0\nLABEL=${OS_FS_PREFIX}_root /${OS_FS_PREFIX}_root btrfs rw,compress-force=zstd:1,discard,noatime,nodiratime,nodatacow 0 0\nLABEL=${OS_FS_PREFIX}_var /var       ext4 rw,relatime 0 0\nLABEL=${OS_FS_PREFIX}_home /home      ext4 rw,relatime 0 0\n"
-export IMAGE_HOSTNAME="steamfork"
 export POSTCOPY_BIN_EXECUTION=""

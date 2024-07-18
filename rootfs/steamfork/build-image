@@ -148,17 +148,48 @@ pacstrap -C ${PACCFG} ${ROOT_WORKDIR} ${KERNELCHOICE} ${KERNELCHOICE}-headers
 echo "(2/6) Generating fstab..."
 
 # fstab
-echo -e ${FSTAB} > ${ROOT_WORKDIR}/etc/fstab
+cat <<EOF > ${ROOT_WORKDIR}/etc/fstab
+LABEL=${OS_FS_PREFIX}_root /	btrfs subvol=rootfs/${BUILDVER},compress-force=zstd:1,discard,noatime,nodiratime 0 0
+LABEL=${OS_FS_PREFIX}_root /${OS_FS_PREFIX}_root	btrfs rw,compress-force=zstd:1,discard,noatime,nodiratime,nodatacow 0 0
+LABEL=${OS_FS_PREFIX}_var /var	ext4 rw,relatime 0 0
+LABEL=${OS_FS_PREFIX}_home /home	ext4 rw,relatime 0 0
+EOF
 
 sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' ${ROOT_WORKDIR}/etc/sudoers
 
-echo "(3/6) Bootstrapping SteamFork core root"
+echo "(3/6) Bootstrapping SteamFork core root.."
 pacstrap -C ${PACCFG} ${ROOT_WORKDIR} ${UI_BOOTSTRAP}
 rm ${ROOT_WORKDIR}/etc/pacman.conf
 cp ${PACCFG} ${ROOT_WORKDIR}/etc/pacman.conf
 
-echo -e $OS_RELEASE > ${ROOT_WORKDIR}/etc/os-release
-echo -e $STEAMFORK_RELEASE > ${ROOT_WORKDIR}/etc/steamfork-release
+RELEASE_TYPE="$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')"
+
+echo "(3.1/6) Write os-release..."
+cat <<EOF >${ROOT_WORKDIR}/etc/os-release
+NAME="SteamOS"
+PRETTY_NAME="SteamOS"
+VERSION_CODENAME=holo
+ID=steamos
+ID_LIKE=arch
+ANSI_COLOR="1;35"
+HOME_URL="${HOME_URL}"
+DOCUMENTATION_URL="${DOCUMENTATION_URL}"
+SUPPORT_URL="${SUPPORT_URL}"
+BUG_REPORT_URL="${BUG_REPORT_URL}"
+LOGO=steamos
+VERSION_ID="${RELEASE_TAG}"
+VARIANT_ID="${RELEASE_TYPE}"
+BUILD_ID="${RELEASE_TAG}"
+EOF
+
+echo "(3.2/6) Write steamfork-release"
+cat <<EOF >${ROOT_WORKDIR}/etc/steamfork-release
+IMAGE_ID="${BUILDVER}"
+OS_TAG=${RELEASE_TAG}
+RELEASETYPE=${RELEASE_TYPE}
+ISINTERNAL=no
+EOF
+
 echo -e $IMAGE_HOSTNAME > ${ROOT_WORKDIR}/etc/hostname
 mkdir -p ${ROOT_WORKDIR}/etc/steamos-atomupd
 cat <<EOF >${ROOT_WORKDIR}/etc/steamos-atomupd/manifest.json
@@ -184,8 +215,24 @@ if [[ -n "$PLYMOUTH_THEME" ]]; then
 	arch-chroot ${ROOT_WORKDIR} plymouth-set-default-theme -R $PLYMOUTH_THEME
 fi
 
-for binary in ${POSTCOPY_BIN_EXECUTION}; do arch-chroot ${ROOT_WORKDIR} $binary && rm -rf ${ROOT_WORKDIR}/usr/bin/$binary; done
-echo -e "${PACMAN_ONLOAD}" > ${ROOT_WORKDIR}/usr/lib/systemd/system/var-lib-pacman.mount
+for binary in ${POSTCOPY_BIN_EXECUTION}
+do
+	arch-chroot ${ROOT_WORKDIR} $binary && rm -rf ${ROOT_WORKDIR}/usr/bin/$binary
+done
+
+cat <<EOF > ${ROOT_WORKDIR}/usr/lib/systemd/system/var-lib-pacman.mount
+[Unit]
+Description= ${DISTRO_NAME} onload - /var/lib/pacman
+
+[Mount]
+What=/${OS_FS_PREFIX}_root/rootfs/${FINAL_DISTRIB_IMAGE}/var/lib/pacman
+Where=/var/lib/pacman
+Type=none
+Options=bind
+
+[Install]
+WantedBy=steamos-offload.target
+EOF
 
 echo "(4.5/6) Generating en_US.UTF-8 locale..."
 sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' ${ROOT_WORKDIR}/etc/locale.gen
@@ -252,8 +299,13 @@ if [[ -z "${NO_COMPRESS}" ]]; then
 fi
 
 if [[ "${IS_HOME_BUILD}" == "true" ]]; then
-	echo -e ${UPDATE_METADATA} > ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.releasemeta
-	echo -e ${UPDATE_METADATA} > ${OUTPUT}/latest_${BUILD_MANIFEST_ID}.releasemeta
+	cat <<EOF >${OUTPUT}/${FINAL_DISTRIB_IMAGE}.releasemeta
+IMAGEFILE="${IMAGEFILE}"
+STAGING_OS_TAG=${RELEASE_TAG}
+STAGING_RELEASETYPE=$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')
+STAGING_ISINTERNAL=no
+EOF
+	cp ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.releasemeta ${OUTPUT}/latest_${BUILD_MANIFEST_ID}.releasemeta
 	sha256sum ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst | awk '{print $1'} > ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.sha256
 	chown 1000:1000 ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.sha256 ${OUTPUT}/latest_${BUILD_MANIFEST_ID}.releasemeta
 	chmod 777 ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.sha256 ${OUTPUT}/latest_${BUILD_MANIFEST_ID}.releasemeta
