@@ -281,6 +281,13 @@ do
   fi
 done
 
+echo "(4.13/6) Compile installed package list..."
+cat <<EOF >${OUTPUT}/packages.md
+|Package|Version|
+| -- | -- |
+EOF
+arch-chroot ${ROOT_WORKDIR} pacman -Q | awk '{print "|"$1"|"$2"|"}' >>${OUTPUT}/packages.md
+
 echo "(5/6) Stop doing things in container..."
 # Cleanup
 umount -l ${ROOT_WORKDIR}/var/cache/pacman/pkg/
