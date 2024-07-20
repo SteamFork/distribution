@@ -36,6 +36,10 @@ packages-local:
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-keyring
 	${SCRIPT_DIR}/mkpackage --repo local linux-firmware
 	${SCRIPT_DIR}/mkpackage --repo local linux
+	${SCRIPT_DIR}/mkpackage --repo local mesa-radv
+	${SCRIPT_DIR}/mkpackage --repo local mesa
+	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa-radv
+	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa
 	${SCRIPT_DIR}/mkpackage --repo local ectool
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-customizations-jupiter
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-device-support
@@ -47,8 +51,13 @@ packages-local:
 
 packages-aur:
 	${SCRIPT_DIR}/mkpackage --repo aur ryzenadj
-	${SCRIPT_DIR}/mkpackage --repo aur binder_linux-dkms
 	${SCRIPT_DIR}/mkpackage --repo aur wlr-randr
+	### Waydroid
+	${SCRIPT_DIR}/mkpackage --repo aur binder_linux-dkms
+	${SCRIPT_DIR}/mkpackage --repo aur dnsmasq-git
+	${SCRIPT_DIR}/mkpackage --repo aur libgbinder
+	${SCRIPT_DIR}/mkpackage --repo aur python-gbinder
+	${SCRIPT_DIR}/mkpackage --repo aur waydroid
 
 package:
 	${SCRIPT_DIR}/mkpackage $(RUN_ARGS)
