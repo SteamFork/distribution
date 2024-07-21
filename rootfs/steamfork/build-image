@@ -265,7 +265,11 @@ echo "(4.10/6) Fix runtime audio configuration."
     arch-chroot ${ROOT_WORKDIR} sed -i 's~multi-user.target~local-fs.target~g' /usr/lib/systemd/system/${AUDIO_SERVICE}-sysconf.service
     arch-chroot ${ROOT_WORKDIR} systemctl enable ${AUDIO_SERVICE}-sysconf.service
   done
-
+  rm -f ${ROOT_WORKDIR}/usr/share/pipewire/hardware-profiles/default
+  cd ${ROOT_WORKDIR}/usr/share/pipewire/hardware-profiles/
+  ln -sf valve-galileo default
+  cd -
+ 
 echo "(4.11/6) Enable systemd-resolved."
 rm -f ${ROOT_WORKDIR}/etc/resolv.conf
 ln -sf /run/systemd/resolve/stub-resolv.conf ${ROOT_WORKDIR}/etc/resolv.conf
