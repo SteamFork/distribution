@@ -41,7 +41,7 @@ jobs:
           tag: "${{ steps.tag.outputs.tag }}"
           body: |
             ## Downloads
-            This release contains a snapshot of the repository tree.  Downloadable images are available at [SteamFork.org](https://www.steamfork.org/images/installer/) with updates available OTA.  A download link to the latest installation image can be found below.
+            This release contains a snapshot of the repository tree and a list of packages and their versions in this release.  Downloadable images are available at [SteamFork.org](https://www.steamfork.org/images/installer/) with updates available OTA.  A download link to the latest installation image can be found below.
 
             | Branch | URL | Checksum |
             | -- | -- | -- |
@@ -49,9 +49,8 @@ jobs:
 
             For installation instructions and other documentation, visit the [main project page](https://github.com/SteamFork).
 
-            ## Package Versions
-            $(cat release/images/rel/images/packages.md)
           prerelease: false
+          artifacts: release/images/rel/images/package-versions.txt
           draft: false
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: SteamFork
