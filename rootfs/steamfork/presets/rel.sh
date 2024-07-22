@@ -880,7 +880,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     wireguard-tools
                     wireless-regdb
                     wireless_tools
-                    wireplumber
+                    extra-main/wireplumber
                     wpa_supplicant
                     x264
                     x265
