@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.9.10
-pkgrel=1
+pkgrel=3
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -68,7 +68,7 @@ sha256sums=('SKIP'
 '683128d044f4df12dcb0a7b2858075f510d870460dc71f0d60f69df89cf62419' # 0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
 'b42fa6bb0e3d93aa8a81f61543c2058fa6f8412b9ad190110ffb49c46e81d5ce' # 0020-add-devices-to-oxp-sensors.patch
 'd4bc9044e7e3290d6885d08b8360b61744dc4227a723aa178f9041284e062f08' # 0031-IIO-add-aya-neo-tablet-identifier.patch
-'603a97edcfd170674d96d02f1fe01751ccf947ed0673cc5615b1850eb616384b' # 0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
+'dc8218b5cf4b505a51c77712e54b944f01560d37a0e7630160d5f5776023cfda' # 0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
 '849649888ce53dcc425485ae35d2a196d3a68c65559295b1070eaf2c3f6affe9' # 0033-Codec-Add-aw87xxx-codec-with-partial-acpi-implementa.patch
 'd2d93d6b6d6bf5f57e3a2fc22f754dcf9917b261fec4830f7d3c2d470b372ebc' # 0034-Updated-AW87xxx-driver-to-be-more-verbose-for-debugg.patch
 'ee2a5e6301f27d408500df190829a88f7ad5bcaf56a8a60f5d731bae5bdd4588' # 0036-Updated-AW87xxx-driver-to-automatically-enumerate-a-.patch

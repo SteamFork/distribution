@@ -116,7 +116,7 @@ else
 fi
 
 source ${BUILD_MANIFEST}
-PACCFG=${SCRIPTPATH}/pacman-build-${BUILD_MANIFEST_ID}.conf
+PACCFG=${SCRIPTPATH}/pacman.conf
 
 
 ROOT_WORKDIR=${WORKDIR}/rootfs_mnt
@@ -161,6 +161,11 @@ echo "(3/6) Bootstrapping SteamFork core root.."
 pacstrap -C ${PACCFG} ${ROOT_WORKDIR} ${UI_BOOTSTRAP}
 rm ${ROOT_WORKDIR}/etc/pacman.conf
 cp ${PACCFG} ${ROOT_WORKDIR}/etc/pacman.conf
+if [ ! -d "${ROOT_WORKDIR}/usr/share/defaults" ]
+then
+  mkdir -p ${ROOT_WORKDIR}/usr/share/defaults
+fi
+cp ${PACCFG} ${ROOT_WORKDIR}/usr/share/defaults
 
 RELEASE_TYPE="$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')"
 

@@ -53,7 +53,6 @@ packages-aur:
 	${SCRIPT_DIR}/mkpackage --repo aur ryzenadj
 	${SCRIPT_DIR}/mkpackage --repo aur wlr-randr
 	### Waydroid
-	${SCRIPT_DIR}/mkpackage --repo aur binder_linux-dkms
 	${SCRIPT_DIR}/mkpackage --repo aur dnsmasq-git
 	${SCRIPT_DIR}/mkpackage --repo aur libgbinder
 	${SCRIPT_DIR}/mkpackage --repo aur python-gbinder

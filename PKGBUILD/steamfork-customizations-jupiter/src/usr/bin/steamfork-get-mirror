@@ -3,26 +3,42 @@
 # Copyright (C) 2024-present Fewtarius
 
 STAGING_MIRRORLIST="/tmp/steamfork-mirrors.txt"
-CURL_OPTS="--connect-timeout 2 --max-time 2"
-
-### Each mirror hashes its repository and provides the hash in the web root. Other
-### nodes in the pool check each node's hash, and if they match the node is added
-### to the mirror list on that node.  Each mirrorlist.txt is independent.
-
+LATEST_MIRRORLIST="/etc/default/steamfork-mirrors"
 DEFAULT_MIRRORS=( "www.steamfork.org" "www2.steamfork.org" "www3.steamfork.org" )
-for MIRROR in ${DEFAULT_MIRRORS[@]}
-do
-  curl -Lo ${STAGING_MIRRORLIST} ${CURL_OPTS} https://${MIRROR}/mirrorlist.txt 2>/dev/null
-  if [ "$?" = "0" ]
-  then
-    break
-  else
-    if [ -f "${STAGING_MIRRORLIST}" ]
+CURL_OPTS="--retry 4 --retry-all-errors --retry-delay 1 --connect-timeout 2 --max-time 2"
+
+refresh_mirrors() {
+  for MIRROR in ${DEFAULT_MIRRORS[@]}
+  do
+    curl -Lo ${STAGING_MIRRORLIST} ${CURL_OPTS} https://${MIRROR}/mirrorlist.txt 2>/dev/null
+    if [ "$?" = "0" ]
     then
-      rm -f ${STAGING_MIRRORLIST}
+      break
+    else
+      if [ -f "${STAGING_MIRRORLIST}" ]
+      then
+        rm -f ${STAGING_MIRRORLIST}
+      fi
     fi
+  done
+  cp -f ${STAGING_MIRRORLIST} ${LATEST_MIRRORLIST}
+}
+
+get_mirrors() {
+  if [ -f "${LATEST_MIRRORLIST}" ]
+  then
+	readarray -t MIRROR_LIST < ${LATEST_MIRRORLIST}
+  else
+	MIRROR_LIST=("${DEFAULT_MIRRORS[@]}")
   fi
-done
+
+  for MIRROR in ${MIRROR_LIST[@]}
+  do
+    echo "${MIRROR}" >>${STAGING_MIRRORLIST}
+  done
+}
+
+get_mirrors
 
 case ${1} in
 	list)
@@ -33,19 +49,18 @@ case ${1} in
 		### Randomize the mirror list output
 		cat ${STAGING_MIRRORLIST} | sort -R
 	;;
+	refresh)
+		### Fetch the latest mirror list from an official SteamFork mirror
+		refresh_mirrors
+	;;
 	*)
-		### Fetch a random mirror from the array, and test to make sure it's available.
+		### Fetch a random mirror from the array
 		readarray -t MIRROR_LIST < ${STAGING_MIRRORLIST}
 		for COUNT in $(seq 0 1 ${#MIRROR_LIST[@]})
 		do
 			SELECTED_MIRROR=${MIRROR_LIST[ $RANDOM % ${#MIRROR_LIST[@]}]}
-			curl -Lo /dev/null ${CURL_OPTS} ${SELECTED_MIRROR}/mirrorlist.txt >/dev/null 2>&1
-			if [ "$?" = "0" ]
-			then
-			  echo ${SELECTED_MIRROR}
-			  break
-			fi
-			sleep .1
+			echo ${SELECTED_MIRROR}
+			break
 		done
 	;;
 esac
