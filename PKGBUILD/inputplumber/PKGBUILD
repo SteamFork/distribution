@@ -3,7 +3,7 @@
 pkgname=inputplumber
 _pkgbase=inputplumber
 pkgver=v0.29.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Open source input router and remapper daemon for Linux"
 arch=('x86_64')
 url="https://github.com/ShadowBlip/InputPlumber"
@@ -12,10 +12,15 @@ depends=('dbus' 'libevdev' 'libiio')
 makedepends=('rust' 'make' 'cmake' 'clang' 'git')
 provides=('inputplumber')
 conflicts=('inputplumber-bin')
-source=("${_pkgbase}::git+https://github.com/ShadowBlip/${_pkgbase}.git")
+source=("${_pkgbase}::git+https://github.com/ShadowBlip/${_pkgbase}.git"
+	001-no-rootfs.patch
+)
+
 options=(!lto)
 
-sha256sums=('SKIP')
+sha256sums=('SKIP'
+	'31c8df5dde49ac50e769b48696192e5a647d01d3faa474360ec40f3321af10b3'  # 001-no-rootfs.patch
+)
 
 prepare() {
 	cd "$srcdir/${_pkgbase}"
@@ -23,6 +28,10 @@ prepare() {
 
 build() {
 	cd "$srcdir/${_pkgbase}"
+	for patch in ../*patch
+	do
+		patch -p1 <${patch}
+	done
 	make build
 }
 

@@ -1,0 +1,20 @@
+diff --git a/src/input/manager.rs b/src/input/manager.rs
+index 0a0fb6f..f815729 100644
+--- a/src/input/manager.rs
++++ b/src/input/manager.rs
+@@ -1556,7 +1556,6 @@ impl Manager {
+     pub async fn load_capability_mappings(&self) -> HashMap<String, CapabilityMap> {
+         let mut mappings = HashMap::new();
+         let paths = vec![
+-            "./rootfs/usr/share/inputplumber/capability_maps",
+             "/etc/inputplumber/capability_maps.d",
+             "/usr/share/inputplumber/capability_maps",
+         ];
+@@ -1606,7 +1605,6 @@ impl Manager {
+         let task = tokio::task::spawn_blocking(move || {
+             let mut devices: Vec<CompositeDeviceConfig> = Vec::new();
+             let paths = vec![
+-                "./rootfs/usr/share/inputplumber/devices",
+                 "/etc/inputplumber/devices.d",
+                 "/usr/share/inputplumber/devices",
+             ];
