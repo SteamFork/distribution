@@ -11,6 +11,7 @@ for CONFLICT in /etc/X11/Xsession.d/50rotate-screen \
                 /etc/sddm.conf.d/steamos.conf \
                 /home/liveuser/Desktop/Return.desktop \
                 "/home/liveuser/Desktop/SteamFork Project.desktop" \
+		"/home/liveuser/Desktop/Streaming Services.desktop" \
                 /usr/lib/systemd/system/home-swapfile.swap \
 		/usr/lib/systemd/system/swapfile.service
 do
