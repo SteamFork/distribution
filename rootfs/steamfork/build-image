@@ -286,6 +286,7 @@ ln -sf /run/systemd/resolve/stub-resolv.conf ${ROOT_WORKDIR}/etc/resolv.conf
 echo "(4.12/6) Delete conflicting files..."
 # Delete conflicting files
 for CONFLICT in etc/X11/Xsession.d/50rotate-screen \
+		usr/lib/qt/plugins/discover/steamos-backend.so \
                 etc/sddm.conf.d/steamdeck.conf
 do
   if [ -e "${ROOT_WORKDIR}/${CONFLICT}" ]
@@ -296,10 +297,9 @@ done
 
 echo "(4.13/6) Compile installed package list..."
 cat <<EOF >${OUTPUT}/package-versions.txt
-|Package|Version|
-| -- | -- |
+Package	Version
 EOF
-arch-chroot ${ROOT_WORKDIR} pacman -Q | awk '{print "|"$1"|"$2"|"}' >>${OUTPUT}/package-versions.txt
+arch-chroot ${ROOT_WORKDIR} pacman -Q >>${OUTPUT}/package-versions.txt
 
 echo "(5/6) Stop doing things in container..."
 # Cleanup

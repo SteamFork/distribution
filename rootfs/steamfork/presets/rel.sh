@@ -652,6 +652,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     p11-kit
                     p7zip
                     p8-platform
+		    packagekit-qt5
                     pacman
                     pacman-mirrorlist
                     pam
