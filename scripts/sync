@@ -47,6 +47,7 @@ EOF
       then
 	echo "Syncing ${REL}."
         source ${DEPLOY_DIR}/latest_${REL}.releasemeta
+	UPDATEFILE=${IMAGEFILE}
         IMAGEFILE="$(echo ${IMAGEFILE} | sed 's~_~-~g')"
 	ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new; rm -f \$(ls | grep steamfork_${REL}_ | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
         ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer; rm -f \$(ls | grep steamfork-${REL}- | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
@@ -68,6 +69,10 @@ EOF
 SteamFork v${STAGING_OS_TAG} (${REL}) installation image: <a href="/images/installer/${IMAGEFILE}-x86_64.iso">${IMAGEFILE}-x86_64.iso</a>
 <br>
 SteamFork v${STAGING_OS_TAG} (${REL}) checksum: <a href="/images/installer/${IMAGEFILE}-x86_64.iso.sha256">${IMAGEFILE}-x86_64.iso.sha256</a>
+<p>
+SteamFork v${STAGING_OS_TAG} (${REL}) update image: <a href="/images/${UPDATEFILE}.img.zst">${UPDATEFILE}.img.zst</a>
+<br>
+SteamFork v${STAGING_OS_TAG} (${REL}) checksum: <a href="/images/${UPDATEFILE}.sha256">${UPDATEFILE}.sha256</a>
 <p>
 EOF
       fi
