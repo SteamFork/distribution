@@ -1,6 +1,6 @@
 [Desktop Entry]
 Comment=Set up steaming services
-Exec=konsole -e /bin/bash --rcfile <(curl -L https://github.com/SteamFork/SetupStreamingServices/raw/main/install.sh | bash)
+Exec=konsole -e "/bin/bash --login -c 'curl -L https://github.com/SteamFork/SetupStreamingServices/raw/main/install.sh | bash'"
 GenericName=Streaming Services
 Icon=/usr/share/icons/steamfork/steamfork-streaming.png
 MimeType=

@@ -2,7 +2,7 @@
 
 pkgname=steamfork-customizations-jupiter
 pkgver=2024.07.25
-pkgrel=3
+pkgrel=4
 pkgdesc='SteamFork customizations provider.'
 arch=('any')
 url='http://www.steamfork.org'
