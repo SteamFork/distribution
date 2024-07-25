@@ -1,0 +1,16 @@
+[Desktop Entry]
+Comment=Set up steaming services
+Exec=konsole -e /bin/bash --rcfile <(curl -L https://github.com/SteamFork/SetupStreamingServices/raw/main/install.sh | bash)
+GenericName=Streaming Services
+Icon=/usr/share/icons/steamfork/steamfork-streaming.png
+MimeType=
+Name=Streaming Services
+Name=Streaming Services
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+Version=1.0
+X-KDE-SubstituteUID=false
+X-KDE-Username=
