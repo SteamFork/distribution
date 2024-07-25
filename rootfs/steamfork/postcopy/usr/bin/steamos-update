@@ -8,7 +8,7 @@ fi
 source /etc/steamfork-release
 
 ### Grab a list of mirrors from steamfork.org, and pick one randomly.
-MIRROR=$(steamfork-get-mirror)
+MIRROR="https://$(steamfork-get-mirror)"
 
 ### If we don't have a mirror for whatever reason, use the system default.
 if [ -z "${MIRROR}" ]
@@ -61,7 +61,7 @@ clean_progress() {
 }
 
 updatecheck(){
-    curl -Ls "${endpoint}" > ${argdata}
+    curl -Lso ${argdata} "${endpoint}" 2>/dev/null
     source ${argdata}
     if [[ "${STAGING_OS_TAG}" == "${OS_TAG}" ]]; then
         echo "System up to date."

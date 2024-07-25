@@ -112,7 +112,7 @@ if [ -n "${SNAPSHOTVERSION}" ]
 then
   export RELEASE_TAG=${SNAPSHOTVERSION}
 else
-  export RELEASE_TAG=$(date +%Y%m%d.%H%M.%S)
+  export RELEASE_TAG=$(date +%Y%m%d.%H%M)
 fi
 
 source ${BUILD_MANIFEST}
@@ -201,7 +201,7 @@ cat <<EOF >${ROOT_WORKDIR}/etc/steamos-atomupd/manifest.json
 {
     "product": "steamos",
     "release": "holo",
-    "variant": "steamfork",
+    "variant": "steamdeck",
     "arch": "amd64",
     "version": "${SNAPSHOTVERSION}",
     "buildid": "${SNAPSHOTVERSION}",

@@ -22,7 +22,7 @@ jobs:
         run: echo "tag=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
       - name: Set the version
         id: version
-        run: echo "version=$(date +'%Y%m%d.%H%M.%S')" >> $GITHUB_OUTPUT
+        run: echo "version=$(date +'%Y%m%d.%H%M')" >> $GITHUB_OUTPUT
       - name: Build Release Images
         run: |
           set -e

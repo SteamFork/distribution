@@ -6,7 +6,7 @@ export SCRIPT_DIR	:= ${BUILD_DIR}/scripts
 export WORK_DIR		:= ${BUILD_DIR}/_work
 export IMAGE_DIR	:= ${BUILD_DIR}/release/images
 export REPO_DIR		:= ${BUILD_DIR}/release/repos
-export BUILD_VER	:= $(shell date +%Y%m%d.%H%M.%S)
+export BUILD_VER	:= $(shell date +%Y%m%d.%H%M)
 
 RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(RUN_ARGS):;@:)
