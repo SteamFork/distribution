@@ -1,0 +1,16 @@
+[Desktop Entry]
+Comment=Install and configure common helpers.
+Exec=konsole -e "/bin/bash --login -c 'curl -L https://github.com/SteamFork/SteamForkTools/raw/main/install.sh | bash'"
+GenericName=Install Tools
+Icon=/usr/share/icons/steamfork/steamfork-tools.png
+MimeType=
+Name=Install Tools
+Name=Install Tools
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+Version=1.0
+X-KDE-SubstituteUID=false
+X-KDE-Username=
