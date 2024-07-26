@@ -37,6 +37,7 @@ function trim_subvolumes() {
               btrfs subvolume delete ${VOLUME}
           fi
       done
+      btrfs filesystem sync /sf_root
     fi
 }
 

@@ -58,7 +58,7 @@ beginupd(){
       finalizeupd
     else
       echo "Error deploying image, cleaning up..."
-      steamfork-deploy trim ${installcontainer}
+      steamfork-deploy trim rootfs/${IMAGEFILE}
       rm -rf ${downloadpath}/${IMAGEFILE}/
       exit 1
     fi
