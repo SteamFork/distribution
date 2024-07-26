@@ -2,7 +2,7 @@
 
 pkgname=steamfork-customizations-jupiter
 pkgver=2024.07.26
-pkgrel=1
+pkgrel=2
 pkgdesc='SteamFork customizations provider.'
 arch=('any')
 url='http://www.steamfork.org'
@@ -13,7 +13,8 @@ makedepends=('file')
 
 installit() {
   TYPE=$(file --no-sandbox "${1}")
-  if [[ "${TYPE}" =~ script ]]
+  if [[ "${TYPE}" =~ script ]] || \
+     [[ "${1}" =~ desktop ]]
   then
     PERM="755"
   elif [[ "${TYPE}" =~ link ]]
