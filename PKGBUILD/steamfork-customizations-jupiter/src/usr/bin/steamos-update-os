@@ -53,7 +53,15 @@ beginupd(){
     cleandeployments
     echo "Installing OS Image ${STAGING_OS_TAG}..."
     steamfork-deploy install ${installcontainer}
-    finalizeupd
+    if [ "$?" = 0 ]
+    then
+      finalizeupd
+    else
+      echo "Error deploying image, cleaning up..."
+      steamfork-deploy trim ${installcontainer}
+      rm -rf ${downloadpath}/${IMAGEFILE}/
+      exit 1
+    fi
 }
 
 if [[ -f ${argdata} ]]; then

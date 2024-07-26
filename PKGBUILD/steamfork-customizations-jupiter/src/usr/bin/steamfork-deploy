@@ -58,10 +58,18 @@ function install_subvolume() {
     if [[ ! "$(file ${file} | cut -d ' ' -f 2)" == "BTRFS" ]]; then
         echo "File ${file} is not a valid BTRFS subvolume."
         rm ${file}
+	exit 1
     fi
 
     trim_subvolumes
     btrfs receive ${SUBVOLUME_CONTAINER_PATH} < "${file}"
+    if [ ! "$?" = "0" ]
+    then
+        echo "Error deploying ${SUBVOLUME_CONTAINER_PATH}, cleaning up..."
+	steamfork-deploy trim ${SUBVOLUME_CONTAINER_PATH}
+	rm ${file}
+	exit 1
+    fi
     rm ${file}
     echo "Subvolume installed successfully."
 }
@@ -83,6 +91,7 @@ EOF
         echo "Switched to subvolume: ${subvolume}"
     else
         echo "Error switching: subvolume ${subvolume} does not exist."
+	exit 1
     fi
 }
 

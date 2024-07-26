@@ -1,11 +1,11 @@
 [Desktop Entry]
-Comment=Install and configure common helpers.
+Comment=Common configuration helpers.
 Exec=konsole -e "/bin/bash --login -c 'curl -L https://github.com/SteamFork/SteamForkTools/raw/main/install.sh | bash'"
-GenericName=Install Tools
+GenericName=Setup Helpers
 Icon=/usr/share/icons/steamfork/steamfork-tools.png
 MimeType=
-Name=Install Tools
-Name=Install Tools
+Name=Setup Helpers
+Name=Setup Helpers
 Path=
 StartupNotify=true
 Terminal=false
