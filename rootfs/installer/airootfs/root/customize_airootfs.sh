@@ -12,6 +12,7 @@ for CONFLICT in /etc/X11/Xsession.d/50rotate-screen \
                 /home/liveuser/Desktop/Return.desktop \
                 "/home/liveuser/Desktop/SteamFork Project.desktop" \
 		"/home/liveuser/Desktop/Streaming Services.desktop" \
+		"/home/liveuser/Desktop/Install Tools.desktop" \
                 /usr/lib/systemd/system/home-swapfile.swap \
 		/usr/lib/systemd/system/swapfile.service
 do
