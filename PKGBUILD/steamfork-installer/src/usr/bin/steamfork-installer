@@ -99,3 +99,4 @@ e2label ${home_partition} sf_home
 sync && udevadm trigger && partprobe
 echo "Starting to bootstrap installation..."
 steamfork-bootstrap --username "${HOLOUSER}" --password "${HOLOPASS}" --root_password "${ROOTPASS}"
+sync

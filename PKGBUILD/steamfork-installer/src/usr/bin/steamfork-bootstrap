@@ -153,10 +153,14 @@ if [[ "${REALEXITCODE}" -ne "0" ]]; then
     sleep 5
 fi
 
+sync
 echo "Finished, unmounting filesystems..."
-echo "You may now close this window and reboot your device..."
-for drive in $(echo "sf_home sf_var sf_root sf_efi"); do umount -f $(blkid -L $drive); done
+for drive in $(echo "sf_home sf_var sf_efi sf_root")
+do
+    umount -f $(blkid -L $drive)
+done
 umount -l ${SUBVOLLOCATION} && umount -l ${HOMELOCATION_TEMP}
+echo "You may now close this window and reboot your device..."
 exit 0
 else
 echo "Partition layout not detected. Aborting bootstrap"
