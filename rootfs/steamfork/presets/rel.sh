@@ -72,7 +72,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     assimp
                     at-spi2-core
                     atkmm
-                    atomupd-daemon-git
                     attr
                     audit
                     avahi
@@ -652,7 +651,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     p11-kit
                     p7zip
                     p8-platform
-		    packagekit-qt5
                     pacman
                     pacman-mirrorlist
                     pam
@@ -820,14 +818,12 @@ export STEAMOS_PKGS="accounts-qml-module
                     steam_notif_daemon
                     steamdeck-dsp
                     steamdeck-kde-presets
-                    steamos-atomupd-client-git
                     steamos-devkit-service
                     steamos-efi
                     steamos-kdumpst-layer
                     steamos-log-submitter
                     steamos-manager
                     steamos-networking-tools
-                    steamos-reset
                     steamos-systemreport
                     steamos-tweak-mtu-probing
                     strace
@@ -1024,6 +1020,12 @@ export STEAMOS_PKGS="accounts-qml-module
 # vpower
 # xorg-xwayland-jupiter
 # zenity-light
+
+# Conflicts with SteamFork update tooling
+# atomupd-daemon-git
+# steamos-atomupd-client-git
+# steamos-reset
+# packagekit-qt5
 
 export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   bc

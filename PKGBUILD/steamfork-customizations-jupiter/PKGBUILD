@@ -2,12 +2,12 @@
 
 pkgname=steamfork-customizations-jupiter
 pkgver=2024.07.26
-pkgrel=7
+pkgrel=10
 pkgdesc='SteamFork customizations provider.'
 arch=('any')
 url='http://www.steamfork.org'
 license=('LGPLv2+')
-provides=('steamos-customizations-jupiter')
+provides=('steamos-customizations-jupiter' 'atomupd-daemon-git' 'steamos-atomupd-client-git' 'steamos-reset')
 depends=('base')
 makedepends=('file')
 
