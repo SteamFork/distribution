@@ -84,7 +84,7 @@ EOF
     scp /tmp/index.html ${WWWUSER}@${WWWHOST}:${WWWROOT}/images-new/installer/
     ssh -tt ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/images-new"
     ssh -tt ${WWWUSER}@${WWWHOST} "mv ${WWWROOT}/images ${WWWROOT}/images-old; mv ${WWWROOT}/images-new/ ${WWWROOT}/images; rm -rf ${WWWROOT}/images-old"
-    ssh -tt ${WWWUSER}@${WWWHOST} "mkdir -p ${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}/steamdeck; echo "{ }" >${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}/steamdeck/${STAGING_OS_TAG}.json"
+    ssh -tt ${WWWUSER}@${WWWHOST} "mkdir -p ${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck; echo "{ }" >${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck/${STAGING_OS_TAG}.json"
   ;;
   mirrors)
     for MIRROR_HOST in ${MIRROR_HOSTS}
