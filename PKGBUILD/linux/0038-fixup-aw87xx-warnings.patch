@@ -1,0 +1,36 @@
+From 9a3f8a98782640d381a12629e4cd757b19381940 Mon Sep 17 00:00:00 2001
+From: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
+Date: Sat, 27 Jul 2024 08:22:20 +0200
+Subject: [PATCH] fixup aw87xxx.{c,h} warnings
+
+---
+ sound/soc/codecs/aw87xxx/aw87xxx.c | 1 +
+ sound/soc/codecs/aw87xxx/aw87xxx.h | 5 +++++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/sound/soc/codecs/aw87xxx/aw87xxx.c b/sound/soc/codecs/aw87xxx/aw87xxx.c
+index 154ba1db629920..710f9b6109de83 100644
+--- a/sound/soc/codecs/aw87xxx/aw87xxx.c
++++ b/sound/soc/codecs/aw87xxx/aw87xxx.c
+@@ -42,6 +42,7 @@
+ #include <linux/hrtimer.h>
+ #include <linux/ktime.h>
+ #include <linux/kthread.h>
++#include <linux/vmalloc.h>
+ #include <uapi/sound/asound.h>
+ #include <sound/control.h>
+ #include <sound/soc.h>
+diff --git a/sound/soc/codecs/aw87xxx/aw87xxx.h b/sound/soc/codecs/aw87xxx/aw87xxx.h
+index ed052226a003ce..4a613e4a8f1238 100644
+--- a/sound/soc/codecs/aw87xxx/aw87xxx.h
++++ b/sound/soc/codecs/aw87xxx/aw87xxx.h
+@@ -118,4 +118,9 @@ struct aw87xxx {
+ int aw87xxx_update_profile(struct aw87xxx *aw87xxx, char *profile);
+ int aw87xxx_update_profile_esd(struct aw87xxx *aw87xxx, char *profile);
+ 
++char *aw87xxx_show_current_profile(int dev_index);
++int aw87xxx_set_profile(int dev_index, char *profile);
++int aw87xxx_set_profile_by_id(int dev_index, int profile_id);
++int aw87xxx_add_codec_controls(void *codec);
++int aw87xxx_awrw_write(struct aw87xxx *aw87xxx, const char *buf, size_t count);
+ #endif

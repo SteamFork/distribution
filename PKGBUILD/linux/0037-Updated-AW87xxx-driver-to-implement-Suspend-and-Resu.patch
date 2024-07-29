@@ -1,43 +1,42 @@
-From 93ec07e7e5b5a5d005351880e09f2dd3aa6ea82c Mon Sep 17 00:00:00 2001
+From 98c4c317752a0d9773885cbc3d40bceb705713f8 Mon Sep 17 00:00:00 2001
 From: CVMagic <546352+CVMagic@users.noreply.github.com>
 Date: Wed, 22 May 2024 02:42:40 +0000
-Subject: [PATCH 37/41] Updated AW87xxx driver to implement Suspend and Resume.
+Subject: [PATCH] Updated AW87xxx driver to implement Suspend and Resume.
 
 ---
- sound/soc/codecs/aw87xxx/aw87xxx.c | 39 ++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ sound/soc/codecs/aw87xxx/aw87xxx.c | 37 ++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
 diff --git a/sound/soc/codecs/aw87xxx/aw87xxx.c b/sound/soc/codecs/aw87xxx/aw87xxx.c
-index 8b3e74a7b37b..134a9a750590 100644
+index de3c5c3064c711..154ba1db629920 100644
 --- a/sound/soc/codecs/aw87xxx/aw87xxx.c
 +++ b/sound/soc/codecs/aw87xxx/aw87xxx.c
-@@ -1471,6 +1471,44 @@ static void aw87xxx_i2c_shutdown(struct i2c_client *client)
+@@ -1476,6 +1476,42 @@ static void aw87xxx_i2c_shutdown(struct i2c_client *client)
  	aw87xxx_update_profile(aw87xxx, aw87xxx->prof_off_name);
  }
  
-+
 +static int aw87xxx_runtime_suspend(struct device *dev)
 +{
-+        struct aw87xxx *aw87xxx = dev_get_drvdata(dev);
++	struct aw87xxx *aw87xxx = dev_get_drvdata(dev);
 +
-+        AW_DEV_LOGI(aw87xxx->dev, "Suspending...");
++	AW_DEV_LOGI(aw87xxx->dev, "Suspending...");
 +
-+        // soft and hw power off
-+        aw87xxx_update_profile(aw87xxx, aw87xxx->prof_off_name);
++	// soft and hw power off
++	aw87xxx_update_profile(aw87xxx, aw87xxx->prof_off_name);
 +
-+        return 0;
++	return 0;
 +}
 +
 +static int aw87xxx_runtime_resume(struct device *dev)
 +{
-+        struct list_head *pos = NULL;
++	struct list_head *pos = NULL;
 +	struct aw87xxx *aw87xxx = dev_get_drvdata(dev);
 +
 +	// Power on PA
 +	if (aw87xxx->dev_index == 1)
 +		aw87xxx_dev_hw_pwr_ctrl(&aw87xxx->aw_dev, true);
 +
-+        // Set profile to Music
++	// Set profile to Music
 +	list_for_each_prev(pos, &g_aw87xxx_list) {
 +		aw87xxx = list_entry(pos, struct aw87xxx, list);
 +		AW_DEV_LOGI(aw87xxx->dev, "Resuming...");
@@ -45,10 +44,9 @@ index 8b3e74a7b37b..134a9a750590 100644
 +		mutex_lock(&aw87xxx->reg_lock);
 +		aw87xxx_power_on(aw87xxx, AW87XXX_PROF_MUSIC);
 +		mutex_unlock(&aw87xxx->reg_lock);
++	}
 +
-+        }
-+
-+        return 0;
++	return 0;
 +}
 +
 +static SIMPLE_DEV_PM_OPS(aw87xxx_pm_ops, aw87xxx_runtime_suspend, aw87xxx_runtime_resume);
@@ -56,7 +54,7 @@ index 8b3e74a7b37b..134a9a750590 100644
  static const struct acpi_device_id aw87xxx_acpi_match[] = {
          { "AWDZ8830", 0 },
  	{ }
-@@ -1488,6 +1526,7 @@ static struct i2c_driver aw87xxx_i2c_driver = {
+@@ -1493,6 +1529,7 @@ static struct i2c_driver aw87xxx_i2c_driver = {
  		.owner = THIS_MODULE,
  		.name = AW87XXX_I2C_NAME,
  		.acpi_match_table = aw87xxx_acpi_match,
@@ -64,6 +62,3 @@ index 8b3e74a7b37b..134a9a750590 100644
  		},
  	.probe = aw87xxx_i2c_probe,
  	.remove = aw87xxx_i2c_remove,
--- 
-2.43.2
-
