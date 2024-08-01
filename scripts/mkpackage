@@ -54,7 +54,7 @@ sudo chown ${BUILDUSER}:${BUILDUSER} ${WORK_DIR} ${REPO_DIR}
 
 for STALE_PACKAGE in ${REPO_DIR}/${pkgbase} ${REPO_DIR}/${pkgbase}-debug ${REPO_DIR}/${pkgname[@]}
 do
-  rm -f "${STALE_PACKAGE}-${pkgver}*"
+  rm -f "${STALE_PACKAGE}-[0-9]*"
 done
 
 case ${PKGSOURCE} in
