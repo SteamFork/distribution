@@ -46,9 +46,11 @@ sudo rm -rf /var/lib/pacman/db.lck ${WORK_DIR}
 sudo mkdir -p ${WORK_DIR} ${REPO_DIR} 2>/dev/null
 sudo chown ${BUILDUSER}:${BUILDUSER} ${WORK_DIR} ${REPO_DIR}
 
-for STALE_PACKAGE in ${REPO_DIR}/${1}-*
+source PKGBUILD/${1}/PKGBUILD
+
+for STALE_PACKAGE in ${REPO_DIR}/${pkgname[@]}
 do
-  rm -f "${STALE_PACKAGE}"
+  rm -f "${STALE_PACKAGE}-*"
 done
 
 case ${PKGSOURCE} in
@@ -83,4 +85,12 @@ if [ $? -ne 0 ]; then
 fi
 # remove any epoch (:) in name, replace with -- since not allowed in artifacts
 find ${REPO_DIR}/*.pkg.tar* -type f -name '*:*' -execdir bash -c 'mv "$1" "${1//:/--}"' bash {} \;
-find ${REPO_DIR}/ -type f -name "${1}-*.tar.zst" -execdir bash -c 'gpg --yes --detach-sign --use-agent --no-armor $1' bash {} \;
+
+# Sign packages.
+for PKG in ${REPO_DIR}/${pkgname[@]}-${pkgver}*tar.zst
+do
+  if [ -f "${PKG}" ]
+  then
+    gpg --yes --detach-sign --use-agent --no-armor ${PKG}
+  fi
+done
