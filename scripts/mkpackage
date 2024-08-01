@@ -52,11 +52,6 @@ sudo rm -rf /var/lib/pacman/db.lck ${WORK_DIR}
 sudo mkdir -p ${WORK_DIR} ${REPO_DIR} 2>/dev/null
 sudo chown ${BUILDUSER}:${BUILDUSER} ${WORK_DIR} ${REPO_DIR}
 
-for STALE_PACKAGE in ${REPO_DIR}/${pkgbase} ${REPO_DIR}/${pkgbase}-debug ${REPO_DIR}/${pkgname[@]}
-do
-  rm -f "${STALE_PACKAGE}-[0-9]*"
-done
-
 case ${PKGSOURCE} in
   aur)
     git clone --depth=1 https://aur.archlinux.org/${1}.git ${WORK_DIR}
@@ -80,6 +75,12 @@ case ${PKGSOURCE} in
 esac
 
 source ${WORK_DIR}/PKGBUILD
+
+for STALE_PACKAGE in ${pkgbase} ${pkgbase}-debug ${pkgname[@]}
+do
+  rm -f ${REPO_DIR}/${STALE_PACKAGE}-[0-9]*
+done
+
 PIKAUR_CMD="PKGDEST=${REPO_DIR} pikaur --noconfirm --rebuild --build-gpgdir /etc/pacman.d/gnupg -S -P ${WORK_DIR}/PKGBUILD"
 PIKAUR_RUN=(bash -c "${PIKAUR_CMD}")
 "${PIKAUR_RUN[@]}"

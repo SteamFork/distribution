@@ -1,0 +1,98 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
+
+export WORK_DIR="$(dirname $(realpath "${0}"))"
+
+DEVICE_ID=$(steamfork-device-id)
+QUIRK_PATH="/home/.steamos/offload/customdevicequirks/${DEVICE_ID}"
+
+doreboot() {
+	zenity --question --text="Your system will now reboot, proceed?"
+	if [ $? = 0 ]
+	then
+		sudo shutdown -r now
+	fi
+}
+
+uninstall() {
+	sudo rm -rf ${QUIRK_PATH}
+	doreboot
+}
+
+declare -a allFeatures=(false "Left" "Rotate display 90 degrees to the left." false "Right" "Rotate the display 90 degrees to the right." false "Upsidedown" "Rotate the display 180 degrees." false "Performance" "Reduce native display resolution to improve performance." false "Remove" "Removes the custom quirk.")
+
+HELPERS=$( zenity --title "Quirk Generation Tool" \
+	--list \
+	--checklist \
+	--height=420 \
+	--width=600 \
+	--text="Please choose the features that you would like to add." \
+	--column="Selection" \
+	--column="Component" \
+	--column="Description" \
+	"${allFeatures[@]}")
+
+if [ ! "$?" = 0 ]
+then
+  exit 0
+fi
+
+declare arrSelected=()
+IFS='|' read -r -a arrSelected <<< ${HELPERS}
+for ITEM in "${arrSelected[@]}"
+do
+	ITEM=${ITEM,,}
+	case ${ITEM} in
+		left|right|upsidedown)
+			ROTATION="${ITEM}"
+			;;
+		performance)
+			PERFORMANCE="true"
+			;;
+		remove)
+			REMOVE="true"
+			;;
+	esac
+done
+
+if [ "${REMOVE}" = "true" ]
+then
+	uninstall
+fi
+
+RESOLUTION="$(modetest | awk '/^\s\s#0/ {print $2; exit}')"
+if [[ ${ROTATION} =~ left|right ]]
+then
+        NHEIGHT="$(echo ${RESOLUTION%x*})"
+        NWIDTH="$(echo ${RESOLUTION#*x})"
+else
+	NHEIGHT="$(echo ${RESOLUTION#*x})"
+	NWIDTH="$(echo ${RESOLUTION%x*})"
+fi
+
+GSWIDTH="$(echo "${NWIDTH} / 1.5" | bc)"
+GSHEIGHT="$(echo "${NHEIGHT} / 1.5" | bc)"
+
+if [ "${PERFORMANCE}" = "true" ]
+then
+  QUIRK_DATA=" --gamescope_resolution ${GSWIDTH}x${GSHEIGHT} --gamescope_displaysize ${GSWIDTH}x${GSHEIGHT}"
+else
+  QUIRK_DATA=" --gamescope_resolution ${GSWIDTH}x${GSHEIGHT}"
+fi
+
+if [ -n "${ROTATION}" ]
+then
+  QUIRK_DATA="${QUIRK_DATA} --gamescope_rotation ${ROTATION}"
+  if [ "${ROTATION}" = "upsidedown" ]
+  then
+    QUIRK_DATA="${QUIRK_DATA} --desktop_rotation inverted"
+  else
+    QUIRK_DATA="${QUIRK_DATA} --desktop_rotation ${ROTATION}"
+  fi
+fi
+
+sudo mkdir -p ${QUIRK_PATH} 2>/dev/null
+steamfork-quirk-generator ${QUIRK_DATA} | sudo tee ${QUIRK_PATH}/hardware_quirks.sh
+
+doreboot
