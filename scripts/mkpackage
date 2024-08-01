@@ -5,6 +5,12 @@
 set -e
 set -x
 
+echo "Cache key" | gpg --sign -o /dev/null
+if [ ! "$?" = 0 ]
+then
+  echo "Unable to cache signing key, quitting..."
+fi
+
 while [[ $# -ge 2 ]]
 do
   KEY="$1"
@@ -46,9 +52,7 @@ sudo rm -rf /var/lib/pacman/db.lck ${WORK_DIR}
 sudo mkdir -p ${WORK_DIR} ${REPO_DIR} 2>/dev/null
 sudo chown ${BUILDUSER}:${BUILDUSER} ${WORK_DIR} ${REPO_DIR}
 
-source PKGBUILD/${1}/PKGBUILD
-
-for STALE_PACKAGE in ${REPO_DIR}/${pkgname[@]}
+for STALE_PACKAGE in ${REPO_DIR}/${pkgbase} ${REPO_DIR}/${pkgname[@]}
 do
   rm -f "${STALE_PACKAGE}-*"
 done
@@ -75,6 +79,7 @@ case ${PKGSOURCE} in
   ;;
 esac
 
+source ${WORK_DIR}/PKGBUILD
 PIKAUR_CMD="PKGDEST=${REPO_DIR} pikaur --noconfirm --rebuild --build-gpgdir /etc/pacman.d/gnupg -S -P ${WORK_DIR}/PKGBUILD"
 PIKAUR_RUN=(bash -c "${PIKAUR_CMD}")
 "${PIKAUR_RUN[@]}"
@@ -87,8 +92,13 @@ fi
 find ${REPO_DIR}/*.pkg.tar* -type f -name '*:*' -execdir bash -c 'mv "$1" "${1//:/--}"' bash {} \;
 
 # Sign packages.
-for PKG in ${pkgname[@]}
+for PKG in ${pkgbase} ${pkgbase}-debug ${pkgname[@]}
 do
-  echo "Sign: ${PKG}"
-  gpg --yes --detach-sign --use-agent --no-armor ${REPO_DIR}/${PKG}*${pkgver}*tar.zst
+  for TOSIGN in ${REPO_DIR}/${PKG}-${pkgver}*tar.zst
+  do
+    if [ -f "${TOSIGN}" ]
+    then
+      gpg --yes --detach-sign --use-agent --no-armor ${TOSIGN}
+    fi
+  done
 done

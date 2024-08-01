@@ -99,7 +99,7 @@ build() {
     -D valgrind=enabled
 
   # Print config
-  meson configure build
+  #meson configure build
 
   ninja -C build
   meson compile -C build

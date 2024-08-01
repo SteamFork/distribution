@@ -36,10 +36,10 @@ packages-local:
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-keyring
 	${SCRIPT_DIR}/mkpackage --repo local linux-firmware
 	${SCRIPT_DIR}/mkpackage --repo local linux
-	${SCRIPT_DIR}/mkpackage --repo local mesa-radv
 	${SCRIPT_DIR}/mkpackage --repo local mesa
-	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa-radv
+	${SCRIPT_DIR}/mkpackage --repo local mesa-radv
 	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa
+	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa-radv
 	${SCRIPT_DIR}/mkpackage --repo local ectool
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-customizations-jupiter
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-device-support

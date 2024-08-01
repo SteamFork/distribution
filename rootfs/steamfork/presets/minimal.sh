@@ -258,6 +258,7 @@ export STEAMOS_PKGS="acl
                     linux-api-headers
                     linux-firmware
                     linux-firmware-whence
+		    extra-main/llvm
                     lsof
                     lz4
                     lzo

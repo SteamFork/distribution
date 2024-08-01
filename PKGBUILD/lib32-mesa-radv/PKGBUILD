@@ -115,7 +115,7 @@ END
     -D radv-build-id="33b2f702c2e8a14d5b76f98ab629e74fb06aa55d"
 
   # Print config
-  meson configure build
+  #meson configure build
 
   ninja -C build
   meson compile -C build

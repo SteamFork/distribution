@@ -113,7 +113,7 @@ END
     -D valgrind=disabled
 
   # Print config
-  meson configure build
+  #meson configure build
 
   ninja -C build
   meson compile -C build
