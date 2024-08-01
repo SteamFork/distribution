@@ -87,12 +87,8 @@ fi
 find ${REPO_DIR}/*.pkg.tar* -type f -name '*:*' -execdir bash -c 'mv "$1" "${1//:/--}"' bash {} \;
 
 # Sign packages.
-for PKG in ${REPO_DIR}/${pkgname[@]}*${pkgver}*.pkg.tar.zst
+for PKG in ${pkgname[@]}
 do
-  echo "Check: ${REPO_DIR}/${PKG}"
-  if [ -f "${REPO_DIR}/${PKG}" ]
-  then
-    echo "Sign: ${PKG}"
-    gpg --yes --detach-sign --use-agent --no-armor ${REPO_DIR}/${PKG}
-  fi
+  echo "Sign: ${PKG}"
+  gpg --yes --detach-sign --use-agent --no-armor ${REPO_DIR}/${PKG}*${pkgver}*tar.zst
 done
