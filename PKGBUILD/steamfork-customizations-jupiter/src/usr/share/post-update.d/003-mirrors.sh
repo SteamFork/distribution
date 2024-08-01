@@ -5,5 +5,5 @@
 rm -f /etc/pacman.d/steamfork-mirrorlist
 steamfork-get-mirror random | while read line
 do
-  echo "Server = ${line}/repos/rel" >>/etc/pacman.d/steamfork-mirrorlist
+  echo "Server = https://${line}/repos/rel" >>/etc/pacman.d/steamfork-mirrorlist
 done
