@@ -12,6 +12,8 @@ doreboot() {
 	if [ $? = 0 ]
 	then
 		sudo shutdown -r now
+	else
+		exit 0
 	fi
 }
 
