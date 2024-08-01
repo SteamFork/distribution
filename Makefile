@@ -16,7 +16,7 @@ world: packages-local packages-aur packages-sync images images-sync
 upload: packages-sync images-sync
 
 clean:
-	rm -rf ${WORK_DIR} ${IMAGE_DIR} ${REPO_DIR}
+	sudo rm -rf ${WORK_DIR} ${IMAGE_DIR} ${REPO_DIR}
 
 images-all: images
 

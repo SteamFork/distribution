@@ -24,7 +24,7 @@ case ${1} in
       if [ -d "${WORKING_REPO}" ]
       then
         cd ${WORKING_REPO}
-        repo-add --sign -k ${SIGNKEY} steamfork.db.tar.gz *zst
+        repo-add --verify --sign -k ${SIGNKEY} steamfork.db.tar.gz *zst
         cd -
         ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}; ln -sf ${WWWROOT}/repos/${REPO} steamfork-${REPO}"
       fi
