@@ -88,7 +88,7 @@ diff -rupN linux-6.9.11.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linu
 +                  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYANEO"),
 +                  DMI_MATCH(DMI_PRODUCT_NAME, "SLIDE"),
 +        },
-+                .driver_data = (void *)&lcd1080x1920_bottom_up,
++                .driver_data = (void *)&lcd1080x1920_leftside_up,
 +	}, {    /* AYN Loki Zero, Max, Max Pro */
 +		.matches = {
 +		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ayn"),

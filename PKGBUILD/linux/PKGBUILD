@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.10.2
-pkgrel=4
+pkgrel=6
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -62,7 +62,7 @@ validpgpkeys=(
 )
 sha256sums=('SKIP'
 'a50f15c70227e17023211fd79c5064e328967023a5d60446c8b82f25d708ff13' # config
-'b8a6aa580aba7a76fc6f37d3478082d03f062fbce5782c5e239d667866bc5727' # 0001-drm-panel-orientation-quirks.patch
+'2fde7b646741397b0847ff71fe42ec178aef7de2436cc5531b0e725e878dccf8' # 0001-drm-panel-orientation-quirks.patch
 '783da391e0f45635eefb583b8b3acc29cd62a0c9eeefedf7f790dc2f89c7e279' # 0006-Ayaneo-geek-headset-patch.patch
 '33edff1a51ceb763c47b3ae485f5857a716a1dac9f1e8b65c3b93c6e88a4838f' # 0007-ayaneo-2-headphone-fix.patch
 'c6867ab6a95146e796dee888283fdae95837b8f53487e659f6d66bc458054b14' # 0008-ayaneo-1s-hp-fix.patch
