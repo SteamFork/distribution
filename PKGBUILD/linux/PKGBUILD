@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.10.2
-pkgrel=3
+pkgrel=4
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -52,6 +52,7 @@ source=(
   0037-Updated-AW87xxx-driver-to-implement-Suspend-and-Resu.patch
   0038-fixup-aw87xx-warnings.patch
   0040-Add-Atari-VCS-quirk.patch
+  0050-AMD-Pstate-Core-Performance-Boost.patch
   0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 validpgpkeys=(
@@ -76,6 +77,7 @@ sha256sums=('SKIP'
 '4f3baa6a367659341873ec7443d6238044cca521e04c0a868322221ac50149ff' # 0037-Updated-AW87xxx-driver-to-implement-Suspend-and-Resu.patch
 '23d91695bf8e5d5cdb9503a47468c6c5cf220bc7966a4720aa46645357e29ee6' # 0038-fixup-aw87xx-warnings.patch
 '1822769c05fd3b2126870a853c41ab167a95cf91d23f0d50bb103838857489eb' # 0040-Add-Atari-VCS-quirk.patch
+'8f2ee4421963d5517318f0204d0bdd83e3d7a78c2e53d3dacfeae0a6d2b183f3' # 0050-AMD-Pstate-Core-Performance-Boost.patch
 '23673c33ea69f3508ff9265d27171e2e58899950d563a1726a6049afe9e92067' # 0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 
