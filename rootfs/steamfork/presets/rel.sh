@@ -832,6 +832,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     strace
                     sudo
                     svt-av1
+		    swh-plugins
                     systemd
                     systemd-libs
                     systemd-sysvcompat
