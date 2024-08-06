@@ -19,7 +19,17 @@ fi
 
 mount ${EFI_LOCATION} /boot/efi
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=steamos --removable
+if [ ! $? = 0 ]
+then
+    echo "Failed to install GRUB, exiting..."
+    exit 1
+fi
 grub-mkconfig -o /boot/grub/grub.cfg
+if [ ! $? = 0 ]
+then
+    echo "Failed to configure GRUB, exiting..."
+    exit 1
+fi
 echo "Installing grub entry on ${EFI_STORAGE}, partition number ${EFI_PARTNUM}"
 for ENTRY in $(efibootmgr | awk '/[Ss]team[Ff]ork/ {print $1}' | sed -e 's~Boot~~g;s~\W$~~g')
 do
@@ -27,4 +37,9 @@ do
   efibootmgr -B -b ${ENTRY}
 done
 efibootmgr -c -d ${EFI_STORAGE} -p ${EFI_PARTNUM} -L "SteamFork (GRUB)" -l '\EFI\steamos\grubx64.efi'
+if [ ! $? = 0 ]
+then
+    echo "Failed to configure EFI, exiting..."
+    exit 1
+fi
 umount -l /boot/efi

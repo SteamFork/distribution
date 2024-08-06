@@ -62,12 +62,29 @@ function install_subvolume() {
 	exit 1
     fi
 
+
+    local CURRENT_SUBVOLUME="$(cat /proc/cmdline | sed 's/.*subvol=//g' | cut -d ' ' -f 1)"
+    local NEW_SUBVOLUME="$(basename ${file%.img*})"
+
+    if [ "${CURRENT_SUBVOLUME}" = "rootfs/${NEW_SUBVOLUME}" ]
+    then
+        echo "${NEW_SUBVOLUME} is already the running image, exiting..."
+        rm ${file}
+	exit 1
+    fi
+
+    if [ -d "${SUBVOLUME_CONTAINER_PATH}/${NEW_SUBVOLUME}" ]
+    then
+	echo "${NEW_SUBVOLUME} is already installed, removing..."
+	trim_subvolumes ${SUBVOLUME_CONTAINER_PATH}/${NEW_SUBVOLUME}
+    fi
+
     trim_subvolumes
     btrfs receive ${SUBVOLUME_CONTAINER_PATH} < "${file}"
     if [ ! "$?" = "0" ]
     then
-        echo "Error deploying ${SUBVOLUME_CONTAINER_PATH}, cleaning up..."
-	steamfork-deploy trim ${SUBVOLUME_CONTAINER_PATH}
+        echo "Error deploying ${file}, cleaning up..."
+	steamfork-deploy trim ${SUBVOLUME_CONTAINER_PATH}/${NEW_SUBVOLUME}
 	rm ${file}
 	exit 1
     fi
@@ -76,6 +93,7 @@ function install_subvolume() {
 }
 
 function subvolumeselect() {
+    local CURRENT_SUBVOLUME="$(cat /proc/cmdline | sed 's/.*subvol=//g' | cut -d ' ' -f 1)"
     # Check if subvolume actually exists before wrapping into it
     if [[ -e "${ROOT_CONTAINER_PATH}/${subvolume}" ]]; then
         tmpmount=/tmp/subvol
@@ -88,8 +106,16 @@ steamos-readonly disable
 mkinitcpio -P
 steamfork-grub-update
 EOF
-        umount -l ${tmpmount}
-        echo "Switched to subvolume: ${subvolume}"
+        if [ ! $? = 0 ]
+	then
+	    echo "Failed in switch function, switching back."
+	    subvolumeselect ${ROOT_CONTAINER_PATH}/$(basename ${CURRENT_SUBVOLUME})
+	    umount -l ${tmpmount}
+	    exit 1
+	else
+            umount -l ${tmpmount}
+            echo "Switched to subvolume: ${subvolume}"
+	fi
     else
         echo "Error switching: subvolume ${subvolume} does not exist."
 	exit 1
