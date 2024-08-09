@@ -62,13 +62,18 @@ clean_progress() {
 
 updatecheck(){
     curl -Lso ${argdata} "${endpoint}" 2>/dev/null
+    if [ ! $? = 0 ]
+    then
+        echo "Error: Failed to fetch update metadata."
+        exit 1
+    fi
     source ${argdata}
     if [[ "${STAGING_OS_TAG}" == "${OS_TAG}" ]]; then
         echo "System up to date."
         rm -rf ${argdata}
         exit 7
     elif [[ ! -s "${argdata}" ]]; then
-        echo "Empty arguments file. Connect to internet or update your OS manually."
+        echo "Error: Empty arguments file. Connect to internet or update your OS manually."
         rm -rf ${argdata}
         exit 7
     elif [[ "${STAGING_OS_TAG}" > "${OS_TAG}" ]]; then
@@ -88,7 +93,7 @@ verintg(){
         echo "Update file download complete. The system is ready to update."
     else
         rm -rf ${downloadpath}/${IMAGEFILE}
-        echo "Verification failed. Download contents erased."
+        echo "Error: Verification failed. Download contents erased."
         exit 1
     fi
 }
@@ -100,7 +105,17 @@ dlupd(){
     else
         mkdir -p "${downloadpath}/${IMAGEFILE}"
         curl --http1.1 -# -L -o ${downloadpath}/${IMAGEFILE}/${IMAGEFILE}.img.zst  -C - "${downloadendpoint}/${IMAGEFILE}${preferred_imgtype}" 2>&1 | stdbuf -oL tr '\r' '\n' | grep --line-buffered -oP '[0-9]*+(?=.[0-9])' | clean_progress 100 %
+	if [ ! $? = 0 ]
+	then
+	    echo "Error: Unable to download update package."
+	    exit 1
+	fi
         curl --http1.1 -# -L -o ${downloadpath}/${IMAGEFILE}/${IMAGEFILE}.sha256  -C - "${downloadendpoint}/${IMAGEFILE}.sha256"
+	if [ ! $? = 0 ]
+	then
+	    echo "Error: Unable to download checksum."
+	    exit 1
+	fi
     fi
         verintg
 }
