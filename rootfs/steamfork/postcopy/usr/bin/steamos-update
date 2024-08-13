@@ -65,7 +65,8 @@ updatecheck(){
     if [ ! $? = 0 ]
     then
         echo "Error: Failed to fetch update metadata."
-        exit 1
+        cleanup
+	exit 1
     fi
     source ${argdata}
     if [[ "${STAGING_OS_TAG}" == "${OS_TAG}" ]]; then
@@ -92,8 +93,8 @@ verintg(){
         touch ${ready_watcher}
         echo "Update file download complete. The system is ready to update."
     else
-        rm -rf ${downloadpath}/${IMAGEFILE}
-        echo "Error: Verification failed. Download contents erased."
+        echo "Error: Update failed verification."
+        rm -rf "${downloadpath}"
         exit 1
     fi
 }
@@ -108,12 +109,14 @@ dlupd(){
 	if [ ! $? = 0 ]
 	then
 	    echo "Error: Unable to download update package."
+	    rm -rf "${downloadpath}"
 	    exit 1
 	fi
         curl --http1.1 -# -L -o ${downloadpath}/${IMAGEFILE}/${IMAGEFILE}.sha256  -C - "${downloadendpoint}/${IMAGEFILE}.sha256"
 	if [ ! $? = 0 ]
 	then
 	    echo "Error: Unable to download checksum."
+	    rm -rf "${downloadpath}"
 	    exit 1
 	fi
     fi
