@@ -57,7 +57,7 @@ packages-aur:
 	${SCRIPT_DIR}/mkpackage --repo aur dnsmasq-git
 	${SCRIPT_DIR}/mkpackage --repo aur libgbinder
 	${SCRIPT_DIR}/mkpackage --repo aur python-gbinder
-	${SCRIPT_DIR}/mkpackage --repo aur waydroid
+	${SCRIPT_DIR}/mkpackage --repo local waydroid
 
 package:
 	${SCRIPT_DIR}/mkpackage $(RUN_ARGS)
