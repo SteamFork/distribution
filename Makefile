@@ -15,8 +15,14 @@ world: packages-local packages-aur packages-sync images images-sync
 
 upload: packages-sync images-sync
 
-clean:
-	sudo rm -rf ${WORK_DIR} ${IMAGE_DIR} ${REPO_DIR}
+dist-clean: repo-clean image-clean
+
+repo-clean:
+	sudo rm -rf ${REPO_DIR}
+
+image-clean:
+	sudo rm -rf ${WORK_DIR} ${IMAGE_DIR}
+	sudo pacman -Scc --noconfirm
 
 images-all: images
 
