@@ -33,12 +33,6 @@ case ${1} in
     ssh -tt ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/"
   ;;
   os)
-      cat <<EOF >/tmp/index.html
-<head>
-<meta name="description" content="SteamFork Linux distribution image hosting.">
-<meta name="keywords" content="SteamFork, SteamOS, HoloISO, Linux, Gaming, Handheld">
-<body>
-EOF
     ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/; rm -rf images-new ||:; cp -rf images images-new"
     for REL in rel minimal
     do
@@ -63,25 +57,8 @@ EOF
         ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; sha256sum ${IMAGEFILE}-x86_64.iso | tee -a ${IMAGEFILE}-x86_64.iso.sha256"
         ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso steamfork-${REL}-latest-x86_64.iso"
         ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso.sha256 steamfork-${REL}-latest-x86_64.iso.sha256"
-	echo "Add ${REL} to index."
-        cat <<EOF >>/tmp/index.html
-<p>
-SteamFork v${STAGING_OS_TAG} (${REL}) installation image: <a href="/images/installer/${IMAGEFILE}-x86_64.iso">${IMAGEFILE}-x86_64.iso</a>
-<br>
-SteamFork v${STAGING_OS_TAG} (${REL}) checksum: <a href="/images/installer/${IMAGEFILE}-x86_64.iso.sha256">${IMAGEFILE}-x86_64.iso.sha256</a>
-<p>
-SteamFork v${STAGING_OS_TAG} (${REL}) update image: <a href="/images/${UPDATEFILE}.img.zst">${UPDATEFILE}.img.zst</a>
-<br>
-SteamFork v${STAGING_OS_TAG} (${REL}) checksum: <a href="/images/${UPDATEFILE}.sha256">${UPDATEFILE}.sha256</a>
-<p>
-EOF
       fi
     done
-cat <<EOF >>/tmp/index.html
-</body>
-</head>
-EOF
-    scp /tmp/index.html ${WWWUSER}@${WWWHOST}:${WWWROOT}/images-new/installer/
     ssh -tt ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/images-new"
     ssh -tt ${WWWUSER}@${WWWHOST} "mv ${WWWROOT}/images ${WWWROOT}/images-old; mv ${WWWROOT}/images-new/ ${WWWROOT}/images; rm -rf ${WWWROOT}/images-old"
     ssh -tt ${WWWUSER}@${WWWHOST} "mkdir -p ${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck; echo "{ }" >${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck/${STAGING_OS_TAG}.json"
