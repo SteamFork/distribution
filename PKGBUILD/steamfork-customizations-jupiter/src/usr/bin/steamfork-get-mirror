@@ -5,64 +5,113 @@
 STAGING_MIRRORLIST="/tmp/steamfork-mirrors.txt"
 LATEST_MIRRORLIST="/etc/default/steamfork-mirrors"
 DEFAULT_MIRRORS=( "www.steamfork.org" "www2.steamfork.org" "www3.steamfork.org" )
-CURL_OPTS="--retry 4 --retry-all-errors --retry-delay 1 --connect-timeout 2 --max-time 2"
 
-refresh_mirrors() {
-  for MIRROR in ${DEFAULT_MIRRORS[@]}
-  do
-    curl -Lo ${STAGING_MIRRORLIST} ${CURL_OPTS} https://${MIRROR}/mirrorlist.txt 2>/dev/null
-    if [ "$?" = "0" ]
-    then
-      break
-    else
-      if [ -f "${STAGING_MIRRORLIST}" ]
-      then
-        rm -f ${STAGING_MIRRORLIST}
-      fi
-    fi
-  done
-  cp -f ${STAGING_MIRRORLIST} ${LATEST_MIRRORLIST}
+CURL_OPTS="--retry 1 --retry-all-errors --retry-delay 1 --connect-timeout 2 --max-time 2"
+SYNC_FILE=".sync.txt"
+
+### Enable logging
+case $(steamfork-get-setting system.loglevel) in
+  verbose)
+    DEBUG=true
+  ;;
+  *)
+    DEBUG=false
+  ;;
+esac
+
+function refresh_mirrors() {
+	declare -a ACTIVE_MIRRORS FASTEST_MIRRORS
+
+	for MIRROR in ${DEFAULT_MIRRORS[@]}
+	do
+		$DEBUG && echo "Fetch mirror list from: ${MIRROR}"
+		curl -Lo ${STAGING_MIRRORLIST} ${CURL_OPTS} https://${MIRROR}/mirrorlist.txt 2>/dev/null
+		if [ "$?" = "0" ]
+		then
+			$DEBUG && echo "Fetch OK."
+			### Grab the mirror checksum from the primary instance
+			PRIMARY_HASH_FN=$(uuidgen)
+			$DEBUG && echo "Fetch primary hash from ${MIRROR}"
+			curl -Lo /tmp/${PRIMARY_HASH_FN} -H 'Cache-Control: no-cache' ${CURL_OPTS} "https://${MIRROR}/${SYNC_FILE}" 2>/dev/null
+			PRIMARY_HASH=$(cat /tmp/${PRIMARY_HASH_FN})
+			$DEBUG && echo "PRIMARY_HASH: ${PRIMARY_HASH}"
+			rm -f /tmp/${PRIMARY_HASH_FN} 2>/dev/null
+			break
+		else
+			$DEBUG && echo "Unable to fetch."
+			if [ -f "${STAGING_MIRRORLIST}" ]
+			then
+				rm -f ${STAGING_MIRRORLIST} 2>/dev/null
+			fi
+		fi
+	done
+
+	# Test each mirror and order by the fastest.
+	for INSTANCE in $(cat ${STAGING_MIRRORLIST})
+	do
+		$DEBUG && echo "Testing: ${INSTANCE}"
+		INSTANCE_HASH_FN=$(uuidgen)
+		INSTANCE_URL="https://${INSTANCE}/${SYNC_FILE}"
+		if AVG_SPEED=$(curl -qfsS -H 'Cache-Control: no-cache' ${CURL_OPTS} -w '%{speed_download}' -o /tmp/${INSTANCE_HASH_FN} --url "${INSTANCE_URL}" 2>/dev/null)
+		then
+			if [ $? = 0 ]
+			then
+				INSTANCE_HASH=$(cat /tmp/${INSTANCE_HASH_FN})
+				$DEBUG && echo "Got hash: ${INSTANCE_HASH}"
+				if [ "${PRIMARY_HASH}" = "${INSTANCE_HASH}" ]
+				then
+					$DEBUG && echo "Hash OK. Adding ${INSTANCE} @ ${AVG_SPEED}"
+					ACTIVE_MIRRORS+=("${AVG_SPEED} ${INSTANCE}")
+				fi
+			fi
+		fi
+		rm -f /tmp/${INSTANCE_HASH_FN} 2>/dev/null
+	done
+
+	if [ -f "${LATEST_MIRRORLIST}" ]
+	then
+		rm -f ${LATEST_MIRRORLIST} 2>/dev/null
+	fi
+
+	FASTEST_MIRRORS=$(printf '%s\n' "${ACTIVE_MIRRORS[@]}" | sort -n)
+	for SORTED_MIRROR in ${FASTEST_MIRRORS[*]}
+	do
+		if [[ ! ${SORTED_MIRROR} =~ ^[0-9]+$ ]]
+		then
+			$DEBUG && echo "Add mirror: ${SORTED_MIRROR}"
+			echo ${SORTED_MIRROR} >>${LATEST_MIRRORLIST}
+		fi
+	done
+	rm -f ${STAGING_MIRRORLIST} 2>/dev/null
 }
 
-get_mirrors() {
-  if [ -f "${LATEST_MIRRORLIST}" ]
-  then
+declare -a MIRROR_LIST
+
+### Grab the latest mirror list available, or fall back to the default array.
+if [ -f "${LATEST_MIRRORLIST}" ]
+then
+	$DEBUG && echo "Loading latest mirror list."
 	readarray -t MIRROR_LIST < ${LATEST_MIRRORLIST}
-  else
+else
+	$DEBUG && echo "Loading default mirror list."
 	MIRROR_LIST=("${DEFAULT_MIRRORS[@]}")
-  fi
-
-  for MIRROR in ${MIRROR_LIST[@]}
-  do
-    echo "${MIRROR}" >>${STAGING_MIRRORLIST}
-  done
-}
-
-get_mirrors
+fi
 
 case ${1} in
 	list)
 		### Just a simple list
-		cat ${STAGING_MIRRORLIST}
+		printf '%s\n' "${MIRROR_LIST[@]}"
 	;;
 	random)
 		### Randomize the mirror list output
-		cat ${STAGING_MIRRORLIST} | sort -R
+		printf '%s\n' "${MIRROR_LIST[@]}" | sort -R
 	;;
 	refresh)
 		### Fetch the latest mirror list from an official SteamFork mirror
 		refresh_mirrors
 	;;
 	*)
-		### Fetch a random mirror from the array
-		readarray -t MIRROR_LIST < ${STAGING_MIRRORLIST}
-		for COUNT in $(seq 0 1 ${#MIRROR_LIST[@]})
-		do
-			SELECTED_MIRROR=${MIRROR_LIST[ $RANDOM % ${#MIRROR_LIST[@]}]}
-			echo ${SELECTED_MIRROR}
-			break
-		done
+		### Get the first entry in the mirror list
+		printf '%s\n' "${MIRROR_LIST[0]}"
 	;;
 esac
-
-rm -f ${STAGING_MIRRORLIST}

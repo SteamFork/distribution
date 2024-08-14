@@ -7,7 +7,10 @@ fi
 
 source /etc/steamfork-release
 
-### Grab a list of mirrors from steamfork.org, and pick one randomly.
+### Refresh the mirrors
+steamfork-get-mirror refresh
+
+### Pull from the fastest mirror.
 MIRROR="https://$(steamfork-get-mirror)"
 
 ### If we don't have a mirror for whatever reason, use the system default.
