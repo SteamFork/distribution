@@ -3,6 +3,11 @@ if [[ $EUID -ne 0 ]];
 then
     exec pkexec --disable-internal-agent "$0" "$@"
 fi
-echo "Disabling session switching and autologin..."
-mv /etc/sddm.conf.d/steamos.conf /home/steamfork-autologin.conf
-echo "Done!"
+if [ ! -d "/etc/sddm.conf.d.disabled" ]
+then
+	mkdir -p "/etc/sddm.conf.d.disabled"
+fi
+for CONF in steamos.conf *autologin.conf
+do
+	mv /etc/sddm.conf.d/${CONF} /etc/sddm.conf.d.disabled
+done

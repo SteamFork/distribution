@@ -1,7 +1,7 @@
 # Maintainer: Fewtarius
 
 pkgname=steamfork-customizations-jupiter
-pkgver=2024.08.14
+pkgver=2024.08.15
 pkgrel=1
 pkgdesc='SteamFork customizations provider.'
 arch=('any')
