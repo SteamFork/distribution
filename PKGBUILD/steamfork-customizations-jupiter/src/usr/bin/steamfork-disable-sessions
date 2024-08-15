@@ -7,7 +7,7 @@ if [ ! -d "/etc/sddm.conf.d.disabled" ]
 then
 	mkdir -p "/etc/sddm.conf.d.disabled"
 fi
-for CONF in steamos.conf *autologin.conf
+for CONF in /etc/sddm.conf.d/steamos.conf /etc/sddm.conf.d/*autologin.conf
 do
-	mv /etc/sddm.conf.d/${CONF} /etc/sddm.conf.d.disabled
+	mv ${CONF} /etc/sddm.conf.d.disabled
 done
