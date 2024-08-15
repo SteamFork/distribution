@@ -153,6 +153,20 @@ fi
 if [ ! -z "${XRANDR_ORIENTATION}" ]
 then
     echo -e "export X11_ROTATION=\"${XRANDR_ORIENTATION}\""
+    case ${XRANDR_ORIENTATION} in
+	    left)
+		    echo -e "export X11_TOUCH=\"0 -1 1 1 0 0 0 0 1\""
+		    ;;
+	    right)
+		    echo -e "export X11_TOUCH=\"0 1 0 -1 0 1 0 0 1\""
+		    ;;
+	    normal)
+		    echo -e "export X11_TOUCH=\"1 0 0 0 1 0 0 0 1\""
+		    ;;
+	    inverted)
+		    echo -e "export X11_TOUCH=\"-1 0 1 0 -1 1 0 0 1\""
+		    ;;
+    esac
 fi
 if [ ! -z "${STEAMFORK_SUPPORTED_DEVICE}" ]
 then
