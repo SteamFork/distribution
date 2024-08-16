@@ -1,6 +1,7 @@
 [Unit]
 Description=A simple helper to route audio to hdmi or usb.
 Before=wireplumber.service
+ConditionUser=!root
 
 [Service]
 ExecStart=/usr/bin/steamfork-audio-watchdog
