@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
+# Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
+
+# Source predefined functions and variables
+. /etc/profile
+
+### Enable logging
+case $(steamfork-get-setting system.loglevel) in
+  verbose)
+    DEBUG=true
+  ;;
+  *)
+    DEBUG=false
+  ;;
+esac
+
+DEVICE_PIPEWIRE_PROFILE=$(steamfork-get-setting preferred.audio.profile)
+
+for HDMI in /sys/class/drm/card*/card*/status
+do
+  HDMI_DEVICE=$(echo ${HDMI} | awk 'BEGIN {FS="-"} {print tolower($2)}')
+  HDMI_STATE=$(<${HDMI})
+  $DEBUG && echo "Checking ${HDMI_DEVICE} (${HDMI_STATE})."
+  case ${HDMI_STATE} in
+    connected)
+      OUTPUT_ENABLED=$(<$(dirname ${HDMI})/enabled)
+      if [ "${OUTPUT_ENABLED}" = "enabled" ]
+      then
+	$DEBUG && echo "${HDMI_DEVICE} is connected and enabled."
+        if [[ "${HDMI_DEVICE}" =~ hdmi|dp ]]
+        then
+          ### DisplayPort can be named dp or hdmi, so look for both if connected.
+          HDMI_DEVICE="hdmi|dp"
+        fi
+        DEFAULT_SINK=$(pactl list short sinks | awk '/'${HDMI_DEVICE}'/ {print $2; exit}')
+	$DEBUG && echo "Set default sink to ${DEFAULT_SINK}."
+        break
+      fi
+    ;;
+  esac
+done
+
+if [ -z "${DEFAULT_SINK}" ]
+then
+  $DEBUG && echo "No default sink."
+  DEFAULT_ID=$(pactl list short cards | awk '! /hdmi|dp/ {print $1; exit}')
+  DEFAULT_SINK=$(pactl list short sinks | awk '! /hdmi|dp/ {print $2; exit}')
+
+  $DEBUG && echo "Found ${DEFAULT_ID} (${DEFAULT_SINK})."
+
+  if [ ! -z "${DEFAULT_SINK}" ]
+  then
+    $DEBUG && echo "Set default sink to ${DEFAULT_SINK}."
+    ### Set the default sink ignoring HDMI
+    pactl set-default-sink ${DEFAULT_SINK}
+    pactl set-default-source ${DEFAULT_SINK}.monitor
+  fi
+
+  if [ -n "${DEVICE_PIPEWIRE_PROFILE}" ]
+  then
+    pactl set-card-profile ${DEFAULT_ID} ${DEVICE_PIPEWIRE_PROFILE}
+  fi
+
+fi
+
+pactl set-default-sink ${DEFAULT_SINK}
