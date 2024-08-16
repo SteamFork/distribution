@@ -389,6 +389,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
 		  ryzenadj
                   steamfork-device-support
                   steamfork-customizations-jupiter
+		  steamfork-installer
 		  steamfork-keyring
                   jupiter-hw-support
                   jupiter-legacy-support"
