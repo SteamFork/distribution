@@ -1,11 +1,13 @@
 [Unit]
 Description=A simple helper to route audio to hdmi or usb.
-Before=wireplumber.service
+Requires=pipewire-pulse.socket
+After=wireplumber.service
 ConditionUser=!root
 
 [Service]
 ExecStart=/usr/bin/steamfork-audio-watchdog
-Restart=on-failure
+ExecStartPost=/usr/bin/sudo /usr/bin/udevadm trigger
+Restart=always
 
 [Install]
 WantedBy=default.target

@@ -2,7 +2,7 @@
 
 pkgname=steamfork-device-support
 pkgver=2024.08.16
-pkgrel=9
+pkgrel=14
 pkgdesc='Hardware support provider for PC handhelds.'
 arch=('any')
 url='http://www.steamfork.org'
@@ -45,9 +45,19 @@ package() {
     installit "${FILE}"
   done
 
+  ### System services
   mkdir -p ${pkgdir}/usr/lib/systemd/system/multi-user.target.wants
   cd ${pkgdir}/usr/lib/systemd/system/multi-user.target.wants
   for service in steamfork-boot-quirks.service  steamfork-fancontrol.service steamfork-battery-watchdog.service
+  do
+    ln -sf ../${service} .
+  done
+  cd -
+
+  ### User services
+  mkdir -p ${pkgdir}/usr/lib/systemd/user/default.target.wants
+  cd ${pkgdir}/usr/lib/systemd/user/default.target.wants
+  for service in steamfork-audio-watchdog.service
   do
     ln -sf ../${service} .
   done
