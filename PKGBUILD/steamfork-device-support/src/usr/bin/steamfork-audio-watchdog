@@ -20,7 +20,7 @@ esac
 sudo udevadm trigger && udevadm monitor -s drm -s sound 2>/dev/null |  while read LINE
 do
 	$DEBUG && echo "Input: ${LINE}.."
-	unset HDMI_DEVICE HDMI_STATE OUTPUT_ENABLED HDMI_SINK
+	unset HDMI_DEVICE HDMI_STATE OUTPUT_ENABLED HDMI_SINK AUDIO_PROFILE USB_CARD_ID USB_CARD_SINK
 	CARD="$(echo ${LINE} | awk '{print $4}')"
 	CARD="$(echo ${CARD} | awk 'BEGIN {FS="/"} {print $NF}')"
         if [[ ${CARD} =~ card[0-9] ]]
