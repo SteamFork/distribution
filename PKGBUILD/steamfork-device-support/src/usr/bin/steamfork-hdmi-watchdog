@@ -46,8 +46,8 @@ done
 if [ -z "${DEFAULT_SINK}" ]
 then
   $DEBUG && echo "No default sink."
-  DEFAULT_ID=$(pactl list short cards | awk '! /hdmi|dp/ {print $1; exit}')
-  DEFAULT_SINK=$(pactl list short sinks | awk '! /hdmi|dp/ {print $2; exit}')
+  DEFAULT_ID=$(pactl list short cards | awk '! /hdmi|dp/ {}END{print $1}')
+  DEFAULT_SINK=$(pactl list short sinks | awk '! /hdmi|dp/ {}END{print $2}')
 
   $DEBUG && echo "Found ${DEFAULT_ID} (${DEFAULT_SINK})."
 
