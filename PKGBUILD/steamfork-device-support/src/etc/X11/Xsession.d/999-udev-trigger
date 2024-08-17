@@ -1,4 +1,0 @@
-#!/bin/sh
-
-### Trigger udev to fire the audio helper.
-sudo /usr/bin/udevadm trigger
