@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.10.5
-pkgrel=2
+pkgrel=3
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -54,12 +54,6 @@ source=(
   0040-Add-Atari-VCS-quirk.patch
   0050-AMD-Pstate-Core-Performance-Boost.patch
   0099-add-ayaneo-and-ayn-platform-drivers.patch
-  0133-iio-trigger-allow-devices-to-suspend-resume-theirs-a.patch
-  0134-iio-bmi323-suspend-and-resume-triggering-on-relevant.patch
-  0135-iio-bmi323-peripheral-in-lowest-power-state-on-suspe.patch
-  0136-acpi-x86-s2idle-add-support-for-screen-off-and-scree.patch
-  0137-drm-Notify-the-suspend-core-when-displays-are-change.patch
-  0138-acpi-x86-s2idle-Move-screen-off-on-code-into-dedicat.patch
 )
 validpgpkeys=(
   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
@@ -85,12 +79,6 @@ sha256sums=('SKIP'
 '1822769c05fd3b2126870a853c41ab167a95cf91d23f0d50bb103838857489eb' # 0040-Add-Atari-VCS-quirk.patch
 'c6ff653b1e55c5524b237a40683a34240d4ec7b95e524441ed3ae09ed885f674' # 0050-AMD-Pstate-Core-Performance-Boost.patch
 '23673c33ea69f3508ff9265d27171e2e58899950d563a1726a6049afe9e92067' # 0099-add-ayaneo-and-ayn-platform-drivers.patch
-'b937822f4745e602c50925e6419c50849100a3277e7b8ccc4242ca7671fbacda' # 0133-iio-trigger-allow-devices-to-suspend-resume-theirs-a.patch
-'448ce1a06411efeedd3fa57020e9fd0f6932e22b398f1be77bf585fb367c20fb' # 0134-iio-bmi323-suspend-and-resume-triggering-on-relevant.patch
-'d3d4272fe1f26ab120a191bd329bff1fd4aaa6d12a4ceae820acbb615c44fbb6' # 0135-iio-bmi323-peripheral-in-lowest-power-state-on-suspe.patch
-'439e2359c0b698b24e013cc26971b0829134188cc3916dfd716052313e8ff7ba' # 0136-acpi-x86-s2idle-add-support-for-screen-off-and-scree.patch
-'9508d5d34dd39864397e58fe94310fa37783af2f96fabb19ef3d0fa2b320a7c1' # 0137-drm-Notify-the-suspend-core-when-displays-are-change.patch
-'a3565286a86f4a3577a0b35f6ad6eb1888aa4e8f79345e2220c360d15142e21d' # 0138-acpi-x86-s2idle-Move-screen-off-on-code-into-dedicat.patch
 )
 
 export KBUILD_BUILD_HOST=$(hostnamectl hostname)
