@@ -271,17 +271,6 @@ echo "(4.10/6) Fix runtime audio configuration."
     arch-chroot ${ROOT_WORKDIR} sed -i 's~multi-user.target~local-fs.target~g' /usr/lib/systemd/system/${AUDIO_SERVICE}-sysconf.service
     arch-chroot ${ROOT_WORKDIR} systemctl enable ${AUDIO_SERVICE}-sysconf.service
   done
-  PRE_PW_WD=$(pwd)
-  for PW_PATH in pipewire wireplumber
-  do
-    cd ${ROOT_WORKDIR}/usr/share/${PW_PATH}/hardware-profiles/
-    if [ -L "default" ]
-    then
-      rm -f default
-      ln -sf valve-galileo default
-    fi
-  done
-  cd ${PRE_PW_WD}
 
 echo "(4.11/6) Enable systemd-resolved."
 rm -f ${ROOT_WORKDIR}/etc/resolv.conf
