@@ -1034,6 +1034,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
 		  inputplumber
                   kdegraphics-thumbnailers
                   kwrite
+		  lib32-vulkan-intel
                   libcap.so
                   libdisplay-info.so
                   libliftoff.so
@@ -1055,6 +1056,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   steamfork-device-support
 		  steamfork-keyring
                   vlc
+		  vulkan-intel
                   wlroots
                   wlr-randr
                   xorg-xwayland
