@@ -16,17 +16,39 @@ case $(steamfork-get-setting system.loglevel) in
   ;;
 esac
 
+
 ### Watch for events.
 /usr/bin/sudo /usr/bin/udevadm trigger && /usr/bin/udevadm monitor -s drm -s sound 2>/dev/null |  while read LINE
 do
-        unset HDMI_DEVICE HDMI_STATE OUTPUT_ENABLED HDMI_SINK AUDIO_PROFILE USB_CARD_ID USB_CARD_SINK
+        unset HDMI_DEVICE HDMI_STATE OUTPUT_ENABLED HDMI_SINK WP_SINK AUDIO_PROFILE USB_CARD_ID USB_CARD_SINK
         CARD="$(echo ${LINE} | awk '{print $4}')"
         CARD="$(echo ${CARD} | awk 'BEGIN {FS="/"} {print $NF}')"
         if [[ "${CARD}" =~ card[0-9]$ ]]
         then
 		case "${LINE}" in
-			*drm*)
-				for HDMI in /sys/class/drm/card*/card*/status
+			*drm*|*sound*)
+
+				### Trap USB devices and re-attach them when HDMI/DP is disconnected
+                                AUDIO_PROFILE=$(steamfork-get-setting audio.profile)
+                                USB_CARD_ID=$(pactl list short cards | awk '/usb/ {print $1; exit}')
+                                USB_CARD_SINK=$(pactl list short sinks | awk '/usb/ {print $2; exit}')
+                                if [ -n "${USB_CARD_SINK}" ]
+                                then
+                                        $DEBUG && echo "Set default sink to ${USB_CARD_SINK} (USB)."
+                                        pactl set-default-sink ${USB_CARD_SINK}
+                                        pactl set-default-source ${USB_CARD_SINK}.monitor
+                                        if [ -n "${AUDIO_PROFILE}" ]
+                                        then
+                                                $DEBUG && echo "Set ${USB_CARD_ID} to ${AUDIO_PROFILE}."
+                                                pactl set-card-profile ${USB_CARD_ID} ${AUDIO_PROFILE}
+
+                                        fi
+                                        break
+                                fi
+
+				### Does not work for startup audio routing (it seems to be hijacked by Steam Client),
+				### however it is suitable for hot plug audio routing.
+				for HDMI in /sys/class/drm/${CARD}/card*/status
 				do
 					HDMI_DEVICE=$(echo ${HDMI} | awk 'BEGIN {FS="/"} {print $6}')
 					HDMI_STATE=$(cat ${HDMI} 2>/dev/null)
@@ -37,52 +59,61 @@ do
 					fi
 					case ${HDMI_STATE} in
 						connected)
-							sleep .5
 							$DEBUG && echo "${HDMI_DEVICE} is connected."
-							OUTPUT_ENABLED=$(<$(dirname ${HDMI})/enabled)
-							if [ "${OUTPUT_ENABLED}" = "enabled" ]
-							then
-								$DEBUG && echo "${HDMI_DEVICE} is enabled."
-								if [[ "${HDMI_DEVICE}" =~ HDMI|DP ]]
+							for CONNECT_TIMER in $(seq 1 1 5)
+							do
+								OUTPUT_ENABLED=$(<$(dirname ${HDMI})/enabled)
+								if [ "${OUTPUT_ENABLED}" = "enabled" ]
 								then
-									### DisplayPort can be named dp or hdmi, so look for both if connected.
-									HDMI_DEVICE="hdmi|dp"
+									$DEBUG && echo "${HDMI_DEVICE} is enabled."
+									for SINK_TIMER in $(seq 1 1 5)
+									do
+										HDMI_SINK=$(pactl list short sinks | awk '/hdmi|dp/ {print $2; exit}')
+										if [ -n "${HDMI_SINK}" ]
+										then
+											$DEBUG && echo "Found sink: ${HDMI_SINK}"
+											break
+										else
+											$DEBUG && echo "Waiting for sink to come online."
+											sleep .1
+										fi
+									done
+									if [ -n "${HDMI_SINK}" ]
+									then
+										$DEBUG && echo "Set default sink to ${HDMI_SINK} (HDMI/DP)."
+										pactl set-default-sink ${HDMI_SINK}
+										if [ ! $? = 0 ]
+										then
+											echo "Error: Unable to set-default-sink to ${HDMI_SINK}."
+										fi
+										pactl set-default-source ${HDMI_SINK}.monitor
+										if [ ! $? = 0 ]
+										then
+										        echo "Error: Unable to set-default-source to ${HDMI_SOURCE}."
+										fi
+	
+										WP_SINK=$(wpctl status -k | grep -i "HDMI\|DP" | sed 's~\W~ ~g' | awk '{print $1; exit}')
+										$DEBUG && echo "Set Wireplumber default to ${WP_SINK}"
+										wpctl set-default ${WP_SINK}
+										if [ ! $? = 0 ]
+										then
+											echo "Error: Unable to set wireplumber sink to ${WP_SINK}."
+										fi
+										break
+									fi
+								else
+									$DEBUG && echo "Waiting for ${HDMI} to be enabled."
+									continue
 								fi
-								HDMI_SINK=$(pactl list short sinks | awk '/'${HDMI_DEVICE}'/ {print $2; exit}')
-								if [ -n "${HDMI_SINK}" ]
-								then
-									$DEBUG && echo "Set default sink to ${HDMI_SINK} (HDMI/DP)."
-									pactl set-default-sink ${HDMI_SINK}
-									pactl set-default-source ${HDMI_SINK}.monitor
-									WP_SINK=$(wpctl status -k | grep -i "HDMI\|DP" | sed 's~\W~ ~g' | awk '{print $1; exit}')
-									$DEBUG && echo "Set Wireplumber default to ${WP_SINK}"
-									wpctl set-default ${WP_SINK}
-									break
-								fi
-							fi
+								sleep .1
+							done
 							;;
 						disconnected)
 							$DEBUG && echo "${HDMI_DEVICE} (${CARD}) is disconnected."
+							continue
 							;;
 					esac
 				done
-				sleep .5
-				;;
-			*sound*)
-				AUDIO_PROFILE=$(steamfork-get-setting audio.profile)
-				USB_CARD_ID=$(pactl list short cards | awk '/usb/ {print $1; exit}')
-				USB_CARD_SINK=$(pactl list short sinks | awk '/usb/ {print $2; exit}')
-				if [ -n "${USB_CARD_SINK}" ]
-				then
-					$DEBUG && echo "Set default sink to ${USB_CARD_SINK} (USB)."
-					pactl set-default-sink ${USB_CARD_SINK}
-					pactl set-default-source ${USB_CARD_SINK}.monitor
-					if [ -n "${AUDIO_PROFILE}" ]
-					then
-						$DEBUG && echo "Set ${USB_CARD_ID} to ${AUDIO_PROFILE}."
-						pactl set-card-profile ${USB_CARD_ID} ${AUDIO_PROFILE}
-					fi
-				fi
 				;;
 		esac
 	fi
