@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2024 Fewtarius
 
-# Autosuspend for USB device 唰匀䈀 䴀漀甀猀攀 [SINO WEALTH]
-echo 'auto' > '/sys/bus/usb/devices/1-1/power/control';
-
 # Runtime PM for PCI Device Intel Corporation Wi-Fi 6E(802.11ax) AX210/AX1675* 2x2 [Typhoon Peak]
 echo 'auto' > '/sys/bus/pci/devices/0000:02:00.0/power/control';
 
