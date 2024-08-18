@@ -37,17 +37,7 @@ do
 	then
 		$VERBOSE && echo "Incoming event on ${CARD}."
 		AUDIO_PROFILE=$(steamfork-get-setting audio.profile)
-		while true
-		do
-			CURRENT_SINK=$(pactl get-default-sink)
-			if [ -n "${CURRENT_SINK}" ] && \
-			   [ ! "${CURRENT_SINK}" =~ "auto_null" ]
-			then
-				break
-			else
-				systemctl restart --user wireplumber
-			fi
-		done
+		CURRENT_SINK=$(pactl get-default-sink)
 
 		### Connect bluetooth devices (Priority 1)
 		BLUETOOTH_CONNECTED="$(bluetoothctl devices Connected)"
