@@ -47,7 +47,6 @@ do
 			else
 				systemctl restart --user wireplumber
 			fi
-			sleep .1
 		done
 
 		### Connect bluetooth devices (Priority 1)
