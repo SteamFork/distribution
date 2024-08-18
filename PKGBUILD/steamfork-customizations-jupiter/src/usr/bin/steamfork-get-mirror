@@ -11,12 +11,17 @@ SYNC_FILE=".sync.txt"
 
 ### Enable logging
 case $(steamfork-get-setting system.loglevel) in
-  verbose)
-    DEBUG=true
-  ;;
-  *)
-    DEBUG=false
-  ;;
+	verbose)
+		VERBOSE=true
+		;;
+	debug)
+		VERBOSE=true
+		DEBUG=true
+		;;
+	*)
+		VERBOSE=false
+		DEBUG=false
+		;;
 esac
 
 function refresh_mirrors() {
@@ -24,21 +29,21 @@ function refresh_mirrors() {
 
 	for MIRROR in ${DEFAULT_MIRRORS[@]}
 	do
-		$DEBUG && echo "Fetch mirror list from: ${MIRROR}"
+		$VERBOSE && echo "Fetch mirror list from: ${MIRROR}"
 		curl -Lo ${STAGING_MIRRORLIST} ${CURL_OPTS} https://${MIRROR}/mirrorlist.txt 2>/dev/null
 		if [ "$?" = "0" ]
 		then
-			$DEBUG && echo "Fetch OK."
+			$VERBOSE && echo "Fetch OK."
 			### Grab the mirror checksum from the primary instance
 			PRIMARY_HASH_FN=$(uuidgen)
-			$DEBUG && echo "Fetch primary hash from ${MIRROR}"
+			$VERBOSE && echo "Fetch primary hash from ${MIRROR}"
 			curl -Lo /tmp/${PRIMARY_HASH_FN} -H 'Cache-Control: no-cache' ${CURL_OPTS} "https://${MIRROR}/${SYNC_FILE}" 2>/dev/null
 			PRIMARY_HASH=$(cat /tmp/${PRIMARY_HASH_FN})
-			$DEBUG && echo "PRIMARY_HASH: ${PRIMARY_HASH}"
+			$VERBOSE && echo "PRIMARY_HASH: ${PRIMARY_HASH}"
 			rm -f /tmp/${PRIMARY_HASH_FN} 2>/dev/null
 			break
 		else
-			$DEBUG && echo "Unable to fetch."
+			$VERBOSE && echo "Unable to fetch."
 			if [ -f "${STAGING_MIRRORLIST}" ]
 			then
 				rm -f ${STAGING_MIRRORLIST} 2>/dev/null
@@ -49,7 +54,7 @@ function refresh_mirrors() {
 	# Test each mirror and order by the fastest.
 	for INSTANCE in $(cat ${STAGING_MIRRORLIST})
 	do
-		$DEBUG && echo "Testing: ${INSTANCE}"
+		$VERBOSE && echo "Testing: ${INSTANCE}"
 		INSTANCE_HASH_FN=$(uuidgen)
 		INSTANCE_URL="https://${INSTANCE}/${SYNC_FILE}"
 		if AVG_SPEED=$(curl -qfsS -H 'Cache-Control: no-cache' ${CURL_OPTS} -w '%{speed_download}' -o /tmp/${INSTANCE_HASH_FN} --url "${INSTANCE_URL}" 2>/dev/null)
@@ -57,10 +62,10 @@ function refresh_mirrors() {
 			if [ $? = 0 ]
 			then
 				INSTANCE_HASH=$(cat /tmp/${INSTANCE_HASH_FN})
-				$DEBUG && echo "Got hash: ${INSTANCE_HASH}"
+				$VERBOSE && echo "Got hash: ${INSTANCE_HASH}"
 				if [ "${PRIMARY_HASH}" = "${INSTANCE_HASH}" ]
 				then
-					$DEBUG && echo "Hash OK. Adding ${INSTANCE} @ ${AVG_SPEED}"
+					$VERBOSE && echo "Hash OK. Adding ${INSTANCE} @ ${AVG_SPEED}"
 					ACTIVE_MIRRORS+=("${AVG_SPEED} ${INSTANCE}")
 				fi
 			fi
@@ -78,7 +83,7 @@ function refresh_mirrors() {
 	do
 		if [[ ! ${SORTED_MIRROR} =~ ^[0-9]+$ ]]
 		then
-			$DEBUG && echo "Add mirror: ${SORTED_MIRROR}"
+			$VERBOSE && echo "Add mirror: ${SORTED_MIRROR}"
 			echo ${SORTED_MIRROR} >>${LATEST_MIRRORLIST}
 		fi
 	done
@@ -90,10 +95,10 @@ declare -a MIRROR_LIST
 ### Grab the latest mirror list available, or fall back to the default array.
 if [ -f "${LATEST_MIRRORLIST}" ]
 then
-	$DEBUG && echo "Loading latest mirror list."
+	$VERBOSE && echo "Loading latest mirror list."
 	readarray -t MIRROR_LIST < ${LATEST_MIRRORLIST}
 else
-	$DEBUG && echo "Loading default mirror list."
+	$VERBOSE && echo "Loading default mirror list."
 	MIRROR_LIST=("${DEFAULT_MIRRORS[@]}")
 fi
 
