@@ -817,6 +817,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     steam-im-modules
                     steam-jupiter-stable
                     steam_notif_daemon
+                    steamdeck-dsp
                     steamdeck-kde-presets
 		    steamos-atomupd-client-git
                     steamos-devkit-service
@@ -880,7 +881,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     wireguard-tools
                     wireless-regdb
                     wireless_tools
-                    extra-main/wireplumber
+                    wireplumber
                     wpa_supplicant
                     x264
                     x265
@@ -1015,7 +1016,7 @@ export STEAMOS_PKGS="accounts-qml-module
 # signon-kwallet-extension
 # solid
 # sonnet
-# steamdeck-dsp
+# steamos-customizations-jupiter
 # syndication
 # syntax-highlighting
 # systemd-swap
