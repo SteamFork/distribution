@@ -8,55 +8,71 @@
 
 ### Enable logging
 case $(steamfork-get-setting system.loglevel) in
-  verbose)
-    DEBUG=true
-  ;;
-  *)
-    DEBUG=false
-  ;;
+	verbose)
+		DEBUG=true
+		;;
+	*)
+		DEBUG=false
+		;;
 esac
 
 
 ### Watch for events.
 /usr/bin/sudo /usr/bin/udevadm trigger && /usr/bin/udevadm monitor -s drm -s sound -s bluetooth 2>/dev/null |  while read LINE
 do
-        unset HDMI_DEVICE HDMI_STATE OUTPUT_ENABLED HDMI_SINK WP_SINK AUDIO_PROFILE USB_CARD_ID USB_CARD_SINK
-        CARD="$(echo ${LINE} | awk '{print $4}')"
-        CARD="$(echo ${CARD} | awk 'BEGIN {FS="/"} {print $NF}')"
-        if [[ "${CARD}" =~ card[0-9]$ ]] || \
+	unset AUDIO_PROFILE
+	unset HDMI_DEVICE HDMI_STATE OUTPUT_ENABLED HDMI_SINK WP_SINK
+	unset USB_CARD_ID USB_CARD_SINK
+	unset BLUETOOTH_CONNECTED BT_CARD_ID BT_CARD_SINK
+
+	CARD="$(echo ${LINE} | awk '{print $4}')"
+	CARD="$(echo ${CARD} | awk 'BEGIN {FS="/"} {print $NF}')"
+	if [[ "${CARD}" =~ card[0-9]$ ]] || \
 	   [[ "${CARD}" =~ hci[0-9]: ]]
-        then
+	then
 		$DEBUG && echo "Event on ${CARD}."
-                AUDIO_PROFILE=$(steamfork-get-setting audio.profile)
+		AUDIO_PROFILE=$(steamfork-get-setting audio.profile)
 		CURRENT_SINK=$(pactl get-default-sink)
 
-		### Connect bluetooth devices (priority 1)
-		BT_CARD_ID=$(pactl list short cards | awk '/bluez/ {print $1; exit}')
-		BT_CARD_SINK=$(pactl list short sinks | awk '/bluez/ {print $2; exit}')
-		if [ -n "${BT_CARD_SINK}" ]
+		### Connect bluetooth devices (Priority 1)
+		BLUETOOTH_CONNECTED="$(bluetoothctl devices Connected)"
+		if [ -n "${BLUETOOTH_CONNECTED}" ]
 		then
-			if [ ! "${BT_CARD_SINK}" = "${CURRENT_SINK}" ]
-			then
-				$DEBUG && echo "Bluetooth: Set default sink to ${BT_CARD_SINK} (USB)."
-				pactl set-default-sink ${BT_CARD_SINK}
-				pactl set-default-source ${BT_CARD_SINK}.monitor
-				if [ -n "${AUDIO_PROFILE}" ]
+			for CONNECT_TIMER in $(seq 1 1 10)
+			do
+				BT_CARD_ID=$(pactl list short cards | awk '/bluez/ {print $1; exit}')
+				BT_CARD_SINK=$(pactl list short sinks | awk '/bluez/ {print $2; exit}')
+				if [ -n "${BT_CARD_SINK}" ]
 				then
-					$DEBUG && echo "Bluetooth: Set ${BT_CARD_ID} to ${AUDIO_PROFILE}."
-					pactl set-card-profile ${BT_CARD_ID} ${AUDIO_PROFILE}
+					if [ ! "${BT_CARD_SINK}" == "${CURRENT_SINK}" ]
+					then
+						$DEBUG && echo "Bluetooth: Set default sink to ${BT_CARD_SINK} (USB)."
+						pactl set-default-sink ${BT_CARD_SINK}
+						pactl set-default-source ${BT_CARD_SINK}.monitor
+						if [ -n "${AUDIO_PROFILE}" ]
+						then
+							$DEBUG && echo "Bluetooth: Set ${BT_CARD_ID} to ${AUDIO_PROFILE}."
+							pactl set-card-profile ${BT_CARD_ID} ${AUDIO_PROFILE}
+						fi
+						continue
+					else
+						${DEBUG} && echo "Bluetooth: ${BT_CARD_SINK} already connected."
+					fi
+				else
+					${DEBUG} && echo "Bluetooth: Waiting for sink (${BLUETOOTH_CONNECTED})."
+					sleep .5
+					continue
 				fi
-				continue
-			else
-				${DEBUG} && echo "Bluetooth: ${BT_CARD_SINK} already connected."
-			fi
+				sleep .1
+			done
 		fi
-	
-		### Trap USB devices and re-attach them when HDMI/DP is disconnected (pri 2)
+
+		### Trap USB devices and re-attach them when HDMI/DP is disconnected (Priority 2)
 		USB_CARD_ID=$(pactl list short cards | awk '/usb/ {print $1; exit}')
 		USB_CARD_SINK=$(pactl list short sinks | awk '/usb/ {print $2; exit}')
 		if [ -n "${USB_CARD_SINK}" ]
 		then
-			if [ ! "${USB_CARD_SINK}" = "${CURRENT_SINK}" ]
+			if [ ! "${USB_CARD_SINK}" == "${CURRENT_SINK}" ]
 			then
 				$DEBUG && echo "USB Audio: Set default sink to ${USB_CARD_SINK} (USB)."
 				pactl set-default-sink ${USB_CARD_SINK}
@@ -68,73 +84,81 @@ do
 				fi
 				continue
 			else
-				${DEBUG} && echo "USB Audio: ${BT_CARD_SINK} already connected."
+				${DEBUG} && echo "USB Audio: ${USB_CARD_SINK} already connected."
+				continue
 			fi
 		fi
 
-		### Does not work for startup audio routing (it seems to be hijacked by Steam Client),
-		### however it is suitable for hot plug audio routing. (pri 3)
-		for HDMI in /sys/class/drm/${CARD}/card*/status
-		do
-			HDMI_DEVICE=$(echo ${HDMI} | awk 'BEGIN {FS="/"} {print $6}')
-			HDMI_STATE=$(cat ${HDMI} 2>/dev/null)
-			if [[ ${HDMI_DEVICE} =~ eDP ]]
-			then
-				$DEBUG && echo "HDMI/DP: ${HDMI_DEVICE} is internal, ignoring."
-				continue
-			fi
-			case ${HDMI_STATE} in
-				connected)
-					$DEBUG && echo "HDMI/DP: ${HDMI_DEVICE} is connected."
-					for CONNECT_TIMER in $(seq 1 1 5)
-					do
-						OUTPUT_ENABLED=$(<$(dirname ${HDMI})/enabled)
-						if [ "${OUTPUT_ENABLED}" = "enabled" ]
-						then
-							$DEBUG && echo "HDMI/DP: ${HDMI_DEVICE} is enabled."
-							for SINK_TIMER in $(seq 1 1 5)
-							do
-								HDMI_SINK=$(pactl list short sinks | awk '/hdmi|dp/ {print $2; exit}')
+		PRIORITY_DEVICES=$(pactl list short cards | awk '/usb|bluez/ {print $2; exit}')
+		if [ -z "${PRIORITY_DEVICES}" ]
+		then
+			### Scan each HDMI / Display Port connector each time there's an event because we don't know where things
+			### may be connected. (Priority 3)
+			for HDMI in /sys/class/drm/card*/card*/status
+			do
+				HDMI_DEVICE=$(echo ${HDMI} | awk 'BEGIN {FS="/"} {print $6}')
+				HDMI_STATE=$(cat ${HDMI} 2>/dev/null)
+				if [[ ${HDMI_DEVICE} =~ eDP ]]
+				then
+					$DEBUG && echo "HDMI/DP: ${HDMI_DEVICE} is internal, ignoring."
+					continue
+				fi
+				case ${HDMI_STATE} in
+					connected)
+						$DEBUG && echo "HDMI/DP: ${HDMI_DEVICE} is connected."
+						for CONNECT_TIMER in $(seq 1 1 5)
+						do
+							OUTPUT_ENABLED=$(<$(dirname ${HDMI})/enabled)
+							if [ "${OUTPUT_ENABLED}" = "enabled" ]
+							then
+								$DEBUG && echo "HDMI/DP: ${HDMI_DEVICE} is enabled."
+								for SINK_TIMER in $(seq 1 1 5)
+								do
+									HDMI_SINK=$(pactl list short sinks | awk '/hdmi|dp/ {print $2; exit}')
+									if [ -n "${HDMI_SINK}" ]
+									then
+										$DEBUG && echo "HDMI/DP: Found sink: ${HDMI_SINK}"
+										break
+									else
+										$DEBUG && echo "HDMI/DP: Waiting for sink to come online."
+										sleep .1
+									fi
+								done
 								if [ -n "${HDMI_SINK}" ]
 								then
-									$DEBUG && echo "HDMI/DP: Found sink: ${HDMI_SINK}"
-									break
-								else
-									$DEBUG && echo "HDMI/DP: Waiting for sink to come online."
-									sleep .1
-								fi
-							done
-							if [ -n "${HDMI_SINK}" ]
-							then
-								if [ ! "${HDMI_SINK}" = "${CURRENT_SINK}" ]
-								then
-									$DEBUG && echo "HDMI/DP: Set default sink to ${HDMI_SINK} (HDMI/DP)."
-									pactl set-default-sink ${HDMI_SINK}
-									if [ ! $? = 0 ]
+									if [ ! "${HDMI_SINK}" == "${CURRENT_SINK}" ]
 									then
-										echo "HDMI/DP: Error, Unable to set-default-sink to ${HDMI_SINK}."
+										$DEBUG && echo "HDMI/DP: Set default sink to ${HDMI_SINK} (HDMI/DP)."
+										pactl set-default-sink ${HDMI_SINK}
+										if [ ! $? = 0 ]
+										then
+											echo "HDMI/DP: Error, Unable to set-default-sink to ${HDMI_SINK}."
+										fi
+										pactl set-default-source ${HDMI_SINK}.monitor
+										if [ ! $? = 0 ]
+										then
+											echo "HDMI/DP: Error, Unable to set-default-source to ${HDMI_SOURCE}."
+										fi
+									else
+										${DEBUG} && echo "HDMI/DP: ${HDMI_SINK} already connected."
 									fi
-									pactl set-default-source ${HDMI_SINK}.monitor
-									if [ ! $? = 0 ]
-									then
-									        echo "HDMI/DP: Error, Unable to set-default-source to ${HDMI_SOURCE}."
-									fi
-								else
-									${DEBUG} && echo "HDMI/DP: ${HDMI_SINK} already connected."
 								fi
+							else
+								$DEBUG && echo "HDMI/DP: Waiting for ${HDMI} to be enabled."
+								sleep .1
+								continue
 							fi
-						else
-							$DEBUG && echo "HDMI/DP: Waiting for ${HDMI} to be enabled."
-							continue
-						fi
-						sleep .1
-					done
-					;;
-				disconnected)
-					$DEBUG && echo "HDMI/DP: ${HDMI_DEVICE} (${CARD}) is disconnected."
-					continue
-					;;
-			esac
-		done
+							sleep .1
+						done
+						;;
+					disconnected)
+						$DEBUG && echo "HDMI/DP: ${HDMI_DEVICE} (${CARD}) is disconnected."
+						continue
+						;;
+				esac
+			done
+		else
+			${DEBUG} && echo "HDMI/DP: A higher priority device is already connected (${PRIORITY_DEVICES})."
+		fi
 	fi
 done
