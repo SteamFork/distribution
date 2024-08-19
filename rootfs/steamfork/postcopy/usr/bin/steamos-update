@@ -68,7 +68,7 @@ updatecheck(){
     if [ ! $? = 0 ]
     then
         echo "Error: Failed to fetch update metadata."
-        cleanup
+	rm -rf ${argdata}
 	exit 1
     fi
     source ${argdata}
