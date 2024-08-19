@@ -21,6 +21,10 @@ case $(steamfork-get-setting system.loglevel) in
 		;;
 esac
 
+function silent_init() {
+	$VERBOSE && echo "Initializing audio silently."
+	aplay /usr/share/sounds/silent.wav >/dev/null 2>&1
+}
 
 ### Watch for events.
 /usr/bin/sudo /usr/bin/udevadm trigger && /usr/bin/udevadm monitor -s drm -s sound -s bluetooth 2>/dev/null |  while read LINE
@@ -37,11 +41,37 @@ do
 	then
 		$VERBOSE && echo "Incoming event on ${CARD}."
 		AUDIO_PROFILE=$(steamfork-get-setting audio.profile)
-		CURRENT_SINK=$(pactl get-default-sink)
+
+		### Don't do anything if audio is not initialized.
+		while true
+		do
+			CURRENT_SINK=$(pactl get-default-sink)
+			$VERBOSE && echo "Current Sink: ${CURRENT_SINK}"
+			if [ ! "${CURRENT_SINK}" = "auto_null" ]
+			then
+				break
+			fi
+			sleep .1
+		done
+
+		### Clear the default sink.
+		$VERBOSE && echo "Cleared default sink."
+		wpctl clear-default
 
 		### Connect bluetooth devices (Priority 1)
-		BLUETOOTH_CONNECTED="$(bluetoothctl devices Connected)"
-		if [ -n "${BLUETOOTH_CONNECTED}" ]
+		for BT_DEVICE in $(bluetoothctl devices Connected 2>/dev/null | awk '{print $2}')
+		do
+			IS_AUDIO=$(bluetoothctl info ${BT_DEVICE} 2>/dev/null | grep "Audio Sink")
+			if [ -n "${IS_AUDIO}" ]
+			then
+				$VERBOSE && echo "Bluetooth: ${BT_DEVICE} has an audio sink."
+				break
+			else
+				$VERBOSE && echo "Bluetooth: ${BT_DEVICE} has no audio sink."
+				continue
+			fi
+		done
+		if [ -n "${IS_AUDIO}" ]
 		then
 			for CONNECT_TIMER in $(seq 1 1 10)
 			do
@@ -49,6 +79,7 @@ do
 				BT_CARD_SINK=$(pactl list short sinks | awk '/bluez/ {print $2; exit}')
 				if [ -n "${BT_CARD_SINK}" ]
 				then
+					CURRENT_SINK=$(pactl get-default-sink)
 					if [ ! "${BT_CARD_SINK}" == "${CURRENT_SINK}" ]
 					then
 						$VERBOSE && echo "Bluetooth: Set default sink to ${BT_CARD_SINK} (USB)."
@@ -59,12 +90,14 @@ do
 							$VERBOSE && echo "Bluetooth: Set ${BT_CARD_ID} to ${AUDIO_PROFILE}."
 							pactl set-card-profile ${BT_CARD_ID} ${AUDIO_PROFILE}
 						fi
+						silent_init
 						continue
 					else
 						${VERBOSE} && echo "Bluetooth: ${BT_CARD_SINK} already connected."
+						continue
 					fi
 				else
-					${VERBOSE} && echo "Bluetooth: Waiting for sink (${BLUETOOTH_CONNECTED})."
+					${VERBOSE} && echo "Bluetooth: Waiting for sink (${BT_DEVICE})."
 					sleep .5
 					continue
 				fi
@@ -77,6 +110,7 @@ do
 		USB_CARD_SINK=$(pactl list short sinks | awk '/usb/ {print $2; exit}')
 		if [ -n "${USB_CARD_SINK}" ]
 		then
+			CURRENT_SINK=$(pactl get-default-sink)
 			if [ ! "${USB_CARD_SINK}" == "${CURRENT_SINK}" ]
 			then
 				$VERBOSE && echo "USB Audio: Set default sink to ${USB_CARD_SINK} (USB)."
@@ -87,6 +121,7 @@ do
 					$VERBOSE && echo "USB Audio: Set ${USB_CARD_ID} to ${AUDIO_PROFILE}."
 					pactl set-card-profile ${USB_CARD_ID} ${AUDIO_PROFILE}
 				fi
+				silent_init
 				continue
 			else
 				${VERBOSE} && echo "USB Audio: ${USB_CARD_SINK} already connected."
@@ -97,70 +132,34 @@ do
 		PRIORITY_DEVICES=$(pactl list short cards | awk '/usb|bluez/ {print $2; exit}')
 		if [ -z "${PRIORITY_DEVICES}" ]
 		then
-			### Scan each HDMI / Display Port connector each time there's an event because we don't know where things
-			### may be connected. (Priority 3)
-			for HDMI in /sys/class/drm/card*/card*/status
+			for CONNECT_TIMER in $(seq 1 1 10)
 			do
-				HDMI_DEVICE=$(echo ${HDMI} | awk 'BEGIN {FS="/"} {print $6}')
-				HDMI_STATE=$(cat ${HDMI} 2>/dev/null)
-				if [[ ${HDMI_DEVICE} =~ eDP ]]
-				then
-					$VERBOSE && echo "HDMI/DP: ${HDMI_DEVICE} is internal, ignoring."
+	                	HDMI_CARD_ID=$(pactl list short cards | awk '/hdmi|dp/ {print $1; exit}')
+        	        	HDMI_CARD_SINK=$(pactl list short sinks | awk '/hdmi|dp/ {print $2; exit}')
+                		if [ -n "${HDMI_CARD_SINK}" ]
+                		then
+					CURRENT_SINK=$(pactl get-default-sink)
+                		        if [ ! "${HDMI_CARD_SINK}" == "${CURRENT_SINK}" ]
+                		        then
+                		                $VERBOSE && echo "HDMI/DP: Set default sink to ${HDMI_CARD_SINK} (USB)."
+                		                pactl set-default-sink ${HDMI_CARD_SINK}
+                		                if [ -n "${AUDIO_PROFILE}" ]
+                		                then
+                		                        $VERBOSE && echo "HDMI/DP: Set ${HDMI_CARD_ID} to ${AUDIO_PROFILE}."
+                		                        pactl set-card-profile ${HDMI_CARD_ID} ${AUDIO_PROFILE}
+                		                fi
+                		                silent_init
+                		                continue
+                		        else
+                		                ${VERBOSE} && echo "HDMI/DP: ${HDMI_CARD_SINK} already connected."
+                		                continue
+                		        fi
+				else
+					${VERBOSE} && echo "HDMI/DP: Waiting for sink (${CARD})."
+					sleep .5
 					continue
-				fi
-				case ${HDMI_STATE} in
-					connected)
-						$VERBOSE && echo "HDMI/DP: ${HDMI_DEVICE} is connected."
-						for CONNECT_TIMER in $(seq 1 1 5)
-						do
-							OUTPUT_ENABLED=$(<$(dirname ${HDMI})/enabled)
-							if [ "${OUTPUT_ENABLED}" = "enabled" ]
-							then
-								$VERBOSE && echo "HDMI/DP: ${HDMI_DEVICE} is enabled."
-								for SINK_TIMER in $(seq 1 1 5)
-								do
-									HDMI_SINK=$(pactl list short sinks | awk '/hdmi|dp/ {print $2; exit}')
-									if [ -n "${HDMI_SINK}" ]
-									then
-										$VERBOSE && echo "HDMI/DP: Found sink: ${HDMI_SINK}"
-										break
-									else
-										$VERBOSE && echo "HDMI/DP: Waiting for sink to come online."
-										sleep .1
-									fi
-								done
-								if [ -n "${HDMI_SINK}" ]
-								then
-									if [ ! "${HDMI_SINK}" == "${CURRENT_SINK}" ]
-									then
-										$VERBOSE && echo "HDMI/DP: Set default sink to ${HDMI_SINK} (HDMI/DP)."
-										pactl set-default-sink ${HDMI_SINK}
-										if [ ! $? = 0 ]
-										then
-											echo "HDMI/DP: Error, Unable to set-default-sink to ${HDMI_SINK}."
-										fi
-										pactl set-default-source ${HDMI_SINK}.monitor
-										if [ ! $? = 0 ]
-										then
-											echo "HDMI/DP: Error, Unable to set-default-source to ${HDMI_SOURCE}."
-										fi
-									else
-										${VERBOSE} && echo "HDMI/DP: ${HDMI_SINK} already connected."
-									fi
-								fi
-							else
-								$VERBOSE && echo "HDMI/DP: Waiting for ${HDMI} to be enabled."
-								sleep .1
-								continue
-							fi
-							sleep .1
-						done
-						;;
-					disconnected)
-						$VERBOSE && echo "HDMI/DP: ${HDMI_DEVICE} (${CARD}) is disconnected."
-						continue
-						;;
-				esac
+                		fi
+				sleep .1
 			done
 		else
 			${VERBOSE} && echo "HDMI/DP: A higher priority device is already connected (${PRIORITY_DEVICES})."
