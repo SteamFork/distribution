@@ -6,7 +6,7 @@
 # Source predefined functions and variables
 . /etc/profile
 
-source $(steamfork-devicequirk-set)
+source steamfork-devicequirk-set
 
 ### Enable logging
 case $(steamfork-get-setting system.loglevel) in
