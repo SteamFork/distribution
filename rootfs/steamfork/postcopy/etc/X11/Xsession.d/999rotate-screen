@@ -1,9 +1,0 @@
-#!/bin/bash
-INT_DISPLAY=$(xrandr | awk '/\<connected\>/ {print $1}' | grep eDP | head -n1)
-source steamfork-devicequirk-set
-
-if [ -z "${X11_ROTATION}" ]; then
-    echo "Ignoring anything. Assume normal rotation"
-else
-    xrandr --output ${INT_DISPLAY} --rotate ${X11_ROTATION}
-fi
