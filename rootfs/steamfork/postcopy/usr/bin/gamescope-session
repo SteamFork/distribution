@@ -272,8 +272,7 @@ then
   GAMESCOPE_DISPLAY="eDP-1"
 fi
 
-### I don't really like triggering udev here, but it's more reliable than timers.
-sudo udevadm trigger && gamescope \
+gamescope \
 	--generate-drm-mode fixed \
 	--xwayland-count 2 \
 	${GAMESCOPE_ADDITIONAL_OPTIONS} \
