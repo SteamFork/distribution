@@ -6,6 +6,8 @@
 # Source predefined functions and variables
 . /etc/profile
 
+source $(steamfork-devicequirk-set)
+
 ### Enable logging
 case $(steamfork-get-setting system.loglevel) in
 	verbose)
@@ -25,6 +27,17 @@ function silent_init() {
 	$VERBOSE && echo "Initializing audio silently."
 	aplay /usr/share/sounds/silent.wav >/dev/null 2>&1
 }
+
+function clear_default() {
+	$VERBOSE && echo "Cleared default sink."
+	wpctl clear-default
+}
+
+if [ "${AUDIO_WATCHDOG}" = "false" ]
+then
+	$VERBOSE && echo "Watchdog is disabled on this device."
+	exit 0
+fi
 
 ### Watch for events.
 /usr/bin/sudo /usr/bin/udevadm trigger && /usr/bin/udevadm monitor -s drm -s sound -s bluetooth 2>/dev/null |  while read LINE
@@ -54,10 +67,6 @@ do
 			sleep .1
 		done
 
-		### Clear the default sink.
-		$VERBOSE && echo "Cleared default sink."
-		wpctl clear-default
-
 		### Connect bluetooth devices (Priority 1)
 		for BT_DEVICE in $(bluetoothctl devices Connected 2>/dev/null | awk '{print $2}')
 		do
@@ -82,6 +91,7 @@ do
 					CURRENT_SINK=$(pactl get-default-sink)
 					if [ ! "${BT_CARD_SINK}" == "${CURRENT_SINK}" ]
 					then
+						clear_default	
 						$VERBOSE && echo "Bluetooth: Set default sink to ${BT_CARD_SINK} (USB)."
 						pactl set-default-sink ${BT_CARD_SINK}
 						pactl set-default-source ${BT_CARD_SINK}.monitor
@@ -113,6 +123,7 @@ do
 			CURRENT_SINK=$(pactl get-default-sink)
 			if [ ! "${USB_CARD_SINK}" == "${CURRENT_SINK}" ]
 			then
+				clear_default
 				$VERBOSE && echo "USB Audio: Set default sink to ${USB_CARD_SINK} (USB)."
 				pactl set-default-sink ${USB_CARD_SINK}
 				pactl set-default-source ${USB_CARD_SINK}.monitor
@@ -141,6 +152,7 @@ do
 					CURRENT_SINK=$(pactl get-default-sink)
                 		        if [ ! "${HDMI_CARD_SINK}" == "${CURRENT_SINK}" ]
                 		        then
+						clear_default
                 		                $VERBOSE && echo "HDMI/DP: Set default sink to ${HDMI_CARD_SINK} (USB)."
                 		                pactl set-default-sink ${HDMI_CARD_SINK}
                 		                if [ -n "${AUDIO_PROFILE}" ]
