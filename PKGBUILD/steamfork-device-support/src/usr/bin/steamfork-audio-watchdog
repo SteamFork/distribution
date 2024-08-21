@@ -76,7 +76,7 @@ function connect_sink() {
 					pactl set-card-profile ${CARD_ID} ${AUDIO_PROFILE}
 				fi
 				silent_init
-				break
+				continue
 			else
 				${VERBOSE} && echo "${LOG_HEADER}: ${CARD_SINK} already connected."
 				continue
@@ -90,9 +90,9 @@ function connect_sink() {
 	done
 }
 
-connect_sink "HDMI/DP" "hdmi|dp" "1"
-connect_sink "USB" "usb" "1"
-connect_sink "Bluetooth" "bluez" "1"
+connect_sink "HDMI/DP" "hdmi|dp" "5"
+connect_sink "USB" "usb" "2"
+connect_sink "Bluetooth" "bluez" "2"
 
 ### Watch for events.
 /usr/bin/udevadm monitor -s drm -s sound -s bluetooth 2>/dev/null |  while read LINE
@@ -120,19 +120,19 @@ do
 
 		if [ -n "${IS_AUDIO}" ]
 		then
-			connect_sink "Bluetooth" "bluez" "10"
+			connect_sink "Bluetooth" "bluez" "5"
 			SINK_CHECK=$(pactl get-default-sink)
 			if [[ "${SINK_CHECK}" =~ bluez ]]
 			then
-				break
+				continue
 			fi
 		fi
 
-		connect_sink "USB" "usb" "10"
+		connect_sink "USB" "usb" "5"
 		SINK_CHECK=$(pactl get-default-sink)
 		if [[ "${SINK_CHECK}" =~ usb ]]
 		then
-			break
+			continue
 		fi
 
 		PRIORITY_DEVICES=$(pactl list short cards | awk '/usb|bluez/ {print $2; exit}')
@@ -141,7 +141,7 @@ do
 			connect_sink "HDMI/DP" "hdmi|dp" "10"
 			if [[ "${SINK_CHECK}" =~ hdmi ]]
 			then
-				break
+				continue
 			fi
 		else
 			${VERBOSE} && echo "HDMI/DP: A higher priority device is available (${PRIORITY_DEVICES})."
