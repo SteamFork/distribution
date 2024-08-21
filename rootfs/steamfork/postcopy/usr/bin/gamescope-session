@@ -272,7 +272,7 @@ then
   GAMESCOPE_DISPLAY="eDP-1"
 fi
 
-gamescope \
+sudo udevadm trigger && gamescope \
 	--generate-drm-mode fixed \
 	--xwayland-count 2 \
 	${GAMESCOPE_ADDITIONAL_OPTIONS} \
