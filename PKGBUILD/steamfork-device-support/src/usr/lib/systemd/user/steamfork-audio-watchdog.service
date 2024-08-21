@@ -1,8 +1,8 @@
 [Unit]
 Description=A simple helper to route audio to hdmi or usb.
-Requires=pipewire-pulse.service wireplumber.service
-After=wireplumber.service
-Before=gamescope-session.service
+Requires=pipewire-pulse.service wireplumber.service graphical-session-pre.target
+After=pipewire-pulse.service wireplumber.service graphical-session-pre.target
+Before=graphical-session.target
 ConditionUser=!root
 
 [Service]
