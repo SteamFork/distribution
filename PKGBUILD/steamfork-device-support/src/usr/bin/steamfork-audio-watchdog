@@ -25,7 +25,7 @@ esac
 
 if [ "${AUDIO_WATCHDOG}" = "false" ]
 then
-    $VERBOSE && echo "Watchdog is disabled on this device."
+    $VERBOSE && log $0 "Watchdog is disabled on this device."
     exit 0
 fi
 
@@ -33,7 +33,7 @@ fi
 while true
 do
     BOOT_SINK=$(pactl get-default-sink)
-    $VERBOSE && echo "Boot Sink: ${BOOT_SINK}"
+    $VERBOSE && log $0 "Boot Sink: ${BOOT_SINK}"
     if [ ! "${BOOT_SINK}" = "auto_null" ]
     then
 	break
@@ -44,10 +44,17 @@ done
 function connect_sink() {
 	local LOG_HEADER="${1}"
 	local SINK_TYPE="${2}"
-	local SINK_RETRY="${3}"
+	local SINK_TIMER="${3}"
+	local SINK_TAKEOVER="${4}"
 	local AUDIO_PROFILE=$(steamfork-get-setting audio.profile)
 
-	for CONNECT_TIMER in $(seq 1 1 ${SINK_RETRY})
+	if [ -z "${SINK_TAKEOVER}" ]
+	then
+		SINK_TAKEOVER="1"
+	fi
+
+	### Watch for the sink, it can take a few seconds to settle.
+	for CONNECT_TIMER in $(seq 1 1 ${SINK_TIMER})
 	do
 		local CURRENT_SINK=$(pactl get-default-sink)
 		local CARD_ID=$(pactl list short cards | awk '/'${SINK_TYPE}'/ {print $1; exit}')
@@ -57,51 +64,74 @@ function connect_sink() {
                         if [ ! "${CARD_SINK}" == "${CURRENT_SINK}" ] || \
 			   [ ! "${CARD_SINK}" == "${BOOT_SINK}" ]
                         then
-				$VERBOSE && echo "${LOG_HEADER}: Set default sink to ${CARD_SINK} (${SINK_TYPE})."
-				pactl set-default-source ${CARD_SINK}.monitor
-				pactl set-default-sink ${CARD_SINK}
-				if [ -n "${AUDIO_PROFILE}" ]
-				then
-					$VERBOSE && echo "${LOG_HEADER}: Set ${CARD_ID} to ${AUDIO_PROFILE}."
-					pactl set-card-profile ${CARD_ID} ${AUDIO_PROFILE}
-				fi
-				NEW_SINK=$(pactl get-default-sink)
-				if [ ! "${CURRENT_SINK}" = "${NEW_SINK}" ]
-				then
-					$VERBOSE && echo "${LOG_HEADER}: Sink mismatch, retrying."
+				### When Steam loads, it hijacks audio back to the internal sink.  Not on our watch.
+				for HOSTILE_TAKEOVER in $(seq 1 1 ${SINK_TAKEOVER})
+				do
+					$VERBOSE && log $0 "${LOG_HEADER}: Set default sink to ${CARD_SINK} (${SINK_TYPE})."
+					pactl set-default-source ${CARD_SINK}.monitor
+					pactl set-default-sink ${CARD_SINK}
+					if [ -n "${AUDIO_PROFILE}" ]
+					then
+						$VERBOSE && log $0 "${LOG_HEADER}: Set ${CARD_ID} to ${AUDIO_PROFILE}."
+						pactl set-card-profile ${CARD_ID} ${AUDIO_PROFILE}
+					fi
+					sleep .1
+					NEW_SINK=$(pactl get-default-sink)
+					if [ ! "${CURRENT_SINK}" = "${NEW_SINK}" ]
+					then
+						$VERBOSE && log $0 "${LOG_HEADER}: Sink mismatch (${CURRENT_SINK})."
+					else
+						$VERBOSE && log $0 "${LOG_HEADER}: Sink connected (${NEW_SINK})."
+					fi
+					sleep .5
 					continue
-				else
-					$VERBOSE && echo "${LOG_HEADER}: Sink set to ${NEW_SINK}."
+				done
+				if [ "${CURRENT_SINK}" = "${NEW_SINK}" ]
+				then
 					break
 				fi
                         else
-                                ${VERBOSE} && echo "${LOG_HEADER}: ${CARD_SINK} already connected."
+                                ${VERBOSE} && log $0 "${LOG_HEADER}: ${CARD_SINK} already connected."
                                 continue
                         fi
 		else
-			${VERBOSE} && echo "${LOG_HEADER}: Waiting for sink (${CARD_ID})."
+			${VERBOSE} && log $0 "${LOG_HEADER}: Waiting for sink (${CARD_ID})."
 			sleep .2
 			continue
 		fi
 		sleep .2
 	done
+	echo ${NEW_SINK}
 }
 
-connect_sink "Bluetooth" "bluez" "5"
-connect_sink "USB" "usb" "5"
-connect_sink "HDMI/DP" "hdmi|dp" "5"
+### When we start up, try connecting to any external sinks.
+$VERBOSE && log $0 "Startup: Check for connected bluetooth devices."
+BT_SINK=$(connect_sink "Bluetooth" "bluez" 5 10)
+
+if [[ ! "${BT_SINK}" =~ bluez ]]
+then
+	$VERBOSE && log $0 "Startup: Check for connected USB devices."
+	USB_SINK=$(connect_sink "USB" "usb" 5 10)
+fi
+
+if [[ ! "${BT_SINK}" =~ bluez ]] || \
+   [[ ! "${USB_SINK}" =~ usb ]]
+then
+	$VERBOSE && log $0 "Startup: Check for connected HDMI/DP devices."
+	HDMI_SINK=$(connect_sink "HDMI/DP" "hdmi|dp" 5 10)
+fi
 
 ### Watch for events.
 /usr/bin/udevadm monitor -s drm -s sound -s bluetooth 2>/dev/null |  while read LINE
 do
 	unset BT_DEVICE IS_AUDIO SINK_CHECK CARD PRIORITY_DEVICES
 
-	CARD="$(echo ${LINE} | awk '{print $4}')"
-	CARD="$(echo ${CARD} | awk 'BEGIN {FS="/"} {print $NF}')"
+	CARD="$(log $0 ${LINE} | awk '{print $4}')"
+	CARD="$(log $0 ${CARD} | awk 'BEGIN {FS="/"} {print $NF}')"
 	if [[ "${CARD}" =~ card[0-9]$ ]] || \
 	   [[ "${CARD}" =~ hci[0-9]: ]]
 	then
-		$VERBOSE && echo "Incoming event on ${CARD}."
+		$VERBOSE && log $0 "Incoming event on ${CARD}."
 
 		### Connect bluetooth devices (Priority 1)
 		for BT_DEVICE in $(bluetoothctl devices Connected 2>/dev/null | awk '{print $2}')
@@ -109,17 +139,17 @@ do
 			IS_AUDIO=$(bluetoothctl info ${BT_DEVICE} 2>/dev/null | grep "Audio Sink")
 			if [ -n "${IS_AUDIO}" ]
 			then
-				$VERBOSE && echo "Bluetooth: ${BT_DEVICE} has an audio sink."
+				$VERBOSE && log $0 "Bluetooth: ${BT_DEVICE} has an audio sink."
 				break
 			else
-				$VERBOSE && echo "Bluetooth: ${BT_DEVICE} has no audio sink."
+				$VERBOSE && log $0 "Bluetooth: ${BT_DEVICE} has no audio sink."
 				continue
 			fi
 		done
 
 		if [ -n "${IS_AUDIO}" ]
 		then
-			connect_sink "Bluetooth" "bluez" "5"
+			connect_sink "Bluetooth" "bluez" "5" "2"
 			SINK_CHECK=$(pactl get-default-sink)
 			if [[ "${SINK_CHECK}" =~ bluez ]]
 			then
@@ -127,24 +157,26 @@ do
 			fi
 		fi
 
-		connect_sink "USB" "usb" "5"
+		### Connect USB devices (Priority 2)
+		connect_sink "USB" "usb" "5" "2"
 		SINK_CHECK=$(pactl get-default-sink)
 		if [[ "${SINK_CHECK}" =~ usb ]]
 		then
 			continue
 		fi
 
+		### Connect HDMI/DP devices (Priority 3)
 		PRIORITY_DEVICES=$(pactl list short cards | awk '/usb|bluez/ {print $2; exit}')
 		if [ -z "${PRIORITY_DEVICES}" ]
 		then
-			connect_sink "HDMI/DP" "hdmi|dp" "10"
+			connect_sink "HDMI/DP" "hdmi|dp" "10" "2"
 			SINK_CHECK=$(pactl get-default-sink)
 			if [[ "${SINK_CHECK}" =~ hdmi ]]
 			then
 				continue
 			fi
 		else
-			${VERBOSE} && echo "HDMI/DP: A higher priority device is available (${PRIORITY_DEVICES})."
+			${VERBOSE} && log $0 "HDMI/DP: A higher priority device is available (${PRIORITY_DEVICES})."
 		fi
 	fi
 	sleep .1

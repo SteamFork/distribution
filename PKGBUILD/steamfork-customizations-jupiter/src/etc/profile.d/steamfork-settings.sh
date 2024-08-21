@@ -11,7 +11,6 @@ function log() {
   MESSAGE=${*#${1}}
   MESSAGE=${MESSAGE# }
   logger -t ${SOURCE} "${MESSAGE}"
-  echo "$(date) ${SOURCE}: ${MESSAGE}" >>/var/log/messages
 }
 
 function create_settings() {
