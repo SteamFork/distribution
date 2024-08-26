@@ -287,7 +287,10 @@ echo "(4.11/6) Enable systemd-resolved."
 rm -f ${ROOT_WORKDIR}/etc/resolv.conf
 ln -sf /run/systemd/resolve/stub-resolv.conf ${ROOT_WORKDIR}/etc/resolv.conf
 
-echo "(4.12/6) Delete conflicting files..."
+echo "(4.12/6) Fix blank screen desktop issue."
+  sed -i '/cd "$config_dir"/a \ \ \ \ rm -rf /tmp/.ICE-unix' /usr/bin/startplasma-steamos-oneshot
+
+echo "(4.13/6) Delete conflicting files..."
 # Delete conflicting files
 for CONFLICT in etc/X11/Xsession.d/50rotate-screen \
 		usr/lib/qt/plugins/discover/steamos-backend.so \
@@ -299,7 +302,7 @@ do
   fi
 done
 
-echo "(4.13/6) Compile installed package list..."
+echo "(4.14/6) Compile installed package list..."
 cat <<EOF >${OUTPUT}/package-versions.txt
 Package	Version
 EOF
