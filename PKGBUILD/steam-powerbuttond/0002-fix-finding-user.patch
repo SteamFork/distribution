@@ -1,0 +1,13 @@
+diff --git a/steam-powerbuttond b/steam-powerbuttond
+index 273bb76..310cb75 100755
+--- a/steam-powerbuttond
++++ b/steam-powerbuttond
+@@ -95,7 +95,7 @@ def __init__():
+ def get_user():
+     global user
+     global home_path
+-    command = "who | awk '{print $1}' | sort | head -1"
++    command = "awk 'BEGIN { FS=\":\" } END {print $1}' /etc/passwd"
+ 
+     while not user:
+         users = subprocess.Popen(
