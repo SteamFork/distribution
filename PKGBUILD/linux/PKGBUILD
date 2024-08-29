@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.10.6
-pkgrel=3
+pkgrel=4
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -51,7 +51,7 @@ source=(
   0036-Updated-AW87xxx-driver-to-automatically-enumerate-a-.patch
   0037-Updated-AW87xxx-driver-to-implement-Suspend-and-Resu.patch
   0038-fixup-aw87xx-warnings.patch
-  0040-Add-Atari-VCS-quirk.patch
+  0040-amdgpu-quirks.patch
   0050-AMD-Pstate-Core-Performance-Boost.patch
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
   0053-add-support-for-screen-off-and-screen-on.patch
@@ -65,7 +65,7 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
 )
 sha256sums=('SKIP'
-'ce7eb735c62dc815e0397319df231090a12ad5b7c476655d72ede02d9d0dd031' # config
+'eaf3778881108ff1ba71731eba807b20cb3badddde069836a6c09f127a12a824' # config
 '2fde7b646741397b0847ff71fe42ec178aef7de2436cc5531b0e725e878dccf8' # 0001-drm-panel-orientation-quirks.patch
 '783da391e0f45635eefb583b8b3acc29cd62a0c9eeefedf7f790dc2f89c7e279' # 0006-Ayaneo-geek-headset-patch.patch
 '33edff1a51ceb763c47b3ae485f5857a716a1dac9f1e8b65c3b93c6e88a4838f' # 0007-ayaneo-2-headphone-fix.patch
@@ -80,7 +80,7 @@ sha256sums=('SKIP'
 '73a88310ac0077bedd4a4e49689c06cb8460c55774cea1395d90f9ac57252e8c' # 0036-Updated-AW87xxx-driver-to-automatically-enumerate-a-.patch
 '4f3baa6a367659341873ec7443d6238044cca521e04c0a868322221ac50149ff' # 0037-Updated-AW87xxx-driver-to-implement-Suspend-and-Resu.patch
 '23d91695bf8e5d5cdb9503a47468c6c5cf220bc7966a4720aa46645357e29ee6' # 0038-fixup-aw87xx-warnings.patch
-'1822769c05fd3b2126870a853c41ab167a95cf91d23f0d50bb103838857489eb' # 0040-Add-Atari-VCS-quirk.patch
+'2728588169bb1e1b4d9987c0732a316e39670f0c873429179b894ddc6be9b0fa' # 0040-amdgpu-quirks.patch
 'c6ff653b1e55c5524b237a40683a34240d4ec7b95e524441ed3ae09ed885f674' # 0050-AMD-Pstate-Core-Performance-Boost.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
 'a8e3c0f7a3cdcc82a12a5dc44772263c2dd7bc3207f16b98dac42e0e74184172' # 0053-add-support-for-screen-off-and-screen-on.patch

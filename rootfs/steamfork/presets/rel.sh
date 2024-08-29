@@ -280,7 +280,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     kdialog
                     kdsoap
                     kdsoap-ws-discovery-client
-                    kdumpst
                     kemoticons
                     kexec-tools
                     keyutils
@@ -822,7 +821,6 @@ export STEAMOS_PKGS="accounts-qml-module
 		    steamos-atomupd-client-git
                     steamos-devkit-service
                     steamos-efi
-                    steamos-kdumpst-layer
                     steamos-log-submitter
                     steamos-manager
                     steamos-networking-tools
@@ -963,6 +961,7 @@ export STEAMOS_PKGS="accounts-qml-module
 # kded
 # kdesu
 # kdnssd
+# kdumpst
 # kfilemetadata
 # kgamma5
 # kglobalaccel
@@ -1017,6 +1016,7 @@ export STEAMOS_PKGS="accounts-qml-module
 # solid
 # sonnet
 # steamos-customizations-jupiter
+# steamos-kdumpst-layer
 # syndication
 # syntax-highlighting
 # systemd-swap
