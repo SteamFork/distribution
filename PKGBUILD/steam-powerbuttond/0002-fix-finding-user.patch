@@ -7,7 +7,7 @@ index 273bb76..310cb75 100755
      global user
      global home_path
 -    command = "who | awk '{print $1}' | sort | head -1"
-+    command = "awk 'BEGIN { FS=\":\" } END {print $1}' /etc/passwd"
++    command = "id -nu 1000"
  
      while not user:
          users = subprocess.Popen(

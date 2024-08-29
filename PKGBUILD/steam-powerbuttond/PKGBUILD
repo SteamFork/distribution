@@ -2,7 +2,7 @@
 # Thanks to upsteam maintainer: Derek J. Clark <derekjohn.clark@gmail.com>
 pkgname=steam-powerbuttond
 pkgver=20240829
-pkgrel=1
+pkgrel=2
 pkgdesc="Simple powerbutton daemon for steam with gamescope-session"
 arch=('any')
 url="https://github.com/ShadowBlip/steam-powerbuttond"
@@ -16,7 +16,7 @@ source=("${pkgname}::git+${url}.git"
 	0002-fix-finding-user.patch)
 sha256sums=('SKIP'
 	    '2ada504d2cbc0f3bbcc53226be9fcf2ff7abae4e41d46f3568cd9c4ad40e18c4' # 0001-Don-t-install-to-usr-local.patch
-	    '438fa6d4f58839dee026b380b7e0170973bbea18288db236cbf24d06474ed3f8' # 0002-fix-finding-user.patch
+	    'af4913f01377ba9cad03588decee29e7e170e0288df1597446ac0403ed96387b' # 0002-fix-finding-user.patch
            )
 
 package() {
