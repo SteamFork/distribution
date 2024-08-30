@@ -341,7 +341,7 @@ export STEAMOS_PKGS="acl
                     shared-mime-info
                     sqlite
                     squashfs-tools
-                    steamos-atomupd-client-git
+                    steamos-atomupd-client
                     steamos-devkit-service
                     steamos-efi
                     steamos-log-submitter

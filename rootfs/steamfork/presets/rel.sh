@@ -71,7 +71,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     aspell-en
                     assimp
                     at-spi2-core
-		    atomupd-daemon-git
+		    atomupd-daemon
                     atkmm
                     attr
                     audit
@@ -818,7 +818,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     steam_notif_daemon
                     steamdeck-dsp
                     steamdeck-kde-presets
-		    steamos-atomupd-client-git
+		    steamos-atomupd-client
                     steamos-devkit-service
                     steamos-efi
                     steamos-log-submitter
