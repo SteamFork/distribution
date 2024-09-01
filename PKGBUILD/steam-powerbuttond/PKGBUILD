@@ -1,8 +1,8 @@
 # Maintainer: Fewtarius
 # Thanks to upsteam maintainer: Derek J. Clark <derekjohn.clark@gmail.com>
 pkgname=steam-powerbuttond
-pkgver=20240829
-pkgrel=2
+pkgver=20240831
+pkgrel=1
 pkgdesc="Simple powerbutton daemon for steam with gamescope-session"
 arch=('any')
 url="https://github.com/ShadowBlip/steam-powerbuttond"
