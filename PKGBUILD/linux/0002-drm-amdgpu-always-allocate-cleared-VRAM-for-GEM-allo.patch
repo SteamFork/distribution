@@ -1,0 +1,32 @@
+From 56de86227c5d8c93ce736da920962ac84b9dd2de Mon Sep 17 00:00:00 2001
+From: Alex Deucher <alexander.deucher@amd.com>
+Date: Tue, 26 Mar 2024 11:28:29 -0400
+Subject: [PATCH] drm/amdgpu: always allocate cleared VRAM for GEM allocations
+
+This adds allocation latency, but aligns better with user
+expectations.  The latency should improve with the drm buddy
+clearing patches that Arun has been working on.
+
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
+index aad2027e5c7c..d796af6b80f9 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
+@@ -348,6 +348,10 @@ int amdgpu_gem_create_ioctl(struct drm_device *dev, void *data,
+ 		return -EINVAL;
+ 	}
+ 
++	/* always clear VRAM */
++	if (args->in.domains & AMDGPU_GEM_DOMAIN_VRAM)
++		flags |= AMDGPU_GEM_CREATE_VRAM_CLEARED;
++
+ 	/* create a gem object to contain this object in */
+ 	if (args->in.domains & (AMDGPU_GEM_DOMAIN_GDS |
+ 	    AMDGPU_GEM_DOMAIN_GWS | AMDGPU_GEM_DOMAIN_OA)) {
+-- 
+2.45.2
+
