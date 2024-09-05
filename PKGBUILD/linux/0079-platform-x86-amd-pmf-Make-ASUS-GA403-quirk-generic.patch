@@ -1,0 +1,29 @@
+From f56f0ca76b076ec1113547a4d74aefd1366c446d Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Sat, 31 Aug 2024 12:36:18 +1200
+Subject: [PATCH 79/79] platform/x86/amd: pmf: Make ASUS GA403 quirk generic
+
+The original quirk should match to GA403U so that the full
+range of GA403U models can benefit.
+
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+---
+ drivers/platform/x86/amd/pmf/pmf-quirks.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/platform/x86/amd/pmf/pmf-quirks.c b/drivers/platform/x86/amd/pmf/pmf-quirks.c
+index 460444cda1b2..48870ca52b41 100644
+--- a/drivers/platform/x86/amd/pmf/pmf-quirks.c
++++ b/drivers/platform/x86/amd/pmf/pmf-quirks.c
+@@ -25,7 +25,7 @@ static const struct dmi_system_id fwbug_list[] = {
+ 		.ident = "ROG Zephyrus G14",
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "GA403UV"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "GA403U"),
+ 		},
+ 		.driver_data = &quirk_no_sps_bug,
+ 	},
+-- 
+2.43.2
+

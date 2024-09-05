@@ -55,9 +55,29 @@ source=(
   0040-amdgpu-quirks.patch
   0050-AMD-Pstate-Core-Performance-Boost.patch
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
-  0053-add-support-for-screen-off-and-screen-on.patch
-  0054-Notify-the-suspend-core-when-displays-are-changed-at.patch
-  0055-Move-screen-off_on-code-into-dedicated.patch
+  0057-platform-x86-amd-pmf-Add-quirk-for-ROG-Ally-X.patch
+  0058-hid-asus-add-ROG-Ally-X-prod-ID-to-quirk-list.patch
+  0059-platform-x86-asus-wmi-Add-quirk-for-ROG-Ally-X.patch
+  0060-Fix-ROG-ALLY-X-audio.patch
+  0061-platform-x86-asus-wmi-add-support-for-vivobook-fan-p.patch
+  0062-hid-asus-use-hid-for-brightness-control-on-keyboard.patch
+  0063-Input-xpad-add-support-for-ASUS-ROG-RAIKIRI-PRO.patch
+  0064-platform-x86-asus-wmi-add-debug-print-in-more-key-pl.patch
+  0065-platform-x86-asus-wmi-don-t-fail-if-platform_profile.patch
+  0066-platform-x86-asus-wmi-Add-quirk-for-ROG-Ally-X.patch
+  0067-acpi-x86-s2idle-add-support-for-screen-off-and-scree.patch
+  0068-drm-Notify-the-suspend-core-when-displays-are-change.patch
+  0069-acpi-x86-s2idle-Move-screen-off-on-code-into-dedicat.patch
+  0070-acpi-x86-s2idle-Add-ability-to-configure-wakeup-by-A.patch
+  0071-platform-x86-asus-wmi-Refactor-Ally-CSEE-quirks.patch
+  0072-platform-x86-asus-armoury-move-existing-tunings-to-a.patch
+  0073-platform-x86-asus-armoury-add-dgpu-tgp-control.patch
+  0074-platform-x86-asus-armoury-add-apu-mem-control-suppor.patch
+  0075-platform-x86-asus-armoury-add-core-count-control.patch
+  0076-Core-mask-fix.patch
+  0077-asus-wmi-deprecate-bios-features.patch
+  0078-hid-asus-ally-Add-full-gamepad-support.patch
+  0079-platform-x86-amd-pmf-Make-ASUS-GA403-quirk-generic.patch
   0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 validpgpkeys=(
@@ -66,7 +86,7 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
 )
 sha256sums=('SKIP'
-'eaf3778881108ff1ba71731eba807b20cb3badddde069836a6c09f127a12a824' # config
+'9a5419e5236028eb47121b165fd5b510356f9757107d3f4f6cf7b1383620cc7d' # config
 '2fde7b646741397b0847ff71fe42ec178aef7de2436cc5531b0e725e878dccf8' # 0001-drm-panel-orientation-quirks.patch
 '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
 '783da391e0f45635eefb583b8b3acc29cd62a0c9eeefedf7f790dc2f89c7e279' # 0006-Ayaneo-geek-headset-patch.patch
@@ -85,9 +105,29 @@ sha256sums=('SKIP'
 '2728588169bb1e1b4d9987c0732a316e39670f0c873429179b894ddc6be9b0fa' # 0040-amdgpu-quirks.patch
 'c6ff653b1e55c5524b237a40683a34240d4ec7b95e524441ed3ae09ed885f674' # 0050-AMD-Pstate-Core-Performance-Boost.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
-'a8e3c0f7a3cdcc82a12a5dc44772263c2dd7bc3207f16b98dac42e0e74184172' # 0053-add-support-for-screen-off-and-screen-on.patch
-'abf7ddb74fa9eb0cfdbe81dba7bf4003e5d85ac1a4e1f2b5333ab97986c3e68e' # 0054-Notify-the-suspend-core-when-displays-are-changed-at.patch
-'713653bbb8d96eba905d87864989ca2ee0363efbcdf8217121924f538be2adc8' # 0055-Move-screen-off_on-code-into-dedicated.patch
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
+'SKIP'
 '23673c33ea69f3508ff9265d27171e2e58899950d563a1726a6049afe9e92067' # 0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 

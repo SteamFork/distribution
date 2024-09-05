@@ -1,8 +1,8 @@
-From 9217190b15982ba259576eb0a605f806113b1f50 Mon Sep 17 00:00:00 2001
+From bdf6e7a6b3fda3094f26ab68b92a30bdee8d101d Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <mario.limonciello@amd.com>
 Date: Wed, 14 Aug 2024 20:20:13 -0500
-Subject: [PATCH] acpi/x86: s2idle: Move screen off/on code into dedicated
- callbacks
+Subject: [PATCH 69/79] acpi/x86: s2idle: Move screen off/on code into
+ dedicated callbacks
 
 This lets the DRM core notify on screen events instead of calling
 them back to back.
@@ -13,7 +13,7 @@ Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
  1 file changed, 59 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
-index dd0b40b9bbe8be..e7f9748937d68e 100644
+index dd0b40b9bbe8..e7f9748937d6 100644
 --- a/drivers/acpi/x86/s2idle.c
 +++ b/drivers/acpi/x86/s2idle.c
 @@ -539,17 +539,21 @@ static struct acpi_scan_handler lps0_handler = {
@@ -121,3 +121,6 @@ index dd0b40b9bbe8be..e7f9748937d68e 100644
  	.prepare = acpi_s2idle_prepare,
  	.prepare_late = acpi_s2idle_prepare_late,
  	.check = acpi_s2idle_check,
+-- 
+2.43.2
+
