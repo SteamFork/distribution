@@ -21,8 +21,10 @@ options=(!strip)
 #git log --format=raw --show-signature main
 #git tag -v $(git tag)
 source=("${pkgbase}::git+${url}.git"
+        "TAS2XXX1EB3.bin"
         "aw87xxx_acf.bin")
 sha256sums=('SKIP'
+            '97b3a30af1fefd229ed6c0ca4352e536c4892b2754581396669c3aa5a2c8763e'
             'd29703932b73a6588c131ea20d0f2d2cf76221018aa179984a758da2982dab15')
 validpgpkeys=('4CDE8575E547BF835FE15807A31B6BD72486CFD6') # Josh Boyer <jwboyer@fedoraproject.org>
 
