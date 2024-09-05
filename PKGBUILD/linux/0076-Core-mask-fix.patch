@@ -1,0 +1,42 @@
+From 731bb08b75d1f14e0885102f0875e822caaf5218 Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Wed, 14 Aug 2024 20:15:14 +1200
+Subject: [PATCH 76/79] Core mask fix
+
+---
+ drivers/platform/x86/asus-armoury.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
+index 559d90d2ffa4..9f0474d4bc4a 100644
+--- a/drivers/platform/x86/asus-armoury.c
++++ b/drivers/platform/x86/asus-armoury.c
+@@ -675,15 +675,21 @@ static ssize_t cores_current_value_store(struct kobject *kobj,
+ 	if (err)
+ 		return err;
+ 
+-	if (core_type == CPU_CORE_PERF)
+-		cores |= (currentv & 0xff00);
+-	else
+-		cores |= currentv & 0xff;
++	if (core_type == CPU_CORE_PERF) {
++		cores &= ~ASUS_PERF_CORE_MASK;
++		cores |= FIELD_PREP(ASUS_PERF_CORE_MASK, currentv >> 8);
++	} else {
++		cores &= ~ASUS_POWER_CORE_MASK;
++		cores |= FIELD_PREP(ASUS_POWER_CORE_MASK, currentv);
++	}
+ 
+ 	if (cores == currentv)
+ 		return 0;
+ 
++	mutex_lock(&asus_armoury.mutex);
+ 	err = asus_wmi_set_devstate(ASUS_WMI_DEVID_CORES, cores, &result);
++	mutex_unlock(&asus_armoury.mutex);
++
+ 	if (err) {
+ 		pr_warn("Failed to set CPU core count: %d\n", err);
+ 		return err;
+-- 
+2.43.2
+

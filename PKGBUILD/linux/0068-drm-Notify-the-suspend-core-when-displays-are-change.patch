@@ -1,8 +1,8 @@
-From 85bbc00e7ffdb0a799f4ce8f4a4fa8fb560d3046 Mon Sep 17 00:00:00 2001
+From 6e7440f1a1d7892bd6024908e11789408bc761ee Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <mario.limonciello@amd.com>
 Date: Wed, 14 Aug 2024 20:19:09 -0500
-Subject: [PATCH] drm: Notify the suspend core when displays are changed at
- suspend
+Subject: [PATCH 68/79] drm: Notify the suspend core when displays are changed
+ at suspend
 
 This allows notifying the BIOS with the LPS0 _DSM for "Screen off"
 and "Screen on".
@@ -13,7 +13,7 @@ Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
  1 file changed, 13 insertions(+)
 
 diff --git a/drivers/gpu/drm/drm_atomic_helper.c b/drivers/gpu/drm/drm_atomic_helper.c
-index 39ef0a6addeba8..8afabbfe4c1b6f 100644
+index fb97b51b38f1..d3ef199c58c1 100644
 --- a/drivers/gpu/drm/drm_atomic_helper.c
 +++ b/drivers/gpu/drm/drm_atomic_helper.c
 @@ -27,6 +27,7 @@
@@ -24,7 +24,7 @@ index 39ef0a6addeba8..8afabbfe4c1b6f 100644
  
  #include <drm/drm_atomic.h>
  #include <drm/drm_atomic_helper.h>
-@@ -3526,6 +3527,13 @@ struct drm_atomic_state *drm_atomic_helper_suspend(struct drm_device *dev)
+@@ -3530,6 +3531,13 @@ struct drm_atomic_state *drm_atomic_helper_suspend(struct drm_device *dev)
  		goto unlock;
  	}
  
@@ -38,7 +38,7 @@ index 39ef0a6addeba8..8afabbfe4c1b6f 100644
  unlock:
  	DRM_MODESET_LOCK_ALL_END(dev, ctx, err);
  	if (err)
-@@ -3607,7 +3615,12 @@ int drm_atomic_helper_resume(struct drm_device *dev,
+@@ -3611,7 +3619,12 @@ int drm_atomic_helper_resume(struct drm_device *dev,
  	DRM_MODESET_LOCK_ALL_BEGIN(dev, ctx, 0, err);
  
  	err = drm_atomic_helper_commit_duplicated_state(state, &ctx);
@@ -51,3 +51,6 @@ index 39ef0a6addeba8..8afabbfe4c1b6f 100644
  	DRM_MODESET_LOCK_ALL_END(dev, ctx, err);
  	drm_atomic_state_put(state);
  
+-- 
+2.43.2
+
