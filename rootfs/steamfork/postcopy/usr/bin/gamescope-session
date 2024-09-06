@@ -268,16 +268,18 @@ fi
 
 function get_active_display() {
 	local DRM_PATH="/sys/class/drm"
-	for CARD in card[0-9]
+	for CARD in $(seq 0 1 9)
 	do
 		### Preference order: eDP, DP, HDMI.
-		for DISPLAY in ${DRM_PATH}/${CARD}-eDP* ${DRM_PATH}/${CARD}-DP* ${DRM_PATH}/${CARD}-HDMI*
+		for DISPLAY in ${DRM_PATH}/card${CARD}-eDP* ${DRM_PATH}/card${CARD}-DP* ${DRM_PATH}/card${CARD}-HDMI*
 		do
-			MY_DISPLAY=$(echo ${DISPLAY#*${CARD}-})
+			MY_DISPLAY=$(echo ${DISPLAY#*card${CARD}-})
 			DISPLAY_STATUS=$(cat ${DISPLAY}/status 2>/dev/null)
 			if [ "${DISPLAY_STATUS}" = "connected" ]
 			then
 				break
+			else
+				unset MY_DISPLAY DISPLAY_STATUS
 			fi
 		done
 		if [ -n "${MY_DISPLAY}" ]
