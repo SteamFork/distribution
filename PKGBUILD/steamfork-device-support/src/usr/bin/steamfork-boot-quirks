@@ -4,7 +4,10 @@ if [ -d "/etc/lib/steamfork_hwsupport/devicequirks/DEFAULT/boot.d" ]
 then
     for SCRIPT in "/etc/lib/steamfork_hwsupport/devicequirks/DEFAULT/boot.d"/*
     do
-        "${SCRIPT}"
+        if [ -f "${SCRIPT}" ]
+	then
+            "${SCRIPT}"
+	fi
     done
 fi
 
@@ -15,7 +18,10 @@ do
     then
         for SCRIPT in "${QUIRKPATH}/${DEVICE_NAME}/boot.d"/*
         do
-            "${SCRIPT}"
+	    if [ -f "${SCRIPT}" ]
+	    then
+                "${SCRIPT}"
+	    fi
         done
    fi
 done
