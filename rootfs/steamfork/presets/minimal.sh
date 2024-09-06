@@ -39,7 +39,7 @@ export DISABLED_SERVICES=()
 export PLYMOUTH_THEME=""
 export FINAL_DISTRIB_IMAGE=${BUILDVER}
 export KERNELCHOICE="linux"
-export BASE_BOOTSTRAP_PKGS="base base-devel linux-firmware intel-ucode amd-ucode dkms jq btrfs-progs core-main/grub efibootmgr openssh"
+export BASE_BOOTSTRAP_PKGS="base base-devel linux-firmware intel-ucode amd-ucode dkms jq btrfs-progs core-3.6/grub efibootmgr openssh"
 export STEAMOS_PKGS="acl
                     accountsservice
                     adobe-source-code-pro-fonts
@@ -258,7 +258,7 @@ export STEAMOS_PKGS="acl
                     linux-api-headers
                     linux-firmware
                     linux-firmware-whence
-		    extra-main/llvm
+		    extra-3.6/llvm
                     lsof
                     lz4
                     lzo

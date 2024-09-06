@@ -43,7 +43,7 @@ export DISABLED_SERVICES=(jupiter-controller-update.service)
 export PLYMOUTH_THEME="steamos"
 export FINAL_DISTRIB_IMAGE=${BUILDVER}
 export KERNELCHOICE="linux"
-export BASE_BOOTSTRAP_PKGS="base base-devel linux-firmware amd-ucode sddm-wayland dkms jq btrfs-progs core-main/grub efibootmgr openssh plymouth"
+export BASE_BOOTSTRAP_PKGS="base base-devel linux-firmware amd-ucode sddm-wayland dkms jq btrfs-progs core-3.6/grub efibootmgr openssh plymouth"
 export STEAMOS_PKGS="accounts-qml-module
                     accountsservice
                     acl
