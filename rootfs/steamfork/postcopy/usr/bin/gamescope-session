@@ -266,7 +266,35 @@ else
 	echo >&2 "!! Failed to claim global gamescope stats session"
 fi
 
+function get_active_display() {
+	local DRM_PATH="/sys/class/drm"
+	for CARD in card[0-9]
+	do
+		### Preference order: eDP, DP, HDMI.
+		for DISPLAY in ${DRM_PATH}/${CARD}-eDP* ${DRM_PATH}/${CARD}-DP* ${DRM_PATH}/${CARD}-HDMI*
+		do
+			MY_DISPLAY=$(echo ${DISPLAY#*${CARD}-})
+			DISPLAY_STATUS=$(cat ${DISPLAY}/status 2>/dev/null)
+			if [ "${DISPLAY_STATUS}" = "connected" ]
+			then
+				break
+			fi
+		done
+		if [ -n "${MY_DISPLAY}" ]
+		then
+			echo "${MY_DISPLAY}"
+			break
+		fi
+	done
+}
+
+### Find an active display.
+GAMESCOPE_DISPLAY=$(get_active_display)
+
+### Set up quirks for the device.
 source steamfork-devicequirk-set
+
+### If we still have no detected display, force output to eDP-1.
 if [ -z "${GAMESCOPE_DISPLAY}" ]
 then
   GAMESCOPE_DISPLAY="eDP-1"

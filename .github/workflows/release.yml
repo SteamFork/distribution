@@ -45,7 +45,7 @@ jobs:
 
             | Branch | URL | Checksum |
             | -- | -- | -- |
-            | Stable | [LATEST](https://www.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [CHECKSUM](https://www.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) |
+            | Stable | [LATEST](https://www.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) |
             | Mirror 1 | [LATEST](https://www2.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www2.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) ||
             | Mirror 2 | [LATEST](https://www3.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www3.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256)||
             For installation instructions and other documentation, visit the [main project page](https://github.com/SteamFork).
