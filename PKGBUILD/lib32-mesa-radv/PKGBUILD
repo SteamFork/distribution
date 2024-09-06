@@ -11,11 +11,12 @@ pkgdesc="An open-source implementation of the OpenGL specification (32-bit)"
 # When updating the tag, consider if you are adding any shader compiler changes. If so,
 # or if you are not sure, regenerate the radv-build-id below. To update, see
 # https://gitlab.steamos.cloud/jupiter/docs/-/wikis/How-to-make-a-new-Mesa-release#updating-the-radv-build-id
-_tag=steamos-24.4.0
-pkgver=24.1.0_devel.188125.steamos_24.4.0.SteamFork
-pkgrel=2
+_tag=steamos-24.4.1
+pkgver=24.1.0_devel.188126.steamos_24.4.1
+pkgrel=1
 arch=('x86_64')
 makedepends=('git' 'openssh' 'python-mako' 'lib32-libxml2' 'lib32-expat' 'lib32-libx11' 'xorgproto' 'lib32-libdrm'
+             'python>=3.11' 'python<3.12'
              'lib32-libxshmfence'
              'lib32-wayland' 'wayland-protocols' 'lib32-zstd' 'lib32-libelf'
              'lib32-llvm' 'lib32-libunwind'
