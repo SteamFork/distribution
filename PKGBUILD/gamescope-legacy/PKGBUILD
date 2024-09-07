@@ -1,0 +1,75 @@
+# Maintainer: Pierre-Loup A. Griffais <pgriffais@valvesoftware.com>
+
+pkgname=gamescope-legacy
+_srctag=3.14.2
+pkgver=${_srctag//-/.}
+pkgrel=1
+pkgdesc="gaming shell based on Xwayland, powered by Vulkan and DRM"
+arch=(x86_64)
+url="https://github.com/ValveSoftware/gamescope"
+license=('MIT')
+depends=('xorg-xwayland' 'libavif' 'aom' 'rav1e' 'libxres' 'xcb-util-errors' 'freerdp' 'xcb-util-wm' 'libxcomposite' 'pixman' 'libinput' 'seatd' 'pipewire' 'libxmu' 'libxcursor' 'powerbuttond' 'libdecor' 'libei')
+makedepends=(openssh git meson cmake wayland-protocols ninja glslang glm vulkan-headers benchmark)
+source=(
+        "git+https://github.com/ValveSoftware/gamescope.git#tag=$_srctag"
+        "git+https://github.com/Joshua-Ashton/wlroots.git"
+        "git+https://gitlab.freedesktop.org/emersion/libliftoff.git"
+        "git+https://github.com/Joshua-Ashton/GamescopeShaders.git#tag=v0.1"
+        # FIXME Upstream gamescope is just selecting master branch at build time, so we are arbitrarily snapshotting a
+        #       revision when bumping the version here such that the build is reproducible.
+        "git+https://github.com/nothings/stb.git#commit=af1a5bc352164740c1cc1354942b1c6b72eacb8a"
+	)
+
+sha256sums=(
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+	    )
+
+prepare() {
+	cd "gamescope"
+
+	local src
+	for src in "${source[@]}"; do
+		src="${src%%::*}"
+		src="${src##*/}"
+		[[ $src = *.patch ]] || continue
+		echo "Applying patch $src..."
+		patch -Np1 < "../$src"
+	done
+
+	# git submodules
+	git submodule init
+	git config submodule.subprojects/wlroots.url "$srcdir/wlroots"
+	git config submodule.subprojects/libliftoff.url "$srcdir/libliftoff"
+	git -c protocol.file.allow=always submodule update
+
+	# meson subprojects
+	rm -rf subprojects/stb
+	git clone "$srcdir/stb" subprojects/stb
+	cp -av subprojects/packagefiles/stb/* subprojects/stb/ # patch from the .wrap we elided
+}
+
+build() {
+	cd "gamescope"
+
+	rm -rf build
+	mkdir build
+	cd build
+	arch-meson --buildtype release -Davif_screenshots=disabled -Denable_gamescope_wsi_layer=false -Denable_openvr_support=false --prefix /usr ..
+	ninja
+}
+
+package() {
+	cd "gamescope/build"
+
+	DESTDIR="$pkgdir" meson install --skip-subprojects
+
+	mv "$pkgdir"/usr/bin/gamescope "$pkgdir"/usr/bin/gamescope-legacy
+
+	rm -rf "$pkgdir"/usr/include
+	rm -rf "$pkgdir"/usr/lib
+	rm -rf "$pkgdir"/usr/share
+}
