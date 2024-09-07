@@ -181,6 +181,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     galileo-mura
                     gamemode
                     gamescope
+		    gamescope-legacy
                     gawk
                     gc
                     gcab
