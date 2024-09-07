@@ -11,7 +11,7 @@ pkgname=('vulkan-mesa-layers' 'vulkan-intel' 'vulkan-swrast' 'libva-mesa-driver'
 pkgdesc="An open-source implementation of the OpenGL specification"
 _tag=radeonsi-24.0.3
 pkgver=24.0.5.183659.radeonsi_24.0.3.SteamFork
-pkgrel=2
+pkgrel=3
 arch=('x86_64')
 makedepends=('git' 'openssh' 'python-mako' 'libxml2' 'libx11' 'xorgproto' 'libdrm' 'libxshmfence' 'libxxf86vm'
              'libxdamage' 'libvdpau' 'libva' 'wayland' 'wayland-protocols' 'zstd' 'elfutils' 'llvm'
@@ -71,7 +71,7 @@ build() {
     -D b_ndebug=true \
     -D b_lto=false \
     -D platforms=x11,wayland \
-    -D gallium-drivers=radeonsi,swrast,zink \
+    -D gallium-drivers=iris,i915,radeonsi,swrast,zink \
     -D vulkan-drivers=intel,swrast \
     -D vulkan-layers=device-select,intel-nullhw,overlay \
     -D dri3=enabled \
