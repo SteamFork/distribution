@@ -302,7 +302,24 @@ then
   GAMESCOPE_DISPLAY="eDP-1"
 fi
 
-sudo udevadm trigger && gamescope \
+GAMESCOPE_BINARY="gamescope"
+HAS_INTEL=$(lspci -nn | grep -iE 'VGA compat.*Intel' | tr ' ' $'\n' | tr -d '][' | grep 8086)
+HAS_AMD=$(lspci -nn | grep -iE 'VGA compat.*AMD' | tr ' ' $'\n' | tr -d '][' | grep 1002)
+HAS_LEGACY=$(lspci -nn | grep -iE 'VGA compat.*(Ellesmere|Lexa|Baffin|Polaris)' | tr ' ' $'\n' | tr -d '][' | grep 1002)
+
+if [ -n "${HAS_INTEL}" ] && \
+   [ -z "${HAS_AMD}" ]
+then
+        export ENABLE_GAMESCOPE_WSI=0
+        export INTEL_DEBUG=norbc
+        export mesa_glthread=true
+elif [ -n "${HAS_LEGACY}" ]
+then
+        export mesa_glthread=true
+        GAMESCOPE_BINARY="gamescope-legacy"
+fi
+
+sudo udevadm trigger && ${GAMESCOPE_BINARY} \
 	--generate-drm-mode fixed \
 	--xwayland-count 2 \
 	${GAMESCOPE_ADDITIONAL_OPTIONS} \
