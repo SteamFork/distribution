@@ -1,4 +1,4 @@
-# Maintainer: Pierre-Loup A. Griffais <pgriffais@valvesoftware.com>
+# Maintainer: Fewtarius
 
 pkgname=gamescope-legacy
 _srctag=3.14.2
