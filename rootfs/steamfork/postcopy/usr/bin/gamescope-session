@@ -290,19 +290,13 @@ function get_active_display() {
 	done
 }
 
+### Default to the current version of Gamescope.
+GAMESCOPE_BINARY="gamescope"
+
 ### Find an active display.
 GAMESCOPE_DISPLAY=$(get_active_display)
 
-### Set up quirks for the device.
-source steamfork-devicequirk-set
-
-### If we still have no detected display, force output to eDP-1.
-if [ -z "${GAMESCOPE_DISPLAY}" ]
-then
-  GAMESCOPE_DISPLAY="eDP-1"
-fi
-
-GAMESCOPE_BINARY="gamescope"
+### Tests to determine how to start Gamescope.
 HAS_INTEL=$(lspci -nn | grep -iE 'VGA compat.*Intel' | tr ' ' $'\n' | tr -d '][' | grep 8086)
 HAS_AMD=$(lspci -nn | grep -iE 'VGA compat.*AMD' | tr ' ' $'\n' | tr -d '][' | grep 1002)
 HAS_LEGACY=$(lspci -nn | grep -iE 'VGA compat.*(Ellesmere|Lexa|Baffin|Polaris)' | tr ' ' $'\n' | tr -d '][' | grep 1002)
@@ -310,14 +304,25 @@ HAS_LEGACY=$(lspci -nn | grep -iE 'VGA compat.*(Ellesmere|Lexa|Baffin|Polaris)' 
 if [ -n "${HAS_INTEL}" ] && \
    [ -z "${HAS_AMD}" ]
 then
+	### This is an Intel IPU without an AMD GPU.
         export ENABLE_GAMESCOPE_WSI=0
         export INTEL_DEBUG=norbc
         export mesa_glthread=true
 elif [ -n "${HAS_LEGACY}" ]
 then
+	### This is a device with an AMD GPU that is Polaris or older.
 	export ENABLE_GAMESCOPE_WSI=0
         export mesa_glthread=true
         GAMESCOPE_BINARY="gamescope-legacy"
+fi
+
+### Set up quirks for the device.  Do this late so we can override any detected parameters.
+source steamfork-devicequirk-set
+
+### If we still have no detected display, we should force output to eDP-1.
+if [ -z "${GAMESCOPE_DISPLAY}" ]
+then
+  GAMESCOPE_DISPLAY="eDP-1"
 fi
 
 sudo udevadm trigger && ${GAMESCOPE_BINARY} \
