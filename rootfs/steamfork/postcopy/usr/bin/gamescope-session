@@ -315,6 +315,7 @@ then
         export mesa_glthread=true
 elif [ -n "${HAS_LEGACY}" ]
 then
+	export ENABLE_GAMESCOPE_WSI=0
         export mesa_glthread=true
         GAMESCOPE_BINARY="gamescope-legacy"
 fi
