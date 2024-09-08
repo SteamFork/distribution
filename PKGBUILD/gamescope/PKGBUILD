@@ -3,7 +3,7 @@
 pkgname=gamescope
 _srctag=3.15.5
 pkgver=${_srctag//-/.}.SteamFork
-pkgrel=2
+pkgrel=3
 pkgdesc="gaming shell based on Xwayland, powered by Vulkan and DRM"
 arch=(x86_64)
 url="https://github.com/ValveSoftware/gamescope"
@@ -26,7 +26,6 @@ source=("gamescope-session"
         #       revision when bumping the version here such that the build is reproducible.
         "git+https://github.com/nothings/stb.git#commit=af1a5bc352164740c1cc1354942b1c6b72eacb8a"
 	0001-revert-299bc34.patch
-	0002-external_monitor.patch
 	)
 sha256sums=('ca794fb2d96d971baee9b0c3d6f4c6a4f55255dbbef2c4133ea5946ed667d507'
             'fe515fce8f151a6c03a89e043044bfddf8cd6ee89027d2cfbcf6f6706c78ca76'
@@ -42,7 +41,6 @@ sha256sums=('ca794fb2d96d971baee9b0c3d6f4c6a4f55255dbbef2c4133ea5946ed667d507'
             'SKIP'
             'SKIP'
 	    'a550ef98fd55e142d2bca9f9fe893172bb9140edfc6df232698324c9d5e4625c' # 0001-revert-299bc34.patch
-	    'c9446c342c1a957f2a9df0e5d67060a6dc8adc306c03a3dc8974494975f79582' # 0002-external_monitor.patch
             )
 
 install=gamescope.install
