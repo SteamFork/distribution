@@ -12,6 +12,9 @@ pipeline. Replace the agreed name `AMD_PRIVATE_COLOR` with
 our downstream version `CONFIG_DRM_AMD_COLOR_STEAMDECK`.
 
 Signed-off-by: Melissa Wen <mwen@igalia.com>
+
+*** Updated by Fewtarius, 09/08/2024.
+
 ---
  drivers/gpu/drm/amd/display/Kconfig                     | 7 +++++++
  drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c       | 2 +-
@@ -20,10 +23,9 @@ Signed-off-by: Melissa Wen <mwen@igalia.com>
  drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c | 6 +++---
  5 files changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/Kconfig b/drivers/gpu/drm/amd/display/Kconfig
-index 901d1961b739..49523fa82f92 100644
---- a/drivers/gpu/drm/amd/display/Kconfig
-+++ b/drivers/gpu/drm/amd/display/Kconfig
+diff -rupN linux-6.10.9.orig/drivers/gpu/drm/amd/display/Kconfig linux-6.10.9/drivers/gpu/drm/amd/display/Kconfig
+--- linux-6.10.9.orig/drivers/gpu/drm/amd/display/Kconfig	2024-09-08 17:37:40.514686321 +0000
++++ linux-6.10.9/drivers/gpu/drm/amd/display/Kconfig	2024-09-08 17:37:55.042101682 +0000
 @@ -51,4 +51,11 @@ config DRM_AMD_SECURE_DISPLAY
  	  This option enables the calculation of crc of specific region via
  	  debugfs. Cooperate with specific DMCU FW.
@@ -36,24 +38,22 @@ index 901d1961b739..49523fa82f92 100644
 +	  color management support on Steam Deck.
 +
  endmenu
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index d6e71aa808d8..c00d09584bbe 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -4099,7 +4099,7 @@ static int amdgpu_dm_mode_config_init(struct amdgpu_device *adev)
+diff -rupN linux-6.10.9.orig/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c linux-6.10.9/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+--- linux-6.10.9.orig/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c	2024-09-08 17:37:40.518019826 +0000
++++ linux-6.10.9/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c	2024-09-08 17:38:35.727531667 +0000
+@@ -4129,7 +4129,7 @@ static int amdgpu_dm_mode_config_init(st
  		return r;
  	}
  
 -#ifdef AMD_PRIVATE_COLOR
 +#ifdef CONFIG_DRM_AMD_COLOR_STEAMDECK
- 	if (amdgpu_dm_create_color_properties(adev))
- 		return -ENOMEM;
- #endif
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_color.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_color.c
-index c87b64e464ed..9355eff9b167 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_color.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_color.c
-@@ -97,7 +97,7 @@ static inline struct fixed31_32 amdgpu_dm_fixpt_from_s3132(__u64 x)
+ 	if (amdgpu_dm_create_color_properties(adev)) {
+ 		dc_state_release(state->context);
+ 		kfree(state);
+diff -rupN linux-6.10.9.orig/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_color.c linux-6.10.9/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_color.c
+--- linux-6.10.9.orig/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_color.c	2024-09-08 17:37:40.518019826 +0000
++++ linux-6.10.9/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_color.c	2024-09-08 17:37:55.045435187 +0000
+@@ -97,7 +97,7 @@ static inline struct fixed31_32 amdgpu_d
  	return val;
  }
  
@@ -62,11 +62,10 @@ index c87b64e464ed..9355eff9b167 100644
  /* Pre-defined Transfer Functions (TF)
   *
   * AMD driver supports pre-defined mathematical functions for transferring
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
-index e23a0a276e33..d424df95276e 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
-@@ -338,7 +338,7 @@ static int amdgpu_dm_crtc_late_register(struct drm_crtc *crtc)
+diff -rupN linux-6.10.9.orig/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c linux-6.10.9/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
+--- linux-6.10.9.orig/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c	2024-09-08 17:37:40.518019826 +0000
++++ linux-6.10.9/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c	2024-09-08 17:37:55.045435187 +0000
+@@ -338,7 +338,7 @@ static int amdgpu_dm_crtc_late_register(
  }
  #endif
  
@@ -75,7 +74,7 @@ index e23a0a276e33..d424df95276e 100644
  /**
   * dm_crtc_additional_color_mgmt - enable additional color properties
   * @crtc: DRM CRTC
-@@ -420,7 +420,7 @@ static const struct drm_crtc_funcs amdgpu_dm_crtc_funcs = {
+@@ -420,7 +420,7 @@ static const struct drm_crtc_funcs amdgp
  #if defined(CONFIG_DEBUG_FS)
  	.late_register = amdgpu_dm_crtc_late_register,
  #endif
@@ -84,7 +83,7 @@ index e23a0a276e33..d424df95276e 100644
  	.atomic_set_property = amdgpu_dm_atomic_crtc_set_property,
  	.atomic_get_property = amdgpu_dm_atomic_crtc_get_property,
  #endif
-@@ -599,7 +599,7 @@ int amdgpu_dm_crtc_init(struct amdgpu_display_manager *dm,
+@@ -599,7 +599,7 @@ int amdgpu_dm_crtc_init(struct amdgpu_di
  
  	drm_mode_crtc_set_gamma_size(&acrtc->base, MAX_COLOR_LEGACY_LUT_ENTRIES);
  
@@ -93,11 +92,10 @@ index e23a0a276e33..d424df95276e 100644
  	dm_crtc_additional_color_mgmt(&acrtc->base);
  #endif
  	return 0;
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c
-index 8a4c40b4c27e..5d87c24f0461 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c
-@@ -1468,7 +1468,7 @@ static void amdgpu_dm_plane_drm_plane_destroy_state(struct drm_plane *plane,
+diff -rupN linux-6.10.9.orig/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c linux-6.10.9/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c
+--- linux-6.10.9.orig/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c	2024-09-08 17:37:40.518019826 +0000
++++ linux-6.10.9/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_plane.c	2024-09-08 17:37:55.045435187 +0000
+@@ -1473,7 +1473,7 @@ static void amdgpu_dm_plane_drm_plane_de
  	drm_atomic_helper_plane_destroy_state(plane, state);
  }
  
@@ -106,7 +104,7 @@ index 8a4c40b4c27e..5d87c24f0461 100644
  static void
  dm_atomic_plane_attach_color_mgmt_properties(struct amdgpu_display_manager *dm,
  					     struct drm_plane *plane)
-@@ -1659,7 +1659,7 @@ static const struct drm_plane_funcs dm_plane_funcs = {
+@@ -1664,7 +1664,7 @@ static const struct drm_plane_funcs dm_p
  	.atomic_duplicate_state = amdgpu_dm_plane_drm_plane_duplicate_state,
  	.atomic_destroy_state = amdgpu_dm_plane_drm_plane_destroy_state,
  	.format_mod_supported = amdgpu_dm_plane_format_mod_supported,
@@ -115,7 +113,7 @@ index 8a4c40b4c27e..5d87c24f0461 100644
  	.atomic_set_property = dm_atomic_plane_set_property,
  	.atomic_get_property = dm_atomic_plane_get_property,
  #endif
-@@ -1742,7 +1742,7 @@ int amdgpu_dm_plane_init(struct amdgpu_display_manager *dm,
+@@ -1747,7 +1747,7 @@ int amdgpu_dm_plane_init(struct amdgpu_d
  
  	drm_plane_helper_add(plane, &dm_plane_helper_funcs);
  
@@ -124,6 +122,3 @@ index 8a4c40b4c27e..5d87c24f0461 100644
  	dm_atomic_plane_attach_color_mgmt_properties(dm, plane);
  #endif
  	/* Create (reset) the plane state */
--- 
-2.43.2
-

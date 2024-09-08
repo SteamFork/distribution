@@ -36,11 +36,6 @@ index 0b2eb0ae85fe..460444cda1b2 100644
  	{}
  };
  
-@@ -48,4 +56,3 @@ void amd_pmf_quirks_init(struct amd_pmf_dev *dev)
- 			dmi_id->ident);
- 	}
- }
--
 -- 
 2.46.0
 
