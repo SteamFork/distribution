@@ -1,49 +1,7 @@
-From 79819aa596b3cfd8f3ad86e59c0ec4579334a89f Mon Sep 17 00:00:00 2001
-From: "Luke D. Jones" <luke@ljones.dev>
-Date: Mon, 29 Jul 2024 14:08:31 +1200
-Subject: [PATCH 01/22] platform/x86/amd: pmf: Add quirk for ROG Ally X
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-The ASUS ROG Ally X has the same issue as the G14 where it advertises
-SPS support but doesn't use it.
-
-Signed-off-by: Luke D. Jones <luke@ljones.dev>
-Link: https://lore.kernel.org/r/20240729020831.28117-1-luke@ljones.dev
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/platform/x86/amd/pmf/pmf-quirks.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/platform/x86/amd/pmf/pmf-quirks.c b/drivers/platform/x86/amd/pmf/pmf-quirks.c
-index 0b2eb0ae85fe..460444cda1b2 100644
---- a/drivers/platform/x86/amd/pmf/pmf-quirks.c
-+++ b/drivers/platform/x86/amd/pmf/pmf-quirks.c
-@@ -29,6 +29,14 @@ static const struct dmi_system_id fwbug_list[] = {
- 		},
- 		.driver_data = &quirk_no_sps_bug,
- 	},
-+	{
-+		.ident = "ROG Ally X",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "RC72LA"),
-+		},
-+		.driver_data = &quirk_no_sps_bug,
-+	},
- 	{}
- };
- 
--- 
-2.46.0
-
-
-From 910dcb90d974d8ba83cd41b4c8ceef9525d42f57 Mon Sep 17 00:00:00 2001
+From 392ed067a203f26a61a42ee286748f14e1870803 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 31 Aug 2024 12:36:18 +1200
-Subject: [PATCH 02/22] platform/x86/amd: pmf: Make ASUS GA403 quirk generic
+Subject: [PATCH 01/21] platform/x86/amd: pmf: Make ASUS GA403 quirk generic
 
 The original quirk should match to GA403U so that the full
 range of GA403U models can benefit.
@@ -70,10 +28,10 @@ index 460444cda1b2..48870ca52b41 100644
 2.46.0
 
 
-From 35054c913713d0ca26c352f6c9621da8b99711bc Mon Sep 17 00:00:00 2001
+From 26fcf70258b2038144244f404849eff1d5b88b5f Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 25 Jul 2024 10:31:25 +1200
-Subject: [PATCH 03/22] hid-asus: add ROG Ally X prod ID to quirk list
+Subject: [PATCH 02/21] hid-asus: add ROG Ally X prod ID to quirk list
 
 The new ASUS ROG Ally X functions almost exactly the same as the previous
 model, so we can use the same quirks.
@@ -115,10 +73,10 @@ index 72d56ee7ce1b..6e3223389080 100644
 2.46.0
 
 
-From 66391c83427bbbff594f8a8ce69e1250d3475b99 Mon Sep 17 00:00:00 2001
+From a33ceec06332d0cf59c6da61eca3512a8895cf34 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Tue, 6 Aug 2024 11:46:03 +1200
-Subject: [PATCH 04/22] platform/x86: asus-wmi: Add quirk for ROG Ally X
+Subject: [PATCH 03/21] platform/x86: asus-wmi: Add quirk for ROG Ally X
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -176,10 +134,10 @@ index bc9c5db38324..5fe5149549cc 100644
 2.46.0
 
 
-From b6404d8dd0dfa419a46b0440a5ee518657319045 Mon Sep 17 00:00:00 2001
+From e0287028d7a0d39a8535ddaf0b10907e16bd9380 Mon Sep 17 00:00:00 2001
 From: Jonathan LoBue <jlobue10@gmail.com>
 Date: Sat, 13 Jul 2024 00:12:06 -0700
-Subject: [PATCH 05/22] Fix ROG ALLY X audio
+Subject: [PATCH 04/21] Fix ROG ALLY X audio
 
 Patch to test fixing TAS2781 amp getting bound properly to i2c
 for ASUS ROG ALLY X.
@@ -224,10 +182,10 @@ index 1a7b7e790fca..0a426ddceb6e 100644
 2.46.0
 
 
-From 602bce633909ee7e739da33b0ec18d9e62a103de Mon Sep 17 00:00:00 2001
+From a10808ef9c073f929c8b2c1934536733c251a560 Mon Sep 17 00:00:00 2001
 From: Mohamed Ghanmi <mohamed.ghanmi@supcom.tn>
 Date: Sun, 9 Jun 2024 15:48:49 +0100
-Subject: [PATCH 06/22] platform/x86: asus-wmi: add support for vivobook fan
+Subject: [PATCH 05/21] platform/x86: asus-wmi: add support for vivobook fan
  profiles
 
 Add support for vivobook fan profiles wmi call on the ASUS VIVOBOOK
@@ -525,10 +483,10 @@ index 3eb5cd6773ad..982a637744ec 100644
 2.46.0
 
 
-From d3415025fd46e84efa7d4c7ab9cfcb8d2df6690f Mon Sep 17 00:00:00 2001
+From 2236e52a8332b18ab0fa42d74bc755c23a737893 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 13 Jul 2024 19:47:33 +1200
-Subject: [PATCH 07/22] hid-asus: use hid for brightness control on keyboard
+Subject: [PATCH 06/21] hid-asus: use hid for brightness control on keyboard
 
 On almost all ASUS ROG series laptops the MCU used for the USB keyboard
 also has a HID packet used for setting the brightness. This is usually
@@ -640,10 +598,10 @@ index 982a637744ec..8e7fc84a8f7d 100644
 2.46.0
 
 
-From f4a57249f3b680093d742e50543955d1aa88c551 Mon Sep 17 00:00:00 2001
+From 8ddb90abbc6968a68f8950a9fb525b74ccb332d6 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Fri, 7 Jun 2024 15:58:01 +1200
-Subject: [PATCH 08/22] Input: xpad - add support for ASUS ROG RAIKIRI PRO
+Subject: [PATCH 07/21] Input: xpad - add support for ASUS ROG RAIKIRI PRO
 
 Add the VID/PID for ASUS ROG RAIKIRI PRO to
 xpad_device and the VID to xpad_table.
@@ -669,10 +627,10 @@ index 6e3223389080..bb0f2900c573 100644
 2.46.0
 
 
-From 0cc69d2da1ae13f01f1715ca2b49e7d958c2efeb Mon Sep 17 00:00:00 2001
+From 56a7dca35e3df6c9617c4fc0dd37a09938da3876 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Tue, 21 May 2024 18:17:17 +1200
-Subject: [PATCH 09/22] platform/x86: asus-wmi: add debug print in more key
+Subject: [PATCH 08/21] platform/x86: asus-wmi: add debug print in more key
  places
 
 Add more verbose debug print in the WMI method calls. This helps a lot
@@ -835,10 +793,10 @@ index 85c90ed9873b..fbb3345cc65a 100644
 2.46.0
 
 
-From d5379573c40cf5c0cc42ad96ae5508828f55cd2a Mon Sep 17 00:00:00 2001
+From 4f25a99e3bfdff10a775eb0401fb61f6340657e0 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Fri, 24 May 2024 10:54:36 +1200
-Subject: [PATCH 10/22] platform/x86: asus-wmi: don't fail if platform_profile
+Subject: [PATCH 09/21] platform/x86: asus-wmi: don't fail if platform_profile
  already registered
 
 On some newer laptops it appears that an AMD driver can register a
@@ -887,10 +845,10 @@ index fbb3345cc65a..d53c4aff519f 100644
 2.46.0
 
 
-From dd618ea8fe14b27b093aa6b19dba0729e96a550f Mon Sep 17 00:00:00 2001
+From b6a1272cf12d816d637c601f39f3d6493a7c21ed Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 25 Jul 2024 10:05:59 +1200
-Subject: [PATCH 11/22] platform/x86: asus-wmi: Add quirk for ROG Ally X
+Subject: [PATCH 10/21] platform/x86: asus-wmi: Add quirk for ROG Ally X
 
 The new ROG Ally X functions the same as the previus model so we can use
 the same method to ensure the MCU USB devices wake and reconnect
@@ -932,10 +890,10 @@ index 8e7fc84a8f7d..879b272ee667 100644
 2.46.0
 
 
-From 9dcc7a3514d5254f878b221150ac6de61acf854f Mon Sep 17 00:00:00 2001
+From b07c9b65cac2fd883f8392f46813443fb4a30487 Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <mario.limonciello@amd.com>
 Date: Wed, 14 Aug 2024 12:50:25 -0500
-Subject: [PATCH 12/22] acpi/x86: s2idle: add support for screen off and screen
+Subject: [PATCH 11/21] acpi/x86: s2idle: add support for screen off and screen
  on callbacks
 
 All the _DSM methods for the LPS0 method are called back to back
@@ -1009,10 +967,10 @@ index 09f8397bae15..19734b297527 100644
 2.46.0
 
 
-From cd57569e666ca0e4fe054216b911f2f278ce18a2 Mon Sep 17 00:00:00 2001
+From 6a0e5c64d22e2e7746810047a67133c45e59e54d Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <mario.limonciello@amd.com>
 Date: Wed, 14 Aug 2024 20:19:09 -0500
-Subject: [PATCH 13/22] drm: Notify the suspend core when displays are changed
+Subject: [PATCH 12/21] drm: Notify the suspend core when displays are changed
  at suspend
 
 This allows notifying the BIOS with the LPS0 _DSM for "Screen off"
@@ -1066,10 +1024,10 @@ index fb97b51b38f1..d3ef199c58c1 100644
 2.46.0
 
 
-From 13b15fba4f0712c622ac6a980974a224b659bb39 Mon Sep 17 00:00:00 2001
+From 55a2920db603010323f33949cdcc05da30b1b13d Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <mario.limonciello@amd.com>
 Date: Wed, 14 Aug 2024 20:20:13 -0500
-Subject: [PATCH 14/22] acpi/x86: s2idle: Move screen off/on code into
+Subject: [PATCH 13/21] acpi/x86: s2idle: Move screen off/on code into
  dedicated callbacks
 
 This lets the DRM core notify on screen events instead of calling
@@ -1193,10 +1151,10 @@ index dd0b40b9bbe8..e7f9748937d6 100644
 2.46.0
 
 
-From b3aa746367d005d1f62277c3744e7125224f0cb7 Mon Sep 17 00:00:00 2001
+From 8af07eac58b8ee315010ad8616f71967ba7d2871 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 1 Sep 2024 14:30:37 +1200
-Subject: [PATCH 15/22] platform/x86: asus-wmi: Refactor Ally CSEE quirks
+Subject: [PATCH 14/21] platform/x86: asus-wmi: Refactor Ally CSEE quirks
 
 Adjust the CSEE quirk call ordering and time delay. This fixes issues
 where the MCU isn't provided enough time to complete USB device
@@ -1438,10 +1396,10 @@ index 879b272ee667..8e7fc84a8f7d 100644
 2.46.0
 
 
-From 27f10a1783e6daff3323703fde9b572fc4a2a7a8 Mon Sep 17 00:00:00 2001
+From aa6ad2bd42945d46a37ad6b013519e39bb3d4bc6 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 30 May 2024 13:20:11 +1200
-Subject: [PATCH 16/22] platform/x86: asus-armoury: move existing tunings to
+Subject: [PATCH 15/21] platform/x86: asus-armoury: move existing tunings to
  asus-armoury module
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1472,12 +1430,12 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
  drivers/platform/x86/Kconfig               |  14 +
  drivers/platform/x86/Makefile              |   1 +
- drivers/platform/x86/asus-armoury.c        | 705 +++++++++++++++++++++
+ drivers/platform/x86/asus-armoury.c        | 706 +++++++++++++++++++++
  drivers/platform/x86/asus-armoury.h        | 209 ++++++
  drivers/platform/x86/asus-wmi.c            |  65 +-
  drivers/platform/x86/asus-wmi.h            |  14 +
  include/linux/platform_data/x86/asus-wmi.h |  11 +
- 7 files changed, 1003 insertions(+), 16 deletions(-)
+ 7 files changed, 1004 insertions(+), 16 deletions(-)
  create mode 100644 drivers/platform/x86/asus-armoury.c
  create mode 100644 drivers/platform/x86/asus-armoury.h
 
@@ -1527,10 +1485,10 @@ index e1b142947067..fe3e7e7dede8 100644
  obj-$(CONFIG_ASUS_TF103C_DOCK)	+= asus-tf103c-dock.o
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
 new file mode 100644
-index 000000000000..5b41f5950a4e
+index 000000000000..0cedcd8ac888
 --- /dev/null
 +++ b/drivers/platform/x86/asus-armoury.c
-@@ -0,0 +1,705 @@
+@@ -0,0 +1,706 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
 + * Asus Armoury (WMI) attributes driver. This driver uses the fw_attributes
@@ -2146,7 +2104,8 @@ index 000000000000..5b41f5950a4e
 +	} else if (strstr(product, "X13")) {
 +		cpu_max = 75;
 +		cpu_default = 50;
-+	} else if (strstr(product, "RC71")) {
++	} else if (strstr(product, "RC71")
++		|| strstr(product, "RC72")) {
 +		cpu_max = 50;
 +		cpu_default = 30;
 +	} else if (strstr(product, "G814")
@@ -2184,7 +2143,7 @@ index 000000000000..5b41f5950a4e
 +	rog->ppt_apu_sppt = cpu_default;
 +
 +	rog->ppt_platform_sppt = platform_default;
-+	rog->ppt_fppt = platform_default;
++	rog->ppt_fppt = cpu_default;
 +
 +	rog->nv_boost_default = NVIDIA_BOOST_MAX;
 +	rog->nv_boost_max = NVIDIA_BOOST_MIN;
@@ -2596,10 +2555,10 @@ index 8e7fc84a8f7d..0fabef8fe490 100644
 2.46.0
 
 
-From 8e912c49e07d910f7bd773de157542523c4a27b2 Mon Sep 17 00:00:00 2001
+From 0bc3b8e2e092a2f817fd342f2156c7464bf86038 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 2 Jun 2024 14:32:15 +1200
-Subject: [PATCH 17/22] platform/x86: asus-armoury: add dgpu tgp control
+Subject: [PATCH 16/21] platform/x86: asus-armoury: add dgpu tgp control
 
 Implement the dgpu TGP control under the asus-armoury module using the
 fw_attributes class.
@@ -2612,7 +2571,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  3 files changed, 43 insertions(+)
 
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
-index 5b41f5950a4e..013a4eee251d 100644
+index 0cedcd8ac888..9344784b5253 100644
 --- a/drivers/platform/x86/asus-armoury.c
 +++ b/drivers/platform/x86/asus-armoury.c
 @@ -51,6 +51,9 @@
@@ -2658,7 +2617,7 @@ index 5b41f5950a4e..013a4eee251d 100644
  
  	{ &charge_mode_attr_group, ASUS_WMI_DEVID_CHARGE_MODE },
  	{ &boot_sound_attr_group, ASUS_WMI_DEVID_BOOT_SOUND },
-@@ -663,6 +678,11 @@ static void init_rog_tunables(struct rog_tunables *rog)
+@@ -664,6 +679,11 @@ static void init_rog_tunables(struct rog_tunables *rog)
  	rog->nv_temp_max = NVIDIA_TEMP_MAX;
  	rog->nv_temp_target = NVIDIA_TEMP_MIN;
  
@@ -2726,10 +2685,10 @@ index 0fabef8fe490..196af54a52b0 100644
 2.46.0
 
 
-From 6e1198d3c84d62db835a20e17d27a6f3b769db29 Mon Sep 17 00:00:00 2001
+From bd64120a63ec1d778516c1e3c3392a91a0e44201 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 2 Jun 2024 14:44:31 +1200
-Subject: [PATCH 18/22] platform/x86: asus-armoury: add apu-mem control support
+Subject: [PATCH 17/21] platform/x86: asus-armoury: add apu-mem control support
 
 Implement the APU memory size control under the asus-armoury module using
 the fw_attributes class.
@@ -2744,7 +2703,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 116 insertions(+)
 
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
-index 013a4eee251d..a559a7b29336 100644
+index 9344784b5253..0355b30eca9e 100644
 --- a/drivers/platform/x86/asus-armoury.c
 +++ b/drivers/platform/x86/asus-armoury.c
 @@ -460,6 +460,120 @@ static ssize_t egpu_enable_current_value_store(struct kobject *kobj,
@@ -2892,10 +2851,10 @@ index 196af54a52b0..e37972a53c11 100644
 2.46.0
 
 
-From 03468552d1b8bb8a8b56ed603208c959655c7de1 Mon Sep 17 00:00:00 2001
+From 994aedf90728a318ba4e80f72728c26059784091 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 2 Jun 2024 16:21:32 +1200
-Subject: [PATCH 19/22] platform/x86: asus-armoury: add core count control
+Subject: [PATCH 18/21] platform/x86: asus-armoury: add core count control
 
 Implement Intel core enablement under the asus-armoury module using the
 fw_attributes class.
@@ -2905,13 +2864,13 @@ depending on their requirements. After change a reboot is required.
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
- drivers/platform/x86/asus-armoury.c        | 211 +++++++++++++++++++++
+ drivers/platform/x86/asus-armoury.c        | 218 +++++++++++++++++++++
  drivers/platform/x86/asus-armoury.h        |  29 +++
  include/linux/platform_data/x86/asus-wmi.h |   4 +
- 3 files changed, 244 insertions(+)
+ 3 files changed, 251 insertions(+)
 
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
-index a559a7b29336..b0ae6ab024a2 100644
+index 0355b30eca9e..2a942c3558dc 100644
 --- a/drivers/platform/x86/asus-armoury.c
 +++ b/drivers/platform/x86/asus-armoury.c
 @@ -40,6 +40,21 @@
@@ -2936,18 +2895,21 @@ index a559a7b29336..b0ae6ab024a2 100644
  /* Default limits for tunables available on ASUS ROG laptops */
  #define PPT_CPU_LIMIT_MIN	5
  #define PPT_CPU_LIMIT_MAX	150
-@@ -85,6 +100,10 @@ struct rog_tunables {
+@@ -85,6 +100,13 @@ struct rog_tunables {
  	u32 dgpu_tgp_min;
  	u32 dgpu_tgp_max;
  	u32 dgpu_tgp;
 +
++	u32 cur_perf_cores;
 +	u32 min_perf_cores;
 +	u32 max_perf_cores;
++	u32 cur_power_cores;
++	u32 min_power_cores;
 +	u32 max_power_cores;
  };
  
  static const struct class *fw_attr_class;
-@@ -146,6 +165,8 @@ static struct kobj_attribute pending_reboot = __ATTR_RO(pending_reboot);
+@@ -146,6 +168,8 @@ static struct kobj_attribute pending_reboot = __ATTR_RO(pending_reboot);
  static bool asus_bios_requires_reboot(struct kobj_attribute *attr)
  {
  	return !strcmp(attr->attr.name, "gpu_mux_mode") ||
@@ -2956,7 +2918,7 @@ index a559a7b29336..b0ae6ab024a2 100644
  		!strcmp(attr->attr.name, "panel_hd_mode");
  }
  
-@@ -574,6 +595,193 @@ static ssize_t apu_mem_possible_values_show(struct kobject *kobj,
+@@ -574,6 +598,197 @@ static ssize_t apu_mem_possible_values_show(struct kobject *kobj,
  }
  ATTR_GROUP_ENUM_CUSTOM(apu_mem, "apu_mem", "Set the available system memory for the APU to use");
  
@@ -2967,7 +2929,10 @@ index a559a7b29336..b0ae6ab024a2 100644
 +
 +	asus_armoury.rog_tunables->min_perf_cores = 4;
 +	asus_armoury.rog_tunables->max_perf_cores = 4;
++	asus_armoury.rog_tunables->cur_perf_cores = 4;
++	asus_armoury.rog_tunables->min_power_cores = 0;
 +	asus_armoury.rog_tunables->max_power_cores = 8;
++	asus_armoury.rog_tunables->cur_power_cores = 8;
 +
 +	err = asus_wmi_get_devstate_dsts(ASUS_WMI_DEVID_CORES_MAX, &cores);
 +	if (err)
@@ -2976,6 +2941,14 @@ index a559a7b29336..b0ae6ab024a2 100644
 +	cores &= ~ASUS_WMI_DSTS_PRESENCE_BIT;
 +	asus_armoury.rog_tunables->max_power_cores = FIELD_GET(ASUS_POWER_CORE_MASK, cores);
 +	asus_armoury.rog_tunables->max_perf_cores = FIELD_GET(ASUS_PERF_CORE_MASK, cores);
++
++	cores = 0;
++	err = asus_wmi_get_devstate_dsts(ASUS_WMI_DEVID_CORES, &cores);
++	if (err)
++		return err;
++
++	asus_armoury.rog_tunables->cur_perf_cores = FIELD_GET(ASUS_PERF_CORE_MASK, cores);
++	asus_armoury.rog_tunables->cur_power_cores = FIELD_GET(ASUS_POWER_CORE_MASK, cores);
 +
 +	return 0;
 +}
@@ -2986,7 +2959,6 @@ index a559a7b29336..b0ae6ab024a2 100644
 +					enum cpu_core_value core_value)
 +{
 +	u32 cores;
-+	int err;
 +
 +	switch (core_value) {
 +	case CPU_CORE_DEFAULT:
@@ -2999,19 +2971,16 @@ index a559a7b29336..b0ae6ab024a2 100644
 +		if (core_type == CPU_CORE_PERF)
 +			return sysfs_emit(buf, "%d\n", asus_armoury.rog_tunables->min_perf_cores);
 +		else
-+			return sysfs_emit(buf, "%d\n", 0);
++			return sysfs_emit(buf, "%d\n", asus_armoury.rog_tunables->min_power_cores);
 +	default:
 +		break;
 +	}
 +
-+	err = asus_wmi_get_devstate_dsts(ASUS_WMI_DEVID_CORES, &cores);
-+	if (err)
-+		return err;
-+
 +	if (core_type == CPU_CORE_PERF)
-+		cores = FIELD_GET(ASUS_PERF_CORE_MASK, cores);
++		cores = asus_armoury.rog_tunables->cur_perf_cores;
 +	else
-+		cores = FIELD_GET(ASUS_POWER_CORE_MASK, cores);
++		cores = asus_armoury.rog_tunables->cur_power_cores;
++
 +	return sysfs_emit(buf, "%d\n", cores);
 +}
 +
@@ -3020,36 +2989,33 @@ index a559a7b29336..b0ae6ab024a2 100644
 +				enum cpu_core_type core_type)
 +{
 +	int result, err;
-+	u32 cores, currentv, min, max;
++	u32 new_cores, perf_cores, powr_cores, out_val, min, max;
 +
-+	result = kstrtou32(buf, 10, &cores);
++	result = kstrtou32(buf, 10, &new_cores);
 +	if (result)
 +		return result;
 +
 +	if (core_type == CPU_CORE_PERF) {
++		perf_cores = new_cores;
++		powr_cores = out_val = asus_armoury.rog_tunables->cur_power_cores;
 +		min = asus_armoury.rog_tunables->min_perf_cores;
 +		max = asus_armoury.rog_tunables->max_perf_cores;
 +	} else {
-+		min = 0;
++		perf_cores = asus_armoury.rog_tunables->cur_perf_cores;
++		powr_cores = out_val = new_cores;
++		min = asus_armoury.rog_tunables->min_power_cores;
 +		max = asus_armoury.rog_tunables->max_power_cores;
 +	}
-+	if (cores < min || cores > max)
++
++	if (new_cores < min || new_cores > max)
 +		return -EINVAL;
 +
-+	err = asus_wmi_get_devstate_dsts(ASUS_WMI_DEVID_CORES, &currentv);
-+	if (err)
-+		return err;
-+
-+	if (core_type == CPU_CORE_PERF) {
-+		currentv &= ~ASUS_PERF_CORE_MASK;
-+		currentv |= FIELD_PREP(ASUS_PERF_CORE_MASK, cores);
-+	} else {
-+		currentv &= ~ASUS_POWER_CORE_MASK;
-+		currentv |= FIELD_PREP(ASUS_POWER_CORE_MASK, cores);
-+	}
++	out_val = 0;
++	out_val |= FIELD_PREP(ASUS_PERF_CORE_MASK, perf_cores);
++	out_val |= FIELD_PREP(ASUS_POWER_CORE_MASK, powr_cores);
 +
 +	mutex_lock(&asus_armoury.mutex);
-+	err = asus_wmi_set_devstate(ASUS_WMI_DEVID_CORES, currentv, &result);
++	err = asus_wmi_set_devstate(ASUS_WMI_DEVID_CORES, out_val, &result);
 +	mutex_unlock(&asus_armoury.mutex);
 +
 +	if (err) {
@@ -3150,7 +3116,7 @@ index a559a7b29336..b0ae6ab024a2 100644
  /* Simple attribute creation */
  ATTR_GROUP_ROG_TUNABLE(ppt_pl1_spl, "ppt_pl1_spl", ASUS_WMI_DEVID_PPT_PL1_SPL,
  		cpu_default, cpu_min, cpu_max, 1, "Set the CPU slow package limit");
-@@ -625,6 +833,8 @@ static const struct asus_attr_group armoury_attr_groups[] = {
+@@ -625,6 +840,8 @@ static const struct asus_attr_group armoury_attr_groups[] = {
  	{ &dgpu_base_tgp_attr_group, ASUS_WMI_DEVID_DGPU_BASE_TGP },
  	{ &dgpu_tgp_attr_group, ASUS_WMI_DEVID_DGPU_SET_TGP },
  	{ &apu_mem_attr_group, ASUS_WMI_DEVID_APU_MEM },
@@ -3159,7 +3125,7 @@ index a559a7b29336..b0ae6ab024a2 100644
  
  	{ &charge_mode_attr_group, ASUS_WMI_DEVID_CHARGE_MODE },
  	{ &boot_sound_attr_group, ASUS_WMI_DEVID_BOOT_SOUND },
-@@ -811,6 +1021,7 @@ static int __init asus_fw_init(void)
+@@ -812,6 +1029,7 @@ static int __init asus_fw_init(void)
  		return -ENOMEM;
  	}
  	init_rog_tunables(asus_armoury.rog_tunables);
@@ -3226,10 +3192,10 @@ index e37972a53c11..ca37756a1a45 100644
 2.46.0
 
 
-From 49c310ded5974eba34581d407c44086a3a17013f Mon Sep 17 00:00:00 2001
+From fcf406adc4750eda116c6371ffa13442d7d78c55 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 3 Jun 2024 12:04:41 +1200
-Subject: [PATCH 20/22] asus-wmi: deprecate bios features
+Subject: [PATCH 19/21] asus-wmi: deprecate bios features
 
 With the existence of the asus-bioscfg module the attributes no-longer
 need to live under the /sys/devices/platform/asus-nb-wmi/ path.
@@ -3844,10 +3810,10 @@ index 0155a46564ee..23430363f64b 100644
 2.46.0
 
 
-From 1dd232cf7a1eb1858bf3d7c4ca2f8b4074c2e47d Mon Sep 17 00:00:00 2001
+From e0adfffbbe3866b5f19a7a2cd89771d3fbcb55de Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 26 Aug 2024 12:49:35 +1200
-Subject: [PATCH 21/22] hid-asus-ally: Add full gamepad support
+Subject: [PATCH 20/21] hid-asus-ally: Add full gamepad support
 
 This driver adds full support of the ASUS ROG Ally gamepad:
 
@@ -6881,10 +6847,10 @@ index 659cf9c96e26..528c210f9e8c 100644
 2.46.0
 
 
-From 5ef1e51e585133cfa1f4cd57ba33071fee574ae4 Mon Sep 17 00:00:00 2001
+From da970d8aacffaddbbccea5f5335297488637a6ec Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 8 Sep 2024 17:30:43 +1200
-Subject: [PATCH 22/22] ACPI: PM: Quirk ASUS ROG M16 to default to S3 sleep
+Subject: [PATCH 21/21] ACPI: PM: Quirk ASUS ROG M16 to default to S3 sleep
 
 The 2023 ASUS ROG Zephyrus M16 can suffer from quite a variety of events
 causing wakeup from s2idle sleep. The events may come from the EC being
