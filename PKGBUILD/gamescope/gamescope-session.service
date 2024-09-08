@@ -1,0 +1,12 @@
+[Unit]
+Description=Gamescope Session
+BindsTo=graphical-session.target
+Before=graphical-session.target
+Wants=graphical-session-pre.target
+After=graphical-session-pre.target
+
+[Service]
+ExecStart=/usr/bin/gamescope-session
+KillMode=mixed
+# Make Steam's srt-logger write to the journal with it's own prefixes
+Environment=SRT_LOG_TO_JOURNAL=1
