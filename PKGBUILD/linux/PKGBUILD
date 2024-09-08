@@ -55,29 +55,7 @@ source=(
   0040-amdgpu-quirks.patch
   0050-AMD-Pstate-Core-Performance-Boost.patch
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
-  0057-platform-x86-amd-pmf-Add-quirk-for-ROG-Ally-X.patch
-  0058-hid-asus-add-ROG-Ally-X-prod-ID-to-quirk-list.patch
-  0059-platform-x86-asus-wmi-Add-quirk-for-ROG-Ally-X.patch
-  0060-Fix-ROG-ALLY-X-audio.patch
-  0061-platform-x86-asus-wmi-add-support-for-vivobook-fan-p.patch
-  0062-hid-asus-use-hid-for-brightness-control-on-keyboard.patch
-  0063-Input-xpad-add-support-for-ASUS-ROG-RAIKIRI-PRO.patch
-  0064-platform-x86-asus-wmi-add-debug-print-in-more-key-pl.patch
-  0065-platform-x86-asus-wmi-don-t-fail-if-platform_profile.patch
-  0066-platform-x86-asus-wmi-Add-quirk-for-ROG-Ally-X.patch
-  0067-acpi-x86-s2idle-add-support-for-screen-off-and-scree.patch
-  0068-drm-Notify-the-suspend-core-when-displays-are-change.patch
-  0069-acpi-x86-s2idle-Move-screen-off-on-code-into-dedicat.patch
-  0070-acpi-x86-s2idle-Add-ability-to-configure-wakeup-by-A.patch
-  0071-platform-x86-asus-wmi-Refactor-Ally-CSEE-quirks.patch
-  0072-platform-x86-asus-armoury-move-existing-tunings-to-a.patch
-  0073-platform-x86-asus-armoury-add-dgpu-tgp-control.patch
-  0074-platform-x86-asus-armoury-add-apu-mem-control-suppor.patch
-  0075-platform-x86-asus-armoury-add-core-count-control.patch
-  0076-Core-mask-fix.patch
-  0077-asus-wmi-deprecate-bios-features.patch
-  0078-hid-asus-ally-Add-full-gamepad-support.patch
-  0079-platform-x86-amd-pmf-Make-ASUS-GA403-quirk-generic.patch
+  0060-asus-patch-series.patch
   0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 validpgpkeys=(
@@ -105,29 +83,7 @@ sha256sums=('SKIP'
 '2728588169bb1e1b4d9987c0732a316e39670f0c873429179b894ddc6be9b0fa' # 0040-amdgpu-quirks.patch
 'c6ff653b1e55c5524b237a40683a34240d4ec7b95e524441ed3ae09ed885f674' # 0050-AMD-Pstate-Core-Performance-Boost.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
-'21aca72feaf2dc552f90a96b5607375fbfd179c6bb3d5e58b9d5cfa93782b9ca' # 0057-platform-x86-amd-pmf-Add-quirk-for-ROG-Ally-X.patch
-'6340cef82f593d9a14943d9d57e2d3a86484eed8a653599030670a8e68c839cf' # 0058-hid-asus-add-ROG-Ally-X-prod-ID-to-quirk-list.patch
-'bf9579242d8d1a8e6de2564c7a769fe23dc3b4493ee50c8d1a5919050fab64a5' # 0059-platform-x86-asus-wmi-Add-quirk-for-ROG-Ally-X.patch
-'8ca879c5b457836e1762abdd7d065fcbe096b44a2d74baa9b9c2eaf9e6ed3bb4' # 0060-Fix-ROG-ALLY-X-audio.patch
-'3a9ccafbdd37d5e3f483754096c0ab27e8d0381ba4888f928ccdd6ed3430738b' # 0061-platform-x86-asus-wmi-add-support-for-vivobook-fan-p.patch
-'c65e916184c91519c80838a6f40ffd2241ddbc1e354e3a3105315c4818fc19a4' # 0062-hid-asus-use-hid-for-brightness-control-on-keyboard.patch
-'beaf609b0ef863f26de578a492a0204ced8217ca357aae0cdee8b7d76e3af791' # 0063-Input-xpad-add-support-for-ASUS-ROG-RAIKIRI-PRO.patch
-'376244ea4637dc2cf1a57caf334b53f459e88f5e6c1751dd6750210dbe19020d' # 0064-platform-x86-asus-wmi-add-debug-print-in-more-key-pl.patch
-'59b43131e944501b8613f87997a200744898677842b16ea3017212a38ed63724' # 0065-platform-x86-asus-wmi-don-t-fail-if-platform_profile.patch
-'c423edbb704d90ad0c47e78403d87639ad9c7ded349d407abfb5f0501aa6df77' # 0066-platform-x86-asus-wmi-Add-quirk-for-ROG-Ally-X.patch
-'313c20e37cf8555a437f66ca84becdf0a73ed30b5e8e4e02ae39e4ce337ba877' # 0067-acpi-x86-s2idle-add-support-for-screen-off-and-scree.patch
-'5eb6e563f5ae2f07de6e27d1d2ef196697f8e1cb958a37462281157a6862a061' # 0068-drm-Notify-the-suspend-core-when-displays-are-change.patch
-'6fda0db111dd1b536e2db9acebfe18101961da435038d89faa9d8a41e5839d2b' # 0069-acpi-x86-s2idle-Move-screen-off-on-code-into-dedicat.patch
-'7830a8efc59e0bb411c98cf1acc4e3b541dd0a5366773690700502cc570db62f' # 0070-acpi-x86-s2idle-Add-ability-to-configure-wakeup-by-A.patch
-'ca2047aca7450bcd3d6e626d2bb2748ec6df17597dd1fbecf6d9066e4b079589' # 0071-platform-x86-asus-wmi-Refactor-Ally-CSEE-quirks.patch
-'13cc3e2dbaed76839d841948b35594cb6f35d7539248afb0aa81a67345c945c1' # 0072-platform-x86-asus-armoury-move-existing-tunings-to-a.patch
-'04a6ba1429841c69bcf2be83400912ae2f15fdffe2b5f8adf17fe45f7f5fe16d' # 0073-platform-x86-asus-armoury-add-dgpu-tgp-control.patch
-'d89be765af952bd206a08cb2d53b51fee93add31389c0b01d0bf41ad934731d4' # 0074-platform-x86-asus-armoury-add-apu-mem-control-suppor.patch
-'0c5054603f3f1de74c8494fe4ad0412f436be9954c18f9b6ac3b28a761ea0d0b' # 0075-platform-x86-asus-armoury-add-core-count-control.patch
-'765d5657b2278680df48aa67619bd5221c293b5b5ee680c3a04e0227d8dd4ba9' # 0076-Core-mask-fix.patch
-'b295a0c5a44d4557f41a682808221cb417aa9aac54b57b893dce69750b8b5505' # 0077-asus-wmi-deprecate-bios-features.patch
-'da664daaedfaec91dcee3d7e6dcf881c22c9cb7fc0b30fd3a0d363be462d8843' # 0078-hid-asus-ally-Add-full-gamepad-support.patch
-'7af69360e3e097f600d7384998574fa328ef2c9bf8712247a68d4ee24c98f40d' # 0079-platform-x86-amd-pmf-Make-ASUS-GA403-quirk-generic.patch
+'c41299ae8214f893933efe3d20d7aa48e730c349acd6270d59c803f06b8284d2' # 0060-asus-patch-series.patch
 '23673c33ea69f3508ff9265d27171e2e58899950d563a1726a6049afe9e92067' # 0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 
