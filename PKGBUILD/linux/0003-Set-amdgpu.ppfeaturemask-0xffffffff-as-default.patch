@@ -1,0 +1,25 @@
+From 9179080ffaaf1d438db6e0a5a37bdf8dafe233a6 Mon Sep 17 00:00:00 2001
+From: Thomas Crider <gloriouseggroll@gmail.com>
+Date: Mon, 27 Nov 2023 16:13:13 -0500
+Subject: [PATCH] Set amdgpu.ppfeaturemask=0xffffffff as default
+
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+index e06009966..4e791eb8f 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -158,7 +158,7 @@ bool enforce_isolation;
+  * OverDrive(bit 14) disabled by default
+  * GFX DCS(bit 19) disabled by default
+  */
+-uint amdgpu_pp_feature_mask = 0xfff7bfff;
++uint amdgpu_pp_feature_mask = 0xffffffff;
+ uint amdgpu_force_long_training;
+ int amdgpu_lbpw = -1;
+ int amdgpu_compute_multipipe = -1;
+-- 
+2.43.0
+

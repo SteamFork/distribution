@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.10.10
-pkgrel=3
+pkgrel=4
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -39,6 +39,7 @@ source=(
   config         # the main kernel config file
   0001-drm-panel-orientation-quirks.patch
   0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
+  0003-Set-amdgpu.ppfeaturemask-0xffffffff-as-default.patch
   0006-Ayaneo-geek-headset-patch.patch
   0007-ayaneo-2-headphone-fix.patch
   0008-ayaneo-1s-hp-fix.patch
@@ -67,6 +68,7 @@ sha256sums=('SKIP'
 '9a5419e5236028eb47121b165fd5b510356f9757107d3f4f6cf7b1383620cc7d' # config
 '510515d461e6a7b02c276b9d8e7e97131173d7cc5ba6c51f911493afd9670c6e' # 0001-drm-panel-orientation-quirks.patch
 '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
+'38db1ffbacc2315df6ec862404e0dfe73360f950c75336a960b9da382b2a8e7d' # 0003-Set-amdgpu.ppfeaturemask-0xffffffff-as-default.patch
 '783da391e0f45635eefb583b8b3acc29cd62a0c9eeefedf7f790dc2f89c7e279' # 0006-Ayaneo-geek-headset-patch.patch
 '33edff1a51ceb763c47b3ae485f5857a716a1dac9f1e8b65c3b93c6e88a4838f' # 0007-ayaneo-2-headphone-fix.patch
 'c6867ab6a95146e796dee888283fdae95837b8f53487e659f6d66bc458054b14' # 0008-ayaneo-1s-hp-fix.patch
