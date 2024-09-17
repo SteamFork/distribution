@@ -14,7 +14,7 @@ then
 fi
 
 BATCNT=0
-FLASHDELAY=20
+FLASHDELAY=2
 LED_PATH="/sys/class/leds/multicolor:chassis"
 
 unset CURRENT_MODE
@@ -31,12 +31,29 @@ case $(get_setting system.loglevel) in
 esac
 
 function set_rgb() {
-  $DEBUG && log ${0} "multi_intensity: ${1} brightness: ${2}"
+  $DEBUG && log ${0} "set_rgb: multi_intensity: ${1} brightness: ${2}"
   echo "${1}" >${LED_PATH}/multi_intensity
   echo "${2}" >${LED_PATH}/brightness
 }
 
+function get_intensity() {
+  LED_INTENSITY=$(cat ${LED_PATH}/multi_intensity)
+  $DEBUG && log ${0} "get_intensity: multi_intensity: ${LED_INTENSITY}"
+  echo ${LED_INTENSITY}
+}
+
+function get_brightness() {
+  LED_BRIGHTNESS=$(cat ${LED_PATH}/brightness)
+  $DEBUG && log ${0} "get_brightness: brightness: ${LED_BRIGHTNESS}"
+  echo ${LED_BRIGHTNESS}
+}
+
 function led_flash() {
+  local INTENSITY=$(get_intensity)
+  local BRIGHTNESS=$(get_brightness)
+
+  set_rgb "0 0 0" "0"
+  sleep .5
   for i in $(seq 1 1 3)
   do
     set_rgb "255 0 0" "255"
@@ -44,6 +61,7 @@ function led_flash() {
     set_rgb "0 0 0" "0"
     sleep .5
   done
+  set_rgb "${INTENSITY}" "${BRIGHTNESS}"
 }
 
 while true
@@ -54,7 +72,7 @@ do
   if (( "${BATCNT}" >= "${FLASHDELAY}" )) &&
      [[ "${AC_STATUS}" =~ Disch ]]
   then
-    if (( ${BATLEFT} < "20" ))
+    if (( ${BATLEFT} <= "20" ))
     then
       led_flash
       FLASHDELAY=${BATLEFT}
@@ -65,7 +83,7 @@ do
     if [[ "${AC_STATUS}" =~ ^Charg ]]
     then
       # Reset the LED as if the battery was full.
-      set_rgb "0 0 0" "0"
+      set_rgb "${LED_INTENSITY}" "${LED_BRIGHTNESS}"
     fi
   fi
   BATCNT=$(( ${BATCNT} + 1 ))
