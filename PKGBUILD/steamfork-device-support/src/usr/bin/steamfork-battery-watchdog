@@ -14,7 +14,7 @@ then
 fi
 
 BATCNT=0
-FLASHDELAY=2
+FLASHDELAY=10
 LED_PATH="/sys/class/leds/multicolor:chassis"
 
 unset CURRENT_MODE
