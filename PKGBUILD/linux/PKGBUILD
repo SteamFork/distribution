@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.10.10
-pkgrel=4
+pkgrel=5
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -85,7 +85,7 @@ sha256sums=('SKIP'
 '2728588169bb1e1b4d9987c0732a316e39670f0c873429179b894ddc6be9b0fa' # 0040-amdgpu-quirks.patch
 'c6ff653b1e55c5524b237a40683a34240d4ec7b95e524441ed3ae09ed885f674' # 0050-AMD-Pstate-Core-Performance-Boost.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
-'168d6c1967ef58ecbf8643ec1e52ae7f99d376a605be37c2a39304345fa840a7' # 0060-asus-patch-series.patch
+'f0768a4a6e5dd59e872567aca684cd2df86a4fa34899ba73b9c0944348d995e8' # 0060-asus-patch-series.patch
 '23673c33ea69f3508ff9265d27171e2e58899950d563a1726a6049afe9e92067' # 0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 
