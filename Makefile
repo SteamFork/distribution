@@ -54,10 +54,10 @@ packages-local:
 	${SCRIPT_DIR}/mkpackage --repo local webrtc-audio-processing
 	${SCRIPT_DIR}/mkpackage --repo local inputplumber
 	${SCRIPT_DIR}/mkpackage --repo local steam-powerbuttond
+	${SCRIPT_DIR}/mkpackage --repo local ryzenadj
 	${SCRIPT_DIR}/mkpackage --repo local pikaur
 
 packages-aur:
-	${SCRIPT_DIR}/mkpackage --repo aur ryzenadj
 	${SCRIPT_DIR}/mkpackage --repo aur wlr-randr
 	### Waydroid
 	${SCRIPT_DIR}/mkpackage --repo aur dnsmasq-git
