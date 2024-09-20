@@ -6,8 +6,8 @@
 #             Mikael Eriksson <mikael_eriksson@miffe.org>
 
 pkgbase=linux
-pkgver=6.10.10
-pkgrel=5
+pkgver=6.11
+pkgrel=1
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -54,9 +54,7 @@ source=(
   0037-Updated-AW87xxx-driver-to-implement-Suspend-and-Resu.patch
   0038-fixup-aw87xx-warnings.patch
   0040-amdgpu-quirks.patch
-  0050-AMD-Pstate-Core-Performance-Boost.patch
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
-  0060-asus-patch-series.patch
   0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 validpgpkeys=(
@@ -65,13 +63,13 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
 )
 sha256sums=('SKIP'
-'9a5419e5236028eb47121b165fd5b510356f9757107d3f4f6cf7b1383620cc7d' # config
-'510515d461e6a7b02c276b9d8e7e97131173d7cc5ba6c51f911493afd9670c6e' # 0001-drm-panel-orientation-quirks.patch
+'22a039f90ab4666e60095f555fe23bad389a3c5beeb313f76ee1d7f1c1fe476c' # config
+'69fa4d553a092c90a5dd1138b9a335c1f6cfe0a0e3bfc9031cf220194373228b' # 0001-drm-panel-orientation-quirks.patch
 '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
 '38db1ffbacc2315df6ec862404e0dfe73360f950c75336a960b9da382b2a8e7d' # 0003-Set-amdgpu.ppfeaturemask-0xffffffff-as-default.patch
 '783da391e0f45635eefb583b8b3acc29cd62a0c9eeefedf7f790dc2f89c7e279' # 0006-Ayaneo-geek-headset-patch.patch
 '33edff1a51ceb763c47b3ae485f5857a716a1dac9f1e8b65c3b93c6e88a4838f' # 0007-ayaneo-2-headphone-fix.patch
-'c6867ab6a95146e796dee888283fdae95837b8f53487e659f6d66bc458054b14' # 0008-ayaneo-1s-hp-fix.patch
+'aefa22053dbc736d925e4edff86ef39fab98e6668a6cf0e30be43f57e0235c76' # 0008-ayaneo-1s-hp-fix.patch
 'f45ba5d7dbc004474314c9e0329014e8c9d6b111f1e00397b1072b1bde581761' # 0012-HACK-add-KConfig-to-enable-driver-specific-color-mgm.patch
 '683128d044f4df12dcb0a7b2858075f510d870460dc71f0d60f69df89cf62419' # 0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
 'b42fa6bb0e3d93aa8a81f61543c2058fa6f8412b9ad190110ffb49c46e81d5ce' # 0020-add-devices-to-oxp-sensors.patch
@@ -83,9 +81,7 @@ sha256sums=('SKIP'
 '4f3baa6a367659341873ec7443d6238044cca521e04c0a868322221ac50149ff' # 0037-Updated-AW87xxx-driver-to-implement-Suspend-and-Resu.patch
 '23d91695bf8e5d5cdb9503a47468c6c5cf220bc7966a4720aa46645357e29ee6' # 0038-fixup-aw87xx-warnings.patch
 '2728588169bb1e1b4d9987c0732a316e39670f0c873429179b894ddc6be9b0fa' # 0040-amdgpu-quirks.patch
-'c6ff653b1e55c5524b237a40683a34240d4ec7b95e524441ed3ae09ed885f674' # 0050-AMD-Pstate-Core-Performance-Boost.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
-'f0768a4a6e5dd59e872567aca684cd2df86a4fa34899ba73b9c0944348d995e8' # 0060-asus-patch-series.patch
 '23673c33ea69f3508ff9265d27171e2e58899950d563a1726a6049afe9e92067' # 0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 

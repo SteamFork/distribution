@@ -1,14 +1,6 @@
 diff -rupN linux-6.9.8.orig/sound/pci/hda/patch_realtek.c linux-6.9.8/sound/pci/hda/patch_realtek.c
 --- linux-6.9.8.orig/sound/pci/hda/patch_realtek.c	2024-07-11 16:08:31.886810579 +0000
 +++ linux-6.9.8/sound/pci/hda/patch_realtek.c	2024-07-15 12:59:52.250345438 +0000
-@@ -20,6 +20,7 @@
- #include <linux/input.h>
- #include <linux/leds.h>
- #include <linux/ctype.h>
-+#include <linux/dmi.h>
- #include <sound/core.h>
- #include <sound/jack.h>
- #include <sound/hda_codec.h>
 @@ -7300,6 +7301,7 @@ enum {
  	ALC269VB_FIXUP_ASUS_ZENBOOK,
  	ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A,
