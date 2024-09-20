@@ -42,8 +42,12 @@ packages-local:
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-keyring
 	${SCRIPT_DIR}/mkpackage --repo local linux-firmware
 	${SCRIPT_DIR}/mkpackage --repo local linux
+	${SCRIPT_DIR}/mkpackage --repo aur   python-strictyaml
+	${SCRIPT_DIR}/mkpackage --repo local python-sphinx-hawkmoth
+	${SCRIPT_DIR}/mkpackage --repo local libdrm
 	${SCRIPT_DIR}/mkpackage --repo local mesa
 	${SCRIPT_DIR}/mkpackage --repo local mesa-radv
+	${SCRIPT_DIR}/mkpackage --repo local lib32-libdrm
 	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa
 	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa-radv
 	${SCRIPT_DIR}/mkpackage --repo local ectool

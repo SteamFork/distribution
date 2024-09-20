@@ -11,20 +11,20 @@ pkgdesc="An open-source implementation of the OpenGL specification (32-bit)"
 # When updating the tag, consider if you are adding any shader compiler changes. If so,
 # or if you are not sure, regenerate the radv-build-id below. To update, see
 # https://gitlab.steamos.cloud/jupiter/docs/-/wikis/How-to-make-a-new-Mesa-release#updating-the-radv-build-id
-_tag=steamos-24.4.1
-pkgver=24.1.0_devel.188126.steamos_24.4.1
+pkgver=24.2.3
+_tag=mesa-${pkgver}
 pkgrel=1
 arch=('x86_64')
-makedepends=('git' 'openssh' 'python-mako' 'lib32-libxml2' 'lib32-expat' 'lib32-libx11' 'xorgproto' 'lib32-libdrm'
+makedepends=('git' 'openssh' 'python-mako' 'python-ply' 'lib32-libxml2' 'lib32-expat' 'lib32-libx11' 'xorgproto' 'lib32-libdrm'
              'python>=3.11' 'python<3.12'
              'lib32-libxshmfence'
              'lib32-wayland' 'wayland-protocols' 'lib32-zstd' 'lib32-libelf'
              'lib32-llvm' 'lib32-libunwind'
-             'lib32-libxrandr' 'meson' 'glslang')
+             'lib32-libxrandr' 'meson' 'glslang' 'lib32-spirv-tools' 'lib32-spirv-llvm-translator')
 url="https://www.mesa3d.org/"
 license=('custom')
 options=('debug' '!lto')
-source=("jupiter-mesa::git+https://gitlab.com/evlaV/mesa.git#tag=$_tag"
+source=("mesa::git+https://gitlab.freedesktop.org/mesa/mesa.git#tag=$_tag"
         001-fix-amd-crash.patch
         LICENSE)
 sha512sums=('SKIP'
@@ -38,11 +38,11 @@ validpgpkeys=('8703B6700E7EE06D7A39B8D6EDAE37B02CEB490D'  # Emil Velikov <emil.l
               '57551DE15B968F6341C248F68D8E31AFC32428A6') # Eric Engestrom <eric@engestrom.ch>
 
 pkgver() {
-  cd jupiter-mesa
+  cd mesa
 
   read -r _ver <VERSION
   #echo ${_ver/-/_}.$(git rev-list --count HEAD).$(git rev-parse --short HEAD)
-  echo "${_ver/-/_}.$(git rev-list --count HEAD).${_tag//-/_}.SteamFork"
+  echo "${_ver/-/_}.$(git rev-list --count HEAD).${_tag//-/_}"
 }
 
 prepare() {
@@ -58,7 +58,7 @@ prepare() {
         _patchfile="${_patchfile##*/}"
         [[ $_patchfile = *.patch ]] || continue
         echo "Applying patch $_patchfile..."
-        patch --directory=jupiter-mesa --forward --strip=1 --input="${srcdir}/${_patchfile}"
+        patch --directory=mesa --forward --strip=1 --input="${srcdir}/${_patchfile}"
     done
 }
 
@@ -86,7 +86,7 @@ END
   #  - drop all gallium-foo toggles
   #  - disable gbm, disable gles2, glvnd, glx, lmsensors, osmesa
   #  - drop shared-glapi
-  arch-meson jupiter-mesa build \
+  arch-meson mesa build \
     --native-file crossfile.ini \
     --libdir=/usr/lib32 \
     -D b_ndebug=true \
@@ -104,8 +104,9 @@ END
     -D gbm=disabled \
     -D gles1=disabled \
     -D gles2=disabled \
-    -D glvnd=false \
+    -D glvnd=disabled \
     -D glx=disabled \
+    -D intel-rt=disabled \
     -D libunwind=enabled \
     -D llvm=enabled \
     -D lmsensors=disabled \

@@ -1,0 +1,48 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Bruno Santos <brunomanuelsantos@tecnico.ulisboa.pt>
+
+pkgname=python-sphinx-hawkmoth
+pkgver=0.18.0
+pkgrel=2
+pkgdesc="Sphinx autodoc C extension"
+url="https://github.com/jnikula/hawkmoth"
+arch=(x86_64)
+license=(BSD-2-Clause)
+depends=(
+  clang
+  python
+  python-docutils
+  python-sphinx
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  python-pytest-xdist
+  python-strictyaml
+)
+source=("git+https://github.com/jnikula/hawkmoth#tag=v$pkgver")
+sha256sums=('SKIP')
+
+build() {
+  cd hawkmoth
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd hawkmoth
+  PYTHONPATH="$PWD/src" make test
+}
+
+package() {
+  cd hawkmoth
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim:set sw=2 sts=-1 et:

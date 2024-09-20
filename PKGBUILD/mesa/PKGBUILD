@@ -9,18 +9,19 @@ pkgbase=mesa
 #  - drop opencl-mesa - unnecessary and requires to install more dependencies
 pkgname=('vulkan-mesa-layers' 'vulkan-intel' 'vulkan-swrast' 'libva-mesa-driver' 'mesa-vdpau' 'mesa')
 pkgdesc="An open-source implementation of the OpenGL specification"
-_tag=radeonsi-24.0.3
-pkgver=24.0.5.183659.radeonsi_24.0.3.SteamFork
+pkgver=24.2.3
+_tag=${pkgbase}-${pkgver}
 pkgrel=3
 arch=('x86_64')
-makedepends=('git' 'openssh' 'python-mako' 'libxml2' 'libx11' 'xorgproto' 'libdrm' 'libxshmfence' 'libxxf86vm'
+makedepends=('git' 'openssh' 'python-mako' 'python-ply' 'libxml2' 'libx11' 'xorgproto' 'libdrm' 'libxshmfence' 'libxxf86vm'
              'libxdamage' 'libvdpau' 'libva' 'wayland' 'wayland-protocols' 'zstd' 'elfutils' 'llvm'
-             'libomxil-bellagio' 'libclc' 'clang' 'libglvnd' 'libunwind' 'lm_sensors' 'libxrandr'
-             'systemd' 'valgrind' 'glslang' 'vulkan-icd-loader' 'directx-headers' 'cmake' 'meson')
+             'libomxil-bellagio' 'libdrm' 'libclc' 'clang' 'libglvnd' 'libunwind' 'lm_sensors' 'libxrandr'
+             'systemd' 'valgrind' 'glslang' 'vulkan-icd-loader' 'directx-headers' 'cmake' 'meson'
+	     'python-sphinx-hawkmoth' 'spirv-llvm-translator')
 url="https://www.mesa3d.org/"
 license=('custom')
 options=('debug' '!lto')
-source=("jupiter-mesa::git+https://gitlab.com/evlaV/mesa.git#tag=$_tag"
+source=("mesa::git+https://gitlab.freedesktop.org/mesa/mesa.git#tag=$_tag"
 	001-fix-amd-crash.patch
         LICENSE)
 sha512sums=('SKIP'
@@ -34,11 +35,11 @@ validpgpkeys=('8703B6700E7EE06D7A39B8D6EDAE37B02CEB490D'  # Emil Velikov <emil.l
               '57551DE15B968F6341C248F68D8E31AFC32428A6') # Eric Engestrom <eric@engestrom.ch>
 
 pkgver() {
-  cd jupiter-mesa
+  cd mesa
 
   _ver=$(cat VERSION)
   #echo ${_ver/-/_}.$(git rev-list --count HEAD).$(git rev-parse --short HEAD)
-  echo "${_ver/-/_}.$(git rev-list --count HEAD).${_tag//-/_}.SteamFork"
+  echo "${_ver/-/_}.$(git rev-list --count HEAD).${_tag//-/_}"
 }
 
 prepare() {
@@ -54,7 +55,7 @@ prepare() {
         _patchfile="${_patchfile##*/}"
         [[ $_patchfile = *.patch ]] || continue
         echo "Applying patch $_patchfile..."
-        patch --directory=jupiter-mesa --forward --strip=1 --input="${srcdir}/${_patchfile}"
+        patch --directory=mesa --forward --strip=1 --input="${srcdir}/${_patchfile}"
     done
 }
 
@@ -67,11 +68,11 @@ build() {
   #  - drop most gallium drivers but radeonsi, swrast and zink
   #  - drop radv vulkan driver - separate sources and package
   #  - disable xa - unused by our gallium drivers
-  arch-meson jupiter-mesa build \
+  arch-meson mesa build \
     -D b_ndebug=true \
     -D b_lto=false \
     -D platforms=x11,wayland \
-    -D gallium-drivers=iris,i915,radeonsi,swrast,zink \
+    -D gallium-drivers=iris,i915,radeonsi,softpipe,llvmpipe,zink \
     -D vulkan-drivers=intel,swrast \
     -D vulkan-layers=device-select,intel-nullhw,overlay \
     -D dri3=enabled \
@@ -87,7 +88,7 @@ build() {
     -D gbm=enabled \
     -D gles1=disabled \
     -D gles2=enabled \
-    -D glvnd=true \
+    -D glvnd=enabled \
     -D glx=dri \
     -D libunwind=enabled \
     -D llvm=enabled \
@@ -222,6 +223,9 @@ package_mesa() {
   # libglvnd support
   _install fakeinstall/usr/lib/libGLX_mesa.so*
   _install fakeinstall/usr/lib/libEGL_mesa.so*
+
+  # libgallium support
+  _install fakeinstall/usr/lib/libgallium*
 
   # indirect rendering
   ln -s /usr/lib/libGLX_mesa.so.0 "${pkgdir}/usr/lib/libGLX_indirect.so.0"

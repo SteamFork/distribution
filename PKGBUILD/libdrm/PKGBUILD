@@ -1,0 +1,42 @@
+# Maintainer: Fewtarius
+#
+# Upstream:
+#   Maintainer: Andreas Radke <andyrtr@archlinux.org>
+
+pkgname=libdrm
+pkgver=2.4.123
+pkgrel=1
+pkgdesc="Userspace interface to kernel DRM services"
+url="https://dri.freedesktop.org/"
+arch=(x86_64)
+license=('custom')
+depends=('libpciaccess' 'glibc')
+makedepends=('python-docutils' 'meson')
+checkdepends=('cairo')
+optdepends=('cairo: needed for modetest tool')
+replaces=('libdrm-new' 'libdrm-nouveau')
+source=(https://dri.freedesktop.org/$pkgname/$pkgname-$pkgver.tar.xz
+	COPYING)
+sha256sums=('a2b98567a149a74b0f50e91e825f9c0315d86e7be9b74394dae8b298caadb79e' # libdrm-2.4.123.tar.xz
+	    '9631d4f694952e3e6ae5a05534c2e93e994e47d3413677a3a00e45c8cef6db93' # COPYING
+	)
+
+build() {
+  arch-meson $pkgname-$pkgver build \
+    -D udev=true \
+    -D etnaviv=disabled \
+    -D freedreno=disabled \
+    -D vc4=disabled \
+    -D valgrind=disabled \
+    -D install-test-programs=true
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 COPYING
+}
