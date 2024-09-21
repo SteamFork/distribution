@@ -78,13 +78,6 @@ do
       FLASHDELAY=${BATLEFT}
       BATCNT=0
     fi
-  elif (( "${BATLEFT}" > "97" ))
-  then
-    if [[ "${AC_STATUS}" =~ ^Charg ]]
-    then
-      # Reset the LED as if the battery was full.
-      set_rgb "${LED_INTENSITY}" "${LED_BRIGHTNESS}"
-    fi
   fi
   BATCNT=$(( ${BATCNT} + 1 ))
   sleep 2
