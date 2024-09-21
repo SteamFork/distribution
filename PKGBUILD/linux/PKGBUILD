@@ -59,6 +59,7 @@ source=(
   0038-fixup-aw87xx-warnings.patch
   0040-amdgpu-quirks.patch
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
+  0060-asus-patch-series.patch
   0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 validpgpkeys=(
@@ -86,6 +87,7 @@ sha256sums=('SKIP'
 '23d91695bf8e5d5cdb9503a47468c6c5cf220bc7966a4720aa46645357e29ee6' # 0038-fixup-aw87xx-warnings.patch
 '2728588169bb1e1b4d9987c0732a316e39670f0c873429179b894ddc6be9b0fa' # 0040-amdgpu-quirks.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
+'802f1f4b3f446f60120df87c13b4d3cdb3ed490384b4f0e5ea1c43c24dbc4153' # 0060-asus-patch-series.patch
 '23673c33ea69f3508ff9265d27171e2e58899950d563a1726a6049afe9e92067' # 0099-add-ayaneo-and-ayn-platform-drivers.patch
 )
 
