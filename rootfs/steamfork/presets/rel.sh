@@ -180,8 +180,8 @@ export STEAMOS_PKGS="accounts-qml-module
                     fwupd-efi
                     galileo-mura
                     gamemode
-                    gamescope
-		    gamescope-legacy
+                    steamfork/gamescope
+		    steamfork/gamescope-legacy
                     gawk
                     gc
                     gcab
@@ -330,7 +330,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-krb5
                     lib32-libasyncns
                     lib32-libcap
-                    lib32-libdrm
+                    steamfork/lib32-libdrm
                     lib32-libelf
                     lib32-libffi
                     lib32-libgcrypt
@@ -375,8 +375,8 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-llvm-libs
                     lib32-lm_sensors
                     lib32-mangohud
-                    lib32-mesa
-                    lib32-mesa-vdpau
+                    steamfork/lib32-mesa
+                    steamfork/lib32-mesa-vdpau
                     lib32-ncurses
                     lib32-nspr
                     lib32-nss
@@ -392,7 +392,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-systemd
                     lib32-util-linux
                     lib32-vulkan-icd-loader
-                    lib32-vulkan-radeon
+                    steamfork/lib32-vulkan-radeon
 		    lib32-vulkan-mesa-layers
                     lib32-wayland
                     lib32-xcb-util-keysyms
@@ -426,7 +426,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     libdbusmenu-qt5
                     libdecor
                     libdmtx
-                    libdrm
+                    steamfork/libdrm
                     libedit
                     libelf
                     libepoxy
@@ -601,9 +601,9 @@ export STEAMOS_PKGS="accounts-qml-module
                     md4c
                     mdadm
                     media-player-info
-                    mesa
+                    steamfork/mesa
                     mesa-utils
-                    mesa-vdpau
+                    steamfork/mesa-vdpau
                     milou
                     minizip
                     mkinitcpio
@@ -869,9 +869,9 @@ export STEAMOS_PKGS="accounts-qml-module
                     vmaf
                     volume_key
                     vulkan-icd-loader
-                    vulkan-radeon
+                    steamfork/vulkan-radeon
                     vulkan-tools
-                    vulkan-mesa-layers
+                    steamfork/vulkan-mesa-layers
                     wayland
                     wayland-utils
                     webrtc-audio-processing
@@ -1035,7 +1035,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
 		  inputplumber
                   kdegraphics-thumbnailers
                   kwrite
-		  lib32-vulkan-intel
+		  steamfork/lib32-vulkan-intel
                   libcap.so
                   libdisplay-info.so
                   libliftoff.so
@@ -1057,7 +1057,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   steamfork-device-support
 		  steamfork-keyring
                   vlc
-		  vulkan-intel
+		  steamfork/vulkan-intel
                   wlroots
                   wlr-randr
                   xorg-xwayland
