@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.11
-pkgrel=2
+pkgrel=3
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -69,7 +69,7 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
 )
 sha256sums=('SKIP'
-'d9af7608fb3c07f687bb124b5dd5aa3184893030ad6165132455018bc4c90cc5' # config
+'fd52d3262f33ad5e72804cc9f5da600a1f14e4cbc2e98a6d8549c75d382c356c' # config
 '69fa4d553a092c90a5dd1138b9a335c1f6cfe0a0e3bfc9031cf220194373228b' # 0001-drm-panel-orientation-quirks.patch
 '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
 '38db1ffbacc2315df6ec862404e0dfe73360f950c75336a960b9da382b2a8e7d' # 0003-Set-amdgpu.ppfeaturemask-0xffffffff-as-default.patch
