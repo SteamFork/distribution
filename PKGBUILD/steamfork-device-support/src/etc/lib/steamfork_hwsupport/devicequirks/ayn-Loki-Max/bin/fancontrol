@@ -45,14 +45,17 @@ if [ "${COOLING_PROFILE}" = "aggressive" ]
 then
   SPEEDS=(72 96 128)
   TEMPS=(45000 75000 85000)
+  SLEEP_TIME=1
 elif [ "${COOLING_PROFILE}" = "moderate" ]
 then
   SPEEDS=(32 48 64 72 96 128)
   TEMPS=(50000 55000 60000 70000 80000 90000)
+  SLEEP_TIME=1.5
 elif [ "${COOLING_PROFILE}" = "quiet" ]
 then
   SPEEDS=(24 32 48 64 72 96 128)
   TEMPS=(50000 55000 60000 65000 70000 80000 90000)
+  SLEEP_TIME=2
 else
   # auto
   set_control 0x01 >/dev/null 2>&1
@@ -89,7 +92,12 @@ do
     then
       if (( ${CURRENTSPEED} != ${SPEEDS[${INDEX}]} ))
       then
-        CURRENTSPEED=${SPEEDS[${INDEX}]}
+        if (( "${CPU_TEMP}" >= "90000" ))
+        then
+          CURRENTSPEED=${SPEEDS[$(( ${#SPEEDS[@]} - 1 ))]}
+        else
+          CURRENTSPEED=${SPEEDS[${INDEX}]}
+        fi
         ectool -w 0x11 -z $(printf '%x\n' ${CURRENTSPEED}) >/dev/null 2>&1
         $DEBUG && log $0 "Set fan to ${CURRENTSPEED}."
       fi

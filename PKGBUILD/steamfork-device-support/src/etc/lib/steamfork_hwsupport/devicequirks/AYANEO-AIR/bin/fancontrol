@@ -49,15 +49,18 @@ if [ "${COOLING_PROFILE}" = "aggressive" ]
 then
   SPEEDS=(192 225 255)
   TEMPS=(45000 75000 85000)
+  SLEEP_TIME=1
 elif [ "${COOLING_PROFILE}" = "moderate" ]
 then
   SPEEDS=(48 64 96 128 192 255)
   TEMPS=(50000 55000 60000 70000 80000 90000)
+  SLEEP_TIME=1.5
 elif [ "${COOLING_PROFILE}" = "quiet" ]
 then
   # Quiet.
   SPEEDS=(32 48 64 96 128 192 255)
   TEMPS=(55000 60000 65000 70000 80000 90000 95000)
+  SLEEP_TIME=2
 else
   # auto
   set_control 0 >/dev/null 2>&1
@@ -94,8 +97,13 @@ do
     then
       if (( ${CURRENTSPEED} != ${SPEEDS[${INDEX}]} ))
       then
-	CURRENTSPEED=${SPEEDS[${INDEX}]}
-	echo ${SPEEDS[${INDEX}]} >${FAN_PWM}
+	if (( "${CPU_TEMP}" >= "90000" ))
+	then
+		CURRENTSPEED=${SPEEDS[$(( ${#SPEEDS[@]} - 1 ))]}
+	else
+		CURRENTSPEED=${SPEEDS[${INDEX}]}
+	fi
+	echo ${CURRENTSPEED} >${FAN_PWM}
 	$DEBUG && log $0 "Set fan to ${CURRENTSPEED}."
       fi
       break
@@ -103,7 +111,7 @@ do
       INDEX=$(( $INDEX + 1 ))
     fi
   done
-  sleep 2
+  sleep ${SLEEP_TIME}
 done
 
 log $0 "Disabling fan control."
