@@ -97,7 +97,8 @@ do
     then
       if (( ${CURRENTSPEED} != ${SPEEDS[${INDEX}]} ))
       then
-	if (( "${CPU_TEMP}" >= "90000" ))
+	if (( "${CPU_TEMP}" >= "90000" )) && \
+	   (( "${AVERAGE}" <= "${TEMP}" ))
 	then
 		CURRENTSPEED=${SPEEDS[$(( ${#SPEEDS[@]} - 1 ))]}
 	else
