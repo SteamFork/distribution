@@ -52,15 +52,15 @@ then
   SLEEP_TIME=1
 elif [ "${COOLING_PROFILE}" = "moderate" ]
 then
-  SPEEDS=(48 64 96 128 192 255)
-  TEMPS=(50000 55000 60000 70000 80000 90000)
-  SLEEP_TIME=1.5
+  SPEEDS=(64 96 128 192 255)
+  TEMPS=(50000 60000 70000 80000 90000)
+  SLEEP_TIME=1
 elif [ "${COOLING_PROFILE}" = "quiet" ]
 then
   # Quiet.
-  SPEEDS=(32 48 64 96 128 192 255)
-  TEMPS=(55000 60000 65000 70000 80000 90000 95000)
-  SLEEP_TIME=2
+  SPEEDS=(48 64 96 128 192 255)
+  TEMPS=(55000 60000 65000 70000 80000 90000)
+  SLEEP_TIME=1.5
 else
   # auto
   set_control 0 >/dev/null 2>&1
@@ -80,7 +80,7 @@ do
 
   ### Keep a rolling history of CPU temps.
   HISTORY+=(${CPU_TEMP})
-  while (( ${#HISTORY[@]} > 10 ))
+  while (( ${#HISTORY[@]} > 5 ))
   do
     unset HISTORY[-0]
     PRIOR_HISTORY=( ${HISTORY[*]} )
@@ -92,20 +92,21 @@ do
   $DEBUG && log $0 "Current/Average/Ceiling (Speed): ${CPU_TEMP}/${AVERAGE}/${TEMP} (${CURRENTSPEED})."
   for TEMP in "${TEMPS[@]}"
   do
-    if (( "${CPU_TEMP}" >= "90000" )) || \
-       (( "${AVERAGE}" <= "${TEMP}" ))
+    CRITICAL_TEMP=${TEMPS[$(( ${#TEMPS[@]} - 1 ))]}
+    if (( ${CPU_TEMP} >= ${CRITICAL_TEMP} )) || \
+       (( ${AVERAGE} <= ${TEMP} ))
     then
       if (( ${CURRENTSPEED} != ${SPEEDS[${INDEX}]} ))
       then
-	if (( "${CPU_TEMP}" >= "90000" )) && \
-	   (( "${AVERAGE}" <= "${TEMP}" ))
+	if (( ${CPU_TEMP} > ${CRITICAL_TEMP} ))
 	then
-		CURRENTSPEED=${SPEEDS[$(( ${#SPEEDS[@]} - 1 ))]}
+	  $DEBUG && log $0 "Critical temp (${CPU_TEMP})!"
+	  CURRENTSPEED=${SPEEDS[$(( ${#SPEEDS[@]} - 1 ))]}
 	else
-		CURRENTSPEED=${SPEEDS[${INDEX}]}
+	  CURRENTSPEED=${SPEEDS[${INDEX}]}
 	fi
 	echo ${CURRENTSPEED} >${FAN_PWM}
-	$DEBUG && log $0 "Set fan to ${CURRENTSPEED}."
+	$DEBUG && log $0 "Setting fan to ${CURRENTSPEED}."
       fi
       break
     else

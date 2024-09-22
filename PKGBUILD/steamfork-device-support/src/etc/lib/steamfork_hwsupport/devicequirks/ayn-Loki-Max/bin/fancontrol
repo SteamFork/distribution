@@ -39,7 +39,7 @@ then
     set_setting cooling.profile quiet
 fi
 
-log $0 "Setting profile to ${COOLING_PROFILE}"
+$VERBOSE && log $0 "Setting profile to ${COOLING_PROFILE}"
 
 if [ "${COOLING_PROFILE}" = "aggressive" ]
 then
@@ -50,12 +50,12 @@ elif [ "${COOLING_PROFILE}" = "moderate" ]
 then
   SPEEDS=(32 48 64 72 96 128)
   TEMPS=(50000 55000 60000 70000 80000 90000)
-  SLEEP_TIME=1.5
+  SLEEP_TIME=1
 elif [ "${COOLING_PROFILE}" = "quiet" ]
 then
   SPEEDS=(24 32 48 64 72 96 128)
   TEMPS=(50000 55000 60000 65000 70000 80000 90000)
-  SLEEP_TIME=2
+  SLEEP_TIME=1.5
 else
   # auto
   set_control 0x01 >/dev/null 2>&1
@@ -75,7 +75,7 @@ do
 
   ### Keep a rolling history of CPU temps.
   HISTORY+=(${CPU_TEMP})
-  while (( ${#HISTORY[@]} > 10 ))
+  while (( ${#HISTORY[@]} > 5 ))
   do
     unset HISTORY[-0]
     PRIOR_HISTORY=( ${HISTORY[*]} )
@@ -87,27 +87,28 @@ do
   $DEBUG && log $0 "Current/Average/Ceiling (Speed): ${CPU_TEMP}/${AVERAGE}/${TEMP} (${CURRENTSPEED})."
   for TEMP in "${TEMPS[@]}"
   do
-    if (( "${CPU_TEMP}" >= "90000" )) || \
-       (( "${AVERAGE}" <= "${TEMP}" ))
+    CRITICAL_TEMP=${TEMPS[$(( ${#TEMPS[@]} - 1 ))]}
+    if (( ${CPU_TEMP} >= ${CRITICAL_TEMP} )) || \
+       (( ${AVERAGE} <= ${TEMP} ))
     then
       if (( ${CURRENTSPEED} != ${SPEEDS[${INDEX}]} ))
       then
-        if (( "${CPU_TEMP}" >= "90000" )) && \
-           (( "${AVERAGE}" <= "${TEMP}" ))
+        if (( ${CPU_TEMP} > ${CRITICAL_TEMP} ))
         then
+          $DEBUG && log $0 "Critical temp (${CPU_TEMP})!"
           CURRENTSPEED=${SPEEDS[$(( ${#SPEEDS[@]} - 1 ))]}
         else
           CURRENTSPEED=${SPEEDS[${INDEX}]}
         fi
         ectool -w 0x11 -z $(printf '%x\n' ${CURRENTSPEED}) >/dev/null 2>&1
-        $DEBUG && log $0 "Set fan to ${CURRENTSPEED}."
+        $DEBUG && log $0 "Setting fan to ${CURRENTSPEED}."
       fi
       break
     else
       INDEX=$(( $INDEX + 1 ))
     fi
   done
-  sleep 2
+  sleep ${SLEEP_TIME}
 done
 
 log $0 "Disabling fan control."
