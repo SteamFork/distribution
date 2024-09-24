@@ -1,0 +1,24 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 Fewtarius
+
+DATA_DIR="${HOME}/.updates"
+PACKAGE="${1}"
+DATA_SOURCE="https://api.github.com/repos/${2}/tags"
+WORK_DIR="/tmp/${PACKAGE}"
+
+UPSTREAM_VERSION=$(curl --url "${DATA_SOURCE}" 2>/dev/null | jq -r '.[0].name')
+if [ ! -d "${DATA_DIR}" ]
+then
+	mkdir -p ${DATA_DIR}
+fi
+
+if [ -f "${DATA_DIR}/${PACKAGE}" ]
+then
+	DOWNSTREAM_VERSION="$(cat ${DATA_DIR}/${PACKAGE})"
+fi
+
+if [ ! "${UPSTREAM_VERSION}" = "${DOWNSTREAM_VERSION}" ]
+then
+	echo "${UPSTREAM_VERSION}" | tee ${DATA_DIR}/${PACKAGE}
+fi

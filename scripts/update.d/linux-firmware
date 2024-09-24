@@ -1,0 +1,6 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 Fewtarius
+
+PACKAGE="$(basename ${0})"
+${EXEC_PATH}/modules/linux-tag "${PACKAGE}" "git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git"

@@ -1,0 +1,49 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 Fewtarius
+
+DATA_DIR="${HOME}/.updates"
+PACKAGE="${1}"
+
+if [ -z "${2}" ]
+then
+	TO_SOURCE="jupiter-PKGBUILD/${PACKAGE}/PKGBUILD"
+else
+	TO_SOURCE="${2}"
+fi
+
+if [ -z "${3}" ]
+then
+	DATA_SOURCE="https://gitlab.com/evlaV/jupiter-PKGBUILD.git"
+else
+	DATA_SOURCE=${3}
+fi
+
+
+WORK_DIR="/tmp/${PACKAGE}"
+
+function cleanup() {
+	if [ -d "${WORK_DIR}" ]
+	then
+		rm -rf ${WORK_DIR}
+	fi
+}
+
+cleanup
+mkdir -p ${WORK_DIR}
+cd ${WORK_DIR}
+git clone --depth 1 ${DATA_SOURCE} >/dev/null 2>&1
+
+source ${WORK_DIR}/${TO_SOURCE}
+
+if [ ! -d "${DATA_DIR}" ]
+then
+	mkdir -p ${DATA_DIR}
+fi
+
+if [ ! -f "${DATA_DIR}/${PACKAGE}" ] || \
+   [ ! "$(cat ${DATA_DIR}/${PACKAGE})" = "${pkgver}" ]
+then
+	echo "${pkgver}" | tee ${DATA_DIR}/${PACKAGE}
+fi
+cleanup
