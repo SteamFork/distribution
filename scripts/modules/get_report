@@ -1,0 +1,70 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 Fewtarius
+
+if [ -f "${HOME}/.SteamFork/options" ]
+then
+        source ${HOME}/.SteamFork/options
+else
+        echo "Please configure ${HOME}/.SteamFork/options before using this script."
+        exit 1
+fi
+
+for KEY in WEB_HOSTS LOG_PATH
+do
+        if [ -z "${!KEY}" ]
+        then
+                echo "Export ${KEY} before using this script."
+                exit 1
+        fi
+done
+
+function fetch_count() {
+  HOST="$1"
+  DATA="$2"
+  if [ -z "${DATA}" ]
+  then
+    DATA="latest_rel.releasemeta"
+  fi
+  VAL=$(ssh -q ${HOST} "grep \"${DATA}\" ${LOG_PATH} | awk '{print \$1}' | sort | uniq | wc -l")
+  printf "${VAL}"
+}
+
+function total_count() {
+  DATA=${1}
+  if [ -z "${DATA}" ]
+  then
+    DATA="latest_rel.releasemeta"
+  fi
+  for HOST in ${WEB_HOSTS[@]}
+  do
+    ssh -q ${HOST} "grep '${DATA}' ${LOG_PATH} | awk '{print \$1}'"
+  done | sort | uniq | wc -l
+}
+
+function mirror_status() {
+  HOST=${1}
+  DATA=${2}
+  if [ -z "${DATA}" ]
+  then
+    DATA="mirrorlist.txt"
+  fi
+  curl -sL https://${HOST}/${DATA} | wc -l 2>/dev/null
+}
+
+for HOST in ${WEB_HOSTS[@]}
+do
+  VAR=$(mirror_status ${HOST#*@})
+  if (( ${VAR} <= 2 ))
+  then
+    MIRRORS="${MIRRORS}XXX/"
+  elif (( ${VAR} == 3 ))
+  then
+    MIRRORS="${MIRRORS}OK/"
+  fi
+done
+MIRRORS=${MIRRORS::-1}
+
+cat <<EOF
+## Hosting Report ($(date +%m/%d/%Y))\n**Metadata Downloads:**\t\`$(total_count) ($(fetch_count ${WEB_HOSTS[0]})/$(fetch_count ${WEB_HOSTS[1]})/$(fetch_count ${WEB_HOSTS[2]}))\`\n**ISO Downloads:**\t\t\t\t\`$(total_count "steamfork.*iso") ($(fetch_count ${WEB_HOSTS[0]} "steamfork.*iso")/$(fetch_count ${WEB_HOSTS[1]} "steamfork.*iso")/$(fetch_count ${WEB_HOSTS[2]} "steamfork.*iso"))\`\n**Update Downloads:**\t\t\`$(total_count "steamfork.*img.zst") ($(fetch_count ${WEB_HOSTS[0]} "steamfork.*img.zst")/$(fetch_count ${WEB_HOSTS[1]} "steamfork.*img.zst")/$(fetch_count ${WEB_HOSTS[2]} "steamfork.*img.zst"))\`\n**Mirror Status:**\t\t\t\t\t\`(${MIRRORS})\`
+EOF

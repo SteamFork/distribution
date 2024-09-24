@@ -1,0 +1,32 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 Fewtarius
+
+if [ -f "${HOME}/.SteamFork/options" ]
+then
+        source ${HOME}/.SteamFork/options
+else
+        echo "Please configure ${HOME}/.SteamFork/options before using this script."
+        exit 1
+fi
+
+export EXEC_PATH=$(dirname $(realpath "${0}"))
+SERVER_REPORT="/tmp/server_report.txt"
+
+cd ${EXEC_PATH}
+for KEY in WEBHOOK_URL WEBHOOK_USERNAME
+do
+	if [ -z "${!KEY}" ]
+	then
+		echo "Export ${KEY} before using this script."
+		exit 1
+	fi
+done
+
+${EXEC_PATH}/modules/get_report > ${SERVER_REPORT}
+
+MESSAGE="${PACKAGE} version ${VERSION} is now available upstream."
+${EXEC_PATH}/modules/discord --webhook-url="${WEBHOOK_URL}" \
+				--username="${WEBHOOK_USERNAME}" \
+				--text="$(cat ${SERVER_REPORT})"
+rm -f ${SERVER_REPORT}
