@@ -26,7 +26,6 @@ for SCRIPT in update.d/*
 do
 	PACKAGE="$(basename ${SCRIPT})"
 	VERSION="$(${EXEC_PATH}/${SCRIPT})"
-	echo "${PACKAGE} ${VERSION}"
 	if [ -n "${VERSION}" ]
 	then
 		MESSAGE="${PACKAGE} version ${VERSION} is now available upstream."
