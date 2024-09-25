@@ -11,7 +11,7 @@ else
 	BASE_URL="${3}"
 fi
 DATA_SOURCE="https://${BASE_URL}/api/v4/projects/${2}/repository/tags"
-WORK_DIR="/tmp/${PACKAGE}"
+WORK_DIR="${HOME}/.update_tmp/${PACKAGE}"
 
 UPSTREAM_VERSION=$(curl --url "${DATA_SOURCE}" 2>/dev/null | jq -r '.[0] | .name')
 if [ ! -d "${DATA_DIR}" ]

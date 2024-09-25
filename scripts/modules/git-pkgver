@@ -20,7 +20,7 @@ else
 fi
 
 
-WORK_DIR="/tmp/${PACKAGE}"
+WORK_DIR="${HOME}/.update_tmp/${PACKAGE}"
 
 function cleanup() {
 	if [ -d "${WORK_DIR}" ]

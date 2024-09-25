@@ -10,7 +10,7 @@ then
 else
 	DATA_SOURCE="${2}"
 fi
-WORK_DIR="/tmp/${PACKAGE}"
+WORK_DIR="${HOME}/.update_tmp/${PACKAGE}"
 
 if [ ! -d "${WORK_DIR}" ]
 then
