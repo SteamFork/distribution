@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.11
-pkgrel=3
+pkgrel=4
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -43,7 +43,6 @@ source=(
   config         # the main kernel config file
   0001-drm-panel-orientation-quirks.patch
   0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
-  0003-Set-amdgpu.ppfeaturemask-0xffffffff-as-default.patch
   0006-Ayaneo-geek-headset-patch.patch
   0007-ayaneo-2-headphone-fix.patch
   0008-ayaneo-1s-hp-fix.patch
@@ -57,7 +56,7 @@ source=(
   0036-Updated-AW87xxx-driver-to-automatically-enumerate-a-.patch
   0037-Updated-AW87xxx-driver-to-implement-Suspend-and-Resu.patch
   0038-fixup-aw87xx-warnings.patch
-  0040-amdgpu-quirks.patch
+  0040-vcs-amdgpu-quirks.patch
   0041-cpufreq_amd-pstate-Add-the-missing-cpufreq_cpu_put.patch
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
   0060-asus-patch-series.patch
@@ -72,7 +71,6 @@ sha256sums=('SKIP'
 'fd52d3262f33ad5e72804cc9f5da600a1f14e4cbc2e98a6d8549c75d382c356c' # config
 '69fa4d553a092c90a5dd1138b9a335c1f6cfe0a0e3bfc9031cf220194373228b' # 0001-drm-panel-orientation-quirks.patch
 '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
-'38db1ffbacc2315df6ec862404e0dfe73360f950c75336a960b9da382b2a8e7d' # 0003-Set-amdgpu.ppfeaturemask-0xffffffff-as-default.patch
 '783da391e0f45635eefb583b8b3acc29cd62a0c9eeefedf7f790dc2f89c7e279' # 0006-Ayaneo-geek-headset-patch.patch
 '33edff1a51ceb763c47b3ae485f5857a716a1dac9f1e8b65c3b93c6e88a4838f' # 0007-ayaneo-2-headphone-fix.patch
 'aefa22053dbc736d925e4edff86ef39fab98e6668a6cf0e30be43f57e0235c76' # 0008-ayaneo-1s-hp-fix.patch
@@ -86,7 +84,7 @@ sha256sums=('SKIP'
 '73a88310ac0077bedd4a4e49689c06cb8460c55774cea1395d90f9ac57252e8c' # 0036-Updated-AW87xxx-driver-to-automatically-enumerate-a-.patch
 '4f3baa6a367659341873ec7443d6238044cca521e04c0a868322221ac50149ff' # 0037-Updated-AW87xxx-driver-to-implement-Suspend-and-Resu.patch
 '23d91695bf8e5d5cdb9503a47468c6c5cf220bc7966a4720aa46645357e29ee6' # 0038-fixup-aw87xx-warnings.patch
-'2728588169bb1e1b4d9987c0732a316e39670f0c873429179b894ddc6be9b0fa' # 0040-amdgpu-quirks.patch
+'0b79956eea0f1ac894a083b34401e3503b2d717f03b68e2ecb24a024ea3d9451' # 0040-vcs-amdgpu-quirks.patch
 'f39edf5b175d4290f528512605bd9250e864c4a4579bb84b7e8a993cae2284eb' # 0041-cpufreq_amd-pstate-Add-the-missing-cpufreq_cpu_put.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
 '802f1f4b3f446f60120df87c13b4d3cdb3ed490384b4f0e5ea1c43c24dbc4153' # 0060-asus-patch-series.patch
