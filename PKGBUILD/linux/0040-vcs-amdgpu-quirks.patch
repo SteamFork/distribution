@@ -20,16 +20,5 @@ index 99dbd2341120..e9ce71fced4b 100644
  	/* Apple MacBook Pro (15-inch, 2019) Radeon Pro Vega 20 4 GB */
  	{ 0x1002, 0x69af, 0x106b, 0x019a, 0xc0 },
  	{ 0, 0, 0, 0, 0 },
-diff -rupN linux-6.10.5.orig/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c linux-6.10.5/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
---- linux-6.10.5.orig/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c	2024-08-14 13:34:38.000000000 +0000
-+++ linux-6.10.5/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c	2024-08-28 15:53:20.432207108 +0000
-@@ -1883,6 +1883,7 @@ static int amdgpu_device_init_apu_flags(
- 		break;
- 	case CHIP_RENOIR:
- 		if ((adev->pdev->device == 0x1636) ||
-+		    (adev->pdev->device == 0x1638) ||
- 		    (adev->pdev->device == 0x164c))
- 			adev->apu_flags |= AMD_APU_IS_RENOIR;
- 		else
 --
 2.43.2
