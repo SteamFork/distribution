@@ -1,0 +1,6 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 Fewtarius
+
+PACKAGE="$(basename ${0})"
+${EXEC_PATH}/modules/github-tag "${PACKAGE}" "ShadowBlip/steam-powerbuttond"
