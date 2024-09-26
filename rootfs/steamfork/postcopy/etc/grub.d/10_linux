@@ -31,7 +31,7 @@ CLASS="--class gnu-linux --class gnu --class os"
 if [ "x${GRUB_DISTRIBUTOR}" = "x" ] ; then
   OS=""
 else
-  OS="${GRUB_DISTRIBUTOR}, subvolume $(mount | grep "on / " | awk '{print $6}' | sed 's/.*subvol=//g' | sed 's/)//g' | cut -c 2-)"
+  OS="${GRUB_DISTRIBUTOR} v$(mount | grep "on / " | awk '{print $6}' | sed 's/.*subvol=\/rootfs\/steamfork_.*_//g' | sed 's/)//g')"
   CLASS="--class $(echo ${GRUB_DISTRIBUTOR} | tr 'A-Z' 'a-z' | cut -d' ' -f1|LC_ALL=C sed 's,[^[:alnum:]_],_,g') ${CLASS}"
 fi
 
@@ -103,7 +103,7 @@ linux_entry ()
 	      title="$(gettext_printf "%s, with Linux %s" "${os}" "${version}")" ;;
       esac
       if [ x"$title" = x"$GRUB_ACTUAL_DEFAULT" ] || [ x"Previous Linux versions>$title" = x"$GRUB_ACTUAL_DEFAULT" ]; then
-	  replacement_title="$(echo "Advanced options for ${OS}" | sed 's,>,>>,g')>$(echo "$title" | sed 's,>,>>,g')"
+          replacement_title="$(echo "${OS} (Advanced Options)" | sed 's,>,>>,g')>$(echo "$title" | sed 's,>,>>,g')"
 	  quoted="$(echo "$GRUB_ACTUAL_DEFAULT" | grub_quote)"
 	  title_correction_code="${title_correction_code}if [ \"x\$default\" = '$quoted' ]; then default='$(echo "$replacement_title" | grub_quote)'; fi;"
 	  grub_warn "$(gettext_printf "Please don't use old title \`%s' for GRUB_DEFAULT, use \`%s' (for versions before 2.00) or \`%s' (for 2.00 or later)" "$GRUB_ACTUAL_DEFAULT" "$replacement_title" "gnulinux-advanced-$boot_device_id>gnulinux-$version-$type-$boot_device_id")"
@@ -294,7 +294,7 @@ for linux in ${reverse_sorted_list}; do
 	boot_device_id="$(grub_get_device_id "${GRUB_DEVICE}")"
     fi
     # TRANSLATORS: %s is replaced with an OS name
-    echo "submenu '$(gettext_printf "Advanced options for %s" "${OS}" | grub_quote)' \$menuentry_id_option 'gnulinux-advanced-$boot_device_id' {"
+    echo "submenu '$(gettext_printf "%s (Advanced Options)" "${OS}" | grub_quote)' \$menuentry_id_option 'gnulinux-advanced-$boot_device_id' {"
     is_top_level=false
   fi
 

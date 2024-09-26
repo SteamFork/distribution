@@ -1,6 +1,6 @@
 source steamfork-devicequirk-set
 GRUB_DEFAULT=0
-GRUB_TIMEOUT=0
+GRUB_TIMEOUT=2
 GRUB_DISTRIBUTOR=SteamFork
 GRUB_CMDLINE_LINUX_DEFAULT="console=tty1 loglevel=3 quiet splash plymouth.ignore-serial-consoles ${STEAMFORK_GRUB_ADDITIONAL_CMDLINEOPTIONS}"
 GRUB_SAVEDEFAULT="false"

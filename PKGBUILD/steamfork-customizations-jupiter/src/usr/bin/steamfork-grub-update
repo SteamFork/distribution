@@ -18,18 +18,31 @@ else
 fi
 
 mount ${EFI_LOCATION} /boot/efi
+
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=steamos --removable
 if [ ! $? = 0 ]
 then
     echo "Failed to install GRUB, exiting..."
     exit 1
 fi
+
+mv -f /boot/grub/grub.cfg /boot/grub/grub.cfg.bak
 grub-mkconfig -o /boot/grub/grub.cfg
 if [ ! $? = 0 ]
 then
     echo "Failed to configure GRUB, exiting..."
     exit 1
 fi
+
+ROOTFS_VOLS=( $(ls /sf_root/rootfs/ | sort -r) )
+if [ -n "${ROOTFS_VOLS[1]}" ]
+then
+    ### Create a fallback rootfs (B)
+    awk '/### BEGIN \/etc\/grub.d\/10_linux ###/,EOF {print $0}; /### END \/etc\/grub.d\/10_linux ###/ {exit}' /boot/grub/grub.cfg | sed 's~/etc/grub.d/10_linux~Fallback RootFS~g' >>/tmp/fallback-grub.cfg
+    sed -i 's~'${ROOTFS_VOLS[0]#steamfork_*_*}'~'${ROOTFS_VOLS[1]#steamfork_*_*}'~g' /tmp/fallback-grub.cfg
+    sed -i '/### END \/etc\/grub.d\/10_linux ###/ r /tmp/fallback-grub.cfg' /boot/grub/grub.cfg
+fi
+
 echo "Installing grub entry on ${EFI_STORAGE}, partition number ${EFI_PARTNUM}"
 for ENTRY in $(efibootmgr | awk '/[Ss]team[Ff]ork/ {print $1}' | sed -e 's~Boot~~g;s~\W$~~g')
 do
