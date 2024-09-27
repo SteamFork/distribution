@@ -10,7 +10,7 @@ else
         exit 1
 fi
 
-for KEY in WEB_HOSTS LOG_PATH
+for KEY in WEB_HOSTS LOG_PATH SYNC_DATA
 do
         if [ -z "${!KEY}" ]
         then
@@ -18,6 +18,8 @@ do
                 exit 1
         fi
 done
+
+SYNC_SUM=$(cat ${SYNC_DATA})
 
 function fetch_count() {
   HOST="$1"
@@ -42,55 +44,44 @@ function total_count() {
   done | sort | uniq | wc -l
 }
 
-function mirror_status() {
+function sync_status() {
   HOST=${1}
   DATA=${2}
   if [ -z "${DATA}" ]
   then
-    DATA="mirrorlist.txt"
+    DATA=".sync.txt"
   fi
-  curl -sL https://${HOST}/${DATA} | wc -l 2>/dev/null
+  curl -sL https://${HOST}/${DATA} 2>/dev/null
 }
 
 for HOST in ${WEB_HOSTS[@]}
 do
-  VAR=$(mirror_status ${HOST#*@})
-  if (( ${VAR} <= 2 ))
+  OUTPUT="${OUTPUT}## Instance Report For ${HOST#*@}\n"
+  METADATA_COUNT=$(fetch_count ${HOST})
+  OUTPUT="${OUTPUT}* Metadata Downloads: ${METADATA_COUNT}\n"
+  ISO_DOWNLOADS=$(fetch_count ${HOST} "steamfork.*iso")
+  OUTPUT="${OUTPUT}* ISO Downloads: ${ISO_DOWNLOADS}\n"
+  UPDATE_DOWNLOADS=$(fetch_count ${HOST} "steamfork.*img.zst")
+  OUTPUT="${OUTPUT}* Update Downloads: ${UPDATE_DOWNLOADS}\n"
+  SYNC_STATUS=$(sync_status ${HOST#*@})
+  if [ "${SYNC_STATUS}" = "${SYNC_SUM}" ]
   then
-    MIRRORS="${MIRRORS}XXX/"
-  elif (( ${VAR} >= 3 ))
-  then
-    MIRRORS="${MIRRORS}OK/"
+    SYNC_STATUS="OK"
+  else
+    SYNC_STATUS="OUT OF SYNC"
   fi
+  OUTPUT="${OUTPUT}* Sync Status: ${SYNC_STATUS}\n"
 done
-MIRRORS=${MIRRORS::-1}
 
-METADATA="**Metadata Downloads:**\t\`$(total_count) ("
-for HOST in ${WEB_HOSTS[@]}
-do
-  COUNT=$(fetch_count ${HOST})
-  METADATA="${METADATA}${COUNT}/"
-done
-METADATA="${METADATA::-1})\`"
-
-ISOS="**ISO Downloads:**\t\`$(total_count "steamfork.*iso") ("
-for HOST in ${WEB_HOSTS[@]}
-do
-  COUNT=$(fetch_count ${HOST} "steamfork.*iso")
-  ISOS="${ISOS}${COUNT}/"
-done
-ISOS="${ISOS::-1})\`"
-
-UPDATES="**Update Downloads:**\t\`$(total_count "steamfork.*img.zst") ("
-for HOST in ${WEB_HOSTS[@]}
-do
-  COUNT=$(fetch_count ${HOST} "steamfork.*img.zst")
-  UPDATES="${UPDATES}${COUNT}/"
-done
-UPDATES="${UPDATES::-1})\`"
-
+OUTPUT="${OUTPUT}## Total Downloads Today ($(date +%m/%d/%Y)):\n"
+TOTAL_METADATA=$(total_count "latest_rel.releasemeta")
+OUTPUT="${OUTPUT}* Platform Metadata: ${TOTAL_METADATA}\n"
+TOTAL_ISOS=$(total_count "steamfork.*iso")
+OUTPUT="${OUTPUT}* Installation ISOS: ${TOTAL_ISOS}\n"
+TOTAL_UPDATES=$(total_count "steamfork.*img.zst")
+OUTPUT="${OUTPUT}* OS Updates: ${TOTAL_UPDATES}\n"
 
 cat <<EOF
-## Hosting Report ($(date +%m/%d/%Y))\n${METADATA}\n${ISOS}\n${UPDATES}\n**Mirror Status:**\t\t\t\t\t\`(${MIRRORS})\`
+${OUTPUT}
 EOF
 
