@@ -65,6 +65,32 @@ do
 done
 MIRRORS=${MIRRORS::-1}
 
+METADATA="**Metadata Downloads:**\t\`$(total_count) ("
+for HOST in ${WEB_HOSTS[@]}
+do
+  COUNT=$(fetch_count ${HOST})
+  METADATA="${METADATA}${COUNT}/"
+done
+METADATA="${METADATA::-1})\'"
+
+ISOS="**ISO Downloads:**\t\`$(total_count "steamfork.*iso") ("
+for HOST in ${WEB_HOSTS[@]}
+do
+  COUNT=$(fetch_count ${HOST} "steamfork.*iso")
+  ISOS="${ISOS}${COUNT}/"
+done
+ISOS="${ISOS::-1})\'"
+
+UPDATES="**Update Downloads:**\t\`$(total_count "steamfork.*img.gz") ("
+for HOST in ${WEB_HOSTS[@]}
+do
+  COUNT=$(fetch_count ${HOST} "steamfork.*img.gz")
+  UPDATES="${UPDATES}${COUNT}/"
+done
+UPDATES="${UPDATES::-1})\'"
+
+
 cat <<EOF
-## Hosting Report ($(date +%m/%d/%Y))\n**Metadata Downloads:**\t\`$(total_count) ($(fetch_count ${WEB_HOSTS[0]})/$(fetch_count ${WEB_HOSTS[1]})/$(fetch_count ${WEB_HOSTS[2]}))\`\n**ISO Downloads:**\t\t\t\t\`$(total_count "steamfork.*iso") ($(fetch_count ${WEB_HOSTS[0]} "steamfork.*iso")/$(fetch_count ${WEB_HOSTS[1]} "steamfork.*iso")/$(fetch_count ${WEB_HOSTS[2]} "steamfork.*iso"))\`\n**Update Downloads:**\t\t\`$(total_count "steamfork.*img.zst") ($(fetch_count ${WEB_HOSTS[0]} "steamfork.*img.zst")/$(fetch_count ${WEB_HOSTS[1]} "steamfork.*img.zst")/$(fetch_count ${WEB_HOSTS[2]} "steamfork.*img.zst"))\`\n**Mirror Status:**\t\t\t\t\t\`(${MIRRORS})\`
+## Hosting Report ($(date +%m/%d/%Y))\n${METADATA}\n${ISOS}\n${UPDATES}\n**Mirror Status:**\t\t\t\t\t\`(${MIRRORS})\`
 EOF
+
