@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.11
-pkgrel=5
+pkgrel=6
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -49,6 +49,7 @@ source=(
   0012-HACK-add-KConfig-to-enable-driver-specific-color-mgm.patch
   0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
   0020-add-devices-to-oxp-sensors.patch
+  0021-add-msi-claw-support-to-xpad.patch
   0031-IIO-add-aya-neo-tablet-identifier.patch
   0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
   0033-Codec-Add-aw87xxx-codec-with-partial-acpi-implementa.patch
@@ -60,7 +61,7 @@ source=(
   0041-cpufreq_amd-pstate-Add-the-missing-cpufreq_cpu_put.patch
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
   0060-asus-patch-series.patch
-  0099-add-ayaneo-and-ayn-platform-drivers.patch
+  0099-add-external-device-drivers.patch
 )
 validpgpkeys=(
   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
@@ -68,7 +69,7 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
 )
 sha256sums=('SKIP'
-'fd52d3262f33ad5e72804cc9f5da600a1f14e4cbc2e98a6d8549c75d382c356c' # config
+'ea0ae3d4cb3fd2289e2e8ac8b79ee5bbed22f5a363c6adfc317aa4ac7c37d9b8' # config
 '69fa4d553a092c90a5dd1138b9a335c1f6cfe0a0e3bfc9031cf220194373228b' # 0001-drm-panel-orientation-quirks.patch
 '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
 '783da391e0f45635eefb583b8b3acc29cd62a0c9eeefedf7f790dc2f89c7e279' # 0006-Ayaneo-geek-headset-patch.patch
@@ -77,6 +78,7 @@ sha256sums=('SKIP'
 'f45ba5d7dbc004474314c9e0329014e8c9d6b111f1e00397b1072b1bde581761' # 0012-HACK-add-KConfig-to-enable-driver-specific-color-mgm.patch
 '683128d044f4df12dcb0a7b2858075f510d870460dc71f0d60f69df89cf62419' # 0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
 'b42fa6bb0e3d93aa8a81f61543c2058fa6f8412b9ad190110ffb49c46e81d5ce' # 0020-add-devices-to-oxp-sensors.patch
+'a3b3d61c66d4a1c147e5e4e6d8404004435deba3b08788e59de6cd8ee30f570b' # 0021-add-msi-claw-support-to-xpad.patch
 'd4bc9044e7e3290d6885d08b8360b61744dc4227a723aa178f9041284e062f08' # 0031-IIO-add-aya-neo-tablet-identifier.patch
 'dc8218b5cf4b505a51c77712e54b944f01560d37a0e7630160d5f5776023cfda' # 0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
 '5508dedc920022b728489eb3ebbf7235fe48a7822d3c654cd678388c743442b9' # 0033-Codec-Add-aw87xxx-codec-with-partial-acpi-implementa.patch
@@ -88,7 +90,7 @@ sha256sums=('SKIP'
 'f39edf5b175d4290f528512605bd9250e864c4a4579bb84b7e8a993cae2284eb' # 0041-cpufreq_amd-pstate-Add-the-missing-cpufreq_cpu_put.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
 '802f1f4b3f446f60120df87c13b4d3cdb3ed490384b4f0e5ea1c43c24dbc4153' # 0060-asus-patch-series.patch
-'23673c33ea69f3508ff9265d27171e2e58899950d563a1726a6049afe9e92067' # 0099-add-ayaneo-and-ayn-platform-drivers.patch
+'3b1dabc168e4884c6586720538014d6ef8955a0b783d6436dd4937af6622ee42' # 0099-add-external-device-drivers.patch
 )
 
 export KBUILD_BUILD_HOST=$(hostnamectl hostname)
@@ -104,6 +106,7 @@ prepare() {
   cd ${_srcname}/drivers
   git clone https://github.com/SteamFork/ayaneo-platform.git
   git clone https://github.com/SteamFork/ayn-platform.git
+  git -c advice.detachedHead=false clone -b 20240922 --depth=1 https://github.com/uejji/hid-msi-claw.git
   cd ..
 
   echo "Setting version..."

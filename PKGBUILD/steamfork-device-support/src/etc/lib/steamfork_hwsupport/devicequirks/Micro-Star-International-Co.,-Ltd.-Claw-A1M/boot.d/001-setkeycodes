@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Temporary(?) hack to get special face buttons working.
+setkeycodes e039 186
+setkeycodes e03a 185

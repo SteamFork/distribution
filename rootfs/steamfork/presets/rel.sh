@@ -803,6 +803,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     smbclient
                     snappy
                     socat
+                    sof-firmware
                     sord
                     sound-theme-freedesktop
                     source-highlight
