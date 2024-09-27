@@ -1,7 +1,7 @@
 diff -rupN linux-6.11.orig/drivers/Kconfig linux-6.11/drivers/Kconfig
 --- linux-6.11.orig/drivers/Kconfig	2024-09-27 20:25:26.382542648 +0000
-+++ linux-6.11/drivers/Kconfig	2024-09-27 21:19:35.970920618 +0000
-@@ -245,4 +245,9 @@ source "drivers/cdx/Kconfig"
++++ linux-6.11/drivers/Kconfig	2024-09-27 21:34:59.799737160 +0000
+@@ -245,4 +245,10 @@ source "drivers/cdx/Kconfig"
  
  source "drivers/dpll/Kconfig"
  
@@ -9,12 +9,13 @@ diff -rupN linux-6.11.orig/drivers/Kconfig linux-6.11/drivers/Kconfig
 +
 +source "drivers/ayaneo-platform/Kconfig"
 +source "drivers/ayn-platform/Kconfig"
++source "drivers/hid-msi-claw/Kconfig"
 +
  endmenu
 diff -rupN linux-6.11.orig/drivers/Makefile linux-6.11/drivers/Makefile
 --- linux-6.11.orig/drivers/Makefile	2024-09-27 20:25:26.382542648 +0000
-+++ linux-6.11/drivers/Makefile	2024-09-27 21:19:43.898965876 +0000
-@@ -193,3 +193,8 @@ obj-$(CONFIG_CDX_BUS)		+= cdx/
++++ linux-6.11/drivers/Makefile	2024-09-27 21:35:10.632797513 +0000
+@@ -193,3 +193,9 @@ obj-$(CONFIG_CDX_BUS)		+= cdx/
  obj-$(CONFIG_DPLL)		+= dpll/
  
  obj-$(CONFIG_S390)		+= s390/
@@ -23,3 +24,4 @@ diff -rupN linux-6.11.orig/drivers/Makefile linux-6.11/drivers/Makefile
 +
 +obj-$(CONFIG_AYANEO_PLATFORM)	+= ayaneo-platform/
 +obj-$(CONFIG_AYN_PLATFORM)	+= ayn-platform/
++obj-$(CONFIG_HID_MSI_CLAW)	+= hid-msi-claw/
