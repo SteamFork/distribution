@@ -61,7 +61,7 @@ source=(
   0041-cpufreq_amd-pstate-Add-the-missing-cpufreq_cpu_put.patch
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
   0060-asus-patch-series.patch
-  0099-add-ayaneo-and-ayn-platform-drivers.patch
+  0099-add-external-device-drivers.patch
 )
 validpgpkeys=(
   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
@@ -90,7 +90,7 @@ sha256sums=('SKIP'
 'f39edf5b175d4290f528512605bd9250e864c4a4579bb84b7e8a993cae2284eb' # 0041-cpufreq_amd-pstate-Add-the-missing-cpufreq_cpu_put.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
 '802f1f4b3f446f60120df87c13b4d3cdb3ed490384b4f0e5ea1c43c24dbc4153' # 0060-asus-patch-series.patch
-'23673c33ea69f3508ff9265d27171e2e58899950d563a1726a6049afe9e92067' # 0099-add-ayaneo-and-ayn-platform-drivers.patch
+'d9ddeeb2ed2b16f9e275796ba7a331800bcb34fe2f8861ecaf57d098794c47e2' # 0099-add-external-device-drivers.patch
 )
 
 export KBUILD_BUILD_HOST=$(hostnamectl hostname)
