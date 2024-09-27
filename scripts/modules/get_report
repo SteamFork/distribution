@@ -71,7 +71,7 @@ do
   COUNT=$(fetch_count ${HOST})
   METADATA="${METADATA}${COUNT}/"
 done
-METADATA="${METADATA::-1})\'"
+METADATA="${METADATA::-1})\`"
 
 ISOS="**ISO Downloads:**\t\`$(total_count "steamfork.*iso") ("
 for HOST in ${WEB_HOSTS[@]}
@@ -79,7 +79,7 @@ do
   COUNT=$(fetch_count ${HOST} "steamfork.*iso")
   ISOS="${ISOS}${COUNT}/"
 done
-ISOS="${ISOS::-1})\'"
+ISOS="${ISOS::-1})\`"
 
 UPDATES="**Update Downloads:**\t\`$(total_count "steamfork.*img.gz") ("
 for HOST in ${WEB_HOSTS[@]}
@@ -87,7 +87,7 @@ do
   COUNT=$(fetch_count ${HOST} "steamfork.*img.gz")
   UPDATES="${UPDATES}${COUNT}/"
 done
-UPDATES="${UPDATES::-1})\'"
+UPDATES="${UPDATES::-1})\`"
 
 
 cat <<EOF
