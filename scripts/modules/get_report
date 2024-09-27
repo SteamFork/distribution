@@ -58,7 +58,7 @@ do
   if (( ${VAR} <= 2 ))
   then
     MIRRORS="${MIRRORS}XXX/"
-  elif (( ${VAR} == 3 ))
+  elif (( ${VAR} >= 3 ))
   then
     MIRRORS="${MIRRORS}OK/"
   fi
