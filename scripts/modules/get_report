@@ -81,10 +81,10 @@ do
 done
 ISOS="${ISOS::-1})\`"
 
-UPDATES="**Update Downloads:**\t\`$(total_count "steamfork.*img.gz") ("
+UPDATES="**Update Downloads:**\t\`$(total_count "steamfork.*img.zst") ("
 for HOST in ${WEB_HOSTS[@]}
 do
-  COUNT=$(fetch_count ${HOST} "steamfork.*img.gz")
+  COUNT=$(fetch_count ${HOST} "steamfork.*img.zst")
   UPDATES="${UPDATES}${COUNT}/"
 done
 UPDATES="${UPDATES::-1})\`"
