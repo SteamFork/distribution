@@ -45,9 +45,12 @@ jobs:
 
             | Branch | URL | Checksum |
             | -- | -- | -- |
-            | Stable | [LATEST](https://www.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) |
-            | Mirror 1 | [LATEST](https://www2.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www2.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) ||
-            | Mirror 2 | [LATEST](https://www3.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www3.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256)||
+            | Primary | [LATEST](https://www.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) |
+            | New York | [LATEST](https://www1.ny.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www1.ny.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) ||
+            | Dallas | [LATEST](https://www1.da.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www1.da.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) ||
+            | San Jose | [LATEST](https://www1.sj.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www1.sj.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) ||
+            | Ashburn | [LATEST](https://www1.as.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www1.as.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) ||
+            | Ashburn | [LATEST](https://www2.as.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www2.as.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) ||
             For installation instructions and other documentation, visit the [main project page](https://github.com/SteamFork).
 
           prerelease: false

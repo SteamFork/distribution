@@ -16,6 +16,13 @@ do
   fi
 done
 
+### Generate a mirror list.
+echo "www.steamfork.org" >/tmp/mirrorlist.txt
+for HOST in ${WEB_HOSTS[*]#*@}
+do
+  echo ${HOST} >>/tmp/mirrorlist.txt
+done
+
 case ${1} in
   pkgs|repo)
     for REPO in rel minimal
@@ -59,6 +66,9 @@ case ${1} in
         ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images-new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso.sha256 steamfork-${REL}-latest-x86_64.iso.sha256"
       fi
     done
+
+    scp /tmp/mirrorlist.txt ${WWWUSER}@${WWWHOST}:${WWWROOT}/
+
     ssh -tt ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/images-new"
     ssh -tt ${WWWUSER}@${WWWHOST} "mv ${WWWROOT}/images ${WWWROOT}/images-old; mv ${WWWROOT}/images-new/ ${WWWROOT}/images; rm -rf ${WWWROOT}/images-old"
     ssh -tt ${WWWUSER}@${WWWHOST} "mkdir -p ${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck; echo "{ }" >${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck/${STAGING_OS_TAG}.json"
@@ -66,6 +76,7 @@ case ${1} in
   mirrors)
     for MIRROR_HOST in ${MIRROR_HOSTS}
     do
+      scp /tmp/mirrorlist.txt ${WWWUSER}@${WWWHOST}:${WWWROOT}/
       ssh -tt ${WWWUSER}@${WWWHOST} "rsync -av --no-checksum --no-perms --delete --exclude=${WWWROOT}/.sync.txt ${WWWROOT}/* ${MIRROR_HOST}:${WWWROOT}/"
       ssh -tt ${MIRROR_HOST} "sudo find ${WWWROOT} -type f -exec chown www-data:www-data {} \;; sudo find ${WWWROOT} -type f -exec chmod 664 {} \;; sudo find ${WWWROOT} -type d -exec chmod 775 {} \;;"
     done
