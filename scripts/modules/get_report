@@ -73,7 +73,7 @@ do
   OUTPUT="${OUTPUT}* Sync Status: ${SYNC_STATUS}\n"
 done
 
-OUTPUT="${OUTPUT}## Total Downloads Today ($(date +%m/%d/%Y)):\n"
+OUTPUT="${OUTPUT}## Total Unique Download Requests ($(date +%m/%d/%Y))\n"
 TOTAL_METADATA=$(total_count "latest_rel.releasemeta")
 OUTPUT="${OUTPUT}* Platform Metadata: ${TOTAL_METADATA}\n"
 TOTAL_ISOS=$(total_count "steamfork.*iso")
