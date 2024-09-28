@@ -34,7 +34,10 @@ images:
 	${SCRIPT_DIR}/mkimage rel $(RUN_ARGS)
 
 images-sync:
-	${SCRIPT_DIR}/sync os
+	${SCRIPT_DIR}/sync os-sync
+
+images-release:
+	${SCRIPT_DIR}/sync os-release
 
 packages-all: packages-local packages-aur
 

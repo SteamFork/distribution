@@ -27,14 +27,18 @@ jobs:
         run: |
           set -e
           make image rel BUILD_VER="${{ steps.version.outputs.version }}"
-      - name: Image sync
+      - name: Sync release images to the primary instance
         run: |
           set -e
           make images-sync
-      - name: Mirror sync
+      - name: Sync images to each mirror
         run: |
           set -e
           make mirrors-sync
+      - name: Release images to the public
+        run: |
+          set -e
+          make images-release
       - name: Create a release snapshot.
         uses: ncipollo/release-action@v1
         with:
