@@ -83,10 +83,11 @@ case ${1} in
     for MIRROR_HOST in ${MIRROR_HOSTS}
     do
       scp /tmp/mirrorlist.txt ${WWWUSER}@${WWWHOST}:${WWWROOT}/
-      ssh -tt ${WWWUSER}@${WWWHOST} "rsync -av --no-checksum --no-perms --delete --exclude=${WWWROOT}/.sync.txt ${WWWROOT}/* ${MIRROR_HOST}:${WWWROOT}/"
+      ssh -tt ${WWWUSER}@${WWWHOST} "rsync -av --progress --stats --no-checksum --no-perms --delete --exclude=${WWWROOT}/.sync.txt ${WWWROOT}/* ${MIRROR_HOST}:${WWWROOT}/"
       ssh -tt ${MIRROR_HOST} "sudo find ${WWWROOT} -type f -exec chown www-data:www-data {} \;; sudo find ${WWWROOT} -type f -exec chmod 664 {} \;; sudo find ${WWWROOT} -type d -exec chmod 775 {} \;;"
     done
     ssh -tt ${HOST} "rm -f .ssh/${MIRROR_KEY}"
   ;;
 esac
 
+rm -f /tmp/mirrorlist.txt
