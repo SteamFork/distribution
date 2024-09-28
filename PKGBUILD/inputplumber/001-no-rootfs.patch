@@ -1,5 +1,5 @@
 diff --git a/src/config/path.rs b/src/config/path.rs
-index b63a447..1b54e24 100644
+index 1bfbb3c..296f386 100644
 --- a/src/config/path.rs
 +++ b/src/config/path.rs
 @@ -34,7 +34,6 @@ pub fn get_profiles_path() -> PathBuf {
@@ -10,11 +10,12 @@ index b63a447..1b54e24 100644
          PathBuf::from("/etc/inputplumber/devices.d"),
          get_base_path().join("devices"),
      ];
-@@ -46,7 +45,6 @@ pub fn get_devices_paths() -> Vec<PathBuf> {
- /// E.g. ["/etc/inputplumber/capability_maps.d", "/usr/share/inputplumber/capability_maps"]
- pub fn get_capability_maps_paths() -> Vec<PathBuf> {
+@@ -48,7 +47,7 @@ pub fn get_capability_maps_paths() -> Vec<PathBuf> {
      let paths = vec![
--        PathBuf::from("./rootfs/usr/share/inputplumber/capability_maps"),
-         PathBuf::from("/etc/inputplumber/capability_maps.d"),
          get_base_path().join("capability_maps"),
+         PathBuf::from("/etc/inputplumber/capability_maps.d"),
+-        PathBuf::from("./rootfs/usr/share/inputplumber/capability_maps"),
++        PathBuf::from("/usr/share/inputplumber/capability_maps"),
      ];
+ 
+     paths
