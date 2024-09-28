@@ -1,0 +1,23 @@
+diff -rupN linux-6.11.orig/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c linux-6.11/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+--- linux-6.11.orig/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c	2024-09-15 14:57:56.000000000 +0000
++++ linux-6.11/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c	2024-09-28 10:00:08.987106157 +0000
+@@ -1884,6 +1884,7 @@ static int amdgpu_device_init_apu_flags(
+ 		break;
+ 	case CHIP_RENOIR:
+ 		if ((adev->pdev->device == 0x1636) ||
++		    (adev->pdev->device == 0x1638) ||
+ 		    (adev->pdev->device == 0x164c))
+ 			adev->apu_flags |= AMD_APU_IS_RENOIR;
+ 		else
+diff -rupN linux-6.11.orig/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c linux-6.11/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
+--- linux-6.11.orig/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c	2024-09-28 09:52:52.818185639 +0000
++++ linux-6.11/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c	2024-09-28 09:53:52.999129298 +0000
+@@ -1301,6 +1301,8 @@ static const struct amdgpu_gfxoff_quirk
+ 	{ 0x1002, 0x15dd, 0x1002, 0x15dd, 0xc6 },
+ 	/* GFXOFF is unstable on revision 91 (Atari VCS) with 113-RAVEN2-117 */
+ 	{ 0x1002, 0x15D8, 0x1002, 0x15D8, 0x91 },
++	/* GFXOFF is unstable on revision 0xc3 (Ayaneo Air) with 113-CEZANNE-018 */
++	{ 0x1002, 0x1637, 0x1002, 0x1637, 0xc3 },
+ 	/* Apple MacBook Pro (15-inch, 2019) Radeon Pro Vega 20 4 GB */
+ 	{ 0x1002, 0x69af, 0x106b, 0x019a, 0xc0 },
+ 	{ 0, 0, 0, 0, 0 },
