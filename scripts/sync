@@ -7,7 +7,7 @@ then
  source "${HOME}/.SteamFork/options"
 fi
 
-for KEY in WWWHOST WWWUSER WWWROOT SIGNKEY REPO_DIR IMAGE_DIR MIRROR_HOSTS
+for KEY in WWWHOST WWWUSER WWWROOT SIGNKEY REPO_DIR IMAGE_DIR MIRROR_HOSTS MIRROR_KEY
 do
   if [ -z "${!KEY}" ]
   then
@@ -78,12 +78,15 @@ case ${1} in
     done
   ;;
   mirrors)
+    scp ${HOME}/.SteamFork/${MIRROR_KEY} ${WWWUSER}@${WWWHOST}:${HOME}/.ssh
+    ssh -tt ${HOST} "chmod 0700 .ssh; chmod 0600 .ssh/${MIRROR_KEY}"
     for MIRROR_HOST in ${MIRROR_HOSTS}
     do
       scp /tmp/mirrorlist.txt ${WWWUSER}@${WWWHOST}:${WWWROOT}/
       ssh -tt ${WWWUSER}@${WWWHOST} "rsync -av --no-checksum --no-perms --delete --exclude=${WWWROOT}/.sync.txt ${WWWROOT}/* ${MIRROR_HOST}:${WWWROOT}/"
       ssh -tt ${MIRROR_HOST} "sudo find ${WWWROOT} -type f -exec chown www-data:www-data {} \;; sudo find ${WWWROOT} -type f -exec chmod 664 {} \;; sudo find ${WWWROOT} -type d -exec chmod 775 {} \;;"
     done
+    ssh -tt ${HOST} "rm -f .ssh/${MIRROR_KEY}"
   ;;
 esac
 
