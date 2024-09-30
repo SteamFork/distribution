@@ -19,7 +19,7 @@ then
 	git clone ${DATA_SOURCE} >/dev/null 2>&1
 else
 	cd ${WORK_DIR}
-	git pull --rebase >/dev/null 2>&1
+	git fetch >/dev/null 2>&1
 fi
 
 cd ${WORK_DIR}/${PACKAGE}
