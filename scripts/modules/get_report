@@ -10,7 +10,7 @@ else
         exit 1
 fi
 
-for KEY in WEB_HOSTS LOG_PATH SYNC_DATA
+for KEY in WEB_HOSTS LOG_PATH
 do
         if [ -z "${!KEY}" ]
         then
@@ -19,7 +19,7 @@ do
         fi
 done
 
-SYNC_SUM=$(cat ${SYNC_DATA})
+SYNC_SUM=$(curl -sL https://${WEB_HOSTS[0]}/.sync.txt 2>/dev/null)
 
 function fetch_count() {
   HOST="$1"
@@ -73,7 +73,7 @@ do
   OUTPUT="${OUTPUT}* Sync Status: ${SYNC_STATUS}\n"
 done
 
-OUTPUT="${OUTPUT}## Total Unique Download Requests ($(date +%m/%d/%Y))\n"
+OUTPUT="${OUTPUT}## Total Unique Download Requests ($(date --date=' 1 days ago' +%m/%d/%Y))\n"
 TOTAL_METADATA=$(total_count "latest_rel.releasemeta")
 OUTPUT="${OUTPUT}* Platform Metadata: ${TOTAL_METADATA}\n"
 TOTAL_ISOS=$(total_count "steamfork.*iso")
