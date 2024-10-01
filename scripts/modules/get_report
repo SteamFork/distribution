@@ -77,7 +77,7 @@ OUTPUT="${OUTPUT}## Total Unique Download Requests ($(date --date=' 1 days ago' 
 TOTAL_METADATA=$(total_count "latest_rel.releasemeta")
 OUTPUT="${OUTPUT}* Platform Metadata: ${TOTAL_METADATA}\n"
 TOTAL_ISOS=$(total_count "steamfork.*iso")
-OUTPUT="${OUTPUT}* Installation ISOS: ${TOTAL_ISOS}\n"
+OUTPUT="${OUTPUT}* Installation ISOs: ${TOTAL_ISOS}\n"
 TOTAL_UPDATES=$(total_count "steamfork.*img.zst")
 OUTPUT="${OUTPUT}* OS Updates: ${TOTAL_UPDATES}\n"
 
