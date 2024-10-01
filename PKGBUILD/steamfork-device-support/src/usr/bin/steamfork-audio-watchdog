@@ -171,7 +171,7 @@ do
 
 		if [ -n "${IS_AUDIO}" ]
 		then
-			connect_sink "Bluetooth" "bluez" "5" "2"
+			connect_sink "Bluetooth" "bluez" "12" "2"
 			SINK_CHECK=$(pactl get-default-sink)
 			if [[ "${SINK_CHECK}" =~ bluez ]]
 			then
