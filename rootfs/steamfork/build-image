@@ -319,7 +319,7 @@ btrfs send -f ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img ${ROOT_WORKDIR}/${OS_FS_PREFI
 umount -l ${ROOT_WORKDIR} && umount -l ${WORKDIR}/work.img && rm -rf ${WORKDIR} && ${WORKDIR}/work.img
 if [[ -z "${NO_COMPRESS}" ]]; then
 	echo "Compressing image..."
-	zstd --ultra -z ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img -o ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst
+	zstd -z ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img -o ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst
 	rm -rf ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img
 	chown 1000:1000 ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst
 	chmod 777 ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst
