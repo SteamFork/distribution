@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# TODO: fix this ugly temporary hack
+(sleep 5; echo "xinput" | sudo tee $(find /sys -name gamepad_mode_current 2> /dev/null)) &
