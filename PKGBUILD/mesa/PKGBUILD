@@ -9,9 +9,9 @@ pkgbase=mesa
 #  - drop opencl-mesa - unnecessary and requires to install more dependencies
 pkgname=('vulkan-mesa-layers' 'vulkan-intel' 'vulkan-swrast' 'libva-mesa-driver' 'mesa-vdpau' 'mesa')
 pkgdesc="An open-source implementation of the OpenGL specification"
-pkgver=24.2.3
+pkgver=24.2.4
 _tag=${pkgbase}-${pkgver}
-pkgrel=3
+pkgrel=1
 arch=('x86_64')
 makedepends=('git' 'openssh' 'python-mako' 'python-ply' 'libxml2' 'libx11' 'xorgproto' 'libdrm' 'libxshmfence' 'libxxf86vm'
              'libxdamage' 'libvdpau' 'libva' 'wayland' 'wayland-protocols' 'zstd' 'elfutils' 'llvm'
