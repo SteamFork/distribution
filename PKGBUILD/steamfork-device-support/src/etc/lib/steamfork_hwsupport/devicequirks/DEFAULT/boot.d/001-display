@@ -1,0 +1,15 @@
+#!/bin/sh
+
+PANEL_POWER_SAVINGS=$(steamfork-get-setting amdgpu.panel_power_saving)
+if [ -z "${PANEL_POWER_SAVINGS}" ]
+then
+  PANEL_POWER_SAVINGS=1
+fi
+
+for NODE in /sys/class/drm/card?/*/amdgpu/panel_power_savings
+do
+  if [ -e "${NODE}" ]
+  then
+    echo ${PANEL_POWER_SAVINGS} >${NODE}
+  fi
+done
