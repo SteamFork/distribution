@@ -16,6 +16,20 @@ do
   fi
 done
 
+function private_key() {
+  case ${1} in
+    add)
+      echo "Copy private key to ${WWWHOST}."
+      scp ${HOME}/.SteamFork/${MIRROR_KEY} ${WWWUSER}@${WWWHOST}:.ssh
+      ssh -tt ${WWWUSER}@${WWWHOST} "chmod 0700 .ssh; chmod 0600 .ssh/${MIRROR_KEY}"
+    ;;
+    remove)
+      echo "Remove private key from ${WWWHOST}"
+      ssh -tt ${WWWUSER}@${WWWHOST} "rm -f .ssh/${MIRROR_KEY}"
+    ;;
+  esac
+}
+
 ### Generate a mirror list.
 echo "www.steamfork.org" >/tmp/mirrorlist.txt
 for HOST in ${WEB_HOSTS[*]#*@}
@@ -73,17 +87,17 @@ case ${1} in
 
   ;;
   os-release)
+    private_key add
     for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}
     do
       echo "Swap to release images on ${HOST}."
       ssh -tt ${HOST} "chown -R www-data:www-data ${WWWROOT}/images.new"
       ssh -tt ${HOST} "rm -rf ${WWWROOT}/images.prev; mv ${WWWROOT}/images ${WWWROOT}/images.prev; mv ${WWWROOT}/images.new/ ${WWWROOT}/images"
     done
+    private_key remove
   ;;
   mirrors)
-    echo "Copy private key to ${WWWHOST}."
-    scp ${HOME}/.SteamFork/${MIRROR_KEY} ${WWWUSER}@${WWWHOST}:.ssh
-    ssh -tt ${WWWUSER}@${WWWHOST} "chmod 0700 .ssh; chmod 0600 .ssh/${MIRROR_KEY}"
+    private_key add
     echo "Push mirror list to ${WWWHOST}."
     scp /tmp/mirrorlist.txt ${WWWUSER}@${WWWHOST}:${WWWROOT}/
     for MIRROR_HOST in ${MIRROR_HOSTS}
@@ -92,8 +106,7 @@ case ${1} in
       ssh -tt ${WWWUSER}@${WWWHOST} "rsync -av --progress --stats --no-checksum --no-perms --delete --exclude=${WWWROOT}/.sync.txt ${WWWROOT}/* ${MIRROR_HOST}:${WWWROOT}/"
       ssh -tt ${MIRROR_HOST} "sudo find ${WWWROOT} -type f -exec chown www-data:www-data {} \;; sudo find ${WWWROOT} -type f -exec chmod 664 {} \;; sudo find ${WWWROOT} -type d -exec chmod 775 {} \;;"
     done
-    echo "Remove private key from ${WWWHOST}"
-    ssh -tt ${WWWUSER}@${WWWHOST} "rm -f .ssh/${MIRROR_KEY}"
+    private_key remove
   ;;
 esac
 
