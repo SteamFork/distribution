@@ -18,7 +18,7 @@ then
 	cd ${WORK_DIR}
 	git clone ${DATA_SOURCE} >/dev/null 2>&1
 else
-	cd ${WORK_DIR}
+	cd ${WORK_DIR}/${PACKAGE}
 	git fetch >/dev/null 2>&1
 fi
 
