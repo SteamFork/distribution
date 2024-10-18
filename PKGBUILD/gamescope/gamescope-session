@@ -54,10 +54,15 @@ echo "no_display" > "$MANGOHUD_CONFIGFILE"
 mkdir -p "$(dirname "$RADV_FORCE_VRS_CONFIG_FILE")"
 echo "1x1" > "$RADV_FORCE_VRS_CONFIG_FILE"
 
-# Let's try this across the board to see if it breaks anything
-# Helps performance in HZD, Cyberpunk, at least
-# Expose 8 physical cores, instead of 4c/8t
-export WINE_CPU_TOPOLOGY=8:0,1,2,3,4,5,6,7
+# Expose all threads and cores properly
+unset TOPOLOGY
+export THREADS=$(nproc)
+for ((i = 0; i < THREADS; ++i)); do
+    TOPOLOGY+="${i},"
+done
+export CPU_TOPOLOGY=${TOPOLOGY%?}
+echo "${THREADS} available threads on CPU, setting \"${THREADS}:${CPU_TOPOLOGY}\" CPU topology for Wine"
+export WINE_CPU_TOPOLOGY=${THREADS}:${CPU_TOPOLOGY}
 
 # To expose vram info from radv's patch we're including
 export WINEDLLOVERRIDES=dxgi=n
