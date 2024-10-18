@@ -10,7 +10,7 @@ export OS_FS_PREFIX="sf"
 export HOME_URL="https://www.steamfork.org"
 export DOCUMENTATION_URL="https://wiki.steamfork.org"
 export SUPPORT_URL="${HOME_URL}"
-export BUG_REPORT_URL="https://github.com/SteamFork/bugtracker"
+export BUG_REPORT_URL="https://github.com/SteamFork#community"
 
 echo -e ${RELEASE_TAG} > /tmp/builder-releasetag
 echo -e "$(echo ${DISTRO_NAME} | tr '[:upper:]' '[:lower:]')_$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')_${RELEASE_TAG}" > /tmp/build_temp_ver
