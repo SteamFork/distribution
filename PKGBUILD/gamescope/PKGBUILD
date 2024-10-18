@@ -27,7 +27,7 @@ source=("gamescope-session"
         "git+https://github.com/nothings/stb.git#commit=af1a5bc352164740c1cc1354942b1c6b72eacb8a"
 	0001-revert-299bc34.patch
 	)
-sha256sums=('868ce6e94a1d36f75474e420d69a0b6c22aa23109c340e6601fdf8d57ca4b782'
+sha256sums=('e5c0b1a188a4512aa1532f07f1a3604eaba94f366965ee5b254aae597f8ed767'
             'fe515fce8f151a6c03a89e043044bfddf8cd6ee89027d2cfbcf6f6706c78ca76'
             'e37ba6107f3a84cf47c2799b537a88583e6cb8951167a9c6a48fa1d85996206b'
             '8e31e370bc644c470483aec4d4b86cd22e7bede48af70a330b1d912500831fc2'
