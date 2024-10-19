@@ -83,7 +83,7 @@ case ${1} in
       fi
     done
     scp /tmp/mirrorlist.txt ${WWWUSER}@${WWWHOST}:${WWWROOT}/
-    ssh -tt ${HOST} "mkdir -p ${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck; echo "{ }" >${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck/${STAGING_OS_TAG}.json"
+    ssh -tt ${WWWHOST} "mkdir -p ${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck; echo "{ }" >${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck/${STAGING_OS_TAG}.json"
 
   ;;
   os-release)
