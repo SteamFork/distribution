@@ -1,13 +1,15 @@
 # Maintainer: Fewtarius
 
-pkgname=steamfork-customizations-jupiter
-pkgver=2024.10.05
+pkgname=steamfork-customizations
+pkgver=2024.10.22
 pkgrel=1
 pkgdesc='SteamFork customizations provider.'
 arch=('any')
 url='http://www.steamfork.org'
 license=('LGPLv2+')
-provides=('steamos-customizations-jupiter')
+provides=('steamos-customizations-jupiter'
+	  'steamfork-customizations-jupiter')
+replaces=('steamfork-customizations-jupiter')
 depends=('base')
 makedepends=('file')
 

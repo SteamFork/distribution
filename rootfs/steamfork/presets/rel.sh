@@ -1054,7 +1054,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   python-wheel
                   ryzenadj
 		  steam-powerbuttond
-                  steamfork-customizations-jupiter
+                  steamfork-customizations
                   steamfork-device-support
 		  steamfork-keyring
                   vlc

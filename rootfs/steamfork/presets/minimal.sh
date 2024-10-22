@@ -388,7 +388,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   zenity
 		  ryzenadj
                   steamfork-device-support
-                  steamfork-customizations-jupiter
+                  steamfork-customizations
 		  steamfork-installer
 		  steamfork-keyring
                   jupiter-hw-support

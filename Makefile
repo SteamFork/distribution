@@ -55,7 +55,7 @@ packages-local:
 	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa-radv
 	${SCRIPT_DIR}/mkpackage --repo local ectool
 	${SCRIPT_DIR}/mkpackage --repo local steam-powerbuttond
-	${SCRIPT_DIR}/mkpackage --repo local steamfork-customizations-jupiter
+	${SCRIPT_DIR}/mkpackage --repo local steamfork-customizations
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-device-support
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-installer
 	${SCRIPT_DIR}/mkpackage --repo local webrtc-audio-processing

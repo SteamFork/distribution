@@ -157,7 +157,7 @@ firefox
 # Steamfork dependencies
 steamdeck-kde-presets
 steamfork-device-support
-steamfork-customizations-jupiter
+steamfork-customizations
 steamfork-installer
 jupiter-hw-support
 jupiter-legacy-support
