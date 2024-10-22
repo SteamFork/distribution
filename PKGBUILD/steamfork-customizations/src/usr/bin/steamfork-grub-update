@@ -26,12 +26,21 @@ then
     exit 1
 fi
 
-mv -f /boot/grub/grub.cfg /boot/grub/grub.cfg.bak
+if [ -e "/boot/grub/grub.cfg" ]
+then
+    mv -f /boot/grub/grub.cfg /boot/grub/grub.cfg.bak
+fi
+
 grub-mkconfig -o /boot/grub/grub.cfg
 if [ ! $? = 0 ]
 then
     echo "Failed to configure GRUB, exiting..."
     exit 1
+fi
+
+if [ -f "/tmp/fallback-grub.cfg" ]
+then
+        rm -f "/tmp/fallback-grub.cfg"
 fi
 
 ROOTFS_VOLS=( $(ls /sf_root/rootfs/ | sort -r) )
