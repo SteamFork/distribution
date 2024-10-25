@@ -1,4 +1,4 @@
-From 8d65ca935c1c9645ba10b0ff6a1e20279272914a Mon Sep 17 00:00:00 2001
+From 72a7e137aabe9208e49c37c0d91db7817cac140a Mon Sep 17 00:00:00 2001
 From: Jonathan LoBue <jlobue10@gmail.com>
 Date: Sat, 13 Jul 2024 00:12:06 -0700
 Subject: [PATCH 01/34] Fix ROG ALLY X audio
@@ -46,7 +46,7 @@ index a2737c1ff920..c95a056ed764 100644
 2.47.0
 
 
-From 11345fd456871d27774b444a70f65a234076e40d Mon Sep 17 00:00:00 2001
+From c417c999ee8718520ceef00d1b56c4b3543db103 Mon Sep 17 00:00:00 2001
 From: Mohamed Ghanmi <mohamed.ghanmi@supcom.tn>
 Date: Sun, 9 Jun 2024 15:48:49 +0100
 Subject: [PATCH 02/34] platform/x86: asus-wmi: add support for vivobook fan
@@ -347,7 +347,7 @@ index ae9bf7479e7b..c854f4bc6062 100644
 2.47.0
 
 
-From ceb983d7ff621ec2ed2b183ef31bf48419861dae Mon Sep 17 00:00:00 2001
+From d9ec42a8db9478564a54457f93c26560355a88fb Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 13 Jul 2024 19:47:33 +1200
 Subject: [PATCH 03/34] hid-asus: use hid for brightness control on keyboard
@@ -462,7 +462,7 @@ index c854f4bc6062..365e119bebaa 100644
 2.47.0
 
 
-From 44a6eb78d26f6851b99dccb19ccdf846fc6dd137 Mon Sep 17 00:00:00 2001
+From ca8dd6ff20738b0726de74b371d903ad88e04064 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Fri, 7 Jun 2024 15:58:01 +1200
 Subject: [PATCH 04/34] Input: xpad - add support for ASUS ROG RAIKIRI PRO
@@ -476,7 +476,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index 06104a4e0fdc..fa81225b9fe4 100644
+index 8a991b30e3c6..b15a4e44324c 100644
 --- a/drivers/hid/hid-ids.h
 +++ b/drivers/hid/hid-ids.h
 @@ -209,6 +209,7 @@
@@ -491,7 +491,7 @@ index 06104a4e0fdc..fa81225b9fe4 100644
 2.47.0
 
 
-From 01a0a4b28202cd0210747c278309100a85289247 Mon Sep 17 00:00:00 2001
+From fe86a454faef96c3d75fff1a88c660e4e0cbbce6 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Tue, 10 Sep 2024 17:04:17 +1200
 Subject: [PATCH 05/34] platform/x86: asus-wmi: add debug print in more key
@@ -657,7 +657,7 @@ index 83a710cf7ec1..2d62cf1ed647 100644
 2.47.0
 
 
-From 91a200790b7c8a9ff4dd78ca0abfee524457509d Mon Sep 17 00:00:00 2001
+From 0ffca0c3e18583f8f0652f5e028516f8717ea1bb Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Fri, 24 May 2024 10:54:36 +1200
 Subject: [PATCH 06/34] platform/x86: asus-wmi: don't fail if platform_profile
@@ -709,7 +709,7 @@ index 2d62cf1ed647..08861792bddd 100644
 2.47.0
 
 
-From 4510b04e4dfe00d340c922f0f4bc1d5adecb6889 Mon Sep 17 00:00:00 2001
+From 820135cbd26aa77a62e0b703d2b40959106d8e45 Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <mario.limonciello@amd.com>
 Date: Wed, 14 Aug 2024 12:50:25 -0500
 Subject: [PATCH 07/34] acpi/x86: s2idle: add support for screen off and screen
@@ -786,7 +786,7 @@ index 09f8397bae15..19734b297527 100644
 2.47.0
 
 
-From c5414ec8fe0a1b4de27d78dcdc7b9b9dcdc6b495 Mon Sep 17 00:00:00 2001
+From c26eed1aed58e718a12ddbf3398bf9209de1d14e Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <mario.limonciello@amd.com>
 Date: Wed, 14 Aug 2024 20:19:09 -0500
 Subject: [PATCH 08/34] drm: Notify the suspend core when displays are changed
@@ -843,7 +843,7 @@ index fb97b51b38f1..d3ef199c58c1 100644
 2.47.0
 
 
-From 5a8ec3f25377c82f04b6f5b81761b9226101e59e Mon Sep 17 00:00:00 2001
+From f5b1a3fc8b5946b88ea16787ea2d3ace6a50b35b Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <mario.limonciello@amd.com>
 Date: Wed, 14 Aug 2024 20:20:13 -0500
 Subject: [PATCH 09/34] acpi/x86: s2idle: Move screen off/on code into
@@ -970,7 +970,7 @@ index dd0b40b9bbe8..e7f9748937d6 100644
 2.47.0
 
 
-From f92c43d026f074da943bb7babb54276188651209 Mon Sep 17 00:00:00 2001
+From 1f5170565924dd4282ba7d53fa4b14ed2fb275d2 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 1 Sep 2024 14:30:37 +1200
 Subject: [PATCH 10/34] platform/x86: asus-wmi: Refactor Ally suspend/resume
@@ -1161,7 +1161,7 @@ index 08861792bddd..3faa4a8e4cb6 100644
 2.47.0
 
 
-From e24bc5b7c692474c93b3771b5277700b84ca0e95 Mon Sep 17 00:00:00 2001
+From 9906e017a826b4ec2a4e08f2029baf252dba8bbc Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 22 Sep 2024 21:40:46 +1200
 Subject: [PATCH 11/34] platform/x86: asus-wmi: export symbols used for
@@ -1279,7 +1279,7 @@ index 365e119bebaa..6ea4dedfb85e 100644
 2.47.0
 
 
-From 07d10f3856725e7505ef54bfef0d20cc9998e35c Mon Sep 17 00:00:00 2001
+From e2fe0420a5ed1db3aa4fe36da95a8be94fb22512 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 21 Sep 2024 16:04:58 +1200
 Subject: [PATCH 12/34] hid-asus: Add MODULE_IMPORT_NS(ASUS_WMI)
@@ -1309,7 +1309,7 @@ index 659cf9c96e26..07bbe3cc48a9 100644
 2.47.0
 
 
-From ed0724b3c05cd15b471ebdc4cc8d0bf6ba362b0e Mon Sep 17 00:00:00 2001
+From aa4472b043b2dc04b05b7b6631a15b77fec57110 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 22 Sep 2024 21:39:43 +1200
 Subject: [PATCH 13/34] platform/x86: asus-armoury: move existing tunings to
@@ -2181,7 +2181,7 @@ index 6ea4dedfb85e..21313e1eb6c9 100644
 2.47.0
 
 
-From 5a9cdb7ae0118dac8beac9c54283c5fc2b79436f Mon Sep 17 00:00:00 2001
+From 998eb6f0128e1ba450e419883f749e243d3dfc34 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 19 Sep 2024 17:23:35 +1200
 Subject: [PATCH 14/34] platform/x86: asus-armoury: add panel_hd_mode attribute
@@ -2243,7 +2243,7 @@ index 21313e1eb6c9..a6064995c2cc 100644
 2.47.0
 
 
-From 3498a3cc378bce7c7190691d7eb05a642dd6f192 Mon Sep 17 00:00:00 2001
+From 8b51c8b630818477e2ebc19c60ef9f1cc74934ff Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 19 Sep 2024 17:19:37 +1200
 Subject: [PATCH 15/34] platform/x86: asus-armoury: add the ppt_* and nv_*
@@ -2523,7 +2523,7 @@ index 4d0dd34c52aa..ca570ed9c8ef 100644
 2.47.0
 
 
-From fe2fa6a6565de4cc7865e7df1aeff05c940166f3 Mon Sep 17 00:00:00 2001
+From cbec1bb604f4dc446d6c58776832da22a25d3f26 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 2 Jun 2024 14:32:15 +1200
 Subject: [PATCH 16/34] platform/x86: asus-armoury: add dgpu tgp control
@@ -2653,7 +2653,7 @@ index a6064995c2cc..8c755799eb60 100644
 2.47.0
 
 
-From 9f0bfb4d5db53925996ca79b3ba047189d211bcc Mon Sep 17 00:00:00 2001
+From 997ef5831059d92ebd9c5d511a556d4e1cecd437 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 2 Jun 2024 14:44:31 +1200
 Subject: [PATCH 17/34] platform/x86: asus-armoury: add apu-mem control support
@@ -2819,7 +2819,7 @@ index 8c755799eb60..88bf250dc8ca 100644
 2.47.0
 
 
-From 8f0828cb4eefadcf80b87a3889d489f80ae9e9d3 Mon Sep 17 00:00:00 2001
+From 59b1a06012f4f55d38abcb03ae60faf9bab4a51d Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 18 Sep 2024 21:19:12 +1200
 Subject: [PATCH 18/34] platform/x86: asus-armoury: add core count control
@@ -3176,7 +3176,7 @@ index 88bf250dc8ca..cc21e4272460 100644
 2.47.0
 
 
-From 33975f35762d682df454756ed10e7b090a877362 Mon Sep 17 00:00:00 2001
+From 9f27522e2ee54684ebb79228db0cd80972bf7cd9 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 3 Jun 2024 12:04:41 +1200
 Subject: [PATCH 19/34] platform/x86: asus-wmi: deprecate bios features
@@ -3797,7 +3797,7 @@ index bca5bede59e1..20675917b6b0 100644
 2.47.0
 
 
-From 32d9521ac71fec5e9bf107b39d643cd6d46680b3 Mon Sep 17 00:00:00 2001
+From 2542c029de4fd90bf01faacfd8a989c271f49db9 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 8 Sep 2024 17:30:43 +1200
 Subject: [PATCH 20/34] ACPI: PM: Quirk ASUS ROG M16 to default to S3 sleep
@@ -3843,124 +3843,10 @@ index 889f1c1a1fa9..c8ee8e42b0f6 100644
 2.47.0
 
 
-From 7c57a24790666d707babe4a62b1addef19d0b8af Mon Sep 17 00:00:00 2001
-From: Michael Burch <me@michaelburch.net>
-Date: Sun, 1 Sep 2024 04:28:47 +0000
-Subject: [PATCH 21/34] Bluetooth: btusb: Add 2 USB HW IDs for MT7925
- (0xe118/e)
-
-Add 2 USB HW IDs for MT7925 (0xe118/e) to ensure proper recognition.
-
-These HW IDs are extracted from Windows driver inf file:
-https://dlcdnets.asus.com/pub/ASUS/nb/Image/Driver/Bluetooth/39389/Bluetooth_DCH_MediaTek_B_V1.1037.0.433Sub2_39389.exe?model=H7606WV
-
-Patch has been tested successfully on an Asus ProArt P16 model H7606WV.
-Controller is recognized devices pair successfully.
-
-Signed-off-by: Michael Burch <me@michaelburch.net>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
----
- drivers/bluetooth/btusb.c |  6 ++++++
- drivers/pci/vgaarb.c      | 23 ++++++++++++++++-------
- 2 files changed, 22 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 93dbeb8b348d..800cec64c9d9 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -692,6 +692,12 @@ static const struct usb_device_id quirks_table[] = {
- 	{ USB_DEVICE(0x0489, 0xe113), .driver_info = BTUSB_MEDIATEK |
- 						     BTUSB_WIDEBAND_SPEECH |
- 						     BTUSB_VALID_LE_STATES },
-+	{ USB_DEVICE(0x0489, 0xe118), .driver_info = BTUSB_MEDIATEK |
-+						     BTUSB_WIDEBAND_SPEECH |
-+						     BTUSB_VALID_LE_STATES },
-+	{ USB_DEVICE(0x0489, 0xe11e), .driver_info = BTUSB_MEDIATEK |
-+						     BTUSB_WIDEBAND_SPEECH |
-+						     BTUSB_VALID_LE_STATES },
- 	{ USB_DEVICE(0x13d3, 0x3602), .driver_info = BTUSB_MEDIATEK |
- 						     BTUSB_WIDEBAND_SPEECH |
- 						     BTUSB_VALID_LE_STATES },
-diff --git a/drivers/pci/vgaarb.c b/drivers/pci/vgaarb.c
-index 78748e8d2dba..6acb23f48468 100644
---- a/drivers/pci/vgaarb.c
-+++ b/drivers/pci/vgaarb.c
-@@ -620,9 +620,11 @@ static bool vga_is_boot_device(struct vga_device *vgadev)
- 	 * We always prefer a firmware default device, so if we've already
- 	 * found one, there's no need to consider vgadev.
- 	 */
--	if (boot_vga && boot_vga->is_firmware_default)
--		return false;
-+	if (boot_vga && boot_vga->is_firmware_default){
-+	pr_info("boot_vga->is_firmware_default: %d", boot_vga->is_firmware_default);
-+	return false;}
- 
-+	pr_info("vga_is_firmware_default(pdev): %d", vga_is_firmware_default(pdev));
- 	if (vga_is_firmware_default(pdev)) {
- 		vgadev->is_firmware_default = true;
- 		return true;
-@@ -638,11 +640,14 @@ static bool vga_is_boot_device(struct vga_device *vgadev)
- 	 * vgadev is no better.
- 	 */
- 	if (boot_vga &&
--	    (boot_vga->owns & VGA_RSRC_LEGACY_MASK) == VGA_RSRC_LEGACY_MASK)
--		return false;
-+	    (boot_vga->owns & VGA_RSRC_LEGACY_MASK) == VGA_RSRC_LEGACY_MASK){
-+		pr_info("(boot_vga->owns & VGA_RSRC_LEGACY_MASK) == VGA_RSRC_LEGACY_MASK): %d", (boot_vga->owns & VGA_RSRC_LEGACY_MASK) == VGA_RSRC_LEGACY_MASK);
-+						return false;}
- 
--	if ((vgadev->owns & VGA_RSRC_LEGACY_MASK) == VGA_RSRC_LEGACY_MASK)
-+	if ((vgadev->owns & VGA_RSRC_LEGACY_MASK) == VGA_RSRC_LEGACY_MASK){
-+		pr_info("(vgadev->owns & VGA_RSRC_LEGACY_MASK) == VGA_RSRC_LEGACY_MASK): %d", (vgadev->owns & VGA_RSRC_LEGACY_MASK) == VGA_RSRC_LEGACY_MASK);
- 		return true;
-+	}
- 
- 	/*
- 	 * If we haven't found a legacy VGA device, accept a non-legacy
-@@ -651,6 +656,7 @@ static bool vga_is_boot_device(struct vga_device *vgadev)
- 	 * use legacy VGA resources.  Prefer an integrated GPU over others.
- 	 */
- 	pci_read_config_word(pdev, PCI_COMMAND, &cmd);
-+	pr_info("cmd & (PCI_COMMAND_IO | PCI_COMMAND_MEMORY): %d", cmd & (PCI_COMMAND_IO | PCI_COMMAND_MEMORY));
- 	if (cmd & (PCI_COMMAND_IO | PCI_COMMAND_MEMORY)) {
- 
- 		/*
-@@ -659,6 +665,7 @@ static bool vga_is_boot_device(struct vga_device *vgadev)
- 		 * there are more, we use the *last* because that was the
- 		 * previous behavior.
- 		 */
-+		pr_info("vga_arb_integrated_gpu(&pdev->dev): %d", vga_arb_integrated_gpu(&pdev->dev));
- 		if (vga_arb_integrated_gpu(&pdev->dev))
- 			return true;
- 
-@@ -669,8 +676,9 @@ static bool vga_is_boot_device(struct vga_device *vgadev)
- 		if (boot_vga) {
- 			pci_read_config_word(boot_vga->pdev, PCI_COMMAND,
- 					     &boot_cmd);
--			if (boot_cmd & (PCI_COMMAND_IO | PCI_COMMAND_MEMORY))
--				return false;
-+			if (boot_cmd & (PCI_COMMAND_IO | PCI_COMMAND_MEMORY)){
-+				pr_info("boot_cmd & (PCI_COMMAND_IO | PCI_COMMAND_MEMORY): %d", boot_cmd & (PCI_COMMAND_IO | PCI_COMMAND_MEMORY));
-+				return false;}
- 		}
- 		return true;
- 	}
-@@ -679,6 +687,7 @@ static bool vga_is_boot_device(struct vga_device *vgadev)
- 	 * Vgadev has neither IO nor MEM enabled.  If we haven't found any
- 	 * other VGA devices, it is the best candidate so far.
- 	 */
-+	pr_info("end-of-func: boot_vga: %d", boot_vga);
- 	if (!boot_vga)
- 		return true;
- 
--- 
-2.47.0
-
-
-From 989a26370a355374729653bb3a50c0fff22ccbba Mon Sep 17 00:00:00 2001
+From 9a619a0470c4890d32289f313a1a7fc32c473c77 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 10 Oct 2024 09:52:45 +1300
-Subject: [PATCH 22/34] ALSA: hda/realtek: fixup ASUS GA605W
+Subject: [PATCH 21/34] ALSA: hda/realtek: fixup ASUS GA605W
 
 The GA605W laptop has almost the exact same codec setup as the GA403
 and so the same quirks apply to it.
@@ -3987,7 +3873,41 @@ index c95a056ed764..c05fa72aee4f 100644
 2.47.0
 
 
-From 45afacb56bc31059470522a52c472f53913628a7 Mon Sep 17 00:00:00 2001
+From c8f3dc2ddd8522e15790fd6138bebfa8996e2e34 Mon Sep 17 00:00:00 2001
+From: Jiande Lu <jiande.lu@mediatek.com>
+Date: Mon, 16 Sep 2024 11:22:28 +0800
+Subject: [PATCH 22/34] Bluetooth: btusb: Add USB HW IDs for MT7920/MT7925
+
+Add HW IDs for wireless module. These HW IDs are extracted from
+Windows driver inf file and the test for card bring up successful.
+
+Signed-off-by: Jiande Lu <jiande.lu@mediatek.com>
+---
+ drivers/bluetooth/btusb.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 2408e50743ca..c9049c8878bc 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -692,6 +692,12 @@ static const struct usb_device_id quirks_table[] = {
+ 	{ USB_DEVICE(0x0489, 0xe113), .driver_info = BTUSB_MEDIATEK |
+ 						     BTUSB_WIDEBAND_SPEECH |
+ 						     BTUSB_VALID_LE_STATES },
++	{ USB_DEVICE(0x0489, 0xe118), .driver_info = BTUSB_MEDIATEK |
++		              BTUSB_WIDEBAND_SPEECH |
++		              BTUSB_VALID_LE_STATES },
++	{ USB_DEVICE(0x0489, 0xe11e), .driver_info = BTUSB_MEDIATEK |
++									BTUSB_WIDEBAND_SPEECH |
++									BTUSB_VALID_LE_STATES },
+ 	{ USB_DEVICE(0x13d3, 0x3602), .driver_info = BTUSB_MEDIATEK |
+ 						     BTUSB_WIDEBAND_SPEECH |
+ 						     BTUSB_VALID_LE_STATES },
+-- 
+2.47.0
+
+
+From 5d361b860c1577195d772b22adadbfeb384fc614 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 26 Aug 2024 12:49:35 +1200
 Subject: [PATCH 23/34] hid-asus-ally: Add joystick LED ring support
@@ -4771,7 +4691,7 @@ index 07bbe3cc48a9..567087401159 100644
 2.47.0
 
 
-From ba3ef84a065b83c27c1770fdaaaecf4411ecd09f Mon Sep 17 00:00:00 2001
+From b77b43cdfb47f52d22869e256d01096b318c3c97 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 2 Oct 2024 23:32:46 +1300
 Subject: [PATCH 24/34] hid-asus-ally: initial Ally-X gamepad
@@ -5258,7 +5178,7 @@ index eb8617c80c2a..458d02996bca 100644
 2.47.0
 
 
-From 1de5c0b15283d50f441d94bdbafe7eafce811b4f Mon Sep 17 00:00:00 2001
+From f8bd488c0f3214455de25227c4e4b0551a752d17 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 2 Oct 2024 23:51:36 +1300
 Subject: [PATCH 25/34] hid-asus-ally: initial gamepad configuration
@@ -5668,19 +5588,19 @@ index 458d02996bca..9c22e62ff0c6 100644
 2.47.0
 
 
-From 71db2860d62583f4c9ce7477a9285dffb04fe404 Mon Sep 17 00:00:00 2001
+From a65f89c41764d80beed661b4203ddd878e1ab683 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 14:58:33 +1300
 Subject: [PATCH 26/34] hid-asus-ally: add button remap attributes
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
- drivers/hid/hid-asus-ally.c | 377 ++++++++++++++++++++++++++++++++++--
+ drivers/hid/hid-asus-ally.c | 388 ++++++++++++++++++++++++++++++++++--
  drivers/hid/hid-asus-ally.h | 193 ++++++++++++++++++
- 2 files changed, 552 insertions(+), 18 deletions(-)
+ 2 files changed, 563 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 91e944e017b4..497b1f4afb02 100644
+index 91e944e017b4..ab3dfa7296b6 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -54,6 +54,150 @@ struct btn_code_map {
@@ -5914,19 +5834,13 @@ index 91e944e017b4..497b1f4afb02 100644
  		break;
  	default:
  		break;
-@@ -326,6 +522,144 @@ static int _gamepad_apply_btn_pair(struct hid_device *hdev, struct ally_gamepad_
+@@ -326,6 +522,155 @@ static int _gamepad_apply_btn_pair(struct hid_device *hdev, struct ally_gamepad_
  	return ret;
  }
  
-+static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribute *attr,
-+				       const char *buf, size_t count)
++static ssize_t _gamepad_apply_all(struct hid_device *hdev, struct ally_gamepad_cfg *ally_cfg)
 +{
-+	struct ally_gamepad_cfg *ally_cfg = drvdata.gamepad_cfg;
-+	struct hid_device *hdev = to_hid_device(dev);
 +	int ret;
-+
-+	if (!drvdata.gamepad_cfg)
-+		return -ENODEV;
 +
 +	ret = _gamepad_apply_btn_pair(hdev, ally_cfg, btn_pair_dpad_u_d);
 +	if (ret < 0)
@@ -5953,6 +5867,23 @@ index 91e944e017b4..497b1f4afb02 100644
 +	if (ret < 0)
 +		return ret;
 +	ret = _gamepad_apply_btn_pair(hdev, ally_cfg, btn_pair_lt_rt);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribute *attr,
++				       const char *buf, size_t count)
++{
++	struct ally_gamepad_cfg *ally_cfg = drvdata.gamepad_cfg;
++	struct hid_device *hdev = to_hid_device(dev);
++	int ret;
++
++	if (!drvdata.gamepad_cfg)
++		return -ENODEV;
++
++	ret = _gamepad_apply_all(hdev, ally_cfg);
 +	if (ret < 0)
 +		return ret;
 +
@@ -6059,7 +5990,7 @@ index 91e944e017b4..497b1f4afb02 100644
  static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
  {
  	struct ally_gamepad_cfg *ally_cfg;
-@@ -338,13 +672,6 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
+@@ -338,13 +683,6 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
  	ally_cfg->hdev = hdev;
  	// Allocate memory for each mode's `btn_mapping`
  	ally_cfg->mode = xpad_mode_game;
@@ -6073,7 +6004,7 @@ index 91e944e017b4..497b1f4afb02 100644
  
  	input_dev = devm_input_allocate_device(&hdev->dev);
  	if (!input_dev) {
-@@ -370,26 +697,37 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
+@@ -370,26 +708,37 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
  	ally_cfg->input = input_dev;
  
  	/* ignore all errors for this as they are related to USB HID I/O */
@@ -6119,7 +6050,7 @@ index 91e944e017b4..497b1f4afb02 100644
  /**************************************************************************************************/
  /* ROG Ally gamepad i/o and force-feedback                                                        */
  /**************************************************************************************************/
-@@ -1167,6 +1505,9 @@ static void ally_hid_remove(struct hid_device *hdev)
+@@ -1167,6 +1516,9 @@ static void ally_hid_remove(struct hid_device *hdev)
  	if (drvdata.ally_x)
  		ally_x_remove(hdev);
  
@@ -6346,10 +6277,131 @@ index 9c22e62ff0c6..910a3997fc68 100644
 2.47.0
 
 
-From 4970b3e62e1cb6d749bc1c997364a2c2e279bdb8 Mon Sep 17 00:00:00 2001
+From cd5d5fb477ca5a5c09bb138d4ad4aefcf49095d5 Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Fri, 25 Oct 2024 08:56:54 +0200
+Subject: [PATCH 27/34] hid-asus-ally: add gamepad mode selection
+
+---
+ drivers/hid/hid-asus-ally.c | 73 +++++++++++++++++++++++++++++++++++++
+ drivers/hid/hid-asus-ally.h |  2 +
+ 2 files changed, 75 insertions(+)
+
+diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
+index ab3dfa7296b6..bc58818a8efb 100644
+--- a/drivers/hid/hid-asus-ally.c
++++ b/drivers/hid/hid-asus-ally.c
+@@ -637,9 +637,82 @@ static ssize_t btn_mapping_reset_store(struct device *dev, struct device_attribu
+ }
+ ALLY_DEVICE_ATTR_WO(btn_mapping_reset, reset_btn_mapping);
+ 
++/* GAMEPAD MODE */
++static ssize_t _gamepad_set_mode(struct hid_device *hdev, struct ally_gamepad_cfg *ally_cfg,
++				  int val)
++{
++	u8 *hidbuf;
++	int ret;
++
++	hidbuf = kzalloc(FEATURE_ROG_ALLY_REPORT_SIZE, GFP_KERNEL);
++	if (!hidbuf)
++		return -ENOMEM;
++
++	hidbuf[0] = FEATURE_ROG_ALLY_REPORT_ID;
++	hidbuf[1] = FEATURE_ROG_ALLY_CODE_PAGE;
++	hidbuf[2] = xpad_cmd_set_mode;
++	hidbuf[3] = xpad_cmd_len_mode;
++	hidbuf[4] = val;
++
++	ret = ally_gamepad_check_ready(hdev);
++	if (ret < 0)
++		goto report_fail;
++
++	ret = asus_dev_set_report(hdev, hidbuf, FEATURE_ROG_ALLY_REPORT_SIZE);
++	if (ret < 0)
++		goto report_fail;
++
++	ret = _gamepad_apply_all(hdev, ally_cfg);
++	if (ret < 0)
++		goto report_fail;
++
++report_fail:
++	kfree(hidbuf);
++	return ret;
++}
++
++static ssize_t gamepad_mode_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct ally_gamepad_cfg *ally_cfg = drvdata.gamepad_cfg;
++
++	if (!drvdata.gamepad_cfg)
++		return -ENODEV;
++
++	return sysfs_emit(buf, "%d\n", ally_cfg->mode);
++}
++
++static ssize_t gamepad_mode_store(struct device *dev, struct device_attribute *attr,
++				  const char *buf, size_t count)
++{
++	struct hid_device *hdev = to_hid_device(dev);
++	struct ally_gamepad_cfg *ally_cfg = drvdata.gamepad_cfg;
++	int ret, val;
++
++	if (!drvdata.gamepad_cfg)
++		return -ENODEV;
++
++	ret = kstrtoint(buf, 0, &val);
++	if (ret)
++		return ret;
++
++	if (val < xpad_mode_game || val > xpad_mode_mouse)
++		return -EINVAL;
++
++	ally_cfg->mode = val;
++
++	ret = _gamepad_set_mode(hdev, ally_cfg, val);
++	if (ret < 0)
++		return ret;
++
++	return count;
++}
++
++DEVICE_ATTR_RW(gamepad_mode);
++
+ /* ROOT LEVEL ATTRS *******************************************************************************/
+ static struct attribute *gamepad_device_attrs[] = {
+ 	&dev_attr_btn_mapping_reset.attr,
++	&dev_attr_gamepad_mode.attr,
+ 	&dev_attr_gamepad_apply_all.attr,
+ 	NULL
+ };
+diff --git a/drivers/hid/hid-asus-ally.h b/drivers/hid/hid-asus-ally.h
+index 910a3997fc68..b74085a6c908 100644
+--- a/drivers/hid/hid-asus-ally.h
++++ b/drivers/hid/hid-asus-ally.h
+@@ -20,6 +20,7 @@ enum xpad_mode {
+ 
+ /* the xpad_cmd determines which feature is set or queried */
+ enum xpad_cmd {
++	xpad_cmd_set_mode = 0x01,
+ 	xpad_cmd_set_mapping = 0x02,
+ 	xpad_cmd_set_leds = 0x08,
+ 	xpad_cmd_check_ready = 0x0A,
+@@ -27,6 +28,7 @@ enum xpad_cmd {
+ 
+ /* the xpad_cmd determines which feature is set or queried */
+ enum xpad_cmd_len {
++	xpad_cmd_len_mode = 0x01,
+ 	xpad_cmd_len_mapping = 0x2c,
+ 	xpad_cmd_len_leds = 0x0C,
+ };
+-- 
+2.47.0
+
+
+From 82815551a7674f781330e9ed84a7a1ecf5062aab Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 15:40:09 +1300
-Subject: [PATCH 27/34] hid-asus-ally: Turbo settings for buttons
+Subject: [PATCH 28/34] hid-asus-ally: Turbo settings for buttons
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -6358,7 +6410,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 118 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 497b1f4afb02..9e147bca54be 100644
+index bc58818a8efb..005459a6e469 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -229,6 +229,7 @@ static const char* btn_to_name(u64 key)
@@ -6375,7 +6427,7 @@ index 497b1f4afb02..9e147bca54be 100644
  
 +static int _gamepad_apply_turbo(struct hid_device *hdev, struct ally_gamepad_cfg *ally_cfg)
 +{
-+	struct btn_mapping *map = ally_cfg->key_mapping[ally_cfg->mode];
++	struct btn_mapping *map = &ally_cfg->key_mapping[ally_cfg->mode];
 +	u8 *hidbuf;
 +	int ret;
 +
@@ -6413,10 +6465,10 @@ index 497b1f4afb02..9e147bca54be 100644
 +	return ret;
 +}
 +
- static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribute *attr,
- 				       const char *buf, size_t count)
+ static ssize_t _gamepad_apply_all(struct hid_device *hdev, struct ally_gamepad_cfg *ally_cfg)
  {
-@@ -557,6 +598,9 @@ static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribu
+ 	int ret;
+@@ -551,6 +592,9 @@ static ssize_t _gamepad_apply_all(struct hid_device *hdev, struct ally_gamepad_c
  	if (ret < 0)
  		return ret;
  	ret = _gamepad_apply_btn_pair(hdev, ally_cfg, btn_pair_lt_rt);
@@ -6426,7 +6478,7 @@ index 497b1f4afb02..9e147bca54be 100644
  	if (ret < 0)
  		return ret;
  
-@@ -565,24 +609,24 @@ static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribu
+@@ -576,24 +620,24 @@ static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribu
  ALLY_DEVICE_ATTR_WO(gamepad_apply_all, apply_all);
  
  /* button map attributes, regular and macro*/
@@ -6470,10 +6522,10 @@ index 497b1f4afb02..9e147bca54be 100644
  static void _gamepad_set_xpad_default(struct ally_gamepad_cfg *ally_cfg)
  {
 diff --git a/drivers/hid/hid-asus-ally.h b/drivers/hid/hid-asus-ally.h
-index 910a3997fc68..5b48f75b1075 100644
+index b74085a6c908..4eb90ededf2c 100644
 --- a/drivers/hid/hid-asus-ally.h
 +++ b/drivers/hid/hid-asus-ally.h
-@@ -23,12 +23,14 @@ enum xpad_cmd {
+@@ -24,6 +24,7 @@ enum xpad_cmd {
  	xpad_cmd_set_mapping = 0x02,
  	xpad_cmd_set_leds = 0x08,
  	xpad_cmd_check_ready = 0x0A,
@@ -6481,14 +6533,15 @@ index 910a3997fc68..5b48f75b1075 100644
  };
  
  /* the xpad_cmd determines which feature is set or queried */
- enum xpad_cmd_len {
+@@ -31,6 +32,7 @@ enum xpad_cmd_len {
+ 	xpad_cmd_len_mode = 0x01,
  	xpad_cmd_len_mapping = 0x2c,
  	xpad_cmd_len_leds = 0x0C,
 +	xpad_cmd_len_turbo = 0x20,
  };
  
  /* Values correspond to the actual HID byte value required */
-@@ -222,6 +224,37 @@ enum btn_pair_index {
+@@ -224,6 +226,37 @@ enum btn_pair_index {
  		return count;                                                  \
  	}
  
@@ -6500,7 +6553,7 @@ index 910a3997fc68..5b48f75b1075 100644
 +		struct btn_data *btn;                                          \
 +		if (!drvdata.gamepad_cfg)                                      \
 +			return -ENODEV;                                        \
-+		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]->_btn_name;   \
++		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]._btn_name;   \
 +		return sysfs_emit(buf, "%d\n", btn->turbo);                    \
 +	}
 +
@@ -6515,7 +6568,7 @@ index 910a3997fc68..5b48f75b1075 100644
 +		int ret; \
 +		if (!drvdata.gamepad_cfg)                                      \
 +			return -ENODEV;                                        \
-+		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]->_btn_name;   \
++		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]._btn_name;   \
 +		ret = kstrtobool(buf, &turbo);                                 \
 +		if (ret)                                                       \
 +			return ret;                                            \
@@ -6526,7 +6579,7 @@ index 910a3997fc68..5b48f75b1075 100644
  #define ALLY_BTN_ATTRS_GROUP(_name, _fname)                               \
  	static struct attribute *_fname##_attrs[] = {                     \
  		&dev_attr_##_fname.attr,                                  \
-@@ -232,11 +265,32 @@ enum btn_pair_index {
+@@ -234,11 +267,32 @@ enum btn_pair_index {
  		.attrs = _fname##_attrs,                                  \
  	}
  
@@ -6565,53 +6618,19 @@ index 910a3997fc68..5b48f75b1075 100644
 2.47.0
 
 
-From 117d74b063926fa0e7df0ee87f6be251c566d04f Mon Sep 17 00:00:00 2001
-From: "Luke D. Jones" <luke@ljones.dev>
-Date: Sat, 5 Oct 2024 19:08:40 +1300
-Subject: [PATCH 28/34] hid-asus-ally: add gamepad modes and defaults
-
-Signed-off-by: Luke D. Jones <luke@ljones.dev>
----
- drivers/hid/hid-asus-ally.h | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/hid/hid-asus-ally.h b/drivers/hid/hid-asus-ally.h
-index 5b48f75b1075..6761afe847d8 100644
---- a/drivers/hid/hid-asus-ally.h
-+++ b/drivers/hid/hid-asus-ally.h
-@@ -20,6 +20,7 @@ enum xpad_mode {
- 
- /* the xpad_cmd determines which feature is set or queried */
- enum xpad_cmd {
-+	xpad_cmd_set_mode = 0x01,
- 	xpad_cmd_set_mapping = 0x02,
- 	xpad_cmd_set_leds = 0x08,
- 	xpad_cmd_check_ready = 0x0A,
-@@ -28,6 +29,7 @@ enum xpad_cmd {
- 
- /* the xpad_cmd determines which feature is set or queried */
- enum xpad_cmd_len {
-+	xpad_cmd_len_mode = 0x01,
- 	xpad_cmd_len_mapping = 0x2c,
- 	xpad_cmd_len_leds = 0x0C,
- 	xpad_cmd_len_turbo = 0x20,
--- 
-2.47.0
-
-
-From 3b2f4223aa26df235da3d9d44cf0b8e52a9c0058 Mon Sep 17 00:00:00 2001
+From d2c2382b116fad4c6dcc795e258401001008e832 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 20:46:00 +1300
 Subject: [PATCH 29/34] hid-asus-ally: add vibration intensity settings
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
- drivers/hid/hid-asus-ally.c | 95 ++++++++++++++++++++++++++++++++++++-
- drivers/hid/hid-asus-ally.h | 10 +++-
- 2 files changed, 102 insertions(+), 3 deletions(-)
+ drivers/hid/hid-asus-ally.c | 93 +++++++++++++++++++++++++++++++++++++
+ drivers/hid/hid-asus-ally.h |  6 +++
+ 2 files changed, 99 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 9e147bca54be..4dffa4335e0b 100644
+index 005459a6e469..121fc1ecd9b1 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -263,6 +263,11 @@ struct ally_gamepad_cfg {
@@ -6716,25 +6735,16 @@ index 9e147bca54be..4dffa4335e0b 100644
  /* A HID packet conatins mappings for two buttons: btn1, btn1_macro, btn2, btn2_macro */
  static void _btn_pair_to_hid_pkt(struct ally_gamepad_cfg *ally_cfg,
  				enum btn_pair_index pair,
-@@ -525,7 +613,7 @@ static int _gamepad_apply_btn_pair(struct hid_device *hdev, struct ally_gamepad_
- 
- static int _gamepad_apply_turbo(struct hid_device *hdev, struct ally_gamepad_cfg *ally_cfg)
- {
--	struct btn_mapping *map = ally_cfg->key_mapping[ally_cfg->mode];
-+	struct btn_mapping *map = &ally_cfg->key_mapping[ally_cfg->mode];
- 	u8 *hidbuf;
- 	int ret;
- 
-@@ -674,6 +762,8 @@ ALLY_DEVICE_ATTR_WO(btn_mapping_reset, reset_btn_mapping);
- static struct attribute *gamepad_device_attrs[] = {
+@@ -758,6 +846,8 @@ static struct attribute *gamepad_device_attrs[] = {
  	&dev_attr_btn_mapping_reset.attr,
+ 	&dev_attr_gamepad_mode.attr,
  	&dev_attr_gamepad_apply_all.attr,
 +	&dev_attr_gamepad_vibration_intensity.attr,
 +	&dev_attr_gamepad_vibration_intensity_index.attr,
  	NULL
  };
  
-@@ -746,6 +836,9 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
+@@ -830,6 +920,9 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
  	ally_cfg->key_mapping[ally_cfg->mode - 1].btn_m2.button = BTN_KB_M2;
  	_gamepad_apply_btn_pair(hdev, ally_cfg, btn_pair_m1_m2);
  
@@ -6745,7 +6755,7 @@ index 9e147bca54be..4dffa4335e0b 100644
  	if (sysfs_create_groups(&hdev->dev.kobj, gamepad_device_attr_groups)) {
  		err = -ENODEV;
 diff --git a/drivers/hid/hid-asus-ally.h b/drivers/hid/hid-asus-ally.h
-index 6761afe847d8..7c17eaefaf3a 100644
+index 4eb90ededf2c..7c17eaefaf3a 100644
 --- a/drivers/hid/hid-asus-ally.h
 +++ b/drivers/hid/hid-asus-ally.h
 @@ -22,6 +22,7 @@ enum xpad_mode {
@@ -6775,29 +6785,11 @@ index 6761afe847d8..7c17eaefaf3a 100644
  /* button specific macros */
  #define ALLY_BTN_SHOW(_fname, _btn_name, _secondary)                           \
  	static ssize_t _fname##_show(struct device *dev,                       \
-@@ -234,7 +240,7 @@ enum btn_pair_index {
- 		struct btn_data *btn;                                          \
- 		if (!drvdata.gamepad_cfg)                                      \
- 			return -ENODEV;                                        \
--		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]->_btn_name;   \
-+		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]._btn_name;   \
- 		return sysfs_emit(buf, "%d\n", btn->turbo);                    \
- 	}
- 
-@@ -249,7 +255,7 @@ enum btn_pair_index {
- 		int ret; \
- 		if (!drvdata.gamepad_cfg)                                      \
- 			return -ENODEV;                                        \
--		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]->_btn_name;   \
-+		btn = &ally_cfg->key_mapping[ally_cfg->mode - 1]._btn_name;   \
- 		ret = kstrtobool(buf, &turbo);                                 \
- 		if (ret)                                                       \
- 			return ret;                                            \
 -- 
 2.47.0
 
 
-From 9b3303c7f67576d3447a858a7765090bb1b6df02 Mon Sep 17 00:00:00 2001
+From d5d5905c019d9e4bbeb20a6c2c1c3ed8963b5fbe Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 21:32:41 +1300
 Subject: [PATCH 30/34] hid-asus-ally: add JS deadzones
@@ -6809,7 +6801,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 123 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 4dffa4335e0b..963fb7428665 100644
+index 121fc1ecd9b1..c1b1f559dab7 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -253,6 +253,11 @@ struct btn_mapping {
@@ -6911,7 +6903,7 @@ index 4dffa4335e0b..963fb7428665 100644
  /* A HID packet conatins mappings for two buttons: btn1, btn1_macro, btn2, btn2_macro */
  static void _btn_pair_to_hid_pkt(struct ally_gamepad_cfg *ally_cfg,
  				enum btn_pair_index pair,
-@@ -689,6 +767,9 @@ static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribu
+@@ -683,6 +761,9 @@ static ssize_t _gamepad_apply_all(struct hid_device *hdev, struct ally_gamepad_c
  	if (ret < 0)
  		return ret;
  	ret = _gamepad_apply_turbo(hdev, ally_cfg);
@@ -6921,7 +6913,7 @@ index 4dffa4335e0b..963fb7428665 100644
  	if (ret < 0)
  		return ret;
  
-@@ -773,6 +854,8 @@ static const struct attribute_group ally_controller_attr_group = {
+@@ -857,6 +938,8 @@ static const struct attribute_group ally_controller_attr_group = {
  
  static const struct attribute_group *gamepad_device_attr_groups[] = {
  	&ally_controller_attr_group,
@@ -6930,7 +6922,7 @@ index 4dffa4335e0b..963fb7428665 100644
  	&btn_mapping_m1_attr_group,
  	&btn_mapping_m2_attr_group,
  	&btn_mapping_a_attr_group,
-@@ -838,6 +921,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
+@@ -922,6 +1005,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
  
  	ally_cfg->vibration_intensity[0] = 0x64;
  	ally_cfg->vibration_intensity[1] = 0x64;
@@ -7006,7 +6998,7 @@ index 7c17eaefaf3a..02ce4bfc304e 100644
 2.47.0
 
 
-From 76d526572cc79edf270a45dcce1c0af65d2d884e Mon Sep 17 00:00:00 2001
+From 603de8d9e7d8353aa1a622bbf47836970aa87740 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 21:37:27 +1300
 Subject: [PATCH 31/34] hid-asus-ally: add trigger deadzones
@@ -7018,7 +7010,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 44 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 963fb7428665..8c2788bb9e5b 100644
+index c1b1f559dab7..1ba5c9c42f9e 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -277,6 +277,8 @@ struct ally_gamepad_cfg {
@@ -7098,7 +7090,7 @@ index 963fb7428665..8c2788bb9e5b 100644
  /* A HID packet conatins mappings for two buttons: btn1, btn1_macro, btn2, btn2_macro */
  static void _btn_pair_to_hid_pkt(struct ally_gamepad_cfg *ally_cfg,
  				enum btn_pair_index pair,
-@@ -856,6 +897,8 @@ static const struct attribute_group *gamepad_device_attr_groups[] = {
+@@ -940,6 +981,8 @@ static const struct attribute_group *gamepad_device_attr_groups[] = {
  	&ally_controller_attr_group,
  	&axis_xy_left_attr_group,
  	&axis_xy_right_attr_group,
@@ -7123,7 +7115,7 @@ index 02ce4bfc304e..61b7af89665a 100644
 2.47.0
 
 
-From 3412f812a8af8ebac679a6fa6cf356152c1365b4 Mon Sep 17 00:00:00 2001
+From 171f54a1653801340f461b205383d022b17e305c Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 6 Oct 2024 19:49:24 +1300
 Subject: [PATCH 32/34] hid-asus-ally: add anti-deadzones
@@ -7135,7 +7127,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 112 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 8c2788bb9e5b..d8d0c9471dc7 100644
+index 1ba5c9c42f9e..1b4794442b1d 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -279,6 +279,9 @@ struct ally_gamepad_cfg {
@@ -7266,7 +7258,7 @@ index 8c2788bb9e5b..d8d0c9471dc7 100644
  	&dev_attr_axis_xy_right_deadzone.attr,
  	&dev_attr_axis_xyz_deadzone_index.attr,
  	NULL
-@@ -811,6 +917,9 @@ static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribu
+@@ -805,6 +911,9 @@ static ssize_t _gamepad_apply_all(struct hid_device *hdev, struct ally_gamepad_c
  	if (ret < 0)
  		return ret;
  	ret = _gamepad_apply_deadzones(hdev, ally_cfg);
@@ -7276,7 +7268,7 @@ index 8c2788bb9e5b..d8d0c9471dc7 100644
  	if (ret < 0)
  		return ret;
  
-@@ -965,6 +1074,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
+@@ -1049,6 +1158,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
  	ally_cfg->vibration_intensity[0] = 0x64;
  	ally_cfg->vibration_intensity[1] = 0x64;
  	_gamepad_set_deadzones_default(ally_cfg);
@@ -7308,7 +7300,7 @@ index 61b7af89665a..e2b8464a09bd 100644
 2.47.0
 
 
-From bd8a764edb3a58cb61a3b18458c770da8a515a5c Mon Sep 17 00:00:00 2001
+From daa6a02b7835b37b1181e1d4694cdb0a7583334e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 6 Oct 2024 21:22:40 +1300
 Subject: [PATCH 33/34] hid-asus-ally: add JS response curves
@@ -7320,7 +7312,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 141 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index d8d0c9471dc7..af3265bedb3b 100644
+index 1b4794442b1d..89877c43d182 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -5,8 +5,10 @@
@@ -7463,7 +7455,7 @@ index d8d0c9471dc7..af3265bedb3b 100644
  	NULL
  };
  static const struct attribute_group axis_xy_right_attr_group = {
-@@ -920,6 +1019,9 @@ static ssize_t gamepad_apply_all_store(struct device *dev, struct device_attribu
+@@ -914,6 +1013,9 @@ static ssize_t _gamepad_apply_all(struct hid_device *hdev, struct ally_gamepad_c
  	if (ret < 0)
  		return ret;
  	ret = _gamepad_apply_js_ADZ(hdev, ally_cfg);
@@ -7473,7 +7465,7 @@ index d8d0c9471dc7..af3265bedb3b 100644
  	if (ret < 0)
  		return ret;
  
-@@ -1075,6 +1177,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
+@@ -1159,6 +1261,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
  	ally_cfg->vibration_intensity[1] = 0x64;
  	_gamepad_set_deadzones_default(ally_cfg);
  	_gamepad_set_anti_deadzones_default(ally_cfg);
@@ -7548,7 +7540,7 @@ index e2b8464a09bd..2172f7dd703b 100644
 2.47.0
 
 
-From ddedef39358bef205bf6a6081e0eecd0f7329049 Mon Sep 17 00:00:00 2001
+From c79d0fc6b6a88a4ac8419148d3db059ef31b06f2 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 10 Oct 2024 11:15:36 +1300
 Subject: [PATCH 34/34] hid-asus-ally: add calibrations (wip)
@@ -7559,7 +7551,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  1 file changed, 95 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index af3265bedb3b..07665978b991 100644
+index 89877c43d182..b247f71edb36 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -271,6 +271,28 @@ struct response_curve {
@@ -7684,7 +7676,7 @@ index af3265bedb3b..07665978b991 100644
  static struct attribute *axis_xy_left_attrs[] = {
  	&dev_attr_axis_xy_left_anti_deadzone.attr,
  	&dev_attr_axis_xy_left_deadzone.attr,
-@@ -1172,6 +1266,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
+@@ -1256,6 +1350,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
  	ally_cfg->key_mapping[ally_cfg->mode - 1].btn_m1.button = BTN_KB_M1;
  	ally_cfg->key_mapping[ally_cfg->mode - 1].btn_m2.button = BTN_KB_M2;
  	_gamepad_apply_btn_pair(hdev, ally_cfg, btn_pair_m1_m2);
