@@ -42,14 +42,7 @@ case ${1} in
     for REPO in rel minimal
     do
       echo "Syncing ${REPO} repository to ${WWWHOST}."
-      WORKING_REPO="${REPO_DIR}/${REPO}"
-      if [ -d "${WORKING_REPO}" ]
-      then
-        cd ${WORKING_REPO}
-        repo-add --verify --sign -k ${SIGNKEY} steamfork.db.tar.gz *zst
-        cd -
-        ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}; ln -sf ${WWWROOT}/repos/${REPO} steamfork-${REPO}"
-      fi
+      ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}; ln -sf ${WWWROOT}/repos/${REPO} steamfork-${REPO}"
     done
     rsync -av --delete --progress --stats ${REPO_DIR} ${WWWUSER}@${WWWHOST}:${WWWROOT}/
     ssh -tt ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/"

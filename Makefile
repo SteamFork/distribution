@@ -15,13 +15,16 @@ world: packages-local packages-aur packages-sync images images-sync
 
 upload: packages-sync images-sync
 
-dist-clean: repo-clean image-clean
+dist-clean: repo-clean image-clean build-clean
 
 repo-clean:
 	sudo rm -rf ${REPO_DIR}
 
 image-clean:
 	sudo rm -rf ${WORK_DIR} ${IMAGE_DIR}
+
+build-clean:
+	sudo rm -f /var/lib/pacman/db.lck
 	sudo pacman -Scc --noconfirm
 
 images-all: images

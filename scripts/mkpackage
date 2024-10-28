@@ -5,6 +5,20 @@
 set -e
 set -x
 
+if [ -f "${HOME}/.SteamFork/options" ]
+then
+ source "${HOME}/.SteamFork/options"
+fi
+
+for KEY in SIGNKEY
+do
+  if [ -z "${!KEY}" ]
+  then
+    echo "Export ${KEY} before using this script."
+    exit 1
+  fi
+done
+
 echo "Cache key" | gpg --sign -o /dev/null
 if [ ! "$?" = 0 ]
 then
@@ -48,6 +62,7 @@ REPO_DIR="${REPO_DIR}/${RELEASE_TYPE}"
 
 sudo steamos-readonly disable
 sudo rm -rf /var/lib/pacman/db.lck ${WORK_DIR}
+sudo pacman -Sy ||:
 
 sudo mkdir -p ${WORK_DIR} ${REPO_DIR} 2>/dev/null
 sudo chown ${BUILDUSER}:${BUILDUSER} ${WORK_DIR} ${REPO_DIR}
@@ -103,3 +118,5 @@ do
     fi
   done
 done
+cd ${REPO_DIR}
+repo-add --verify --sign -k ${SIGNKEY} steamfork.db.tar.gz *zst
