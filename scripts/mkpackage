@@ -91,7 +91,7 @@ esac
 
 source ${WORK_DIR}/PKGBUILD
 
-for STALE_PACKAGE in ${pkgbase} ${pkgbase}-debug ${pkgname[@]}
+for STALE_PACKAGE in ${pkgbase} ${pkgbase}-debug ${pkgname[@]} ${pkgname[@]}-debug
 do
   rm -f ${REPO_DIR}/${STALE_PACKAGE}-[0-9]*
 done
