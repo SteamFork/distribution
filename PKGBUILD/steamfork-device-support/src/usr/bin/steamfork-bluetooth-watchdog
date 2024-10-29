@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
+# Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
+
+# Source predefined functions and variables
+. /etc/profile
+
+source steamfork-devicequirk-set
+
+### Enable logging
+case $(steamfork-get-setting system.loglevel) in
+    verbose)
+        VERBOSE=true
+        ;;
+    debug)
+        VERBOSE=true
+        DEBUG=true
+        ;;
+    *)
+        VERBOSE=false
+        DEBUG=false
+        ;;
+esac
+
+if [ "${BLUETOOTH_WATCHDOG}" = "false" ]
+then
+    $VERBOSE && >&2 echo "Watchdog is disabled on this device."
+    exit 0
+fi
+
+$DEBUG && log ${0} "Monitoring paired bluetooth devices."
+while true
+do
+  if [ "$(/usr/bin/bluetoothctl show | awk '/Powered:/ {print $2}' 2>/dev/null)" = "yes" ]
+  then
+    for DEVICE in $(/usr/bin/bluetoothctl devices Paired 2>&1 | awk '{print $2}' 2>/dev/null)
+    do
+      $DEBUG && log ${0} "Inspect ${DEVICE}"
+      CONNECTED=$(/usr/bin/bluetoothctl devices Connected 2>&1 | grep ${DEVICE} 2>/dev/null)
+      if [ -z "${CONNECTED}" ]
+      then
+	$DEBUG && log ${0} "Connect to ${DEVICE}"
+        /usr/bin/bluetoothctl --timeout 5 connect ${DEVICE} >/dev/null 2>&1
+        sleep .5
+        COUNT=0
+        while true
+        do
+          COUNT=$(( COUNT + 1))
+          CONNECTED=$(/usr/bin/bluetoothctl devices Connected 2>&1 | grep ${DEVICE} 2>/dev/null)
+          if [ -n "${CONNECTED}" ]
+          then
+	    $DEBUG && log ${0} "${DEVICE} connected."
+            ISAUDIO=$(bluetoothctl info ${DEVICE} | awk '/UUID: Audio/ {print $2}')
+            if [ -n "${ISAUDIO}" ]
+            then
+	      $DEBUG && log ${0} "${DEVICE} has an audio profile, setting volume."
+              volume $(get_setting "audio.volume")
+              pactl set-port-latency-offset $(pactl list cards short | grep -E -o bluez.*[[:space:]]) headset-output 100000
+            fi
+            break
+          fi
+          if [ "${COUNT}" = 10 ]
+          then
+            break
+          fi
+          sleep .5
+        done
+      fi
+      sleep .5
+    done
+  fi
+  sleep 5
+done

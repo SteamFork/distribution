@@ -1,0 +1,12 @@
+[Unit]
+Description=Simple bluetooth watcher that connects to paired devices.
+Before=display-manager.service
+
+[Service]
+User=root
+Group=wheel
+ExecStart=/usr/bin/steamfork-bluetooth-watchdog
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
