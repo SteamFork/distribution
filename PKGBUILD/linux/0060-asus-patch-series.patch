@@ -6356,7 +6356,7 @@ index ab3dfa7296b6..bc58818a8efb 100644
 +	if (val < xpad_mode_game || val > xpad_mode_mouse)
 +		return -EINVAL;
 +
-+	ally_cfg->mode = val - 1;
++	ally_cfg->mode = val;
 +
 +	ret = _gamepad_set_mode(hdev, ally_cfg, val);
 +	if (ret < 0)
