@@ -87,7 +87,7 @@ sha256sums=('SKIP'
 '93087d9449f994dca23c1d5a32919204d31afecc63950d74a2ea41aaa1e3a9ec' # 0040-vcs-amdgpu-quirks.patch
 'ab8a6dccf67cee7d924ee2e3d4690285d404bcb9bab70eced09b05fa2853b288' # 0041-air-amdgpu-quirks.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
-'3057f9e259c2faedceb430cb3322f9ee6603cfaa8d5655395ab04657cf1933b5' # 0060-asus-patch-series.patch
+'241d1b76cbbaebd630fc5c9e8352c66b2e62edb4e08c312e44703d1867dd9813' # 0060-asus-patch-series.patch
 '3b1dabc168e4884c6586720538014d6ef8955a0b783d6436dd4937af6622ee42' # 0099-add-external-device-drivers.patch
 )
 
