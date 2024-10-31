@@ -2,7 +2,6 @@
 
 source /etc/profile
 source /etc/os-release
-HW_DEVICE=$(steamfork-device-id)
 
 ### Apply device quirks
 if [ -e "/sys/firmware/devicetree/base/model" ]
@@ -14,9 +13,12 @@ fi
 export QUIRK_DEVICE="$(echo ${QUIRK_DEVICE} | sed -e "s#[/]#-#g")"
 
 info_quirks() {
-  for QUIRK in /etc/lib/steamfork_hwsupport/devicequirks/"${HW_DEVICE}"/info.d/${1}/*
-  do
-    "${QUIRK}" 2>/dev/null
+  QUIRKPATHS="$(/usr/bin/steamfork-device-id quirkpaths)"
+  for QUIRKPATH in ${QUIRKPATHS}; do
+    for QUIRK in "${QUIRKPATH}/info.d/${1}"/*
+    do
+      "${QUIRK}" 2>/dev/null
+    done
   done
 }
 

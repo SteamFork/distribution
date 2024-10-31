@@ -8,8 +8,14 @@
 
 . /etc/profile
 
-HWID="$(/usr/bin/steamfork-device-id)"
-FAN_CONTROL_DAEMON="/etc/lib/steamfork_hwsupport/devicequirks/${HWID}/bin/fancontrol"
+QUIRKPATHS="$(/usr/bin/steamfork-device-id quirkpaths)"
+
+for QUIRKPATH in ${QUIRKPATHS}; do
+  if [ -f "${QUIRKPATH}"/bin/fancontrol ]; then
+    FAN_CONTROL_DAEMON="${QUIRKPATH}"/bin/fancontrol
+  fi
+done
+
 if [ -f "${FAN_CONTROL_DAEMON}" ]
 then
  "${FAN_CONTROL_DAEMON}" $*
