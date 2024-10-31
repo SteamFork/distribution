@@ -104,6 +104,7 @@ function subvolumeselect() {
         arch-chroot ${tmpmount} <<EOF
 steamos-readonly disable
 mkinitcpio -P
+mount -L sf_root -o compress-force=zstd:1,discard,noatime,nodiratime /sf_root
 steamfork-grub-update
 EOF
         if [ ! $? = 0 ]
