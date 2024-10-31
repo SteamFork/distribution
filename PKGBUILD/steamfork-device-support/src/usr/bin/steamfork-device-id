@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function quirk_format() {
-  echo ${1} | tr -d '\0' | tr " " "-"
+  echo ${1} | tr -d '().,\0' | tr " " "-"
 }
 
 function device_cpu() {
