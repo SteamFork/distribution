@@ -1,8 +1,8 @@
 # Maintainer: Fewtarius
 
 pkgname=steamfork-customizations
-pkgver=2024.11.05
-pkgrel=2
+pkgver=2024.11.07
+pkgrel=1
 pkgdesc='SteamFork customizations provider.'
 arch=('any')
 url='http://www.steamfork.org'
