@@ -16,9 +16,9 @@ modules() {
   case ${1} in
     stop)
       for QUIRKPATH in ${QUIRKPATHS}; do
-        if [ -e "${QUIRKPATH}"/modules.bad ]
+        if [ -e "${QUIRKPATH}"/modules-suspend.reload ]
         then
-          for module in $(cat "${QUIRKPATH}"/modules.bad)
+          for module in $(cat "${QUIRKPATH}"/modules-suspend.reload)
           do
             EXISTS=$(lsmod | grep ${module})
             if [ $? = 0 ]

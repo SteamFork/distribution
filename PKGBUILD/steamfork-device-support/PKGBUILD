@@ -65,8 +65,8 @@ package() {
 
   mkdir -p ${pkgdir}/usr/lib/systemd/system/steamos-offload.target.wants
   cd ${pkgdir}/usr/lib/systemd/system/steamos-offload.target.wants
-  ln -s ../etc-lib-steamfork_hwsupport-customdevicequirks.mount .
+  ln -s ../etc-lib-hwsupport-devicequirks.mount .
   cd -
 
-  mkdir -p ${pkgdir}/etc/lib/steamfork_hwsupport/customdevicequirks
+  mkdir -p ${pkgdir}/etc/lib/hwsupport/devicequirks
 }
