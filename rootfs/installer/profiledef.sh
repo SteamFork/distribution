@@ -4,7 +4,7 @@
 source /tmp/buildinfo
 
 iso_name="steamfork-${STAGING_RELEASETYPE}"
-iso_label="ALG_XFCE_$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y%m)"
+iso_label="STEAMFORK_$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y%m)"
 iso_publisher="fewtarius"
 iso_application="Squirrel?"
 iso_version="${STAGING_OS_TAG}"
