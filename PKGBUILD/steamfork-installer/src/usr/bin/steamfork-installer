@@ -96,7 +96,7 @@ e2label ${var_partition} sf_var
 mkfs.ext4 -F ${home_partition}
 e2label ${home_partition} sf_home
 
-sync && udevadm trigger && partprobe
+sync && partprobe
 echo "Starting to bootstrap installation..."
 steamfork-bootstrap --username "${HOLOUSER}" --password "${HOLOPASS}" --root_password "${ROOTPASS}"
 sync

@@ -52,7 +52,7 @@ if [[ -L "${PRE_IMMUTABLE_ROOT}" ]] && [[ -L "${PRE_IMMUTABLE_HOME}" ]]; then
 	    fi
         umount /tmp/oldroot
         e2label ${REAL_HOME_PATH} sf_home
-        sync && udevadm trigger
+        sync 
         parted ${REAL_DEVICE} rm 2
         parted ${REAL_DEVICE} rm 1
         sync
@@ -60,7 +60,7 @@ if [[ -L "${PRE_IMMUTABLE_ROOT}" ]] && [[ -L "${PRE_IMMUTABLE_HOME}" ]]; then
         sfdisk -d ${REAL_DEVICE} > /tmp/parttable
         sed -i "s/${DRIVENODE}3/${DRIVENODE}4/g" /tmp/parttable
         sfdisk --force ${REAL_DEVICE} < /tmp/parttable
-        sync && udevadm trigger 
+        sync
         parted ${REAL_DEVICE} mkpart primary fat32 2M 256M
 	    parted ${REAL_DEVICE} set 1 boot on
 	    parted ${REAL_DEVICE} set 1 esp on
@@ -74,7 +74,7 @@ if [[ -L "${PRE_IMMUTABLE_ROOT}" ]] && [[ -L "${PRE_IMMUTABLE_HOME}" ]]; then
 	    btrfs filesystem label ${root_partition} sf_root
         mkfs.ext4 -F ${var_partition}
         e2label ${var_partition} sf_var
-        sync && udevadm trigger
+        sync
         sleep 2
         steamfork-bootstrap --username "${HOLOUSER}" --password "${HOLOPASS}" --root_password "${ROOTPASS}"
     fi
