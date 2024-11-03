@@ -79,6 +79,8 @@ packages-aur:
 	${SCRIPT_DIR}/mkpackage --repo aur libgbinder
 	${SCRIPT_DIR}/mkpackage --repo aur python-gbinder
 	${SCRIPT_DIR}/mkpackage --repo local waydroid
+	### Xbox Xone driver
+	${SCRIPT_DIR}/mkpackage --repo aur xone-dkms
 
 package:
 	${SCRIPT_DIR}/mkpackage $(RUN_ARGS)
