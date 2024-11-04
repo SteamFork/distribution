@@ -12,15 +12,6 @@ function check_network() {
   fi
 }
 
-### Workaround NetworkManager randomly dying until a better solution
-### can be found.
-
-NM_ISACTIVE=$(systemctl is-active NetworkManager)
-if [[ "${NM_ISACTIVE}" =~ inactive ]]
-then
-  systemctl restart NetworkManager
-fi
-
 ### Check for the last update stamp, and if it isn't a match
 ### run any post-update scripts and then update the stamp.
 
