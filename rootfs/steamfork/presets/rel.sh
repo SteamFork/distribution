@@ -19,7 +19,6 @@ export ENABLED_SERVICES=( sddm
                         bluetooth
                         systemd-timesyncd
 			systemd-resolved
-			iwd
                         NetworkManager
 			firewalld
 			inputplumber
