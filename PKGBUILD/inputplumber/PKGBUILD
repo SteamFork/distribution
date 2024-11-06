@@ -3,7 +3,7 @@
 pkgname=inputplumber
 _pkgbase=inputplumber
 pkgver=0.36.5
-pkgrel=1
+pkgrel=2
 pkgdesc="Open source input router and remapper daemon for Linux"
 arch=('x86_64')
 url="https://github.com/ShadowBlip/InputPlumber"
