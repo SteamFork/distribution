@@ -27,6 +27,7 @@ jobs:
         run: |
           set -e
           make image-clean
+          make build-clean
           make image rel BUILD_VER="${{ steps.version.outputs.version }}"
       - name: Sync release images to the primary instance
         run: |
