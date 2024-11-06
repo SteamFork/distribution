@@ -10,12 +10,11 @@ index 1bfbb3c..296f386 100644
          PathBuf::from("/etc/inputplumber/devices.d"),
          get_base_path().join("devices"),
      ];
-@@ -48,7 +47,7 @@ pub fn get_capability_maps_paths() -> Vec<PathBuf> {
+@@ -48,7 +48,6 @@ pub fn get_capability_maps_paths() -> Vec<PathBuf> {
      let paths = vec![
          get_base_path().join("capability_maps"),
          PathBuf::from("/etc/inputplumber/capability_maps.d"),
 -        PathBuf::from("./rootfs/usr/share/inputplumber/capability_maps"),
-+        PathBuf::from("/usr/share/inputplumber/capability_maps"),
      ];
  
      paths
