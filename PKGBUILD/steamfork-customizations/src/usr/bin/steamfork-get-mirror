@@ -4,7 +4,7 @@
 
 STAGING_MIRRORLIST="/tmp/steamfork-mirrors.txt"
 LATEST_MIRRORLIST="/etc/default/steamfork-mirrors"
-DEFAULT_MIRRORS=( "www.steamfork.org" "www1.ny.steamfork.org" "www1.da.steamfork.org" "www1.sj.steamfork.org" "www1..as.steamfork.org" "www1..as.steamfork.org" )
+DEFAULT_MIRRORS=( "www.steamfork.org" "www1.ny.steamfork.org" "www1.da.steamfork.org" "www1.sj.steamfork.org" "www1.as.steamfork.org" "www1.as.steamfork.org" )
 
 CURL_OPTS="--retry 1 --retry-all-errors --retry-delay 1 --connect-timeout 2 --max-time 2"
 SYNC_FILE=".sync.txt"

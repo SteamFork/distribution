@@ -39,7 +39,9 @@ export ENABLED_SERVICES=( sddm
                         var-lib-systemd-coredump.mount
                         var-log.mount
                         var-tmp.mount )
-export DISABLED_SERVICES=(jupiter-controller-update.service)
+export DISABLED_SERVICES=(jupiter-controller-update.service
+			  wpa_supplicant.service
+		  	  iwd.service)
 export PLYMOUTH_THEME="steamos"
 export FINAL_DISTRIB_IMAGE=${BUILDVER}
 export KERNELCHOICE="linux"
