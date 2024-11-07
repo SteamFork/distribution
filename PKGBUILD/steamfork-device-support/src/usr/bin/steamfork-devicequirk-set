@@ -31,12 +31,14 @@ case ${DEVICE_NAME} in
     export X11_ROTATION=right
   ;;
   *)
-    for QUIRKPATH in /etc/lib/steamfork_hwsupport/customdevicequirks /etc/lib/steamfork_hwsupport/devicequirks
+    QUIRKPATHS="$(/usr/bin/steamfork-device-id quirkpaths)"
+
+    for QUIRKPATH in ${QUIRKPATHS}
     do
-        if [ -e "${QUIRKPATH}/${DEVICE_NAME}/hardware_quirks.sh" ]
+        if [ -e "${QUIRKPATH}/hardware_quirks.sh" ]
         then
             puts "Found \"${DEVICE_NAME}\" in ${QUIRKPATH}, loading..."
-            source "${QUIRKPATH}/${DEVICE_NAME}/hardware_quirks.sh"
+            source "${QUIRKPATH}/hardware_quirks.sh"
             break
 	fi
     done

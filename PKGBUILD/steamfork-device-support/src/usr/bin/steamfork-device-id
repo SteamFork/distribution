@@ -1,3 +1,39 @@
-#!/bin/sh
+#!/bin/bash
 
-echo $(tr -d '\0' </sys/class/dmi/id/sys_vendor 2>/dev/null) $(tr -d '\0' </sys/class/dmi/id/product_name 2>/dev/null) | tr ' ' '-'
+function quirk_format() {
+  echo ${1} | tr -d '().,\0' | tr " " "-"
+}
+
+function device_cpu() {
+  quirk_format "$(awk 'BEGIN {FS=":"} /model name/ {print substr($2,2); exit}' /proc/cpuinfo)"
+}
+
+function device_name() {
+  quirk_format "$(cat /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/product_name)"
+}
+
+function quirk_paths() {
+  OUT="/usr/lib/hwsupport/devicequirks/DEFAULT /usr/lib/hwsupport/devicequirks/$(device_name) "
+  for CATEGORY in "$($0 board_name)" "$(device_cpu)"; do
+    OUT+="/usr/lib/hwsupport/devicequirks/$(device_name)/${CATEGORY} "
+  done
+    OUT+="/etc/lib/hwsupport/devicequirks/$(device_name)"
+
+  echo ${OUT}
+}
+
+case "$1" in
+  cpu)
+    device_cpu
+    ;;
+  quirkpaths)
+    quirk_paths
+    ;;
+  "")
+    device_name
+    ;;
+  *)
+    if [ -r /sys/class/dmi/id/$1 ]; then
+      quirk_format "$(cat /sys/class/dmi/id/$1)"
+    fi
+esac

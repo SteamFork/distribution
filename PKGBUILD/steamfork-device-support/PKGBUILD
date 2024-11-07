@@ -1,7 +1,7 @@
 # Maintainer: Fewtarius
 
 pkgname=steamfork-device-support
-pkgver=2024.11.05
+pkgver=2024.11.07
 pkgrel=1
 pkgdesc='Hardware support provider for PC handhelds.'
 arch=('any')
@@ -65,8 +65,8 @@ package() {
 
   mkdir -p ${pkgdir}/usr/lib/systemd/system/steamos-offload.target.wants
   cd ${pkgdir}/usr/lib/systemd/system/steamos-offload.target.wants
-  ln -s ../etc-lib-steamfork_hwsupport-customdevicequirks.mount .
+  ln -s ../etc-lib-hwsupport-devicequirks.mount .
   cd -
 
-  mkdir -p ${pkgdir}/etc/lib/steamfork_hwsupport/customdevicequirks
+  mkdir -p ${pkgdir}/etc/lib/hwsupport/devicequirks
 }

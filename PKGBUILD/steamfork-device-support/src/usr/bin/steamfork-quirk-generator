@@ -129,7 +129,7 @@ if [[ -z "${GAMESCOPE_ORIENTATION}" ]] && [[ -z "${GAMESCOPE_RESOLUTION}" ]] && 
     exit 0
 fi
 
-QUIRKPATH="/etc/lib/steamfork_hwsupport/customdevicequirks/${HWID}/hardware_quirks.sh"
+QUIRKPATH="/etc/lib/hwsupport/devicequirks/${HWID}/hardware_quirks.sh"
 cat <<EOF
 #!/bin/bash
 # Generated quirk for \`${HWID}\`

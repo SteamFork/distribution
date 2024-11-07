@@ -8,11 +8,11 @@
 #  or (at your option) any later version.
 
 [Unit]
-Description=SteamFork Offload - /etc/lib/steamfork_hwsupport/customdevicequirks
+Description=SteamFork Offload - /etc/lib/hwsupport/devicequirks
 
 [Mount]
 What=/home/.steamos/offload/customdevicequirks
-Where=/etc/lib/steamfork_hwsupport/customdevicequirks
+Where=/etc/lib/hwsupport/devicequirks
 Type=none
 Options=bind
 
