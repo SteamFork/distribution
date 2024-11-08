@@ -392,6 +392,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
 		  steamfork-installer
 		  steamfork-keyring
                   jupiter-hw-support
-                  jupiter-legacy-support"
+                  jupiter-legacy-support
+		  open-vm-tools"
 
 export POSTCOPY_BIN_EXECUTION=""
