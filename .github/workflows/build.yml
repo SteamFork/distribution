@@ -20,9 +20,8 @@ jobs:
       - name: Set the version
         id: version
         run: echo "version=$(date +'%Y%m%d.%H%M')" >> $GITHUB_OUTPUT
-      - name: Build Release Images
+      - name: Build Local Images
         run: |
           set -e
-          make image-clean
-          make build-clean
+          make clean
           make image rel BUILD_VER="${{ steps.version.outputs.version }}"
