@@ -71,6 +71,7 @@ export STEAMOS_PKGS="acl
                     cantarell-fonts
                     ccache
                     coreutils
+		    cronie
                     cryptsetup
                     curl
                     dav1d
@@ -278,6 +279,7 @@ export STEAMOS_PKGS="acl
                     nodejs-nopt
                     npm
                     npth
+		    open-vm-tools
                     openjpeg2
                     openssh
                     openssl
@@ -392,7 +394,6 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
 		  steamfork-installer
 		  steamfork-keyring
                   jupiter-hw-support
-                  jupiter-legacy-support
-		  open-vm-tools"
+                  jupiter-legacy-support"
 
 export POSTCOPY_BIN_EXECUTION=""
