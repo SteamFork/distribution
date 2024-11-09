@@ -1,0 +1,41 @@
+# Maintainer: Fewtarius <fewtarius@steamfork.org>
+# Upstream:
+#   Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=lib32-libglvnd
+pkgver=1.7.0
+pkgrel=1
+pkgdesc="The GL Vendor-Neutral Dispatch library"
+arch=('x86_64')
+url="https://gitlab.freedesktop.org/glvnd/libglvnd"
+license=('custom:BSD-like')
+makedepends=('multilib-devel' 'lib32-libx11' 'lib32-libxext' 'xorgproto' 'python' 'meson')
+provides=('lib32-libgl' 'lib32-libegl' 'lib32-libgles')
+provides+=(libEGL.so libGL.so libGLESv2.so libGLX.so libGLdispatch.so libOpenGL.so)
+source=("https://gitlab.freedesktop.org/glvnd/libglvnd/-/archive/v$pkgver/libglvnd-v$pkgver.tar.gz")
+sha512sums=('7b6eb8e075b48f1d915b892044adc3260547d74ed61d1e2fa6c5f0f8c3527754abea314181e088626d4fd58bb221085e5288c4758d828e171c7dcb0e4991745c')
+
+build() {
+  export CC='gcc -m32'
+  export CXX='g++ -m32'
+  export PKG_CONFIG='i686-pc-linux-gnu-pkg-config'
+
+  arch-meson libglvnd-v$pkgver build \
+    --libdir=/usr/lib32 \
+    -D headers=false \
+    -D gles1=false
+
+  meson compile -C build
+}
+
+package() {
+  depends=('lib32-libxext' 'libglvnd')
+
+  meson install -C build --destdir "$pkgdir"
+
+  rm -r "$pkgdir"/usr/include
+
+  mkdir -p "$pkgdir"/usr/share/licenses
+  ln -s libglvnd "$pkgdir"/usr/share/licenses/$pkgname
+}
+

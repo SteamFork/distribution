@@ -13,12 +13,14 @@ pkgver=24.2.6
 _tag=mesa-${pkgver}
 pkgrel=1
 arch=('x86_64')
-makedepends=('git' 'openssh' 'python-mako' 'python-ply' 'lib32-libxml2' 'lib32-expat' 'lib32-libx11' 'xorgproto' 'lib32-libdrm'
-             'lib32-libxshmfence' 'lib32-libxxf86vm' 'lib32-libxdamage' 'lib32-libvdpau'
-             'lib32-libva' 'lib32-wayland' 'wayland-protocols' 'lib32-zstd' 'lib32-libelf'
-             'lib32-llvm' 'libclc' 'clang' 'lib32-clang' 'lib32-libglvnd' 'lib32-libunwind'
-             'lib32-lm_sensors' 'lib32-libxrandr' 'lib32-vulkan-icd-loader' 'lib32-systemd'
-             'glslang' 'cmake' 'meson' 'lib32-spirv-tools' 'lib32-spirv-llvm-translator')
+
+makedepends=('multilib-devel' 'git' 'openssh' 'python-mako' 'python-ply' 'lib32-libxml2' 'lib32-expat' 'lib32-libx11' 'xorgproto' 'lib32-libdrm' 
+	     'lib32-libxshmfence' 'lib32-libxxf86vm' 'lib32-libxdamage' 'lib32-libvdpau'
+	     'lib32-libva' 'lib32-wayland' 'wayland-protocols' 'lib32-zstd' 'lib32-libelf'
+	     'lib32-llvm' 'lib32-libomxil-bellagio' 'lib32-libdrm' 'libclc' 'clang' 'lib32-clang' 'lib32-libglvnd' 'lib32-libunwind'
+	     'lib32-lm_sensors' 'lib32-libxrandr' 'lib32-systemd' 'valgrind' 'glslang' 'lib32-vulkan-icd-loader' 'directx-headers' 'cmake' 'meson'
+	     'python-sphinx-hawkmoth' 'lib32-spirv-tools' 'lib32-spirv-llvm-translator')
+
 url="https://www.mesa3d.org/"
 license=('custom')
 options=('debug' '!lto')

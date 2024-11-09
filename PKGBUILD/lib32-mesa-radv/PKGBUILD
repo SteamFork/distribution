@@ -15,7 +15,7 @@ pkgver=24.2.6
 _tag=mesa-${pkgver}
 pkgrel=1
 arch=('x86_64')
-makedepends=('git' 'openssh' 'python-mako' 'python-ply' 'lib32-libxml2' 'lib32-expat' 'lib32-libx11' 'xorgproto' 'lib32-libdrm'
+makedepends=('multilib-devel' 'git' 'openssh' 'python-mako' 'python-ply' 'lib32-libxml2' 'lib32-expat' 'lib32-libx11' 'xorgproto' 'lib32-libdrm'
              'python>=3.11' 'python<3.12'
              'lib32-libxshmfence'
              'lib32-wayland' 'wayland-protocols' 'lib32-zstd' 'lib32-libelf'
