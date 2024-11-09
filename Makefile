@@ -47,30 +47,30 @@ images-release:
 packages-all: packages-local packages-aur
 
 packages-local:
-	#${SCRIPT_DIR}/mkpackage --repo local steamfork-keyring
-	#${SCRIPT_DIR}/mkpackage --repo local linux-firmware
-	#${SCRIPT_DIR}/mkpackage --repo local linux
-	#${SCRIPT_DIR}/mkpackage --repo aur   python-strictyaml
-	#${SCRIPT_DIR}/mkpackage --repo local python-sphinx-hawkmoth
-	#${SCRIPT_DIR}/mkpackage --repo local libdrm
-	#${SCRIPT_DIR}/mkpackage --repo local libglvnd
-	#${SCRIPT_DIR}/mkpackage --repo local mesa
-	#${SCRIPT_DIR}/mkpackage --repo local mesa-radv
-	#${SCRIPT_DIR}/mkpackage --repo local lib32-libdrm
-	#${SCRIPT_DIR}/mkpackage --repo local lib32-libglvnd
-	#${SCRIPT_DIR}/mkpackage --repo local lib32-mesa
-	#${SCRIPT_DIR}/mkpackage --repo local lib32-mesa-radv
-	#${SCRIPT_DIR}/mkpackage --repo local gamescope
-	#${SCRIPT_DIR}/mkpackage --repo local gamescope-legacy
-	#${SCRIPT_DIR}/mkpackage --repo local ectool
-	#${SCRIPT_DIR}/mkpackage --repo local steam-powerbuttond
-	#${SCRIPT_DIR}/mkpackage --repo local steamfork-customizations
-	#${SCRIPT_DIR}/mkpackage --repo local steamfork-device-support
-	#${SCRIPT_DIR}/mkpackage --repo local steamfork-installer
-	#${SCRIPT_DIR}/mkpackage --repo local webrtc-audio-processing
-	#${SCRIPT_DIR}/mkpackage --repo local ell
-	#${SCRIPT_DIR}/mkpackage --repo local iwd
-	#${SCRIPT_DIR}/mkpackage --repo local inputplumber
+	${SCRIPT_DIR}/mkpackage --repo local steamfork-keyring
+	${SCRIPT_DIR}/mkpackage --repo local linux-firmware
+	${SCRIPT_DIR}/mkpackage --repo local linux
+	${SCRIPT_DIR}/mkpackage --repo aur   python-strictyaml
+	${SCRIPT_DIR}/mkpackage --repo local python-sphinx-hawkmoth
+	${SCRIPT_DIR}/mkpackage --repo local libdrm
+	${SCRIPT_DIR}/mkpackage --repo local libglvnd
+	${SCRIPT_DIR}/mkpackage --repo local mesa
+	${SCRIPT_DIR}/mkpackage --repo local mesa-radv
+	${SCRIPT_DIR}/mkpackage --repo local lib32-libdrm
+	${SCRIPT_DIR}/mkpackage --repo local lib32-libglvnd
+	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa
+	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa-radv
+	${SCRIPT_DIR}/mkpackage --repo local gamescope
+	${SCRIPT_DIR}/mkpackage --repo local gamescope-legacy
+	${SCRIPT_DIR}/mkpackage --repo local ectool
+	${SCRIPT_DIR}/mkpackage --repo local steam-powerbuttond
+	${SCRIPT_DIR}/mkpackage --repo local steamfork-customizations
+	${SCRIPT_DIR}/mkpackage --repo local steamfork-device-support
+	${SCRIPT_DIR}/mkpackage --repo local steamfork-installer
+	${SCRIPT_DIR}/mkpackage --repo local webrtc-audio-processing
+	${SCRIPT_DIR}/mkpackage --repo local ell
+	${SCRIPT_DIR}/mkpackage --repo local iwd
+	${SCRIPT_DIR}/mkpackage --repo local inputplumber
 	${SCRIPT_DIR}/mkpackage --repo local steam-powerbuttond
 	${SCRIPT_DIR}/mkpackage --repo local ryzenadj
 	${SCRIPT_DIR}/mkpackage --repo local pikaur
