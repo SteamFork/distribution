@@ -1,6 +1,7 @@
 [Unit]
 Description=Simple bluetooth watcher that connects to paired devices.
 Before=display-manager.service
+ConditionPathExists=/usr/bin/bluetoothctl
 
 [Service]
 User=root
