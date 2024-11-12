@@ -1,6 +1,6 @@
 [Unit]
 Description=SteamFork post update service
-After=network.target
+Requires=NetworkManager.service
 
 [Service]
 Type=oneshot
