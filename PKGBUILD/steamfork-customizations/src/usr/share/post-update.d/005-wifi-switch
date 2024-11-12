@@ -6,7 +6,7 @@ QUIRKPATHS="$(/usr/bin/steamfork-device-id quirkpaths)"
 
 for QUIRKPATH in ${QUIRKPATHS}
 do
-	if [ -d "${QUIRKPATH}/modules-suspend.reload" ]
+	if [ -f "${QUIRKPATH}/modules-suspend.reload" ]
 	then
 		HAS_MODULE_RELOAD=true
 	fi
