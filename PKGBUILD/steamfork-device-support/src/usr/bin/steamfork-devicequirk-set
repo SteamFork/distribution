@@ -35,11 +35,11 @@ case ${DEVICE_NAME} in
 
     for QUIRKPATH in ${QUIRKPATHS}
     do
+	puts "Look for ${QUIRKPATH}/hardware_quirks.sh..."
         if [ -e "${QUIRKPATH}/hardware_quirks.sh" ]
         then
             puts "Found \"${DEVICE_NAME}\" in ${QUIRKPATH}, loading..."
             source "${QUIRKPATH}/hardware_quirks.sh"
-            break
 	fi
     done
   ;;
