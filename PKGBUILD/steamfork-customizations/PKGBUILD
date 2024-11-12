@@ -2,7 +2,7 @@
 
 pkgname=steamfork-customizations
 pkgver=2024.11.07
-pkgrel=3
+pkgrel=4
 pkgdesc='SteamFork customizations provider.'
 arch=('any')
 url='http://www.steamfork.org'
@@ -50,7 +50,7 @@ package() {
 
   mkdir -p ${pkgdir}/usr/lib/systemd/system/multi-user.target.wants
   cd ${pkgdir}/usr/lib/systemd/system/multi-user.target.wants
-  for service in swapfile.service home-swapfile.swap steamfork-postupdate.service
+  for service in swapfile.service home-swapfile.swap
   do
     ln -sf ../${service} .
   done

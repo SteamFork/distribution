@@ -1,0 +1,27 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024-present Fewtarius
+
+QUIRKPATHS="$(/usr/bin/steamfork-device-id quirkpaths)"
+
+for QUIRKPATH in ${QUIRKPATHS}
+do
+	if [ -d "${QUIRKPATH}/modules-suspend.reload" ]
+	then
+		HAS_MODULE_RELOAD=true
+	fi
+done
+
+WIFI_BACKEND=$(steamos-wifi-set-backend --check)
+if [ -n "${HAS_MODULE_RELOAD}" ]
+then
+	if [ ! "${WIFI_BACKEND}" = "wpa_supplicant" ]
+	then
+		steamos-wifi-set-backend wpa_supplicant
+	fi
+else
+	if [ ! "${WIFI_BACKEND}" = "iwd" ]
+	then
+		steamos-wifi-set-backend iwd
+	fi
+fi

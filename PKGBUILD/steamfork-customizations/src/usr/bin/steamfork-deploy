@@ -106,6 +106,7 @@ steamos-readonly disable
 mkinitcpio -P
 mount -L sf_root -o compress-force=zstd:1,discard,noatime,nodiratime /sf_root
 steamfork-grub-update
+steamfork-postupdate-mgmt
 EOF
         if [ ! $? = 0 ]
 	then
