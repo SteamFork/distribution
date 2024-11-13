@@ -12,6 +12,20 @@ function check_network() {
   fi
 }
 
+### NetworkManager and IWD are a buggy combination, but that's what SteamOS
+### uses upstream by default.  This isn't necessary when using wpa_supplicant
+### which SteamOS also uses for older devices (and we also use for devices with
+### module reload requirements.
+
+### This works around NetworkManager and IWD both refusing to manage wlan0 at times
+### causing the service to quit ... and systemd doesn't restart it.
+
+NM_ISACTIVE=$(systemctl is-active NetworkManager)
+if [[ "${NM_ISACTIVE}" =~ inactive ]]
+then
+  systemctl restart NetworkManager
+fi
+
 ### Check for the last update stamp, and if it isn't a match
 ### run any post-update scripts and then update the stamp.
 
