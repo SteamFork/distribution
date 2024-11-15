@@ -4,6 +4,10 @@ permissions:
 on:
   workflow_dispatch:
   push:
+    paths-ignore:
+      - '.github/**'
+      - '*.md'
+      - '.gitignore'
     branches:
       - "main"
     tags:
