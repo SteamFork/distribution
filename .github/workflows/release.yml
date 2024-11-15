@@ -1,9 +1,11 @@
-name: Release
+name: SteamFork Build and Release Workflow
 permissions:
   contents: write
 on:
   workflow_dispatch:
   push:
+    branches:
+      - "main"
     tags:
       - "*"
 
@@ -28,6 +30,12 @@ jobs:
           set -e
           make clean
           make image rel BUILD_VER="${{ steps.version.outputs.version }}"
+
+  sync:
+    if: startsWith(github.ref, 'refs/tags/*')
+    timeout-minutes: 1440
+    runs-on: main
+    steps:
       - name: Sync release images to the primary instance
         run: |
           set -e
@@ -36,6 +44,12 @@ jobs:
         run: |
           set -e
           make mirrors-sync
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/*')
+    timeout-minutes: 1440
+    runs-on: main
+    steps:
       - name: Release images to the public
         run: |
           set -e
