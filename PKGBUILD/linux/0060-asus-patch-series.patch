@@ -2149,7 +2149,7 @@ index 8c755799eb60..88bf250dc8ca 100644
 2.47.0
 
 
-From b17381bf87d10d8f6657ab9d2b3d39f1a6a5acc8 Mon Sep 17 00:00:00 2001
+From 782db6994b2f3f9c1bc97cd7f6be6a0a1b10898b Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 18 Sep 2024 21:19:12 +1200
 Subject: [PATCH 14/29] platform/x86: asus-armoury: add core count control
@@ -2163,13 +2163,13 @@ depending on their requirements. After change a reboot is required.
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
 ---
- drivers/platform/x86/asus-armoury.c        | 234 ++++++++++++++++++++-
+ drivers/platform/x86/asus-armoury.c        | 226 +++++++++++++++++++++
  drivers/platform/x86/asus-armoury.h        |  28 +++
  include/linux/platform_data/x86/asus-wmi.h |   4 +
- 3 files changed, 262 insertions(+), 4 deletions(-)
+ 3 files changed, 258 insertions(+)
 
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
-index 271dadc4c75d..4c6bda7764fc 100644
+index 271dadc4c75d..69e79446c411 100644
 --- a/drivers/platform/x86/asus-armoury.c
 +++ b/drivers/platform/x86/asus-armoury.c
 @@ -40,6 +40,24 @@
@@ -2425,20 +2425,11 @@ index 271dadc4c75d..4c6bda7764fc 100644
  
  	{ &charge_mode_attr_group, ASUS_WMI_DEVID_CHARGE_MODE },
  	{ &boot_sound_attr_group, ASUS_WMI_DEVID_BOOT_SOUND },
-@@ -812,11 +1030,19 @@ static int __init asus_fw_init(void)
- 	if (!strcmp(wmi_uid, ASUS_ACPI_UID_ASUSWMI))
- 		return -ENODEV;
+@@ -817,6 +1035,14 @@ static int __init asus_fw_init(void)
+ 		return -ENOMEM;
  
--	asus_armoury.rog_tunables = kzalloc(sizeof(struct rog_tunables), GFP_KERNEL);
--	if (!asus_armoury.rog_tunables)
--		return -ENOMEM;
+ 	init_rog_tunables(asus_armoury.rog_tunables);
 +	if (asus_wmi_is_present(ASUS_WMI_DEVID_CORES_MAX)) {
-+		asus_armoury.rog_tunables = kzalloc(sizeof(struct rog_tunables), GFP_KERNEL);
-+		if (!asus_armoury.rog_tunables)
-+			return -ENOMEM;
- 
--	init_rog_tunables(asus_armoury.rog_tunables);
-+		init_rog_tunables(asus_armoury.rog_tunables);
 +		err = init_max_cpu_cores();
 +		if (err) {
 +			kfree(asus_armoury.rog_tunables);
@@ -2507,7 +2498,7 @@ index 88bf250dc8ca..cc21e4272460 100644
 2.47.0
 
 
-From 05cd8df632c6c1a18203699549dfcbb882e4048f Mon Sep 17 00:00:00 2001
+From 886b6bc61ea402f5631d49c863922bb1a77d850e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 3 Jun 2024 12:04:41 +1200
 Subject: [PATCH 15/29] platform/x86: asus-wmi: deprecate bios features
@@ -3128,7 +3119,7 @@ index 29cc43355948..ef7f81545f9a 100644
 2.47.0
 
 
-From 577247f7b72e9c79c1ffc3ee054a05fc3470df49 Mon Sep 17 00:00:00 2001
+From 4c5d82607d002dbfa140a9445d8a494ed34f893f Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 10 Oct 2024 09:52:45 +1300
 Subject: [PATCH 16/29] ALSA: hda/realtek: fixup ASUS GA605W
@@ -3158,7 +3149,7 @@ index 24b4fe99304a..b335a258f7ef 100644
 2.47.0
 
 
-From 4b7d75a2ea120ac775f0f70ddfc703a077408cf3 Mon Sep 17 00:00:00 2001
+From 9358bb959824c845262cce8ac6e73543b680c15d Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 26 Aug 2024 12:49:35 +1200
 Subject: [PATCH 17/29] hid-asus-ally: Add joystick LED ring support
@@ -3942,7 +3933,7 @@ index 9540e3e19cce..7c5269cd4d76 100644
 2.47.0
 
 
-From 464c0fbce1413f614dad6ffcabde25ef9c2c597b Mon Sep 17 00:00:00 2001
+From b0f1070b17691c1285148fc268d5d1c890b57027 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 2 Oct 2024 23:32:46 +1300
 Subject: [PATCH 18/29] hid-asus-ally: initial Ally-X gamepad
@@ -4429,7 +4420,7 @@ index eb8617c80c2a..458d02996bca 100644
 2.47.0
 
 
-From f199cc18e4203a7ca59026632bba4aaf90b139d8 Mon Sep 17 00:00:00 2001
+From c94cab817453e7a4e84ef650a27e29924a62f5b6 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 2 Oct 2024 23:51:36 +1300
 Subject: [PATCH 19/29] hid-asus-ally: initial gamepad configuration
@@ -4841,7 +4832,7 @@ index 458d02996bca..2b298ad4da0e 100644
 2.47.0
 
 
-From 3df207beae97195114485fadca20dc5e9e783314 Mon Sep 17 00:00:00 2001
+From 1894ae3435cc347cfb09753ece1fb3aa1639ac04 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 14:58:33 +1300
 Subject: [PATCH 20/29] hid-asus-ally: add button remap attributes
@@ -5539,7 +5530,7 @@ index 2b298ad4da0e..127db570a827 100644
 2.47.0
 
 
-From 77827475110464e63e67cd7e10ddab80b5b99095 Mon Sep 17 00:00:00 2001
+From c0ec248a615c41dcc2e798054d3a7d8b18de3118 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Fri, 25 Oct 2024 08:56:54 +0200
 Subject: [PATCH 21/29] hid-asus-ally: add gamepad mode selection
@@ -5660,7 +5651,7 @@ index 127db570a827..caec424c52e3 100644
 2.47.0
 
 
-From b143da5b9ea0c5d33afc91b867e878cd8a4a7364 Mon Sep 17 00:00:00 2001
+From 1b305754ee5c412cda1f24fe107bc211011a148e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 15:40:09 +1300
 Subject: [PATCH 22/29] hid-asus-ally: Turbo settings for buttons
@@ -5880,7 +5871,7 @@ index caec424c52e3..4e60e4c8f6d9 100644
 2.47.0
 
 
-From 8ca0d389babee46ed479ed67f0df68f313102f7e Mon Sep 17 00:00:00 2001
+From f4fb10b9e0c1542ff9df755a7d800db05c479dad Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 20:46:00 +1300
 Subject: [PATCH 23/29] hid-asus-ally: add vibration intensity settings
@@ -6051,7 +6042,7 @@ index 4e60e4c8f6d9..eea4696850fa 100644
 2.47.0
 
 
-From ce933bf56becc3894e941b7b7e128848318f7c7d Mon Sep 17 00:00:00 2001
+From 456060265eeee3b42eaac96d442b1b75a13d47ff Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 21:32:41 +1300
 Subject: [PATCH 24/29] hid-asus-ally: add JS deadzones
@@ -6260,7 +6251,7 @@ index eea4696850fa..76ba5fcd593a 100644
 2.47.0
 
 
-From 3f7a55d32b310e68c70388b2a0f5e4c4bea0459e Mon Sep 17 00:00:00 2001
+From 357058856b53bc2afce8687126fb679201ad9e7c Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 21:37:27 +1300
 Subject: [PATCH 25/29] hid-asus-ally: add trigger deadzones
@@ -6377,7 +6368,7 @@ index 76ba5fcd593a..f103b5ecff36 100644
 2.47.0
 
 
-From e52793c0c4a369606e766cc4fda4d91dce6818f2 Mon Sep 17 00:00:00 2001
+From e38ce3daa48912230a8bcd7a2bd3b3b2a65812b9 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 6 Oct 2024 19:49:24 +1300
 Subject: [PATCH 26/29] hid-asus-ally: add anti-deadzones
@@ -6562,7 +6553,7 @@ index f103b5ecff36..9c13de73749c 100644
 2.47.0
 
 
-From 6f191213d33805f0addada99903ea470a2603646 Mon Sep 17 00:00:00 2001
+From 8bb0010337471174b9a8cb87ffc1b58b4c7c73cf Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 6 Oct 2024 21:22:40 +1300
 Subject: [PATCH 27/29] hid-asus-ally: add JS response curves
@@ -6802,7 +6793,7 @@ index 9c13de73749c..518d8db3af5e 100644
 2.47.0
 
 
-From a9fea27b9000f26ced6d75bf4886a0ce06798580 Mon Sep 17 00:00:00 2001
+From 1a0cf33c8681cf1c6184092df74028b5452bb9eb Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 10 Oct 2024 11:15:36 +1300
 Subject: [PATCH 28/29] hid-asus-ally: add calibrations (wip)
@@ -6950,7 +6941,7 @@ index 4d9954362625..03603695c484 100644
 2.47.0
 
 
-From abf43241bfedc3baee29e717797a99a854c977ad Mon Sep 17 00:00:00 2001
+From b0d1757da89ebdd5405dc2e02aa80f381cafaf86 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 6 Nov 2024 00:27:03 +0300
 Subject: [PATCH 29/29] debug by default
@@ -6974,7 +6965,7 @@ index 03603695c484..d2fbb08babdb 100644
  #define FEATURE_REPORT_ID 0x0d
  #define FEATURE_ROG_ALLY_REPORT_ID 0x5a
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
-index 4c6bda7764fc..982feed63cd7 100644
+index 69e79446c411..fb4ae804521d 100644
 --- a/drivers/platform/x86/asus-armoury.c
 +++ b/drivers/platform/x86/asus-armoury.c
 @@ -27,6 +27,8 @@
