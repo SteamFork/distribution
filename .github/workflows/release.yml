@@ -38,6 +38,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/2')
     timeout-minutes: 1440
     runs-on: main
+    needs: build
     steps:
       - name: Sync release images to the primary instance
         run: |
@@ -51,6 +52,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/2')
     timeout-minutes: 1440
     runs-on: main
+    needs: sync
     steps:
       - name: Release images to the public
         run: |
