@@ -1,22 +1,22 @@
-diff -rupN linux-6.9.8.orig/drivers/hwmon/oxp-sensors.c linux-6.9.8/drivers/hwmon/oxp-sensors.c
---- linux-6.9.8.orig/drivers/hwmon/oxp-sensors.c	2024-07-05 07:38:21.000000000 +0000
-+++ linux-6.9.8/drivers/hwmon/oxp-sensors.c	2024-07-10 23:02:16.668034636 +0000
-@@ -42,10 +42,14 @@ static bool unlock_global_acpi_lock(void
+diff -rupN linux-6.12.orig/drivers/hwmon/oxp-sensors.c linux-6.12/drivers/hwmon/oxp-sensors.c
+--- linux-6.12.orig/drivers/hwmon/oxp-sensors.c	2024-11-17 22:15:08.000000000 +0000
++++ linux-6.12/drivers/hwmon/oxp-sensors.c	2024-11-18 12:34:25.438029683 +0000
+@@ -45,12 +45,14 @@ static bool unlock_global_acpi_lock(void
  enum oxp_board {
  	aok_zoe_a1 = 1,
  	aya_neo_2,
 +	aya_neo_2s,
  	aya_neo_air,
-+	aya_neo_air_1s,
+ 	aya_neo_air_1s,
  	aya_neo_air_plus_mendo,
  	aya_neo_air_pro,
-+	aya_neo_flip,
+ 	aya_neo_flip,
  	aya_neo_geek,
 +	aya_neo_geek_1s,
- 	oxp_mini_amd,
- 	oxp_mini_amd_a07,
- 	oxp_mini_amd_pro,
-@@ -92,6 +96,13 @@ static const struct dmi_system_id dmi_ta
+ 	aya_neo_kun,
+ 	orange_pi_neo,
+ 	oxp_2,
+@@ -111,6 +113,13 @@ static const struct dmi_system_id dmi_ta
  		},
  		.driver_data = (void *)aya_neo_2,
  	},
@@ -30,7 +30,7 @@ diff -rupN linux-6.9.8.orig/drivers/hwmon/oxp-sensors.c linux-6.9.8/drivers/hwmo
  	{
  		.matches = {
  			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
-@@ -102,6 +113,13 @@ static const struct dmi_system_id dmi_ta
+@@ -128,6 +137,13 @@ static const struct dmi_system_id dmi_ta
  	{
  		.matches = {
  			DMI_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
@@ -44,7 +44,7 @@ diff -rupN linux-6.9.8.orig/drivers/hwmon/oxp-sensors.c linux-6.9.8/drivers/hwmo
  			DMI_EXACT_MATCH(DMI_BOARD_NAME, "AB05-Mendocino"),
  		},
  		.driver_data = (void *)aya_neo_air_plus_mendo,
-@@ -122,6 +140,20 @@ static const struct dmi_system_id dmi_ta
+@@ -169,6 +185,20 @@ static const struct dmi_system_id dmi_ta
  	},
  	{
  		.matches = {
@@ -65,26 +65,33 @@ diff -rupN linux-6.9.8.orig/drivers/hwmon/oxp-sensors.c linux-6.9.8/drivers/hwmo
  			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
  			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONE XPLAYER"),
  		},
-@@ -339,10 +371,14 @@ static int oxp_platform_read(struct devi
- 				return ret;
- 			switch (board) {
+@@ -463,12 +493,14 @@ static int oxp_platform_read(struct devi
+ 				return read_from_ec(OXP_2_SENSOR_FAN_REG, 2, val);
+ 			case aok_zoe_a1:
  			case aya_neo_2:
 +			case aya_neo_2s:
-+			case aya_neo_flip:
  			case aya_neo_air:
-+			case aya_neo_air_1s:
+ 			case aya_neo_air_1s:
  			case aya_neo_air_plus_mendo:
  			case aya_neo_air_pro:
+ 			case aya_neo_flip:
  			case aya_neo_geek:
 +			case aya_neo_geek_1s:
+ 			case aya_neo_kun:
+ 			case oxp_fly:
  			case oxp_mini_amd:
- 			case oxp_mini_amd_a07:
- 				*val = (*val * 255) / 100;
-@@ -385,6 +421,7 @@ static int oxp_platform_write(struct dev
+@@ -588,12 +620,14 @@ static int oxp_platform_write(struct dev
+ 				val = (val * 184) / 255;
+ 				return write_to_ec(OXP_SENSOR_PWM_REG, val);
+ 			case aya_neo_2:
++			case aya_neo_2s:
  			case aya_neo_air:
+ 			case aya_neo_air_1s:
  			case aya_neo_air_plus_mendo:
  			case aya_neo_air_pro:
-+			case aya_neo_flip:
+ 			case aya_neo_flip:
  			case aya_neo_geek:
++			case aya_neo_geek_1s:
+ 			case aya_neo_kun:
  			case oxp_mini_amd:
  			case oxp_mini_amd_a07:
