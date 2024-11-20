@@ -17,13 +17,3 @@ do
   echo low >${CARD}
 done
 
-COUNT=1
-for CORE in $(find /sys/devices/system/cpu/cpu* -name online)
-do
-  if (( ${COUNT} <= 2 ))
-  then
-    COUNT=$(( ${COUNT} + 1 ))
-    continue
-  fi
-  echo 0 > ${CORE}
-done

@@ -7,11 +7,6 @@
 RESTORE_CPU=$(get_setting sleep.cpugovernor)
 RESTORE_GPU=$(set_setting sleep.gpulevel)
 
-for CORE in $(find /sys/devices/system/cpu/cpu* -name online)
-do
-  echo 1 > ${CORE}
-done
-
 for CORE in $(find /sys/devices/system/cpu/cpufreq -name policy*)
 do
   echo ${RESTORE_CPU} >${CORE}/scaling_governor
