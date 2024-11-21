@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.12
-pkgrel=3
+pkgrel=4
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -60,6 +60,7 @@ source=(
   0041-air-amdgpu-quirks.patch
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
   0060-asus-patch-series.patch
+  0070-lexar-nvme-broken-msi.patch
   0099-add-external-device-drivers.patch
 )
 validpgpkeys=(
@@ -88,6 +89,7 @@ sha256sums=('SKIP'
 'ab8a6dccf67cee7d924ee2e3d4690285d404bcb9bab70eced09b05fa2853b288' # 0041-air-amdgpu-quirks.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
 'ee4bda8ed96baa79475d98720e85c67b6a8dcf82a98c41d9860883c407f9a6fb' # 0060-asus-patch-series.patch
+'b048068eeee69bf0f600d2ea390c8f681f9708776ff45a4b871e1e51136af33a' # 0070-lexar-nvme-broken-msi.patch
 '3b1dabc168e4884c6586720538014d6ef8955a0b783d6436dd4937af6622ee42' # 0099-add-external-device-drivers.patch
 )
 

@@ -1,0 +1,12 @@
+diff -rupN linux-6.12.orig/drivers/nvme/host/pci.c linux-6.12/drivers/nvme/host/pci.c
+--- linux-6.12.orig/drivers/nvme/host/pci.c	2024-11-17 22:15:08.000000000 +0000
++++ linux-6.12/drivers/nvme/host/pci.c	2024-11-21 16:09:07.019822707 +0000
+@@ -3442,6 +3442,8 @@ static const struct pci_device_id nvme_i
+ 				NVME_QUIRK_DISABLE_WRITE_ZEROES, },
+ 	{ PCI_VDEVICE(INTEL, 0xf1a6),	/* Intel 760p/Pro 7600p */
+ 		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN, },
++	{ PCI_DEVICE(0x1d97, 1602),   /* Lexar NM790 */
++		.driver_data = NVME_QUIRK_BROKEN_MSI },
+ 	{ PCI_VDEVICE(INTEL, 0x5845),	/* Qemu emulated controller */
+ 		.driver_data = NVME_QUIRK_IDENTIFY_CNS |
+ 				NVME_QUIRK_DISABLE_WRITE_ZEROES |
