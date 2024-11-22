@@ -2,7 +2,7 @@
 # Upstream maintainer: William Edwards <shadowapex@gmail.com>
 pkgname=inputplumber
 _pkgbase=inputplumber
-pkgver=0.38.0
+pkgver=0.39.1
 pkgrel=1
 pkgdesc="Open source input router and remapper daemon for Linux"
 arch=('x86_64')
@@ -15,14 +15,12 @@ provides=('inputplumber')
 conflicts=('inputplumber-bin')
 source=("${_pkgbase}::git+https://github.com/ShadowBlip/${_pkgbase}.git#tag=v$pkgver"
 	001-no-rootfs.patch
-	002-enable-gyro-air_zero.patch
 	003-Update-mount_matrix.patch
 )
 
 sha256sums=('SKIP'
 	'55d15e63e2229e239b51823ba1a92522cba4a04e424c8515c210c102b4b6a88c'  # 001-no-rootfs.patch
-	'2b7c306d0846e21d3e6a181fba62db04edaabc804bcddde4ee158d902c8ef27f'  # 002-enable-gyro-air_zero.patch
-	'0cc586e16d6003f5872244c13d6e1b0345773a50f44d6de71778be3fda0adfec'  # 003-Update-mount_matrix.patch
+	'cb3fbca0c721e4db0ab850a8f2b59c74b181edbd406d0070552b7aff5a21388d'  # 003-Update-mount_matrix.patch
 )
 
 build() {

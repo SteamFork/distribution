@@ -1,194 +1,3 @@
-From c281e61ccf7476ee49190afc51dd18b23d2b5c04 Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?=E3=83=B1=E3=83=83=E3=82=B8?= <uejjik@gmail.com>
-Date: Thu, 17 Oct 2024 18:05:00 -0500
-Subject: [PATCH 1/2] fix(mount_matrix): Swap roll and yaw axes
-
-Per discussion with @pastaq
----
- .../inputplumber/devices/50-ayaneo_air_plus_mendo.yaml |  5 +++--
- .../usr/share/inputplumber/devices/50-ayaneo_next.yaml |  5 +++--
- .../inputplumber/devices/50-ayn_loki_mini_pro.yaml     |  5 +++--
- .../share/inputplumber/devices/50-ayn_loki_zero.yaml   |  4 ++--
- .../usr/share/inputplumber/devices/50-legion_go.yaml   | 10 ++++++----
- rootfs/usr/share/inputplumber/devices/50-msi_claw.yaml | 10 ++++++----
- .../share/inputplumber/devices/50-orangepi_neo.yaml    |  5 +++--
- 7 files changed, 26 insertions(+), 18 deletions(-)
-
-diff --git a/rootfs/usr/share/inputplumber/devices/50-ayaneo_air_plus_mendo.yaml b/rootfs/usr/share/inputplumber/devices/50-ayaneo_air_plus_mendo.yaml
-index 8cb61c5..d5e9264 100644
---- a/rootfs/usr/share/inputplumber/devices/50-ayaneo_air_plus_mendo.yaml
-+++ b/rootfs/usr/share/inputplumber/devices/50-ayaneo_air_plus_mendo.yaml
-@@ -42,9 +42,10 @@ source_devices:
-     iio:
-       name: bmi323-imu
-       mount_matrix:
-+        # TODO: Reverify on actual hardware
-         x: [0, -1, 0]
--        y: [0, 0, 1]
--        z: [-1, 0, 0]
-+        y: [-1, 0, 0]
-+        z: [0, 0, 1]
- 
- # Optional configuration for the composite device
- options:
-diff --git a/rootfs/usr/share/inputplumber/devices/50-ayaneo_next.yaml b/rootfs/usr/share/inputplumber/devices/50-ayaneo_next.yaml
-index a9f6978..56d29bb 100644
---- a/rootfs/usr/share/inputplumber/devices/50-ayaneo_next.yaml
-+++ b/rootfs/usr/share/inputplumber/devices/50-ayaneo_next.yaml
-@@ -54,9 +54,10 @@ source_devices:
-     iio:
-       name: i2c-BMI0160:00
-       mount_matrix:
-+        # TODO: Reverify on actual hardware
-         x: [0, -1, 0]
--        y: [0, 0, -1]
--        z: [1, 0, 0]
-+        y: [1, 0, 0]
-+        z: [0, 0, -1]
- 
- # Optional configuration for the composite device
- options:
-diff --git a/rootfs/usr/share/inputplumber/devices/50-ayn_loki_mini_pro.yaml b/rootfs/usr/share/inputplumber/devices/50-ayn_loki_mini_pro.yaml
-index c0a3783..f93346c 100644
---- a/rootfs/usr/share/inputplumber/devices/50-ayn_loki_mini_pro.yaml
-+++ b/rootfs/usr/share/inputplumber/devices/50-ayn_loki_mini_pro.yaml
-@@ -36,9 +36,10 @@ source_devices:
-     iio:
-       name: i2c-BMI0160:00
-       mount_matrix:
-+        # TODO: Reverify on actual hardware
-         x: [1, 0, 0]
--        y: [0, 0, -1]
--        z: [0, 1, 0]
-+        y: [0, 1, 0]
-+        z: [0, 0, -1]
- 
- # Optional configuration for the composite device
- options:
-diff --git a/rootfs/usr/share/inputplumber/devices/50-ayn_loki_zero.yaml b/rootfs/usr/share/inputplumber/devices/50-ayn_loki_zero.yaml
-index 2cf91bf..8e18f10 100644
---- a/rootfs/usr/share/inputplumber/devices/50-ayn_loki_zero.yaml
-+++ b/rootfs/usr/share/inputplumber/devices/50-ayn_loki_zero.yaml
-@@ -37,8 +37,8 @@ source_devices:
-       name: i2c-BMI0160:00
-       mount_matrix:
-         x: [1, 0, 0]
--        y: [0, 0, -1]
--        z: [0, 1, 0]
-+        y: [0, 1, 0]
-+        z: [0, 0, -1]
- 
- # Optional configuration for the composite device
- options:
-diff --git a/rootfs/usr/share/inputplumber/devices/50-legion_go.yaml b/rootfs/usr/share/inputplumber/devices/50-legion_go.yaml
-index 1278124..16d8508 100644
---- a/rootfs/usr/share/inputplumber/devices/50-legion_go.yaml
-+++ b/rootfs/usr/share/inputplumber/devices/50-legion_go.yaml
-@@ -141,16 +141,18 @@ source_devices:
- #    iio:
- #      name: accel_3d
- #      mount_matrix:
-+#        # TODO: Reverify on actual hardware
- #        x: [0, 1, 0]
--#        y: [0, 0, -1]
--#        z: [-1, 0, 0]
-+#        y: [-1, 0, 0]
-+#        z: [0, 0, -1]
-   - group: imu
-     iio:
-       name: gyro_3d
-       mount_matrix:
-+        # TODO: Reverify on actual hardware
-         x: [0, 1, 0]
--        y: [0, 0, -1]
--        z: [-1, 0, 0]
-+        y: [-1, 0, 0]
-+        z: [0, 0, -1]
- 
- # Optional configuration for the composite device
- options:
-diff --git a/rootfs/usr/share/inputplumber/devices/50-msi_claw.yaml b/rootfs/usr/share/inputplumber/devices/50-msi_claw.yaml
-index 471da92..89c1735 100644
---- a/rootfs/usr/share/inputplumber/devices/50-msi_claw.yaml
-+++ b/rootfs/usr/share/inputplumber/devices/50-msi_claw.yaml
-@@ -40,16 +40,18 @@ source_devices:
-     iio:
-       name: accel_3d
-       mount_matrix:
-+        # TODO: Reverify on actual hardware
-         x: [0, 1, 0]
--        y: [0, 0, -1]
--        z: [-1, 0, 0]
-+        y: [-1, 0, 0]
-+        z: [0, 0, -1]
-   - group: imu
-     iio:
-       name: gyro_3d
-       mount_matrix:
-+        # TODO: Reverify on actual hardware
-         x: [0, 1, 0]
--        y: [0, 0, -1]
--        z: [-1, 0, 0]
-+        y: [-1, 0, 0]
-+        z: [0, 0, -1]
- 
- # Optional configuration for the composite device
- options:
-diff --git a/rootfs/usr/share/inputplumber/devices/50-orangepi_neo.yaml b/rootfs/usr/share/inputplumber/devices/50-orangepi_neo.yaml
-index 4b289f5..0158b2b 100644
---- a/rootfs/usr/share/inputplumber/devices/50-orangepi_neo.yaml
-+++ b/rootfs/usr/share/inputplumber/devices/50-orangepi_neo.yaml
-@@ -61,9 +61,10 @@ source_devices:
-     iio:
-       name: i2c-BMI0260:00
-       mount_matrix:
-+        # TODO: Reverify on actual hardware
-         x: [1, 0, 0]
--        y: [0, 0, -1]
--        z: [0, -1, 0]
-+        y: [0, -1, 0]
-+        z: [0, 0, -1]
- 
- # Optional configuration for the composite device
- options:
--- 
-2.43.0
-
-From d99eedaaad4fc86732d1904926907450ec7c7d54 Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?=E3=83=B1=E3=83=83=E3=82=B8?= <uejjik@gmail.com>
-Date: Thu, 17 Oct 2024 17:21:14 -0500
-Subject: [PATCH 2/2] fix(mount_matrix): Update mount_matrix
-
-Update mount_matrix to match Steam Deck gyroscope output, per discussion with @pastaq
-
-Thanks to:
-@dansl and @cuongnphan for providing gyro data on Air 1S 7840U
-@aarron-lee for providing gyro data and testing on Win 4 6800U
-.bastardgoose on Discord for providing gyro data and testing on Ally X
-@fewtarius for providing gyro data on 2S, Flip KB and Loki Max
-@pastaq for providing gyro testing on Air, 2021 and Loki Max
-@winghugs for providing gyro testing on Air 1S 8840U
-
-Co-Authored-By: Dan Long <139961+dansl@users.noreply.github.com>
-Co-Authored-By: cuongnphan <65583536+cuongnphan@users.noreply.github.com>
-Co-Authored-By: Aarron Lee <lee.aarron.c@gmail.com>
-Co-Authored-By: fewtarius <88717793+fewtarius@users.noreply.github.com>
-Co-Authored-By: Derek J. Clark <derekjohn.clark@gmail.com>
-Co-Authored-By: Kin <22281362+winghugs@users.noreply.github.com>
----
- rootfs/usr/share/inputplumber/devices/50-ayaneo_2.yaml    | 4 ++--
- rootfs/usr/share/inputplumber/devices/50-ayaneo_2021.yaml | 4 ++--
- rootfs/usr/share/inputplumber/devices/50-ayaneo_2s.yaml   | 8 +++++---
- rootfs/usr/share/inputplumber/devices/50-ayaneo_air.yaml  | 4 ++--
- .../usr/share/inputplumber/devices/50-ayaneo_air_1s.yaml  | 6 ++++++
- .../share/inputplumber/devices/50-ayaneo_air_plus.yaml    | 4 ++--
- rootfs/usr/share/inputplumber/devices/50-ayaneo_flip.yaml | 8 +++++---
- .../usr/share/inputplumber/devices/50-ayn_loki_max.yaml   | 4 ++--
- rootfs/usr/share/inputplumber/devices/50-gpd_win4.yaml    | 6 ++++++
- rootfs/usr/share/inputplumber/devices/50-rog_ally.yaml    | 6 +++---
- rootfs/usr/share/inputplumber/devices/50-rog_ally_x.yaml  | 6 +++---
- 11 files changed, 38 insertions(+), 22 deletions(-)
-
 diff --git a/rootfs/usr/share/inputplumber/devices/50-ayaneo_2.yaml b/rootfs/usr/share/inputplumber/devices/50-ayaneo_2.yaml
 index 5d4e261..a68cbe8 100644
 --- a/rootfs/usr/share/inputplumber/devices/50-ayaneo_2.yaml
@@ -239,15 +48,25 @@ index 04f5ec3..c4b245f 100644
  # Optional configuration for the composite device
  options:
 diff --git a/rootfs/usr/share/inputplumber/devices/50-ayaneo_air.yaml b/rootfs/usr/share/inputplumber/devices/50-ayaneo_air.yaml
-index bad95e8..9ba17d0 100644
+index fd16747..9ba17d0 100644
 --- a/rootfs/usr/share/inputplumber/devices/50-ayaneo_air.yaml
 +++ b/rootfs/usr/share/inputplumber/devices/50-ayaneo_air.yaml
-@@ -40,8 +40,8 @@ source_devices:
-       name: i2c-BMI0160:00
-       mount_matrix:
-         x: [0, -1, 0]
--        y: [0, 0, -1]
--        z: [1, 0, 0]
+@@ -35,13 +35,13 @@ source_devices:
+       name: AT Translated Set 2 keyboard
+       phys_path: isa0060/serio0/input0
+       handler: event*
+-  #- group: imu #TODO:reenable after we switch from polling
+-  #  iio:
+-  #    name: i2c-BMI0160:00
+-  #    mount_matrix:
+-  #      x: [0, -1, 0]
+-  #      y: [0, 0, -1]
+-  #      z: [1, 0, 0]
++  - group: imu
++    iio:
++      name: i2c-BMI0160:00
++      mount_matrix:
++        x: [0, -1, 0]
 +        y: [-1, 0, 0]
 +        z: [0, 0, -1]
  
@@ -285,6 +104,23 @@ index 3c15719..4b5a02b 100644
  
  # Optional configuration for the composite device
  options:
+diff --git a/rootfs/usr/share/inputplumber/devices/50-ayaneo_air_plus_mendo.yaml b/rootfs/usr/share/inputplumber/devices/50-ayaneo_air_plus_mendo.yaml
+index 8cb61c5..d5e9264 100644
+--- a/rootfs/usr/share/inputplumber/devices/50-ayaneo_air_plus_mendo.yaml
++++ b/rootfs/usr/share/inputplumber/devices/50-ayaneo_air_plus_mendo.yaml
+@@ -42,9 +42,10 @@ source_devices:
+     iio:
+       name: bmi323-imu
+       mount_matrix:
++        # TODO: Reverify on actual hardware
+         x: [0, -1, 0]
+-        y: [0, 0, 1]
+-        z: [-1, 0, 0]
++        y: [-1, 0, 0]
++        z: [0, 0, 1]
+ 
+ # Optional configuration for the composite device
+ options:
 diff --git a/rootfs/usr/share/inputplumber/devices/50-ayaneo_flip.yaml b/rootfs/usr/share/inputplumber/devices/50-ayaneo_flip.yaml
 index 2882d9f..babfd2f 100644
 --- a/rootfs/usr/share/inputplumber/devices/50-ayaneo_flip.yaml
@@ -304,6 +140,23 @@ index 2882d9f..babfd2f 100644
  
  # Optional configuration for the composite device
  options:
+diff --git a/rootfs/usr/share/inputplumber/devices/50-ayaneo_next.yaml b/rootfs/usr/share/inputplumber/devices/50-ayaneo_next.yaml
+index a9f6978..56d29bb 100644
+--- a/rootfs/usr/share/inputplumber/devices/50-ayaneo_next.yaml
++++ b/rootfs/usr/share/inputplumber/devices/50-ayaneo_next.yaml
+@@ -54,9 +54,10 @@ source_devices:
+     iio:
+       name: i2c-BMI0160:00
+       mount_matrix:
++        # TODO: Reverify on actual hardware
+         x: [0, -1, 0]
+-        y: [0, 0, -1]
+-        z: [1, 0, 0]
++        y: [1, 0, 0]
++        z: [0, 0, -1]
+ 
+ # Optional configuration for the composite device
+ options:
 diff --git a/rootfs/usr/share/inputplumber/devices/50-ayn_loki_max.yaml b/rootfs/usr/share/inputplumber/devices/50-ayn_loki_max.yaml
 index fed2735..01bfb19 100644
 --- a/rootfs/usr/share/inputplumber/devices/50-ayn_loki_max.yaml
@@ -315,6 +168,48 @@ index fed2735..01bfb19 100644
 -        y: [0, 0, -1]
 -        z: [0, 1, 0]
 +        y: [0, -1, 0]
++        z: [0, 0, -1]
+ 
+ # Optional configuration for the composite device
+ options:
+diff --git a/rootfs/usr/share/inputplumber/devices/50-ayn_loki_mini_pro.yaml b/rootfs/usr/share/inputplumber/devices/50-ayn_loki_mini_pro.yaml
+index c0a3783..f93346c 100644
+--- a/rootfs/usr/share/inputplumber/devices/50-ayn_loki_mini_pro.yaml
++++ b/rootfs/usr/share/inputplumber/devices/50-ayn_loki_mini_pro.yaml
+@@ -36,9 +36,10 @@ source_devices:
+     iio:
+       name: i2c-BMI0160:00
+       mount_matrix:
++        # TODO: Reverify on actual hardware
+         x: [1, 0, 0]
+-        y: [0, 0, -1]
+-        z: [0, 1, 0]
++        y: [0, 1, 0]
++        z: [0, 0, -1]
+ 
+ # Optional configuration for the composite device
+ options:
+diff --git a/rootfs/usr/share/inputplumber/devices/50-ayn_loki_zero.yaml b/rootfs/usr/share/inputplumber/devices/50-ayn_loki_zero.yaml
+index 8f13377..8e18f10 100644
+--- a/rootfs/usr/share/inputplumber/devices/50-ayn_loki_zero.yaml
++++ b/rootfs/usr/share/inputplumber/devices/50-ayn_loki_zero.yaml
+@@ -32,13 +32,13 @@ source_devices:
+       name: AT Translated Set 2 keyboard
+       phys_path: isa0060/serio0/input0
+       handler: event*
+-  #- group: imu #TODO:reenable after we switch from polling
+-  #  iio:
+-  #    name: i2c-BMI0160:00
+-  #    mount_matrix:
+-  #      x: [1, 0, 0]
+-  #      y: [0, 0, -1]
+-  #      z: [0, 1, 0]
++  - group: imu
++    iio:
++      name: i2c-BMI0160:00
++      mount_matrix:
++        x: [1, 0, 0]
++        y: [0, 1, 0]
 +        z: [0, 0, -1]
  
  # Optional configuration for the composite device
@@ -333,6 +228,65 @@ index 866dc43..20cf87c 100644
 +        x: [-1, 0, 0]
 +        y: [0, -1, 0]
 +        z: [0, 0, 1]
+ 
+ # Optional configuration for the composite device
+ options:
+diff --git a/rootfs/usr/share/inputplumber/devices/50-legion_go.yaml b/rootfs/usr/share/inputplumber/devices/50-legion_go.yaml
+index 2094949..aaccb8b 100644
+--- a/rootfs/usr/share/inputplumber/devices/50-legion_go.yaml
++++ b/rootfs/usr/share/inputplumber/devices/50-legion_go.yaml
+@@ -133,8 +133,8 @@ source_devices:
+       name: gyro_3d
+       mount_matrix:
+         x: [0, 1, 0]
+-        y: [0, 0, -1]
+-        z: [-1, 0, 0]
++        y: [-1, 0, 0]
++        z: [0, 0, -1]
+ 
+   # Block all evdev devices; mouse, touchpad, gamepad, keyboard
+   - group: gamepad
+diff --git a/rootfs/usr/share/inputplumber/devices/50-msi_claw.yaml b/rootfs/usr/share/inputplumber/devices/50-msi_claw.yaml
+index 471da92..89c1735 100644
+--- a/rootfs/usr/share/inputplumber/devices/50-msi_claw.yaml
++++ b/rootfs/usr/share/inputplumber/devices/50-msi_claw.yaml
+@@ -40,16 +40,18 @@ source_devices:
+     iio:
+       name: accel_3d
+       mount_matrix:
++        # TODO: Reverify on actual hardware
+         x: [0, 1, 0]
+-        y: [0, 0, -1]
+-        z: [-1, 0, 0]
++        y: [-1, 0, 0]
++        z: [0, 0, -1]
+   - group: imu
+     iio:
+       name: gyro_3d
+       mount_matrix:
++        # TODO: Reverify on actual hardware
+         x: [0, 1, 0]
+-        y: [0, 0, -1]
+-        z: [-1, 0, 0]
++        y: [-1, 0, 0]
++        z: [0, 0, -1]
+ 
+ # Optional configuration for the composite device
+ options:
+diff --git a/rootfs/usr/share/inputplumber/devices/50-orangepi_neo.yaml b/rootfs/usr/share/inputplumber/devices/50-orangepi_neo.yaml
+index 4b289f5..0158b2b 100644
+--- a/rootfs/usr/share/inputplumber/devices/50-orangepi_neo.yaml
++++ b/rootfs/usr/share/inputplumber/devices/50-orangepi_neo.yaml
+@@ -61,9 +61,10 @@ source_devices:
+     iio:
+       name: i2c-BMI0260:00
+       mount_matrix:
++        # TODO: Reverify on actual hardware
+         x: [1, 0, 0]
+-        y: [0, 0, -1]
+-        z: [0, -1, 0]
++        y: [0, -1, 0]
++        z: [0, 0, -1]
  
  # Optional configuration for the composite device
  options:
@@ -370,6 +324,3 @@ index a80d292..8f5b2f7 100644
  
  # Optional configuration for the composite device
  options:
--- 
-2.43.0
-
