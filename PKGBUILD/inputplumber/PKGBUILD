@@ -20,7 +20,7 @@ source=("${_pkgbase}::git+https://github.com/ShadowBlip/${_pkgbase}.git#tag=v$pk
 
 sha256sums=('SKIP'
 	'55d15e63e2229e239b51823ba1a92522cba4a04e424c8515c210c102b4b6a88c'  # 001-no-rootfs.patch
-	'4bf2d523156045bd2a25a4fcf7f1ab9937d40ac3a2bb981a55e9bc73e38f92bf'  # 003-Update-mount_matrix.patch
+	'c2d8439b113ff03996974e70ed53dc4bcdec3f35ec91aa2c6a828a49bfab8341'  # 003-Update-mount_matrix.patch
 )
 
 build() {

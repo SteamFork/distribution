@@ -41,7 +41,7 @@ index 04f5ec3..c4b245f 100644
 -        z: [1, 0, 0]
 +        # Calculated from observed gyro output
 +        # TODO: Verify updated matrix on actual hardware
-+        x: [0, 1, 0]
++        x: [0, -1, 0]
 +        y: [-1, 0, 0]
 +        z: [0, 0, -1]
  
@@ -134,7 +134,7 @@ index 2882d9f..babfd2f 100644
 -        z: [1, 0, 0]
 +        # Calculated from observed gyro output
 +        # TODO: Verify updated matrix on actual hardware
-+        x: [0, 1, 0]
++        x: [0, -1, 0]
 +        y: [-1, 0, 0]
 +        z: [0, 0, -1]
  
