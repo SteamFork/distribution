@@ -3,7 +3,7 @@
 pkgname=inputplumber
 _pkgbase=inputplumber
 pkgver=0.39.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Open source input router and remapper daemon for Linux"
 arch=('x86_64')
 options=(!lto)
@@ -20,7 +20,7 @@ source=("${_pkgbase}::git+https://github.com/ShadowBlip/${_pkgbase}.git#tag=v$pk
 
 sha256sums=('SKIP'
 	'55d15e63e2229e239b51823ba1a92522cba4a04e424c8515c210c102b4b6a88c'  # 001-no-rootfs.patch
-	'cb3fbca0c721e4db0ab850a8f2b59c74b181edbd406d0070552b7aff5a21388d'  # 003-Update-mount_matrix.patch
+	'4bf2d523156045bd2a25a4fcf7f1ab9937d40ac3a2bb981a55e9bc73e38f92bf'  # 003-Update-mount_matrix.patch
 )
 
 build() {
