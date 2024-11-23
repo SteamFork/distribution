@@ -1,0 +1,53 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
+# Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
+
+IMAGE_PATH="release/images/rel/images"
+source ${IMAGE_PATH}/latest_rel.releasemeta
+ARCH="x86_64"
+ISO="${IMAGE_PATH}/installer/${IMAGEFILE//_/-}-${ARCH}.iso"
+
+# Exclude the boot device.
+MYBOOTDEVICE=$(readlink -f /dev/disk/by-partuuid/$(efibootmgr -v | awk 'BEGIN {FS=","} /Boot0000/ {print $3}'))
+
+SDDEVICES=($(awk '/sd*[a-z]$|mmcblk[0-9]$|nvme[0-9]n[0-9]$/ {print $4}' /proc/partitions | sort -r))
+
+# Make sure we're not using a device that's mounted.
+for SDDEVICE in ${SDDEVICES[@]}
+do
+  ISMOUNTED=$(grep "/dev/${SDDEVICE}" /proc/mounts >/dev/null 2>&1 && echo true || echo false)
+  if [[ ! "${MYBOOTDEVICE}" =~ ${SDDEVICE} ]] && \
+     [ "${ISMOUNTED}" = false ]
+  then
+    ISPV=$(sudo pvscan | grep "/dev/${SDDEVICE}" >/dev/null 2>&1 && echo true || echo false)
+    if [ "${ISPV}" = false ]
+    then
+      break
+    else
+      ISMOUNTED=true
+    fi
+  fi
+  unset SDDEVICE
+done
+
+if [ ! -z "${SDDEVICE}" ]
+then
+  echo -e "\nWARNING: The burnimage tool will flash ${ISO} to unused device /dev/${SDDEVICE}.\n"
+
+  read -n 1 -s -r -p "PRESS CONTROL-C NOW TO ABORT, OR ANY OTHER KEY TO CONTINUE!"
+  if [ -e "${ISO}" ]
+  then
+    echo "Wiping ${SDDEVICE} partition data"
+    sudo wipefs -a ${SDDEVICE} 2>/dev/null ||:
+    echo "Writing ${ISO} to ${SDDEVICE}"
+    sudo dd if=${ISO} of=/dev/${SDDEVICE} bs=1M
+    sync
+  else
+    echo "Release not found (${ISO}), aborting."
+    exit 1
+  fi
+else
+  echo "SD Card could not be found, aborting."
+  exit 1
+fi
