@@ -3,7 +3,7 @@
 pkgname=inputplumber
 _pkgbase=inputplumber
 pkgver=0.39.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Open source input router and remapper daemon for Linux"
 arch=('x86_64')
 options=(!lto)
@@ -35,4 +35,9 @@ build() {
 package() {
 	cd "$srcdir/${_pkgbase}"
 	make install PREFIX=${pkgdir}/usr NO_RELOAD=true
+	### Suspend service
+	mkdir -p ${pkgdir}/etc/systemd/system/sleep.target.wants
+	cd ${pkgdir}/etc/systemd/system/sleep.target.wants
+	ln -sf /usr/lib/systemd/system/inputplumber-suspend.service .
+	cd -
 }
