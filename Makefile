@@ -31,7 +31,7 @@ build-clean:
 
 images-all: images
 
-image:
+image: image-clean
 	${SCRIPT_DIR}/mkimage $(RUN_ARGS)
 
 images:
