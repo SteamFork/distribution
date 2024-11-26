@@ -3,7 +3,7 @@
 pkgname=gamescope
 _srctag=3.15.14
 pkgver=${_srctag//-/.}.SteamFork
-pkgrel=3
+pkgrel=4
 pkgdesc="gaming shell based on Xwayland, powered by Vulkan and DRM"
 arch=(x86_64)
 url="https://github.com/ValveSoftware/gamescope"
@@ -27,7 +27,7 @@ source=("gamescope-session"
         "git+https://github.com/nothings/stb.git#commit=af1a5bc352164740c1cc1354942b1c6b72eacb8a"
 	0001-revert-299bc34.patch
 	)
-sha256sums=('57dccadf02fd461c99faf6abdc44055b62385c888e5de7b16358187068dd4fa8'
+sha256sums=('cc7f4950bdec292ea6754de0e878c12d08010a6d181a79420619ec814dd2a435'
             'fe515fce8f151a6c03a89e043044bfddf8cd6ee89027d2cfbcf6f6706c78ca76'
             'e37ba6107f3a84cf47c2799b537a88583e6cb8951167a9c6a48fa1d85996206b'
             '8e31e370bc644c470483aec4d4b86cd22e7bede48af70a330b1d912500831fc2'

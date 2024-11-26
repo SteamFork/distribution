@@ -404,7 +404,8 @@ steamargs=("-steamos3" "-steampal" "-steamdeck" "-gamepadui")
 
 # steamargs+=("-steamfs")
 
-loop_background /usr/lib/hwsupport/powerbuttond
+### We use the ShadowBlip power button watchdog.
+#loop_background /usr/lib/hwsupport/powerbuttond
 
 short_session_tracker_file="/tmp/steamos-short-session-tracker"
 short_session_duration=60
