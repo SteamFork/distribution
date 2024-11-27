@@ -486,7 +486,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     libnotify
                     libnsl
                     libogg
-                    libomxil-bellagio
                     libopenmpt
                     libp11-kit
                     libpaper
