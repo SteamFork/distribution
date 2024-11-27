@@ -9,13 +9,13 @@ pkgbase=mesa
 #  - drop opencl-mesa - unnecessary and requires to install more dependencies
 pkgname=('vulkan-mesa-layers' 'vulkan-intel' 'vulkan-swrast' 'libva-mesa-driver' 'mesa-vdpau' 'mesa')
 pkgdesc="An open-source implementation of the OpenGL specification"
-pkgver=24.3.0
+pkgver=24.2.6
 _tag=${pkgbase}-${pkgver}
 pkgrel=1
 arch=('x86_64')
 makedepends=('git' 'openssh' 'python-mako' 'python-ply' 'libxml2' 'libx11' 'xorgproto' 'libdrm' 'libxshmfence' 'libxxf86vm'
              'libxdamage' 'libvdpau' 'libva' 'wayland' 'wayland-protocols' 'zstd' 'elfutils' 'llvm'
-             'libdrm' 'libclc' 'clang' 'libglvnd' 'libunwind' 'lm_sensors' 'libxrandr'
+             'libomxil-bellagio' 'libdrm' 'libclc' 'clang' 'libglvnd' 'libunwind' 'lm_sensors' 'libxrandr'
              'systemd' 'valgrind' 'glslang' 'vulkan-icd-loader' 'directx-headers' 'cmake' 'meson'
 	     'python-sphinx-hawkmoth' 'spirv-llvm-translator')
 url="https://www.mesa3d.org/"
@@ -75,9 +75,11 @@ build() {
     -D gallium-drivers=iris,i915,radeonsi,softpipe,llvmpipe,zink \
     -D vulkan-drivers=intel,swrast \
     -D vulkan-layers=device-select,intel-nullhw,overlay \
+    -D dri3=enabled \
     -D egl=enabled \
     -D gallium-extra-hud=true \
     -D gallium-nine=true \
+    -D gallium-omx=bellagio \
     -D gallium-opencl=disabled \
     -D gallium-va=enabled \
     -D gallium-vdpau=enabled \
@@ -192,7 +194,7 @@ package_mesa-vdpau() {
 
 package_mesa() {
   depends=('libdrm' 'wayland' 'libxxf86vm' 'libxdamage' 'libxshmfence' 'libelf'
-           'libunwind' 'llvm-libs' 'lm_sensors' 'libglvnd'
+           'libomxil-bellagio' 'libunwind' 'llvm-libs' 'lm_sensors' 'libglvnd'
            'zstd' 'vulkan-icd-loader')
   depends+=('libsensors.so' 'libexpat.so' 'libvulkan.so')
   optdepends=('opengl-man-pages: for the OpenGL API man pages'
@@ -208,9 +210,7 @@ package_mesa() {
   # ati-dri, nouveau-dri, intel-dri, svga-dri, swrast, swr
   _install fakeinstall/usr/lib/dri/*_dri.so
 
-  # gbm
-  _install fakeinstall/usr/lib/gbm/dri_gbm.so
-
+  _install fakeinstall/usr/lib/bellagio
   _install fakeinstall/usr/lib/d3d
   _install fakeinstall/usr/lib/lib{gbm,glapi}.so*
   _install fakeinstall/usr/lib/libOSMesa.so*
