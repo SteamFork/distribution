@@ -93,12 +93,14 @@ case ${1} in
     private_key add
     echo "Push mirror list to ${WWWHOST}."
     scp /tmp/mirrorlist.txt ${WWWUSER}@${WWWHOST}:${WWWROOT}/
-    for MIRROR_HOST in ${MIRROR_HOSTS}
-    do
-      echo "Sync ${MIRROR_HOST} from ${WWWUSER}@${WWWHOST}"
-      ssh -tt ${WWWUSER}@${WWWHOST} "rsync -av --progress --stats --no-perms --delete --exclude=${WWWROOT}/.sync.txt ${WWWROOT}/ ${MIRROR_HOST}:${WWWROOT}/"
-      ssh -tt ${MIRROR_HOST} "sudo find ${WWWROOT} -type f -exec chown www-data:www-data {} \;; sudo find ${WWWROOT} -type f -exec chmod 664 {} \;; sudo find ${WWWROOT} -type d -exec chmod 775 {} \;;"
-    done
+    (
+      for MIRROR_HOST in ${MIRROR_HOSTS}
+      do
+      	echo "Sync ${MIRROR_HOST} from ${WWWUSER}@${WWWHOST}"
+        ssh -tt ${MIRROR_HOST} "cd ${WWWROOT}; sudo rsync -av --delete --progress --stats rsync://${WWWHOST}/steamfork/ ." &
+      done
+      wait
+    )
     private_key remove
   ;;
 esac
