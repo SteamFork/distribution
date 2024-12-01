@@ -1,15 +1,18 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
 
-PANEL_POWER_SAVINGS=$(steamfork-get-setting amdgpu.panel_power_saving)
-if [ -z "${PANEL_POWER_SAVINGS}" ]
+PANEL_POWERSAVE_DISABLED=$(steamfork-get-setting amdgpu.powersave.disabled)
+if [ -z ${PANEL_POWERSAVE_DISABLED} ]
 then
-  PANEL_POWER_SAVINGS=1
+  PANEL_POWERSAVE_DISABLED=0
 fi
 
 for NODE in /sys/class/drm/card?/*/amdgpu/panel_power_savings
 do
-  if [ -e "${NODE}" ]
+  if (( ${PANEL_POWERSAVE_DISABLED} < 1 )) && \
+     [ -e "${NODE}" ]
   then
-    echo ${PANEL_POWER_SAVINGS} >${NODE}
+    echo 1 >${NODE}
   fi
 done

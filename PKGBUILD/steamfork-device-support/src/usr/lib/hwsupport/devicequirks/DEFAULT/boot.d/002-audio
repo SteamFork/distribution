@@ -1,0 +1,21 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
+
+AUDIO_POWERSAVE_DISABLED=$(steamfork-get-setting audio.powersave.disabled)
+if [ -z ${AUDIO_POWERSAVE_DISABLED} ]
+then
+  AUDIO_POWERSAVE_DISABLED=0
+fi
+
+for CODEC in snd_ac97_codec snd_hda_intel
+do
+  CODEC_PATH="/sys/module/${CODEC}/parameters/power_save"
+  if (( ${AUDIO_POWERSAVE_DISABLED} > 0 )) && \
+     [ -e "${CODEC_PATH}" ]
+  then
+    echo 0 >${CODEC_PATH}
+  else
+    echo 1 >${CODEC_PATH}
+  fi
+done
