@@ -106,7 +106,7 @@ prepare() {
   cd ${_srcname}/drivers
   git clone https://github.com/SteamFork/ayaneo-platform.git
   git clone https://github.com/SteamFork/ayn-platform.git
-  git -c advice.detachedHead=false clone -b 20240922 --depth=1 https://github.com/uejji/hid-msi-claw.git
+  git -c advice.detachedHead=false clone -b 20240922 --depth=1 https://github.com/SteamFork/hid-msi-claw.git
   cd ..
 
   echo "Setting version..."
