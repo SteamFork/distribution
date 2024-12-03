@@ -136,16 +136,16 @@ mkfs.btrfs ${WORKDIR}/work.img
 mkdir -p ${WORKDIR}/rootfs_mnt
 mount -t btrfs -o loop,compress-force=zstd:1,discard,noatime,nodiratime ${WORKDIR}/work.img ${ROOT_WORKDIR}
 
-echo "(1/6) Bootstrapping main filesystem"
+echo "Bootstrapping main filesystem"
 # Start by bootstrapping essentials
 mkdir -p ${ROOT_WORKDIR}/${OS_FS_PREFIX}_root/rootfs
 mkdir -p ${ROOT_WORKDIR}/var/cache/pacman/pkg
 mount --bind /var/cache/pacman/pkg/ ${ROOT_WORKDIR}/var/cache/pacman/pkg
 pacstrap -C ${PACCFG} ${ROOT_WORKDIR} ${BASE_BOOTSTRAP_PKGS}
-echo "(1.5/6) Bootstrapping kernel..."
+echo "Bootstrapping kernel..."
 pacstrap -C ${PACCFG} ${ROOT_WORKDIR} ${KERNELCHOICE} ${KERNELCHOICE}-headers
 
-echo "(2/6) Generating fstab..."
+echo "Generating fstab..."
 
 # fstab
 cat <<EOF > ${ROOT_WORKDIR}/etc/fstab
@@ -157,7 +157,7 @@ EOF
 
 sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' ${ROOT_WORKDIR}/etc/sudoers
 
-echo "(3/6) Bootstrapping SteamFork core root.."
+echo "Bootstrapping SteamFork core root.."
 pacstrap -C ${PACCFG} ${ROOT_WORKDIR} ${UI_BOOTSTRAP}
 rm ${ROOT_WORKDIR}/etc/pacman.conf
 cp ${PACCFG} ${ROOT_WORKDIR}/etc/pacman.conf
@@ -169,7 +169,7 @@ cp ${PACCFG} ${ROOT_WORKDIR}/usr/share/defaults
 
 RELEASE_TYPE="$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')"
 
-echo "(3.1/6) Write os-release..."
+echo "Write os-release..."
 cat <<EOF >${ROOT_WORKDIR}/etc/os-release
 NAME="SteamOS"
 PRETTY_NAME="SteamOS"
@@ -188,7 +188,7 @@ VARIANT_ID="${RELEASE_TYPE}"
 BUILD_ID="${RELEASE_TAG}"
 EOF
 
-echo "(3.2/6) Write steamfork-release"
+echo "Write steamfork-release"
 cat <<EOF >${ROOT_WORKDIR}/etc/steamfork-release
 IMAGE_ID="${BUILDVER}"
 OS_TAG=${RELEASE_TAG}
@@ -211,7 +211,7 @@ cat <<EOF >${ROOT_WORKDIR}/etc/steamos-atomupd/manifest.json
 }
 EOF
 
-echo "(4/6) Copying postcopy items..."
+echo "Copying postcopy items..."
 if [[ -d "${SCRIPTPATH}/postcopy" ]]; then
 	cp -r ${SCRIPTPATH}/postcopy/* ${ROOT_WORKDIR}
 fi
@@ -240,10 +240,10 @@ Options=bind
 WantedBy=steamos-offload.target
 EOF
 
-echo "(4.1/6) Set repository path..."
+echo "Set repository path..."
 sed -i 's~@RELEASE_TYPE@~${RELEASE_TYPE}~g' ${ROOT_WORKDIR}/etc/pacman.d/steamfork-mirrorlist
 
-echo "(4.5/6) Generating en_US.UTF-8 locale..."
+echo "Generating en_US.UTF-8 locale..."
 sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' ${ROOT_WORKDIR}/etc/locale.gen
 arch-chroot ${ROOT_WORKDIR} locale-gen
 arch-chroot ${ROOT_WORKDIR} localectl set-locale LANG=en_US.UTF-8
@@ -251,24 +251,24 @@ arch-chroot ${ROOT_WORKDIR} mkdir -p /etc/lib/hwsupport/devicequirks
 
 for ENABLED_SERVICE in ${ENABLED_SERVICES[@]}
 do
-  echo "(4.6/6) Enable service ${ENABLED_SERVICE}"
+  echo "Enable service ${ENABLED_SERVICE}"
   arch-chroot ${ROOT_WORKDIR} systemctl enable ${ENABLED_SERVICE}
 done
 
 for DISABLED_SERVICE in ${DISABLED_SERVICES[@]}
 do
-  echo "(4.7/6) Disable service ${DISABLED_SERVICE}"
+  echo "Disable service ${DISABLED_SERVICE}"
   arch-chroot ${ROOT_WORKDIR} systemctl disable ${DISABLED_SERVICE}
   arch-chroot ${ROOT_WORKDIR} rm -f /usr/lib/systemd/system/multi-user.target.wants/${DISABLED_SERVICE}
 done
 
-echo "(4.8/6) Enable nopasswd sudo (req by steam and other tools)"
+echo "Enable nopasswd sudo (req by steam and other tools)"
   arch-chroot ${ROOT_WORKDIR} sed -i 's~ALL$~NOPASSWD: ALL~g' /etc/sudoers.d/wheel
 
-echo "(4.9/6) Patch Audio output to add generic devices to the filter."
+echo "Patch Audio output to add generic devices to the filter."
   arch-chroot ${ROOT_WORKDIR} sed -i '/matches = \[/a \      {\n\        node.name = "~alsa_output.*"\n\        alsa.card_name = "HD-Audio Generic"\n\      }' /usr/share/wireplumber/hardware-profiles/valve-jupiter/wireplumber.conf.d/alsa-card1.conf
 
-echo "(4.10/6) Fix runtime audio configuration."
+echo "Fix runtime audio configuration."
   for AUDIO_SERVICE in pipewire wireplumber
   do
     arch-chroot ${ROOT_WORKDIR} sed -i 's~multi-user.target~local-fs.target~g' /usr/lib/systemd/system/${AUDIO_SERVICE}-sysconf.service
@@ -286,17 +286,20 @@ echo "(4.10/6) Fix runtime audio configuration."
   done
   cd ${PRE_PW_WD}
 
-echo "(4.11/6) Enable systemd-resolved."
+echo "Enable systemd-resolved."
 rm -f ${ROOT_WORKDIR}/etc/resolv.conf
 ln -sf /run/systemd/resolve/stub-resolv.conf ${ROOT_WORKDIR}/etc/resolv.conf
 
-echo "(4.12/6) Fix blank screen desktop issue."
+echo "Fix blank screen desktop issue."
   sed -i '/cd "$config_dir"/a \ \ \ \ rm -rf /tmp/.ICE-unix' /usr/bin/startplasma-steamos-oneshot
 
-echo "(4.13/6) Fix broken /var/run link."
+echo "Fix broken /var/run link."
   arch-chroot ${ROOT_WORKDIR} echo "After=systemd-tmpfiles-setup.service" >> /usr/lib/systemd/system/network-pre.target
 
-echo "(4.14/6) Delete conflicting files..."
+echo "Fix mkinitcpio warning..."
+  sed -i '/add_checked_modules_from_symbol.*$/d' ${ROOT_WORKDIR}/usr/lib/initcpio/install/kms
+
+echo "Delete conflicting files..."
 # Delete conflicting files
 for CONFLICT in etc/X11/Xsession.d/50rotate-screen \
 		usr/lib/qt/plugins/discover/steamos-backend.so \
@@ -308,18 +311,18 @@ do
   fi
 done
 
-echo "(4.15/6) Compile installed package list..."
+echo "Compile installed package list..."
 cat <<EOF >${OUTPUT}/package-versions.txt
 Package	Version
 EOF
 arch-chroot ${ROOT_WORKDIR} pacman -Q >>${OUTPUT}/package-versions.txt
 
-echo "(5/6) Stop doing things in container..."
+echo "Stop doing things in container..."
 # Cleanup
 umount -l ${ROOT_WORKDIR}/var/cache/pacman/pkg/
 
 # Finish for now
-echo "(6/6) Packaging snapshot..."
+echo "Packaging snapshot..."
 btrfs subvolume snapshot -r ${ROOT_WORKDIR} ${ROOT_WORKDIR}/${OS_FS_PREFIX}_root/rootfs/${BUILDVER}
 btrfs send -f ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img ${ROOT_WORKDIR}/${OS_FS_PREFIX}_root/rootfs/${BUILDVER}
 umount -l ${ROOT_WORKDIR} && umount -l ${WORKDIR}/work.img && rm -rf ${WORKDIR} && ${WORKDIR}/work.img
