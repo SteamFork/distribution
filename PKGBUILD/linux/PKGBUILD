@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.12.1
-pkgrel=2
+pkgrel=3
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -69,7 +69,7 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
 )
 sha256sums=('SKIP'
-'ea0ae3d4cb3fd2289e2e8ac8b79ee5bbed22f5a363c6adfc317aa4ac7c37d9b8' # config
+'9d5827a1304da7860d4e12ad3ae5ad40076b0013c2f067020904146c32640773' # config
 '69fa4d553a092c90a5dd1138b9a335c1f6cfe0a0e3bfc9031cf220194373228b' # 0001-drm-panel-orientation-quirks.patch
 '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
 '783da391e0f45635eefb583b8b3acc29cd62a0c9eeefedf7f790dc2f89c7e279' # 0006-Ayaneo-geek-headset-patch.patch
