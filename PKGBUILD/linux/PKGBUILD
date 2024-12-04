@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.12.1
-pkgrel=4
+pkgrel=5
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -61,7 +61,6 @@ source=(
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
   0060-asus-patch-series.patch
   0070-lexar-nvme-broken-msi.patch
-  0071-teamgroup-mp34-nvme-broken-msi.patch
   0099-add-external-device-drivers.patch
 )
 validpgpkeys=(
@@ -91,7 +90,6 @@ sha256sums=('SKIP'
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
 'ee4bda8ed96baa79475d98720e85c67b6a8dcf82a98c41d9860883c407f9a6fb' # 0060-asus-patch-series.patch
 'b048068eeee69bf0f600d2ea390c8f681f9708776ff45a4b871e1e51136af33a' # 0070-lexar-nvme-broken-msi.patch
-'6a6d360e67e85de0cbe64e0a7479ae8b3bed9feef6d16ccd734783251290706d' # 0071-teamgroup-mp34-nvme-broken-msi.patch
 '3b1dabc168e4884c6586720538014d6ef8955a0b783d6436dd4937af6622ee42' # 0099-add-external-device-drivers.patch
 )
 
