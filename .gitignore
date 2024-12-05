@@ -2,3 +2,4 @@ _work/
 release/
 rootfs/installer/packages.x86_64
 rootfs/installer/airootfs/etc/install.image/
+rootfs/installer/pacman.conf

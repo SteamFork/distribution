@@ -30,6 +30,12 @@ case $key in
 	shift
 	shift
 	;;
+	--upstream_ver)
+	UPSTREAM_VERSION=$2
+	echo "Upstream Version: ${UPSTREAM_VERSION}"
+	shift
+	shift
+	;;
 	--snapshot_ver)
 	SNAPSHOTVERSION="$2"
 	echo "Build version: ${SNAPSHOTVERSION}"
@@ -116,19 +122,29 @@ else
 fi
 
 source ${BUILD_MANIFEST}
-PACCFG=${SCRIPTPATH}/postcopy/etc/pacman.conf
-
 
 ROOT_WORKDIR=${WORKDIR}/rootfs_mnt
 echo "Preparing to create deployment image..."
 # Pre-build cleanup
 umount -l ${ROOT_WORKDIR}
-rm -rf ${WORKDIR}/*.img*
-rm -rf ${WORKDIR}/*.img
-rm -rf ${WORKDIR}/work.img
+if [ -d "${WORKDIR}" ]
+then
+	rm -rf ${WORKDIR}
+fi
 
 # Start building here
 mkdir -p ${WORKDIR}
+
+PACCFG_SOURCE="metadata/pacman.conf"
+cp -f ${PACCFG_SOURCE} ${WORKDIR}
+sed -i 's~@UPSTREAM_VERSION@~'${UPSTREAM_VERSION}'~g' ${WORKDIR}/pacman.conf
+PACCFG=${WORKDIR}/pacman.conf
+
+SF_PACCFG_SOURCE="metadata/steamfork-mirrorlist"
+cp -f ${SF_PACCFG_SOURCE} ${WORKDIR}
+sed -i 's~@UPSTREAM_VERSION@~'${UPSTREAM_VERSION}'~g' ${WORKDIR}/steamfork-mirrorlist
+SF_PACCFG=${WORKDIR}/steamfork-mirrorlist
+
 mkdir -p ${OUTPUT}
 mkdir -p ${ROOT_WORKDIR}
 fallocate -l 10000MB ${WORKDIR}/work.img
@@ -161,6 +177,12 @@ echo "Bootstrapping SteamFork core root.."
 pacstrap -C ${PACCFG} ${ROOT_WORKDIR} ${UI_BOOTSTRAP}
 rm ${ROOT_WORKDIR}/etc/pacman.conf
 cp ${PACCFG} ${ROOT_WORKDIR}/etc/pacman.conf
+
+if [ ! -d "${ROOT_WORKDIR}/etc/pacman.d" ]
+  mkdir -p "${ROOT_WORKDIR}/etc/pacman.d"
+fi
+cp ${SF_PACCFG} ${ROOT_WORKDIR}/etc/pacman.d
+
 if [ ! -d "${ROOT_WORKDIR}/usr/share/defaults" ]
 then
   mkdir -p ${ROOT_WORKDIR}/usr/share/defaults
@@ -239,6 +261,9 @@ Options=bind
 [Install]
 WantedBy=steamos-offload.target
 EOF
+
+echo "Copy pacman.conf..."
+cp ${PACCFG} ${ROOT_WORKDIR}/etc/
 
 echo "Set repository path..."
 sed -i 's~@RELEASE_TYPE@~${RELEASE_TYPE}~g' ${ROOT_WORKDIR}/etc/pacman.d/steamfork-mirrorlist
