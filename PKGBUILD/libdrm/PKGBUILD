@@ -4,7 +4,7 @@
 #   Maintainer: Andreas Radke <andyrtr@archlinux.org>
 
 pkgname=libdrm
-pkgver=2.4.123
+pkgver=2.4.124
 pkgrel=1
 pkgdesc="Userspace interface to kernel DRM services"
 url="https://dri.freedesktop.org/"
@@ -17,7 +17,7 @@ optdepends=('cairo: needed for modetest tool')
 replaces=('libdrm-new' 'libdrm-nouveau')
 source=(https://dri.freedesktop.org/$pkgname/$pkgname-$pkgver.tar.xz
 	COPYING)
-sha256sums=('a2b98567a149a74b0f50e91e825f9c0315d86e7be9b74394dae8b298caadb79e' # libdrm-2.4.123.tar.xz
+sha256sums=('ac36293f61ca4aafaf4b16a2a7afff312aa4f5c37c9fbd797de9e3c0863ca379' # libdrm-2.4.124.tar.xz
 	    '9631d4f694952e3e6ae5a05534c2e93e994e47d3413677a3a00e45c8cef6db93' # COPYING
 	)
 
