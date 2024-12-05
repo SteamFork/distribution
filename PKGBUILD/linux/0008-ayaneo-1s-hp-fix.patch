@@ -1,7 +1,7 @@
-diff -rupN linux-6.9.8.orig/sound/pci/hda/patch_realtek.c linux-6.9.8/sound/pci/hda/patch_realtek.c
---- linux-6.9.8.orig/sound/pci/hda/patch_realtek.c	2024-07-11 16:08:31.886810579 +0000
-+++ linux-6.9.8/sound/pci/hda/patch_realtek.c	2024-07-15 12:59:52.250345438 +0000
-@@ -7300,6 +7301,7 @@ enum {
+diff -rupN linux-6.12.2.orig/sound/pci/hda/patch_realtek.c linux-6.12.2/sound/pci/hda/patch_realtek.c
+--- linux-6.12.2.orig/sound/pci/hda/patch_realtek.c	2024-12-05 18:09:00.500548431 +0000
++++ linux-6.12.2/sound/pci/hda/patch_realtek.c	2024-12-05 18:09:32.307186472 +0000
+@@ -7551,6 +7551,7 @@ enum {
  	ALC269VB_FIXUP_ASUS_ZENBOOK,
  	ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A,
  	ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE,
@@ -9,7 +9,7 @@ diff -rupN linux-6.9.8.orig/sound/pci/hda/patch_realtek.c linux-6.9.8/sound/pci/
  	ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED,
  	ALC269VB_FIXUP_ORDISSIMO_EVE2,
  	ALC283_FIXUP_CHROME_BOOK,
-@@ -8012,6 +8014,13 @@ static const struct hda_fixup alc269_fix
+@@ -8328,6 +8329,13 @@ static const struct hda_fixup alc269_fix
  		.chained = true,
  		.chain_id = ALC269_FIXUP_HEADSET_MIC
  	},
@@ -23,15 +23,15 @@ diff -rupN linux-6.9.8.orig/sound/pci/hda/patch_realtek.c linux-6.9.8/sound/pci/
  	[ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED] = {
  		.type = HDA_FIXUP_FUNC,
  		.v.func = alc269_fixup_limit_int_mic_boost,
-@@ -10622,6 +10631,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x2782, 0x1707, "Vaio VJFE-ADL", ALC298_FIXUP_SPK_VOLUME),
- 	SND_PCI_QUIRK(0x1f66, 0x0101, "AYANEO 2", ALC269_FIXUP_HEADSET_AYA_2),
+@@ -11070,6 +11078,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0xf111, 0x0009, "Framework Laptop", ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE),
  	SND_PCI_QUIRK(0x1f66, 0x0101, "GEEK", ALC269_FIXUP_HEADSET_AYA_GEEK),
+ 	SND_PCI_QUIRK(0x1f66, 0x0101, "AYANEO 2", ALC269_FIXUP_HEADSET_AYA_2),
 +	SND_PCI_QUIRK(0x1f66, 0x0103, "AYANEO AIR 1S", ALC269VB_FIXUP_AYANEO_SPKR_PIN_FIX),
- 	SND_PCI_QUIRK(0x8086, 0x2074, "Intel NUC 8", ALC233_FIXUP_INTEL_NUC8_DMIC),
- 	SND_PCI_QUIRK(0x8086, 0x2080, "Intel NUC 8 Rugged", ALC256_FIXUP_INTEL_NUC8_RUGGED),
- 	SND_PCI_QUIRK(0x8086, 0x2081, "Intel NUC 10", ALC256_FIXUP_INTEL_NUC10),
-@@ -10743,6 +10753,7 @@ static const struct hda_model_fixup alc2
+ 
+ #if 0
+ 	/* Below is a quirk table taken from the old code.
+@@ -11186,6 +11195,7 @@ static const struct hda_model_fixup alc2
  	{.id = ALC269VB_FIXUP_ASUS_ZENBOOK, .name = "asus-zenbook"},
  	{.id = ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A, .name = "asus-zenbook-ux31a"},
  	{.id = ALC269VB_FIXUP_ORDISSIMO_EVE2, .name = "ordissimo"},
