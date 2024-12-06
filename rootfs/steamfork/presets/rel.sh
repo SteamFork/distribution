@@ -592,6 +592,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     lsb-release
                     lsof
                     lua
+                    luajit
                     luit
                     lv2
                     lz4

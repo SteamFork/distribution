@@ -3,13 +3,13 @@
 pkgname=gamescope
 _srctag=3.15.14
 pkgver=${_srctag//-/.}.SteamFork
-pkgrel=4
+pkgrel=5
 pkgdesc="gaming shell based on Xwayland, powered by Vulkan and DRM"
 arch=(x86_64)
 url="https://github.com/ValveSoftware/gamescope"
 license=('MIT')
-depends=('xorg-xwayland' 'libavif' 'aom' 'rav1e' 'libxres' 'xcb-util-errors' 'freerdp' 'xcb-util-wm' 'libxcomposite' 'pixman' 'libinput' 'seatd' 'pipewire' 'libxmu' 'libxcursor' 'powerbuttond' 'libdecor' 'libei')
-makedepends=(openssh git meson cmake wayland-protocols ninja glslang glm vulkan-headers benchmark)
+depends=('xorg-xwayland' 'libavif' 'aom' 'rav1e' 'libxres' 'xcb-util-errors' 'freerdp' 'xcb-util-wm' 'libxcomposite' 'pixman' 'libinput' 'seatd' 'pipewire' 'libxmu' 'libxcursor' 'powerbuttond' 'libdecor' 'libei' 'luajit')
+makedepends=(openssh git meson cmake wayland-protocols ninja glslang glm vulkan-headers benchmark luajit)
 source=("gamescope-session"
         "gamescope-wayland.desktop"
         "gamescope-mimeapps.list"
@@ -26,6 +26,7 @@ source=("gamescope-session"
         #       revision when bumping the version here such that the build is reproducible.
         "git+https://github.com/nothings/stb.git#commit=af1a5bc352164740c1cc1354942b1c6b72eacb8a"
 	0001-revert-299bc34.patch
+	0002-script-Add-beginnings-of-config-script-system.patch
 	)
 sha256sums=('cc7f4950bdec292ea6754de0e878c12d08010a6d181a79420619ec814dd2a435'
             'fe515fce8f151a6c03a89e043044bfddf8cd6ee89027d2cfbcf6f6706c78ca76'
@@ -41,6 +42,7 @@ sha256sums=('cc7f4950bdec292ea6754de0e878c12d08010a6d181a79420619ec814dd2a435'
             'SKIP'
             'SKIP'
 	    'a550ef98fd55e142d2bca9f9fe893172bb9140edfc6df232698324c9d5e4625c' # 0001-revert-299bc34.patch
+	    '293dc5c6f0b6aeca14dbc1108288d6f5d8d6245a77fa86ca333ea19ebcd2ef1c' # 0002-script-Add-beginnings-of-config-script-system.patch
             )
 
 install=gamescope.install
