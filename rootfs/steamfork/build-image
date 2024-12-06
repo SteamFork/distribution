@@ -31,8 +31,8 @@ case $key in
 	shift
 	;;
 	--upstream_ver)
-	UPSTREAM_VERSION=$2
-	echo "Upstream Version: ${UPSTREAM_VERSION}"
+	STEAMOS_VERSION=$2
+	echo "Upstream Version: ${STEAMOS_VERSION}"
 	shift
 	shift
 	;;
@@ -137,12 +137,12 @@ mkdir -p ${WORKDIR}
 
 PACCFG_SOURCE="metadata/pacman.conf"
 cp -f ${PACCFG_SOURCE} ${WORKDIR}
-sed -i 's~@UPSTREAM_VERSION@~'${UPSTREAM_VERSION}'~g' ${WORKDIR}/pacman.conf
+sed -i 's~@STEAMOS_VERSION@~'${STEAMOS_VERSION}'~g' ${WORKDIR}/pacman.conf
 PACCFG=${WORKDIR}/pacman.conf
 
 SF_PACCFG_SOURCE="metadata/steamfork-mirrorlist"
 cp -f ${SF_PACCFG_SOURCE} ${WORKDIR}
-sed -i 's~@UPSTREAM_VERSION@~'${UPSTREAM_VERSION}'~g' ${WORKDIR}/steamfork-mirrorlist
+sed -i 's~@STEAMOS_VERSION@~'${STEAMOS_VERSION}'~g' ${WORKDIR}/steamfork-mirrorlist
 SF_PACCFG=${WORKDIR}/steamfork-mirrorlist
 
 mkdir -p ${OUTPUT}
@@ -209,6 +209,7 @@ LOGO=steamos
 VERSION_ID="${RELEASE_TAG}"
 VARIANT_ID="${RELEASE_TYPE}"
 BUILD_ID="${RELEASE_TAG}"
+STEAMOS_VERSION="${STEAMOS_VERSION}"
 EOF
 
 echo "Write steamfork-release"

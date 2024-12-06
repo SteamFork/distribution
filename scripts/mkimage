@@ -75,10 +75,10 @@ else
 fi
 
 cp -f ${INSTALLER_DIR}/package_lists/${PACKAGESET}.x86_64 ${INSTALLER_DIR}/packages.x86_64
-sed -i 's~@UPSTREAM_VERSION@~'${UPSTREAM_VERSION}'~g' ${INSTALLER_DIR}/packages.x86_64
+sed -i 's~@STEAMOS_VERSION@~'${STEAMOS_VERSION}'~g' ${INSTALLER_DIR}/packages.x86_64
 
 # Build the SteamFork image
-sudo rootfs/steamfork/build-image --flavor ${RELEASE_TYPE} --deployment_rel ${RELEASE_TYPE} --upstream_ver "${UPSTREAM_VERSION}" --snapshot_ver "${BUILD_VER}" --workdir "${WORK_DIR}" --output-dir "${IMAGE_DIR}" --add-release
+sudo rootfs/steamfork/build-image --flavor ${RELEASE_TYPE} --deployment_rel ${RELEASE_TYPE} --upstream_ver "${STEAMOS_VERSION}" --snapshot_ver "${BUILD_VER}" --workdir "${WORK_DIR}" --output-dir "${IMAGE_DIR}" --add-release
 
 # Prep for the installation image
 source ${IMAGE_DIR}/latest_${RELEASE_TYPE}.releasemeta

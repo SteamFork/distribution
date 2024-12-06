@@ -30,7 +30,7 @@ do
   KEY="$1"
   case ${KEY} in
       --branch)
-      UPSTREAM_VERSION="$2"
+      STEAMOS_VERSION="$2"
       shift # past argument
       shift # past value
       ;;
@@ -53,7 +53,7 @@ fi
 
 BUILDUSER=${USER}
 WORK_DIR="${WORK_DIR}/packages/${1}"
-REPO_DIR="${REPO_DIR}/${UPSTREAM_VERSION}"
+REPO_DIR="${REPO_DIR}/${STEAMOS_VERSION}"
 
 sudo steamos-readonly disable
 sudo rm -rf /var/lib/pacman/db.lck ${WORK_DIR}
