@@ -46,6 +46,8 @@ function cleanup() {
 
   sudo rm -rf	${IMAGE_DIR} \
 		${INSTALLER_DIR}/airootfs/etc/install.image \
+		${INSTALLER_DIR}/airootfs/etc/pacman.conf \
+		${INSTALLER_DIR}/airootfs/etc/pacman.d/steamfork-mirrorlist \
 		${INSTALLER_DIR}/buildinfo \
 		/tmp/buildinfo \
 		${INSTALLER_DIR}/packages.x86_64 \
@@ -85,7 +87,11 @@ sudo ln -sf ${IMAGE_DIR}/latest_${RELEASE_TYPE}.releasemeta /tmp/buildinfo
 echo ${IMAGEFILE} | sudo tee ${IMAGE_DIR}/currentcandidate
 ${INSTALLER_DIR}/getlatestbuild.sh || exit 1
 
-cp ${WORK_DIR}/image/buildwork/pacman.conf ${INSTALLER_DIR}/airootfs/etc/
+
+mkdir -p ${INSTALLER_DIR}/airootfs/etc/pacman.d
+cp -f ${WORK_DIR}/buildwork/steamfork-mirrorlist ${INSTALLER_DIR}/airootfs/etc/pacman.d/
+
+cp ${WORK_DIR}/buildwork/pacman.conf ${INSTALLER_DIR}/airootfs/etc/
 
 # Build the installation image
 sudo mkarchiso -v -w ${WORK_DIR}/image-build -o ${IMAGE_DIR}/installer ${INSTALLER_DIR}

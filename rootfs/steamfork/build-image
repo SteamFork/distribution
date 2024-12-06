@@ -179,6 +179,7 @@ rm ${ROOT_WORKDIR}/etc/pacman.conf
 cp ${PACCFG} ${ROOT_WORKDIR}/etc/pacman.conf
 
 if [ ! -d "${ROOT_WORKDIR}/etc/pacman.d" ]
+then
   mkdir -p "${ROOT_WORKDIR}/etc/pacman.d"
 fi
 cp ${SF_PACCFG} ${ROOT_WORKDIR}/etc/pacman.d
