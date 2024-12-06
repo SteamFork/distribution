@@ -39,11 +39,7 @@ done
 
 case ${1} in
   pkgs|repo)
-    for REPO in rel minimal
-    do
-      echo "Syncing ${REPO} repository to ${WWWHOST}."
-      ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}; ln -sf ${WWWROOT}/repos/${REPO} steamfork-${REPO}"
-    done
+    echo "Syncing repository to ${WWWHOST}."
     rsync -av --delete --progress --stats ${REPO_DIR} ${WWWUSER}@${WWWHOST}:${WWWROOT}/
     ssh -tt ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/"
   ;;

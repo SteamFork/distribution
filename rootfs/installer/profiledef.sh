@@ -4,9 +4,9 @@
 source /tmp/buildinfo
 
 iso_name="steamfork-${STAGING_RELEASETYPE}"
-iso_label="STEAMFORK_$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y%m)"
-iso_publisher="fewtarius"
-iso_application="Squirrel?"
+iso_label="STEAMFORK_${STAGING_OS_TAG}"
+iso_publisher="Steamfork"
+iso_application="SteamFork Installation Media"
 iso_version="${STAGING_OS_TAG}"
 install_dir="arch"
 buildmodes=('iso')
@@ -14,7 +14,8 @@ bootmodes=('bios.syslinux.mbr' 'bios.syslinux.eltorito'
            'uefi-ia32.grub.esp' 'uefi-x64.grub.esp'
            'uefi-ia32.grub.eltorito' 'uefi-x64.grub.eltorito')
 arch="x86_64"
-pacman_conf="pacman.conf"
+
+pacman_conf="airootfs/etc/pacman.conf"
 airootfs_image_type="squashfs"
 airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '128K' '-Xdict-size' '100%')
 file_permissions=(

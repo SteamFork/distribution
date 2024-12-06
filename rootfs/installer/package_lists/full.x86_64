@@ -36,7 +36,7 @@ gpm
 zenity
 gptfdisk
 grml-zsh-config
-core-3.6/grub
+core-@STEAMOS_VERSION@/grub
 hdparm
 hyperv
 intel-ucode

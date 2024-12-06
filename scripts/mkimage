@@ -38,10 +38,16 @@ then
   sudo steamos-readonly disable
 fi
 
+echo A
+
 function cleanup() {
-  sudo umount ${WORK_DIR}/buildwork/rootfs_mnt  2>/dev/null ||:
+  sudo umount -R ${WORK_DIR}/buildwork/rootfs_mnt/var/cache/pacman/pkg \
+	         ${WORK_DIR}/buildwork/rootfs_mnt ||:
+
   sudo rm -rf	${IMAGE_DIR} \
 		${INSTALLER_DIR}/airootfs/etc/install.image \
+		${INSTALLER_DIR}/airootfs/etc/pacman.conf \
+		${INSTALLER_DIR}/airootfs/etc/pacman.d/steamfork-mirrorlist \
 		${INSTALLER_DIR}/buildinfo \
 		/tmp/buildinfo \
 		${INSTALLER_DIR}/packages.x86_64 \
@@ -67,10 +73,12 @@ then
 else
   PACKAGESET="full"
 fi
+
 cp -f ${INSTALLER_DIR}/package_lists/${PACKAGESET}.x86_64 ${INSTALLER_DIR}/packages.x86_64
+sed -i 's~@STEAMOS_VERSION@~'${STEAMOS_VERSION}'~g' ${INSTALLER_DIR}/packages.x86_64
 
 # Build the SteamFork image
-sudo rootfs/steamfork/build-image --flavor ${RELEASE_TYPE} --deployment_rel ${RELEASE_TYPE} --snapshot_ver "${BUILD_VER}" --workdir "${WORK_DIR}" --output-dir "${IMAGE_DIR}" --add-release
+sudo rootfs/steamfork/build-image --flavor ${RELEASE_TYPE} --deployment_rel ${RELEASE_TYPE} --upstream_ver "${STEAMOS_VERSION}" --snapshot_ver "${BUILD_VER}" --workdir "${WORK_DIR}" --output-dir "${IMAGE_DIR}" --add-release
 
 # Prep for the installation image
 source ${IMAGE_DIR}/latest_${RELEASE_TYPE}.releasemeta
@@ -78,6 +86,12 @@ sudo cp ${IMAGE_DIR}/latest_${RELEASE_TYPE}.releasemeta ${IMAGE_DIR}/buildinfo
 sudo ln -sf ${IMAGE_DIR}/latest_${RELEASE_TYPE}.releasemeta /tmp/buildinfo
 echo ${IMAGEFILE} | sudo tee ${IMAGE_DIR}/currentcandidate
 ${INSTALLER_DIR}/getlatestbuild.sh || exit 1
+
+
+mkdir -p ${INSTALLER_DIR}/airootfs/etc/pacman.d
+cp -f ${WORK_DIR}/buildwork/steamfork-mirrorlist ${INSTALLER_DIR}/airootfs/etc/pacman.d/
+
+cp ${WORK_DIR}/buildwork/pacman.conf ${INSTALLER_DIR}/airootfs/etc/
 
 # Build the installation image
 sudo mkarchiso -v -w ${WORK_DIR}/image-build -o ${IMAGE_DIR}/installer ${INSTALLER_DIR}
