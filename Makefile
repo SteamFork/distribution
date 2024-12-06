@@ -7,7 +7,7 @@ export WORK_DIR		:= ${BUILD_DIR}/_work
 export IMAGE_DIR	:= ${BUILD_DIR}/release/images
 export REPO_DIR		:= ${BUILD_DIR}/release/repos
 export BUILD_VER	:= $(shell date +%Y%m%d.%H%M)
-export STEAMOS_VERSION := 3.6
+export STEAMOS_VERSION	:= 3.6
 
 RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(RUN_ARGS):;@:)
