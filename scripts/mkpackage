@@ -51,9 +51,14 @@ then
   PKGSOURCE="local"
 fi
 
+if [ -z "${OS_ARCH}" ]
+then
+	OS_ARCH=$(uname -m)
+fi
+
 BUILDUSER=${USER}
 WORK_DIR="${WORK_DIR}/packages/${1}"
-REPO_DIR="${REPO_DIR}/${STEAMOS_VERSION}"
+REPO_DIR="${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}"
 
 sudo steamos-readonly disable
 sudo rm -rf /var/lib/pacman/db.lck ${WORK_DIR}
