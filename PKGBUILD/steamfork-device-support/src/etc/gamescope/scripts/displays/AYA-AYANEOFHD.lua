@@ -20,7 +20,7 @@ local panel_resolutions = {
     vfront = 14,  vsync = 2, vback = 8 },
 }
 
-local panel_refresh_rates = { 61, 120 }
+local panel_refresh_rates = { 60, 120 }
 
 local panel_hdr = {
   supported = false,
