@@ -7,5 +7,5 @@ source /etc/os-release
 rm -f /etc/pacman.d/steamfork-mirrorlist
 steamfork-get-mirror random | while read line
 do
-  echo "Server = https://${line}/repos/${STEAMOS_VERSION}" >>/etc/pacman.d/steamfork-mirrorlist
+  echo "Server = https://${line}/repos/${STEAMOS_VERSION}/os/\$arch" >>/etc/pacman.d/steamfork-mirrorlist
 done
