@@ -23,7 +23,7 @@ else
 fi
 
 cd ${WORK_DIR}/${PACKAGE}
-STEAMOS_VERSION="$(git tag | sort -V | grep -v 'rc' | tail -n 1)"
+UPSTREAM_VERSION="$(git tag | sort -V | grep -v 'rc' | tail -n 1)"
 
 if [ ! -d "${DATA_DIR}" ]
 then
@@ -35,7 +35,7 @@ then
         DOWNSTREAM_VERSION="$(cat ${DATA_DIR}/${PACKAGE})"
 fi
 
-if [ ! "${STEAMOS_VERSION}" = "${DOWNSTREAM_VERSION}" ]
+if [ ! "${UPSTREAM_VERSION}" = "${DOWNSTREAM_VERSION}" ]
 then
-	echo "${STEAMOS_VERSION}" | tee ${DATA_DIR}/${PACKAGE}
+	echo "${UPSTREAM_VERSION}" | tee ${DATA_DIR}/${PACKAGE}
 fi
