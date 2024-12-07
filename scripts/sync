@@ -80,8 +80,8 @@ case ${1} in
     for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}
     do
       echo "Swap to release images on ${HOST}."
-      ssh -tt ${HOST} "chown -R www-data:www-data ${WWWROOT}/images.new"
-      ssh -tt ${HOST} "rm -rf ${WWWROOT}/images.prev; mv ${WWWROOT}/images ${WWWROOT}/images.prev; mv ${WWWROOT}/images.new/ ${WWWROOT}/images"
+      ssh -tt ${HOST} "sudo chown -R www-data:www-data ${WWWROOT}/images.new"
+      ssh -tt ${HOST} "sudo rm -rf ${WWWROOT}/images.prev; sudo mv ${WWWROOT}/images ${WWWROOT}/images.prev; sudo mv ${WWWROOT}/images.new/ ${WWWROOT}/images"
     done
     private_key remove
   ;;
