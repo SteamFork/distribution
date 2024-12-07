@@ -7,11 +7,16 @@
 
 pkgbase=linux
 pkgver=6.12.3
-pkgrel=2
+pkgrel=3
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
 license=(GPL-2.0-only)
+
+ayaneo_platform="v0.3.4"
+ayn_platform="v0.5.2"
+hid_msi_claw="20240922"
+
 makedepends=(
   bc
   cpio
@@ -104,9 +109,9 @@ _make() {
 
 prepare() {
   cd ${_srcname}/drivers
-  git clone https://github.com/SteamFork/ayaneo-platform.git
-  git clone https://github.com/SteamFork/ayn-platform.git
-  git -c advice.detachedHead=false clone -b 20240922 --depth=1 https://github.com/SteamFork/hid-msi-claw.git
+  git -c advice.detachedHead=false clone -b $ayaneo_platform --depth=1 https://github.com/ShadowBlip/ayaneo-platform.git
+  git -c advice.detachedHead=false clone -b $ayn_platform --depth=1 https://github.com/ShadowBlip/ayn-platform.git
+  git -c advice.detachedHead=false clone -b $hid_msi_claw --depth=1 https://github.com/SteamFork/hid-msi-claw.git
   cd ..
 
   echo "Setting version..."
