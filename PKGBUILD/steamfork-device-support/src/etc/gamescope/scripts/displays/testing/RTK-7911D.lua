@@ -1,17 +1,22 @@
--- Ayaneo Flip KB
+-- Anbernic Win600
 
-local panel_id = "ayaneo_fhd_lcd"
-local panel_name = "Ayaneo FHD LCD Panel"
+local panel_id = "anbernic_win600_lcd"
+local panel_name = "Anbernic Win600 LCD Panel"
 
 local panel_models = {
-  { vendor = "AYA", model = "AYANEOFHD" },
+  { vendor = "RTK", model = "7911D" },
 }
 
 local panel_resolutions = {
-  { width = 1080, height = 1920 },
+  { width = 720, height = 1280 },
+  { width = 600, height = 800 },
+  { width = 544, height = 960 },
 }
 
-local panel_refresh_rates = { 60, 120 }
+--local panel_refresh_rates = {}
+--for hz = 31, 60 do
+--  table.insert(panel_refresh_rates, hz)
+--end
 
 
 gamescope.config.known_displays[panel_id] = {
@@ -49,6 +54,7 @@ gamescope.config.known_displays[panel_id] = {
 
     return mode
   end,
+
   matches = function(display)
     for i, panel in ipairs(panel_models) do
       if panel.vendor == display.vendor and panel.model == display.model then

@@ -1,17 +1,22 @@
--- Ayaneo Flip KB
+-- Ayaneo Air 1S
 
-local panel_id = "ayaneo_fhd_lcd"
-local panel_name = "Ayaneo FHD LCD Panel"
+local panel_id = "ayaneo_hd_oled"
+local panel_name = "Ayaneo HD OLED Panel"
 
 local panel_models = {
-  { vendor = "AYA", model = "AYANEOFHD" },
+  { vendor = "AYA", model = "AYANEO-OLED" },
 }
 
 local panel_resolutions = {
   { width = 1080, height = 1920 },
+  { width = 720, height = 1280 },
+  { width = 600, height = 1066 },
 }
 
-local panel_refresh_rates = { 60, 120 }
+local panel_refresh_rates = {}
+for hz = 31, 60 do
+  table.insert(panel_refresh_rates, hz)
+end
 
 
 gamescope.config.known_displays[panel_id] = {
@@ -49,6 +54,7 @@ gamescope.config.known_displays[panel_id] = {
 
     return mode
   end,
+
   matches = function(display)
     for i, panel in ipairs(panel_models) do
       if panel.vendor == display.vendor and panel.model == display.model then
