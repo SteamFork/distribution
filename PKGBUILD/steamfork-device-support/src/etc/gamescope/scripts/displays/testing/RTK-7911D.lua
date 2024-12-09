@@ -1,12 +1,10 @@
--- AYN Loki
--- AYN Loki Max
--- AYN Loki Zero
+-- Anbernic Win600
 
-local panel_id = "ayn_loki_lcd"
-local panel_name = "AYN Loki LCD Panel"
+local panel_id = "anbernic_win600_lcd"
+local panel_name = "Anbernic Win600 LCD Panel"
 
 local panel_models = {
-  { vendor = "AYN", model = "LK-GOLDSPV58" },
+  { vendor = "RTK", model = "7911D" },
 }
 
 local panel_refresh_rates = {}

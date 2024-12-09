@@ -1,12 +1,10 @@
--- AYN Loki
--- AYN Loki Max
--- AYN Loki Zero
+-- Ayaneo Air 1S
 
-local panel_id = "ayn_loki_lcd"
-local panel_name = "AYN Loki LCD Panel"
+local panel_id = "ayaneo_hd_oled"
+local panel_name = "Ayaneo HD OLED Panel"
 
 local panel_models = {
-  { vendor = "AYN", model = "LK-GOLDSPV58" },
+  { vendor = "AYA", model = "AYANEO-OLED" },
 }
 
 local panel_refresh_rates = {}
