@@ -1,6 +1,6 @@
 # SteamFork&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest Version](https://img.shields.io/github/release/SteamFork/distribution.svg?color=1384B5&label=latest%20version&style=flat-square)](https://github.com/SteamFork/distribution/releases/latest) ![Build Status](https://img.shields.io/github/actions/workflow/status/SteamFork/distribution/release.yml?color=1384B5) [![Activity](https://img.shields.io/github/commit-activity/m/SteamFork/distribution?color=1384B5&style=flat-square)](https://github.com/SteamFork/distribution/commits) [![Discord](https://img.shields.io/discord/1245092101193072650?color=1384B5&label=chat&style=flat-square)](https://discord.gg/AQ5rtQstCf)
 
-SteamFork is a project to create an immutable Linux distribution that is as SteamOS like as possible without sacrificing device compatibility.
+SteamFork is a SteamOS-based operating system with improved hardware compatibility. It is designed to provide the same experience as SteamOS on a SteamDeck.
 
 ## Documentation
 Visit the SteamFork Organization root for basic information and usage instructions:
