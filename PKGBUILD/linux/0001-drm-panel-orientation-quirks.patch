@@ -1,7 +1,20 @@
 diff -rupN linux-6.12.5.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linux-6.12.5/drivers/gpu/drm/drm_panel_orientation_quirks.c
 --- linux-6.12.5.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c	2024-12-14 19:04:17.000000000 +0000
-+++ linux-6.12.5/drivers/gpu/drm/drm_panel_orientation_quirks.c	2024-12-15 04:41:36.643769144 +0000
-@@ -129,6 +129,12 @@ static const struct drm_dmi_panel_orient
++++ linux-6.12.5/drivers/gpu/drm/drm_panel_orientation_quirks.c	2024-12-16 05:16:59.397212363 +0000
+@@ -93,6 +93,12 @@ static const struct drm_dmi_panel_orient
+ 	.orientation = DRM_MODE_PANEL_ORIENTATION_RIGHT_UP,
+ };
+ 
++static const struct drm_dmi_panel_orientation_data lcd640x960_leftside_up = {
++	.width = 640,
++	.height = 960,
++	.orientation = DRM_MODE_PANEL_ORIENTATION_LEFT_UP,
++};
++
+ static const struct drm_dmi_panel_orientation_data lcd720x1280_rightside_up = {
+ 	.width = 720,
+ 	.height = 1280,
+@@ -129,6 +135,12 @@ static const struct drm_dmi_panel_orient
  	.orientation = DRM_MODE_PANEL_ORIENTATION_RIGHT_UP,
  };
  
@@ -14,7 +27,7 @@ diff -rupN linux-6.12.5.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linu
  static const struct drm_dmi_panel_orientation_data lcd1280x1920_rightside_up = {
  	.width = 1280,
  	.height = 1920,
-@@ -166,6 +172,12 @@ static const struct dmi_system_id orient
+@@ -166,6 +178,12 @@ static const struct dmi_system_id orient
  		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Win600"),
  		},
  		.driver_data = (void *)&lcd720x1280_rightside_up,
@@ -27,7 +40,7 @@ diff -rupN linux-6.12.5.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linu
  	}, {	/* Asus T100HA */
  		.matches = {
  		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-@@ -184,16 +196,16 @@ static const struct dmi_system_id orient
+@@ -184,16 +202,16 @@ static const struct dmi_system_id orient
  		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "T103HAF"),
  		},
  		.driver_data = (void *)&lcd800x1280_rightside_up,
@@ -48,20 +61,26 @@ diff -rupN linux-6.12.5.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linu
  		},
  		.driver_data = (void *)&lcd800x1280_rightside_up,
  	}, {	/* AYA NEO AIR */
-@@ -208,6 +220,12 @@ static const struct dmi_system_id orient
- 		  DMI_MATCH(DMI_PRODUCT_NAME, "AYA NEO Founder"),
+@@ -202,6 +208,18 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_MATCH(DMI_PRODUCT_NAME, "AIR"),
  		},
- 		.driver_data = (void *)&lcd800x1280_rightside_up,
-+	}, {    /* AYA NEO FLIP KB and DS*/
+ 		.driver_data = (void *)&lcd1080x1920_leftside_up,
++	}, {	/* AYA NEO Flip DS Bottom Screen */
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYANEO"),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "FLIP DS"),
++	},
++		.driver_data = (void *)&lcd640x960_leftside_up,
++	}, {	/* AYA NEO Flip KB/DS Top Screen */
 +		.matches = {
 +		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYANEO"),
 +		  DMI_MATCH(DMI_PRODUCT_NAME, "FLIP"),
 +	},
 +		.driver_data = (void *)&lcd1080x1920_leftside_up,
- 	}, {	/* AYA NEO GEEK */
+ 	}, {	/* AYA NEO Founder */
  		.matches = {
- 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYANEO"),
-@@ -226,6 +244,12 @@ static const struct dmi_system_id orient
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYA NEO"),
+@@ -226,6 +256,12 @@ static const struct dmi_system_id orient
  		  DMI_MATCH(DMI_BOARD_NAME, "KUN"),
  		},
  		.driver_data = (void *)&lcd1600x2560_rightside_up,
@@ -74,7 +93,7 @@ diff -rupN linux-6.12.5.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linu
  	}, {    /* AYN Loki Max */
  		.matches = {
  			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ayn"),
-@@ -315,6 +339,12 @@ static const struct dmi_system_id orient
+@@ -315,6 +351,12 @@ static const struct dmi_system_id orient
  		  DMI_EXACT_MATCH(DMI_BOARD_NAME, "Default string"),
  		},
  		.driver_data = (void *)&gpd_win2,
