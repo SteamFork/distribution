@@ -75,7 +75,7 @@ validpgpkeys=(
 )
 sha256sums=('SKIP'
 '9d5827a1304da7860d4e12ad3ae5ad40076b0013c2f067020904146c32640773' # config
-'69fa4d553a092c90a5dd1138b9a335c1f6cfe0a0e3bfc9031cf220194373228b' # 0001-drm-panel-orientation-quirks.patch
+'e3eec3aee54745fd61cf67f08a9e7f0f2109c7dc058eaec64347a781edb49b00' # 0001-drm-panel-orientation-quirks.patch
 '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
 '3e22c0093a3ba0596a440bb97355348fd0de202a7e4487a5abe2469b4ed1f1dc' # 0006-Ayaneo-geek-headset-patch.patch
 '3805f3b8b39d9d49586fb5d2a445a9ee54cf00cd1cdedd226e727420196cc568' # 0007-ayaneo-2-headphone-fix.patch
