@@ -1,0 +1,19 @@
+diff -rupN linux-6.12.6.orig/drivers/input/touchscreen/goodix.c linux-6.12.6/drivers/input/touchscreen/goodix.c
+--- linux-6.12.6.orig/drivers/input/touchscreen/goodix.c	2024-12-20 06:33:12.088233449 +0000
++++ linux-6.12.6/drivers/input/touchscreen/goodix.c	2024-12-20 19:46:50.982440555 +0000
+@@ -1511,6 +1511,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(goodix_p
+ 
+ static const struct i2c_device_id goodix_ts_id[] = {
+ 	{ "GDIX1001:00" },
++	{ "GDIX1003:00" },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, goodix_ts_id);
+@@ -1519,6 +1520,7 @@ MODULE_DEVICE_TABLE(i2c, goodix_ts_id);
+ static const struct acpi_device_id goodix_acpi_match[] = {
+ 	{ "GDIX1001", 0 },
+ 	{ "GDIX1002", 0 },
++	{ "GDIX1003", 0 },
+ 	{ "GDX9110", 0 },
+ 	{ }
+ };
