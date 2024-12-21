@@ -3,7 +3,6 @@ if [[ -d "/var/overlays/etc/" ]]; then
     echo "Overlays good, continue booting" | systemd-cat -t steamfork-create-overlays -p info
 else
     echo "No RW overlays, create them" | systemd-cat -t steamfork-create-overlays -p warning
-    mkdir -p /home/.steamos/
     mkdir -p /home/.steamos/offload/opt
     mkdir -p /home/.steamos/offload/root
     mkdir -p /home/.steamos/offload/srv
