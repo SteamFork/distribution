@@ -1,5 +1,5 @@
 diff --git a/rootfs/usr/share/inputplumber/devices/50-ayaneo_air.yaml b/rootfs/usr/share/inputplumber/devices/50-ayaneo_air.yaml
-index 4abf518..c4851e6 100644
+index daf8bfe..afa4326 100644
 --- a/rootfs/usr/share/inputplumber/devices/50-ayaneo_air.yaml
 +++ b/rootfs/usr/share/inputplumber/devices/50-ayaneo_air.yaml
 @@ -35,13 +35,13 @@ source_devices:
@@ -11,23 +11,23 @@ index 4abf518..c4851e6 100644
 -  #    name: i2c-BMI0160:00
 -  #    mount_matrix:
 -  #      x: [0, -1, 0]
--  #      y: [0, 0, -1]
--  #      z: [1, 0, 0]
-+  - group: imu
+-  #      y: [-1, 0, 0]
+-  #      z: [0, 0, -1]
++  - group: imu #TODO:reenable after we switch from polling
 +    iio:
 +      name: i2c-BMI0160:00
 +      mount_matrix:
 +        x: [0, -1, 0]
-+        y: [0, 0, -1]
-+        z: [1, 0, 0]
++        y: [-1, 0, 0]
++        z: [0, 0, -1]
  
- # The target input device(s) that the virtual device profile can use
- target_devices:
+ # Optional configuration for the composite device
+ options:
 diff --git a/rootfs/usr/share/inputplumber/devices/50-ayn_loki_zero.yaml b/rootfs/usr/share/inputplumber/devices/50-ayn_loki_zero.yaml
-index bb6b5be..045d1b3 100644
+index 45e0c84..fff2658 100644
 --- a/rootfs/usr/share/inputplumber/devices/50-ayn_loki_zero.yaml
 +++ b/rootfs/usr/share/inputplumber/devices/50-ayn_loki_zero.yaml
-@@ -32,13 +32,13 @@ source_devices:
+@@ -32,14 +32,14 @@ source_devices:
        name: AT Translated Set 2 keyboard
        phys_path: isa0060/serio0/input0
        handler: event*
@@ -35,16 +35,18 @@ index bb6b5be..045d1b3 100644
 -  #  iio:
 -  #    name: i2c-BMI0160:00
 -  #    mount_matrix:
+-  #      # TODO: Reverify on actual hardware
 -  #      x: [1, 0, 0]
--  #      y: [0, 0, -1]
--  #      z: [0, 1, 0]
+-  #      y: [0, 1, 0]
+-  #      z: [0, 0, -1]
 +  - group: imu
 +    iio:
 +      name: i2c-BMI0160:00
 +      mount_matrix:
++        # TODO: Reverify on actual hardware
 +        x: [1, 0, 0]
-+        y: [0, 0, -1]
-+        z: [0, 1, 0]
++        y: [0, 1, 0]
++        z: [0, 0, -1]
  
- # The target input device(s) that the virtual device profile can use
- target_devices:
+ # Optional configuration for the composite device
+ options:
