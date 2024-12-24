@@ -29,7 +29,6 @@ jobs:
       - name: Build Release Images
         run: |
           set -e
-          make clean
           make image rel BUILD_VER="${{ steps.version.outputs.version }}"
   sync:
     if: startsWith(github.ref, 'refs/tags/2')
