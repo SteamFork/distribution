@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.12.6
-pkgrel=1
+pkgrel=2
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -51,6 +51,7 @@ source=(
   0006-Ayaneo-geek-headset-patch.patch
   0007-ayaneo-2-headphone-fix.patch
   0008-ayaneo-1s-hp-fix.patch
+  0009-enable-flip-ds-bottom-touchscreen.patch
   0012-HACK-add-KConfig-to-enable-driver-specific-color-mgm.patch
   0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
   0020-add-devices-to-oxp-sensors.patch
@@ -75,11 +76,12 @@ validpgpkeys=(
 )
 sha256sums=('SKIP'
 '9d5827a1304da7860d4e12ad3ae5ad40076b0013c2f067020904146c32640773' # config
-'e3eec3aee54745fd61cf67f08a9e7f0f2109c7dc058eaec64347a781edb49b00' # 0001-drm-panel-orientation-quirks.patch
+'8c9b1250638bf42b49bb50072f4a8f94797a4cc41c323f8d9b1c69cd4b894b40' # 0001-drm-panel-orientation-quirks.patch
 '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
 '3e22c0093a3ba0596a440bb97355348fd0de202a7e4487a5abe2469b4ed1f1dc' # 0006-Ayaneo-geek-headset-patch.patch
 '3805f3b8b39d9d49586fb5d2a445a9ee54cf00cd1cdedd226e727420196cc568' # 0007-ayaneo-2-headphone-fix.patch
 'a5fc093f55a43295e08bb70df91d1b0861f2fbd76cee2cf9725b52f3f8d0c4a7' # 0008-ayaneo-1s-hp-fix.patch
+'bb5dd08ae830b11a0170014a7b855bd4224fb5f83b0a8fb7a166d702e63d4e36' # 0009-enable-flip-ds-bottom-touchscreen.patch
 'f45ba5d7dbc004474314c9e0329014e8c9d6b111f1e00397b1072b1bde581761' # 0012-HACK-add-KConfig-to-enable-driver-specific-color-mgm.patch
 '683128d044f4df12dcb0a7b2858075f510d870460dc71f0d60f69df89cf62419' # 0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
 '783178f81727fcec0ff37b279a32c59b6c71702d18e53e472cdf1ee0a23d5241' # 0020-add-devices-to-oxp-sensors.patch
