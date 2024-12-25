@@ -1,6 +1,6 @@
 -- Ayaneo Air Plus
--- Ayaneo Slide (?)
--- Antec Core HS (?)
+-- Ayaneo Slide
+-- Antec Core HS
 
 local panel_id = "ayaneo_hd_lcd"
 local panel_name = "Ayaneo HD LCD Panel"
