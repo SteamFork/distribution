@@ -1,0 +1,17 @@
+diff -rupN linux-6.12.7.orig/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c linux-6.12.7/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+--- linux-6.12.7.orig/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c	2024-12-27 13:02:20.000000000 +0000
++++ linux-6.12.7/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c	2024-12-28 21:12:33.588022940 +0000
+@@ -3721,8 +3721,12 @@ static int amdgpu_device_ip_resume_phase
+ 			continue;
+ 		if (adev->ip_blocks[i].version->type == AMD_IP_BLOCK_TYPE_DCE) {
+ 			r = adev->ip_blocks[i].version->funcs->resume(adev);
+-			if (r)
++			if (r) {
++				DRM_ERROR("resume of IP block <%s> failed %d\n",
++					adev->ip_blocks[i].version->funcs->name, r);
+ 				return r;
++			}
++			adev->ip_blocks[i].status.hw = true;
+ 		}
+ 	}
+ 
