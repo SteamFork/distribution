@@ -11,7 +11,7 @@ pkgdesc="An open-source implementation of the OpenGL specification (32-bit)"
 # When updating the tag, consider if you are adding any shader compiler changes. If so,
 # or if you are not sure, regenerate the radv-build-id below. To update, see
 # https://gitlab.steamos.cloud/jupiter/docs/-/wikis/How-to-make-a-new-Mesa-release#updating-the-radv-build-id
-pkgver=24.2.8
+pkgver=24.3.2
 _tag=mesa-${pkgver}
 pkgrel=1
 arch=('x86_64')
@@ -99,7 +99,6 @@ END
     -D android-libbacktrace=disabled \
     -D vulkan-drivers=amd \
     -D vulkan-layers= \
-    -D dri3=enabled \
     -D egl=disabled \
     -D gbm=disabled \
     -D gles1=disabled \
@@ -229,7 +228,6 @@ package_lib32-mesa() {
   # ati-dri, nouveau-dri, intel-dri, svga-dri, swrast, swr
   _install fakeinstall/usr/lib32/dri/*_dri.so
 
-  #_install fakeinstall/usr/lib32/bellagio
   _install fakeinstall/usr/lib32/d3d
   _install fakeinstall/usr/lib32/lib{gbm,glapi}.so*
   _install fakeinstall/usr/lib32/libOSMesa.so*

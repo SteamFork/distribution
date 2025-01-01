@@ -55,11 +55,15 @@ packages-local:
 	${SCRIPT_DIR}/mkpackage --repo aur   python-strictyaml
 	${SCRIPT_DIR}/mkpackage --repo local python-sphinx-hawkmoth
 	${SCRIPT_DIR}/mkpackage --repo local libdrm
+	${SCRIPT_DIR}/mkpackage --repo local lib32-libdrm
 	${SCRIPT_DIR}/mkpackage --repo local libglvnd
+	${SCRIPT_DIR}/mkpackage --repo local lib32-libglvnd
+	${SCRIPT_DIR}/mkpackage --repo local wayland
+	${SCRIPT_DIR}/mkpackage --repo local lib32-wayland
+	${SCRIPT_DIR}/mkpackage --repo local wayland-protocols
+	${SCRIPT_DIR}/mkpackage --repo local xorg-xwayland
 	${SCRIPT_DIR}/mkpackage --repo local mesa
 	${SCRIPT_DIR}/mkpackage --repo local mesa-radv
-	${SCRIPT_DIR}/mkpackage --repo local lib32-libdrm
-	${SCRIPT_DIR}/mkpackage --repo local lib32-libglvnd
 	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa
 	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa-radv
 	${SCRIPT_DIR}/mkpackage --repo local gamescope
