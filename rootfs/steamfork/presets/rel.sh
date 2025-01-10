@@ -391,6 +391,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-pcre2
                     lib32-pipewire
                     lib32-renderdoc-minimal
+		    lib32-spirv-tools
                     lib32-sqlite
                     lib32-systemd
                     lib32-util-linux

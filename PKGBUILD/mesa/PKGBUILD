@@ -9,7 +9,7 @@ pkgbase=mesa
 #  - drop opencl-mesa - unnecessary and requires to install more dependencies
 pkgname=('vulkan-mesa-layers' 'vulkan-intel' 'vulkan-swrast' 'libva-mesa-driver' 'mesa-vdpau' 'mesa')
 pkgdesc="An open-source implementation of the OpenGL specification"
-pkgver=24.3.2
+pkgver=24.3.3
 _tag=${pkgbase}-${pkgver}
 pkgrel=2
 arch=('x86_64')
