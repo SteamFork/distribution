@@ -48,6 +48,6 @@ then
     exit 1
   fi
 else
-  echo "SD Card could not be found, aborting."
+  echo "Removable storage (MicroSD / Thumb Drive) could not be found, aborting."
   exit 1
 fi
