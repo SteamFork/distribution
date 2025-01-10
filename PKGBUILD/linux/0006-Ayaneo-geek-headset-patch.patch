@@ -1,17 +1,6 @@
-From cfa45706ab3ff7e4a8aec67d73fad878dea7c4e9 Mon Sep 17 00:00:00 2001
-From: bouhaa <boukehaarsma23@gmail.com>
-Date: Fri, 22 Sep 2023 21:53:06 +0200
-Subject: [PATCH 06/41] Ayaneo geek headset patch
-
-Fixed for 6.12.2. -Fewtarius
-
----
- sound/pci/hda/patch_realtek.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
-
-diff -rupN linux-6.12.2.orig/sound/pci/hda/patch_realtek.c linux-6.12.2/sound/pci/hda/patch_realtek.c
---- linux-6.12.2.orig/sound/pci/hda/patch_realtek.c	2024-12-05 13:03:10.000000000 +0000
-+++ linux-6.12.2/sound/pci/hda/patch_realtek.c	2024-12-05 18:01:02.030979054 +0000
+diff -rupN linux-6.12.9.orig/sound/pci/hda/patch_realtek.c linux-6.12.9/sound/pci/hda/patch_realtek.c
+--- linux-6.12.9.orig/sound/pci/hda/patch_realtek.c	2025-01-09 12:33:55.000000000 +0000
++++ linux-6.12.9/sound/pci/hda/patch_realtek.c	2025-01-09 22:17:56.513291116 +0000
 @@ -6717,6 +6717,20 @@ static void alc294_gx502_toggle_output(s
  		alc_write_coef_idx(codec, 0x10, 0x0a20);
  }
@@ -41,7 +30,7 @@ diff -rupN linux-6.12.2.orig/sound/pci/hda/patch_realtek.c linux-6.12.2/sound/pc
  	ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC,
  	ALC269_FIXUP_ASPIRE_HEADSET_MIC,
  	ALC269_FIXUP_ASUS_X101_FUNC,
-@@ -9098,6 +9113,10 @@ static const struct hda_fixup alc269_fix
+@@ -9029,6 +9044,10 @@ static const struct hda_fixup alc269_fix
  			{ 0x1b, 0x90170152 } /* use as internal speaker (back) */
  		}
  	},
@@ -52,10 +41,10 @@ diff -rupN linux-6.12.2.orig/sound/pci/hda/patch_realtek.c linux-6.12.2/sound/pc
  	[ALC299_FIXUP_PREDATOR_SPK] = {
  		.type = HDA_FIXUP_PINS,
  		.v.pins = (const struct hda_pintbl[]) {
-@@ -11044,6 +11063,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0xf111, 0x0001, "Framework Laptop", ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE),
+@@ -10994,6 +11013,7 @@ static const struct hda_quirk alc269_fix
  	SND_PCI_QUIRK(0xf111, 0x0006, "Framework Laptop", ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE),
  	SND_PCI_QUIRK(0xf111, 0x0009, "Framework Laptop", ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0xf111, 0x000c, "Framework Laptop", ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE),
 +	SND_PCI_QUIRK(0x1f66, 0x0101, "GEEK", ALC269_FIXUP_HEADSET_AYA_GEEK),
  
  #if 0

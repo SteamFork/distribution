@@ -6,7 +6,7 @@
 #             Mikael Eriksson <mikael_eriksson@miffe.org>
 
 pkgbase=linux
-pkgver=6.12.8
+pkgver=6.12.9
 pkgrel=1
 pkgdesc="Linux Stable"
 arch=(x86_64)
@@ -65,7 +65,6 @@ source=(
   0040-vcs-amdgpu-quirks.patch
   0041-air-amdgpu-quirks.patch
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
-  0052-adaptive-backlight-management.patch
   0060-asus-patch-series.patch
   0070-lexar-nvme-broken-msi.patch
   0099-add-external-device-drivers.patch
@@ -76,10 +75,10 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
 )
 sha256sums=('SKIP'
-'9d5827a1304da7860d4e12ad3ae5ad40076b0013c2f067020904146c32640773' # config
+'1df7ce625c7cdedff37ab1a4658dd282837b221e56d0383f04fac6c2abce6f21' # config
 '8c9b1250638bf42b49bb50072f4a8f94797a4cc41c323f8d9b1c69cd4b894b40' # 0001-drm-panel-orientation-quirks.patch
 '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
-'3e22c0093a3ba0596a440bb97355348fd0de202a7e4487a5abe2469b4ed1f1dc' # 0006-Ayaneo-geek-headset-patch.patch
+'02f5eaede065b7d68ccf469c9f54eab3ce3f0d852624a3430d83bcd6e2bd7dbb' # 0006-Ayaneo-geek-headset-patch.patch
 '3805f3b8b39d9d49586fb5d2a445a9ee54cf00cd1cdedd226e727420196cc568' # 0007-ayaneo-2-headphone-fix.patch
 'a5fc093f55a43295e08bb70df91d1b0861f2fbd76cee2cf9725b52f3f8d0c4a7' # 0008-ayaneo-1s-hp-fix.patch
 'bb5dd08ae830b11a0170014a7b855bd4224fb5f83b0a8fb7a166d702e63d4e36' # 0009-enable-flip-ds-bottom-touchscreen.patch
@@ -96,8 +95,7 @@ sha256sums=('SKIP'
 '93087d9449f994dca23c1d5a32919204d31afecc63950d74a2ea41aaa1e3a9ec' # 0040-vcs-amdgpu-quirks.patch
 'ab8a6dccf67cee7d924ee2e3d4690285d404bcb9bab70eced09b05fa2853b288' # 0041-air-amdgpu-quirks.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
-'7010f004fda33d83ae4c34db23da047da1677fabaa6d1c688be58b0230fd8ed0' # 0052-adaptive-backlight-management.patch
-'ee4bda8ed96baa79475d98720e85c67b6a8dcf82a98c41d9860883c407f9a6fb' # 0060-asus-patch-series.patch
+'4127c2471a6e416ce6ebfe1b57f23940164d0c548c1bbad943bf1e853c5ecc38' # 0060-asus-patch-series.patch
 'b048068eeee69bf0f600d2ea390c8f681f9708776ff45a4b871e1e51136af33a' # 0070-lexar-nvme-broken-msi.patch
 '3b1dabc168e4884c6586720538014d6ef8955a0b783d6436dd4937af6622ee42' # 0099-add-external-device-drivers.patch
 )
