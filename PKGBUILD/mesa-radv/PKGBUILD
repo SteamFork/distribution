@@ -11,7 +11,7 @@ pkgdesc="An open-source implementation of the OpenGL specification"
 # When updating the tag, consider if you are adding any shader compiler changes. If so,
 # or if you are not sure, regenerate the radv-build-id below. To update, see
 # https://gitlab.steamos.cloud/jupiter/docs/-/wikis/How-to-make-a-new-Mesa-release#updating-the-radv-build-id
-pkgver=24.2.8
+pkgver=24.3.3
 _tag=mesa-${pkgver}
 pkgrel=1
 arch=('x86_64')
@@ -86,7 +86,6 @@ build() {
     -D android-libbacktrace=disabled \
     -D vulkan-drivers=amd \
     -D vulkan-layers= \
-    -D dri3=enabled \
     -D egl=disabled \
     -D gbm=disabled \
     -D gles1=disabled \
@@ -211,7 +210,7 @@ package_mesa-vdpau() {
 
 package_mesa() {
   depends=('libdrm' 'wayland' 'libxxf86vm' 'libxdamage' 'libxshmfence' 'libelf'
-           'libomxil-bellagio' 'libunwind' 'llvm-libs' 'lm_sensors' 'libglvnd'
+           'libunwind' 'llvm-libs' 'lm_sensors' 'libglvnd'
            'zstd' 'vulkan-icd-loader')
   depends+=('libsensors.so' 'libexpat.so' 'libvulkan.so')
   optdepends=('opengl-man-pages: for the OpenGL API man pages'
@@ -227,7 +226,6 @@ package_mesa() {
   # ati-dri, nouveau-dri, intel-dri, svga-dri, swrast, swr
   _install fakeinstall/usr/lib/dri/*_dri.so
 
-  _install fakeinstall/usr/lib/bellagio
   _install fakeinstall/usr/lib/d3d
   _install fakeinstall/usr/lib/lib{gbm,glapi}.so*
   _install fakeinstall/usr/lib/libOSMesa.so*

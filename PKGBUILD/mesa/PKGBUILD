@@ -9,13 +9,13 @@ pkgbase=mesa
 #  - drop opencl-mesa - unnecessary and requires to install more dependencies
 pkgname=('vulkan-mesa-layers' 'vulkan-intel' 'vulkan-swrast' 'libva-mesa-driver' 'mesa-vdpau' 'mesa')
 pkgdesc="An open-source implementation of the OpenGL specification"
-pkgver=24.2.8
+pkgver=24.3.3
 _tag=${pkgbase}-${pkgver}
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 makedepends=('git' 'openssh' 'python-mako' 'python-ply' 'libxml2' 'libx11' 'xorgproto' 'libdrm' 'libxshmfence' 'libxxf86vm'
              'libxdamage' 'libvdpau' 'libva' 'wayland' 'wayland-protocols' 'zstd' 'elfutils' 'llvm'
-             'libomxil-bellagio' 'libdrm' 'libclc' 'clang' 'libglvnd' 'libunwind' 'lm_sensors' 'libxrandr'
+             'libdrm' 'libclc' 'clang' 'libglvnd' 'libunwind' 'lm_sensors' 'libxrandr'
              'systemd' 'valgrind' 'glslang' 'vulkan-icd-loader' 'directx-headers' 'cmake' 'meson'
 	     'python-sphinx-hawkmoth' 'spirv-llvm-translator')
 url="https://www.mesa3d.org/"
@@ -74,16 +74,15 @@ build() {
     -D platforms=x11,wayland \
     -D gallium-drivers=iris,i915,radeonsi,softpipe,llvmpipe,zink \
     -D vulkan-drivers=intel,swrast \
-    -D vulkan-layers=device-select,intel-nullhw,overlay \
-    -D dri3=enabled \
+    -D vulkan-layers=device-select,intel-nullhw,overlay,screenshot \
     -D egl=enabled \
     -D gallium-extra-hud=true \
     -D gallium-nine=true \
-    -D gallium-omx=bellagio \
     -D gallium-opencl=disabled \
     -D gallium-va=enabled \
     -D gallium-vdpau=enabled \
     -D gallium-xa=disabled \
+    -D gallium-rusticl=false \
     -D android-libbacktrace=disabled \
     -D gbm=enabled \
     -D gles1=disabled \
@@ -130,6 +129,7 @@ package_vulkan-mesa-layers() {
   _install fakeinstall/usr/share/vulkan/implicit_layer.d
   _install fakeinstall/usr/lib/libVkLayer_*.so
   _install fakeinstall/usr/bin/mesa-overlay-control.py
+  _install fakeinstall/usr/bin/mesa-screenshot-control.py
 
   install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" LICENSE
 }
@@ -194,7 +194,7 @@ package_mesa-vdpau() {
 
 package_mesa() {
   depends=('libdrm' 'wayland' 'libxxf86vm' 'libxdamage' 'libxshmfence' 'libelf'
-           'libomxil-bellagio' 'libunwind' 'llvm-libs' 'lm_sensors' 'libglvnd'
+           'libunwind' 'llvm-libs' 'lm_sensors' 'libglvnd'
            'zstd' 'vulkan-icd-loader')
   depends+=('libsensors.so' 'libexpat.so' 'libvulkan.so')
   optdepends=('opengl-man-pages: for the OpenGL API man pages'
@@ -210,7 +210,9 @@ package_mesa() {
   # ati-dri, nouveau-dri, intel-dri, svga-dri, swrast, swr
   _install fakeinstall/usr/lib/dri/*_dri.so
 
-  _install fakeinstall/usr/lib/bellagio
+  # gbm
+  _install fakeinstall/usr/lib/gbm/dri_gbm.so
+
   _install fakeinstall/usr/lib/d3d
   _install fakeinstall/usr/lib/lib{gbm,glapi}.so*
   _install fakeinstall/usr/lib/libOSMesa.so*

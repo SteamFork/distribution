@@ -9,7 +9,7 @@ pkgbase=lib32-mesa
 #  - drop lib32-opencl-mesa - unnecessary and requires to install more dependencies
 pkgname=('lib32-vulkan-mesa-layers' 'lib32-vulkan-intel' 'lib32-libva-mesa-driver' 'lib32-mesa-vdpau' 'lib32-mesa')
 pkgdesc="An open-source implementation of the OpenGL specification (32-bit)"
-pkgver=24.2.8
+pkgver=24.3.3
 _tag=mesa-${pkgver}
 pkgrel=1
 arch=('x86_64')
@@ -17,7 +17,7 @@ arch=('x86_64')
 makedepends=('multilib-devel' 'git' 'openssh' 'python-mako' 'python-ply' 'lib32-libxml2' 'lib32-expat' 'lib32-libx11' 'xorgproto' 'lib32-libdrm' 
 	     'lib32-libxshmfence' 'lib32-libxxf86vm' 'lib32-libxdamage' 'lib32-libvdpau'
 	     'lib32-libva' 'lib32-wayland' 'wayland-protocols' 'lib32-zstd' 'lib32-libelf'
-	     'lib32-llvm' 'lib32-libomxil-bellagio' 'lib32-libdrm' 'libclc' 'clang' 'lib32-clang' 'lib32-libglvnd' 'lib32-libunwind'
+	     'lib32-llvm' 'lib32-libdrm' 'libclc' 'clang' 'lib32-clang' 'lib32-libglvnd' 'lib32-libunwind'
 	     'lib32-lm_sensors' 'lib32-libxrandr' 'lib32-systemd' 'valgrind' 'glslang' 'lib32-vulkan-icd-loader' 'directx-headers' 'cmake' 'meson'
 	     'python-sphinx-hawkmoth' 'lib32-spirv-tools' 'lib32-spirv-llvm-translator')
 
@@ -90,15 +90,14 @@ END
     -D gallium-drivers=iris,i915,radeonsi,softpipe,llvmpipe,zink \
     -D vulkan-drivers=intel \
     -D vulkan-layers=device-select,intel-nullhw,overlay \
-    -D dri3=enabled \
     -D egl=enabled \
     -D gallium-extra-hud=true \
     -D gallium-nine=true \
-    -D gallium-omx=disabled \
     -D gallium-opencl=disabled \
     -D gallium-va=enabled \
     -D gallium-vdpau=enabled \
     -D gallium-xa=disabled \
+    -D gallium-rusticl=false \
     -D android-libbacktrace=disabled \
     -D gbm=enabled \
     -D gles1=disabled \
@@ -215,7 +214,9 @@ package_lib32-mesa() {
   # ati-dri, nouveau-dri, intel-dri, svga-dri, swrast, swr
   _install fakeinstall/usr/lib32/dri/*_dri.so
 
-  #_install fakeinstall/usr/lib32/bellagio
+  # gbm
+  _install fakeinstall/usr/lib32/gbm/dri_gbm.so
+
   _install fakeinstall/usr/lib32/d3d
   _install fakeinstall/usr/lib32/lib{gbm,glapi}.so*
   _install fakeinstall/usr/lib32/libOSMesa.so*
