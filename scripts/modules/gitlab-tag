@@ -24,7 +24,7 @@ then
 	DOWNSTREAM_VERSION="$(cat ${DATA_DIR}/${PACKAGE})"
 fi
 
-if [ ! "${UPSTREAM_VERSION#*-}" = "${DOWNSTREAM_VERSION}" ]
+if [ ! "${UPSTREAM_VERSION##*-}" = "${DOWNSTREAM_VERSION}" ]
 then
-	echo "${UPSTREAM_VERSION#*-}" | tee ${DATA_DIR}/${PACKAGE}
+	echo "${UPSTREAM_VERSION##*-}" | tee ${DATA_DIR}/${PACKAGE}
 fi
