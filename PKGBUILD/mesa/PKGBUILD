@@ -121,7 +121,7 @@ _install() {
 
 package_vulkan-mesa-layers() {
   pkgdesc="Mesa's Vulkan layers"
-  depends=('libdrm' 'libxcb' 'wayland' 'python>=3.11' 'python<3.12')
+  depends=('spirv-tools' 'libdrm' 'libxcb' 'wayland' 'python>=3.11' 'python<3.12')
   conflicts=('vulkan-mesa-layer')
   replaces=('vulkan-mesa-layer')
 
