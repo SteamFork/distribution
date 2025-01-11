@@ -11,7 +11,7 @@ pkgname=('lib32-vulkan-mesa-layers' 'lib32-vulkan-intel' 'lib32-libva-mesa-drive
 pkgdesc="An open-source implementation of the OpenGL specification (32-bit)"
 pkgver=24.3.3
 _tag=mesa-${pkgver}
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 
 makedepends=('multilib-devel' 'git' 'openssh' 'python-mako' 'python-ply' 'lib32-libxml2' 'lib32-expat' 'lib32-libx11' 'xorgproto' 'lib32-libdrm' 
@@ -137,7 +137,7 @@ _install() {
 
 package_lib32-vulkan-mesa-layers() {
   pkgdesc="Mesa's Vulkan layers (32-bit)"
-  depends=('lib32-libdrm' 'lib32-libxcb' 'lib32-wayland' 'vulkan-mesa-layers')
+  depends=('lib32-spirv-tools' 'lib32-libdrm' 'lib32-libxcb' 'lib32-wayland' 'vulkan-mesa-layers')
   conflicts=('lib32-vulkan-mesa-layer')
   replaces=('lib32-vulkan-mesa-layer')
 
