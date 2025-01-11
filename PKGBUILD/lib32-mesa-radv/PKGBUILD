@@ -37,14 +37,6 @@ validpgpkeys=('8703B6700E7EE06D7A39B8D6EDAE37B02CEB490D'  # Emil Velikov <emil.l
               '71C4B75620BC75708B4BDB254C95FAAB3EB073EC'  # Dylan Baker <dylan@pnwbakers.com>
               '57551DE15B968F6341C248F68D8E31AFC32428A6') # Eric Engestrom <eric@engestrom.ch>
 
-pkgver() {
-  cd mesa
-
-  read -r _ver <VERSION
-  #echo ${_ver/-/_}.$(git rev-list --count HEAD).$(git rev-parse --short HEAD)
-  echo "${_ver/-/_}.$(git rev-list --count HEAD).${_tag//-/_}"
-}
-
 prepare() {
     # although removing _build folder in build() function feels more natural,
     # that interferes with the spirit of makepkg --noextract
