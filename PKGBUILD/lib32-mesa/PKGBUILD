@@ -15,7 +15,7 @@ pkgrel=2
 arch=('x86_64')
 
 makedepends=('multilib-devel' 'git' 'openssh' 'python-mako' 'python-ply' 'lib32-libxml2' 'lib32-expat' 'lib32-libx11' 'xorgproto' 'lib32-libdrm' 
-	     'lib32-libxshmfence' 'lib32-libxxf86vm' 'lib32-libxdamage' 'lib32-libvdpau'
+	     'lib32-libxshmfence' 'lib32-libxxf86vm' 'lib32-libxdamage' 'lib32-libvdpau' 'lib32-spirv-tools'
 	     'lib32-libva' 'lib32-wayland' 'wayland-protocols' 'lib32-zstd' 'lib32-libelf'
 	     'lib32-llvm' 'lib32-libdrm' 'libclc' 'clang' 'lib32-clang' 'lib32-libglvnd' 'lib32-libunwind'
 	     'lib32-lm_sensors' 'lib32-libxrandr' 'lib32-systemd' 'valgrind' 'glslang' 'lib32-vulkan-icd-loader' 'directx-headers' 'cmake' 'meson'
