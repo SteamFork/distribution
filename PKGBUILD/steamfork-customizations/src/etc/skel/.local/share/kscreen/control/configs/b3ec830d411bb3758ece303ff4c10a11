@@ -1,0 +1,18 @@
+{
+    "outputs": [
+        {
+            "id": "ecaa73bfdd9c9dbf1690d4bd0187b081",
+            "metadata": {
+                "name": "eDP"
+            },
+            "retention": 1
+        },
+        {
+            "id": "7416f805407bf1da569f33f5d0b1b68d",
+            "metadata": {
+                "name": "eDP-1"
+            },
+            "retention": 1
+        }
+    ]
+}
