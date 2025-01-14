@@ -1,0 +1,52 @@
+[
+    {
+        "enabled": true,
+        "id": "ecaa73bfdd9c9dbf1690d4bd0187b081",
+        "metadata": {
+            "fullname": "xrandr-AYANEOFHD-539169026",
+            "name": "eDP"
+        },
+        "mode": {
+            "refresh": 120.02743530273438,
+            "size": {
+                "height": 1920,
+                "width": 1080
+            }
+        },
+        "overscan": 0,
+        "pos": {
+            "x": 0,
+            "y": 0
+        },
+        "priority": 1,
+        "rgbrange": 0,
+        "rotation": 2,
+        "scale": 1,
+        "vrrpolicy": 2
+    },
+    {
+        "enabled": true,
+        "id": "7416f805407bf1da569f33f5d0b1b68d",
+        "metadata": {
+            "fullname": "xrandr-AYANEOQHD-539168806",
+            "name": "eDP-1"
+        },
+        "mode": {
+            "refresh": 60.003170013427734,
+            "size": {
+                "height": 960,
+                "width": 640
+            }
+        },
+        "overscan": 0,
+        "pos": {
+            "x": 480,
+            "y": 1080
+        },
+        "priority": 2,
+        "rgbrange": 0,
+        "rotation": 2,
+        "scale": 1,
+        "vrrpolicy": 2
+    }
+]
