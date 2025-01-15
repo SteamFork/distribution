@@ -344,7 +344,7 @@ GAMESCOPE_DISPLAY=$(get_active_display)
 ### Tests to determine how to start Gamescope.
 HAS_INTEL=$(lspci -nn | grep -iE 'VGA compat.*Intel' | tr ' ' $'\n' | tr -d '][' | grep 8086)
 HAS_AMD=$(lspci -nn | grep -iE 'VGA compat.*AMD' | tr ' ' $'\n' | tr -d '][' | grep 1002)
-HAS_LEGACY=$(lspci -nn | grep -iE 'VGA compat.*(Ellesmere|Lexa|Baffin|Polaris|RX)' | tr ' ' $'\n' | tr -d '][' | grep 1002)
+HAS_LEGACY=$(lspci -nn | grep -iE 'VGA compat.*(Ellesmere|Lexa|Baffin|Polaris)' | tr ' ' $'\n' | tr -d '][' | grep 1002)
 
 if [ -n "${HAS_INTEL}" ] && \
    [ -z "${HAS_AMD}" ]
