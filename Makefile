@@ -23,6 +23,9 @@ dist-clean: repo-clean image-clean build-clean
 repo-clean:
 	sudo rm -rf ${REPO_DIR}
 
+repo-check:
+	${SCRIPT_DIR}/sync check
+
 image-clean:
 	sudo umount -qR ${WORK_DIR}/image/buildwork/rootfs_mnt ||:
 	sudo rm -rf ${WORK_DIR} ${IMAGE_DIR}
@@ -103,3 +106,11 @@ packages-sync:
 
 mirrors-sync:
 	${SCRIPT_DIR}/sync mirrors
+
+.PHONY: release
+
+release: 
+	git merge upstream/main
+	${SCRIPT_DIR}/sync check
+	git tag $(shell date +%Y%m%d)
+	git push upstream $(shell date +%Y%m%d)
