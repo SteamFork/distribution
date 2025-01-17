@@ -7,6 +7,8 @@ export WORK_DIR		:= ${BUILD_DIR}/_work
 export IMAGE_DIR	:= ${BUILD_DIR}/release/images
 export REPO_DIR		:= ${BUILD_DIR}/release/repos
 export BUILD_VER	:= $(shell date +%Y%m%d.%H%M)
+export RELEASE_TAG	:= $(shell date +%Y%m%d)
+export UPSTREAM_REPO	:= upstream
 export STEAMOS_VERSION	:= 3.6
 
 RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -110,7 +112,7 @@ mirrors-sync:
 .PHONY: release
 
 release: 
-	git merge upstream/main
+	git merge ${UPSTREAM_REPO}/main
 	${SCRIPT_DIR}/sync check
-	git tag $(shell date +%Y%m%d)
-	git push upstream $(shell date +%Y%m%d)
+	git tag ${RELEASE_TAG}
+	git push ${UPSTREAM_REPO} ${RELEASE_TAG}
