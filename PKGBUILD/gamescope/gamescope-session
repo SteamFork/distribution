@@ -356,6 +356,7 @@ then
 elif [ -n "${HAS_LEGACY}" ]
 then
 	### This is a device with an AMD GPU that is Polaris or older.
+	export ENABLE_GAMESCOPE_WSI=0
 	export mesa_glthread=true
 	GAMESCOPE_BINARY="gamescope-legacy"
 fi
