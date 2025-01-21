@@ -7,11 +7,11 @@ pkgbase=lib32-mesa
 # Jupiter:
 #  - drop radv vulkan driver - separate sources and package
 #  - drop lib32-opencl-mesa - unnecessary and requires to install more dependencies
-pkgname=('lib32-vulkan-mesa-layers' 'lib32-vulkan-intel' 'lib32-libva-mesa-driver' 'lib32-mesa-vdpau' 'lib32-mesa')
+pkgname=('lib32-vulkan-mesa-layers' 'lib32-vulkan-intel' 'lib32-vulkan-virtio' 'lib32-libva-mesa-driver' 'lib32-mesa-vdpau' 'lib32-mesa')
 pkgdesc="An open-source implementation of the OpenGL specification (32-bit)"
 pkgver=24.3.3
 _tag=mesa-${pkgver}
-pkgrel=2
+pkgrel=3
 arch=('x86_64')
 
 makedepends=('multilib-devel' 'git' 'openssh' 'python-mako' 'python-ply' 'lib32-libxml2' 'lib32-expat' 'lib32-libx11' 'xorgproto' 'lib32-libdrm' 
@@ -79,8 +79,8 @@ END
     -D b_ndebug=true \
     -D b_lto=false \
     -D platforms=x11,wayland \
-    -D gallium-drivers=iris,i915,radeonsi,softpipe,llvmpipe,zink \
-    -D vulkan-drivers=intel \
+    -D gallium-drivers=iris,i915,radeonsi,softpipe,llvmpipe,zink,virgl \
+    -D vulkan-drivers=intel,virtio \
     -D vulkan-layers=device-select,intel-nullhw,overlay \
     -D egl=enabled \
     -D gallium-extra-hud=true \
@@ -164,6 +164,18 @@ package_lib32-vulkan-radeon() {
 
   _install fakeinstall/usr/share/vulkan/icd.d/radeon_icd*.json
   _install fakeinstall/usr/lib32/libvulkan_radeon.so
+
+  install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" LICENSE
+}
+
+package_lib32-vulkan-virtio() {
+  pkgdesc="Qemu Vulkan mesa driver"
+  depends=('wayland' 'libx11' 'libxshmfence' 'libdrm' 'zstd' 'systemd-libs')
+  optdepends=('vulkan-mesa-layers: additional vulkan layers')
+  provides=('vulkan-driver')
+
+  _install fakeinstall/usr/share/vulkan/icd.d/virtio_icd*.json
+  _install fakeinstall/usr/lib32/libvulkan_virtio.so
 
   install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" LICENSE
 }

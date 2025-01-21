@@ -397,6 +397,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-util-linux
                     lib32-vulkan-icd-loader
                     steamfork/lib32-vulkan-radeon
+		    steamfork/lib32-vulkan-virtio
 		    lib32-vulkan-mesa-layers
                     lib32-wayland
                     lib32-xcb-util-keysyms
@@ -876,6 +877,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     volume_key
                     vulkan-icd-loader
                     steamfork/vulkan-radeon
+		    steamfork/vulkan-virtio
                     vulkan-tools
                     steamfork/vulkan-mesa-layers
                     wayland
