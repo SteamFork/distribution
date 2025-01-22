@@ -24,13 +24,13 @@ if [[ -L "${PRE_IMMUTABLE_ROOT}" ]] && [[ -L "${PRE_IMMUTABLE_HOME}" ]]; then
         echo "Searching for valid users to migrate..."
         mkdir /tmp/oldroot
         mount ${REAL_ROOT_PATH} /tmp/oldroot
-        HOLOUSER=$(cat /tmp/oldroot/etc/passwd | grep home | awk -F':' '{ print $1}')
-        echo "User ${HOLOUSER} detected."
+        OSUSER=$(cat /tmp/oldroot/etc/passwd | grep home | awk -F':' '{ print $1}')
+        echo "User ${OSUSER} detected."
         while true
         do
-            echo -n "Enter password for user ${HOLOUSER}: "
-            read HOLOPASS
-            if [[ -n "${HOLOPASS}" ]]; then
+            echo -n "Enter password for user ${OSUSER}: "
+            read OSPASS
+            if [[ -n "${OSPASS}" ]]; then
                 break
             fi
         done
@@ -76,7 +76,7 @@ if [[ -L "${PRE_IMMUTABLE_ROOT}" ]] && [[ -L "${PRE_IMMUTABLE_HOME}" ]]; then
         e2label ${var_partition} sf_var
         sync
         sleep 2
-        steamfork-bootstrap --username "${HOLOUSER}" --password "${HOLOPASS}" --root_password "${ROOTPASS}"
+        steamfork-bootstrap --username "${OSUSER}" --password "${OSPASS}" --root_password "${ROOTPASS}"
     fi
 else
     echo "Nothing to migrate."

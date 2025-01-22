@@ -36,12 +36,12 @@ case $key in
     shift # past value
     ;;
     --username)
-    HOLOUSER="$2"
+    OSUSER="$2"
     shift # past argument
     shift # past value
     ;;
     --password)
-    HOLOPASS="$2"
+    OSPASS="$2"
     shift # past argument
     shift # past value
     ;;
@@ -98,5 +98,5 @@ e2label ${home_partition} sf_home
 
 sync && partprobe
 echo "Starting to bootstrap installation..."
-steamfork-bootstrap --username "${HOLOUSER}" --password "${HOLOPASS}" --root_password "${ROOTPASS}"
+steamfork-bootstrap --username "${OSUSER}" --password "${OSPASS}" --root_password "${ROOTPASS}"
 sync

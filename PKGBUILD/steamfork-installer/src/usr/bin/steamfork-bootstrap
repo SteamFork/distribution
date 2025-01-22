@@ -8,12 +8,12 @@ do
 key="$1"
 case $key in
     --username)
-    HOLOUSER="$2"
+    OSUSER="$2"
     shift # past argument
     shift # past value
     ;;
     --password)
-    HOLOPASS="$2"
+    OSPASS="$2"
     shift # past argument
     shift # past value
     ;;
@@ -61,29 +61,28 @@ mount -L sf_home ${HOMELOCATION_TEMP}
 
 # Start build deploying here
 mkdir -p ${SNAPSHOT_FUTURELOC} ${INSTALLLOCATION} ${HOMELOCATION_TEMP} ${SNAPSHOT_FUTURELOC} ${SUBVOLLOCATION}
-if [[ ! -d "${INSTALLLOCATION}/${SUBVOL}" ]]; then
-    echo "Copying image file to home partition..."
-    cp /etc/install.image/${SUBVOL}.img.zst ${SNAPSHOT_FUTURELOC}/
-    echo "Decompressing image file..."
-    zstd -df ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst
-    echo "Removing container file..."
-    rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst
-    echo "Installing image file on root partition..."
-    btrfs receive ${INSTALLLOCATION} < ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img
-    echo "Removing install file..."
-    rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img
-elif [[ "${IS_RESET}" == "1" ]]; then
+if [[ "${IS_RESET}" == "1" ]]; then
     echo "Removing current copy of subvolume..."
     btrfs subvolume delete ${INSTALLLOCATION}/${SUBVOL}
-    echo "Copying image file to home partition..."
+fi
+
+if [[ ! -d "${INSTALLLOCATION}/${SUBVOL}" ]]; then
+    echo "Copying rootfs image to home partition..."
     cp /etc/install.image/${SUBVOL}.img.zst ${SNAPSHOT_FUTURELOC}/
-    echo "Decompressing image file..."
+    echo "Verifying rootfs image..."
+    COPIED_HASH=$(cat /etc/install.image/${SUBVOL}.img.zst.sha256)
+    IMAGE_HASH=$(sha256sum ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst | awk '{print $1}')
+    if [ ! "${COPIED_HASH}" == "${IMAGE_HASH}" ]
+    then
+	    echo "ERROR: The rootfs image has failed verification, redownload and remake your installation media."
+	    exit 1
+    fi
+    echo "Decompressing rootfs..."
     zstd -df ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst
-    echo "Removing container file..."
     rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst
-    echo "Installing image file on root partition..."
+    echo "Installing rootfs image to partition..."
     btrfs receive ${INSTALLLOCATION} < ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img
-    echo "Removing install file..."
+    echo "Removing rootfs image..."
     rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img
 else
     echo "Installer subvolume already exists on container, skipping bootstrap..."
@@ -107,24 +106,24 @@ mkdir -p ${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/var/overlays/
 mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc
 echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${SUBVOLLOCATION} passwd root
 
-if [[ ! -z "${HOLOUSER}" ]]; then
-    echo -e "\nCreating user ${HOLOUSER}..."
+if [[ ! -z "${OSUSER}" ]]; then
+    echo -e "\nCreating user ${OSUSER}..."
     ### If the user exists, kill it with fire
     for file in /etc/group /etc/shadow /etc/passwd
     do
-      arch-chroot ${SUBVOLLOCATION} sed -i '/^'${HOLOUSER}':/d' ${file}
+      arch-chroot ${SUBVOLLOCATION} sed -i '/^'${OSUSER}':/d' ${file}
     done
-    arch-chroot ${SUBVOLLOCATION} rm -rf /home/${HOLOUSER}
+    arch-chroot ${SUBVOLLOCATION} rm -rf /home/${OSUSER}
 
-    arch-chroot ${SUBVOLLOCATION} groupadd -g 1000 ${HOLOUSER}
-    arch-chroot ${SUBVOLLOCATION} useradd --create-home -d /home/${HOLOUSER} -c "Steam Deck User" -s /bin/bash -u 1000 -g 1000 ${HOLOUSER}
-    arch-chroot ${SUBVOLLOCATION} usermod -aG wheel ${HOLOUSER}
-    arch-chroot ${SUBVOLLOCATION} usermod -aG video ${HOLOUSER}
-    arch-chroot ${SUBVOLLOCATION} usermod -aG steamos-log-submitter ${HOLOUSER}
-    arch-chroot ${SUBVOLLOCATION} cp -f /usr/share/icons/steam/${HOLOUSER}-face.icon /home/${HOLOUSER}/.face.icon
-    arch-chroot ${SUBVOLLOCATION} chown ${HOLOUSER}:${HOLOUSER} /home/${HOLOUSER}/.face.icon
+    arch-chroot ${SUBVOLLOCATION} groupadd -g 1000 ${OSUSER}
+    arch-chroot ${SUBVOLLOCATION} useradd --create-home -d /home/${OSUSER} -c "Steam Deck User" -s /bin/bash -u 1000 -g 1000 ${OSUSER}
+    arch-chroot ${SUBVOLLOCATION} usermod -aG wheel ${OSUSER}
+    arch-chroot ${SUBVOLLOCATION} usermod -aG video ${OSUSER}
+    arch-chroot ${SUBVOLLOCATION} usermod -aG steamos-log-submitter ${OSUSER}
+    arch-chroot ${SUBVOLLOCATION} cp -f /usr/share/icons/steam/${OSUSER}-face.icon /home/${OSUSER}/.face.icon
+    arch-chroot ${SUBVOLLOCATION} chown ${OSUSER}:${OSUSER} /home/${OSUSER}/.face.icon
 
-    echo -e "${HOLOPASS}\n${HOLOPASS}" | arch-chroot ${SUBVOLLOCATION} passwd ${HOLOUSER}
+    echo -e "${OSPASS}\n${OSPASS}" | arch-chroot ${SUBVOLLOCATION} passwd ${OSUSER}
 
     ### Remove the local build repo
     arch-chroot ${SUBVOLLOCATION} sed -ie '/^\[repo\]/,+3d' /etc/pacman.conf
@@ -161,9 +160,9 @@ do
 done
 umount -l ${SUBVOLLOCATION} && umount -l ${HOMELOCATION_TEMP}
 echo "You may now close this window and reboot your device..."
-exit 0
+sleep 10
 else
 echo "Partition layout not detected. Aborting bootstrap"
 exit 127
-sleep 5
+sleep 10
 fi
