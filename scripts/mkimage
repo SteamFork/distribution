@@ -38,8 +38,6 @@ then
   sudo steamos-readonly disable
 fi
 
-echo A
-
 function cleanup() {
   sudo umount -R ${WORK_DIR}/buildwork/rootfs_mnt/var/cache/pacman/pkg \
 	         ${WORK_DIR}/buildwork/rootfs_mnt ||:
