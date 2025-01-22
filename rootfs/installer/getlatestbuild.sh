@@ -7,5 +7,4 @@ source ${IMAGE_DIR}/buildinfo
 
 mkdir -p ${DOWNLOADPATH}
 cp ${IMAGE_DIR}/${IMAGEFILE}${preferred_imgtype} ${DOWNLOADPATH}
-cp ${IMAGE_DIR}/${IMAGEFILE}${preferred_imgtype}.sha256 ${DOWNLOADPATH}
-
+sha256sum ${IMAGE_DIR}/${IMAGEFILE}${preferred_imgtype} >${DOWNLOADPATH}/${IMAGEFILE}${preferred_imgtype}.sha256
