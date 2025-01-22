@@ -70,7 +70,7 @@ if [[ ! -d "${INSTALLLOCATION}/${SUBVOL}" ]]; then
     echo "Copying rootfs image to home partition..."
     cp /etc/install.image/${SUBVOL}.img.zst ${SNAPSHOT_FUTURELOC}/
     echo "Verifying rootfs image..."
-    COPIED_HASH=$(cat /etc/install.image/${SUBVOL}.img.zst.sha256)
+    COPIED_HASH=$(cat /etc/install.image/${SUBVOL}.img.zst.sha256 | awk '{print $1}')
     IMAGE_HASH=$(sha256sum ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst | awk '{print $1}')
     if [ ! "${COPIED_HASH}" == "${IMAGE_HASH}" ]
     then
