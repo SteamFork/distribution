@@ -21,3 +21,28 @@ do
     rm -f "${CONFLICT}"
   fi
 done
+
+# Clean up the installer to free space.
+rm -rf /{usr/,}include
+rm -rf /{usr/,}lib/cmake
+rm -rf /{usr/,}lib/pkgconfig
+rm -rf /{usr/,}man
+rm -rf /{usr/,}share/aclocal
+rm -rf /{usr/,}share/bash-completion
+rm -rf /{usr/,}share/doc
+rm -rf /{usr/,}share/gtk-doc
+rm -rf /{usr/,}share/info
+rm -rf /{usr/,}share/locale
+rm -rf /{usr/,}share/man
+rm -rf /{usr/,}share/pkgconfig
+rm -rf /{usr/,}share/zsh
+
+find / \( -name "*.orig" \
+          -o -name "*.rej" \
+          -o -name "*.a" \
+          -o -name "*.la" \
+          -o -name "*.o" \
+          -o -name "*.in" \
+          -o -name ".git*" \) \
+          -exec rm -f {} \; 2>/dev/null || :
+
