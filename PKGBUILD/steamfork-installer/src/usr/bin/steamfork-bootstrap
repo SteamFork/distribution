@@ -49,7 +49,8 @@ ROOTLOCATION=/tmp/sf_root
 INSTALLLOCATION=${ROOTLOCATION}/rootfs
 HOMELOCATION_TEMP=/tmp/sf_home
 SNAPSHOT_FUTURELOC=${HOMELOCATION_TEMP}/.steamos/installcontainer
-SUBVOL=$(ls /etc/install.image | grep steamfork | sed -s 's/.img.zst//g')
+SUBVOL=$(ls /etc/install.image/*.img.zst | sed -s 's/.img.zst//g')
+SUBVOL=$(basename ${SUBVOL})
 SUBVOLLOCATION=/tmp/subvol
 
 echo "Bootstrapping SteamFork image $SUBVOL on $(blkid -L sf_root)..."
