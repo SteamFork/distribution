@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.12.10
-pkgrel=2
+pkgrel=3
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -82,7 +82,7 @@ sha256sums=('SKIP'
 '02f5eaede065b7d68ccf469c9f54eab3ce3f0d852624a3430d83bcd6e2bd7dbb' # 0006-Ayaneo-geek-headset-patch.patch
 '3805f3b8b39d9d49586fb5d2a445a9ee54cf00cd1cdedd226e727420196cc568' # 0007-ayaneo-2-headphone-fix.patch
 'a5fc093f55a43295e08bb70df91d1b0861f2fbd76cee2cf9725b52f3f8d0c4a7' # 0008-ayaneo-1s-hp-fix.patch
-'b20b74d5cb99d722dc6a060b04715bb10d52eea14b23123237cf03722cff9763' # 0009-ayn-minipro-fixup.patch
+'3b2e1c9038c2e7f81bee186e3b8ddc1e0009b6d252abe183b1552cc4b2b365f0' # 0009-ayn-minipro-fixup.patch
 'bb5dd08ae830b11a0170014a7b855bd4224fb5f83b0a8fb7a166d702e63d4e36' # 0010-enable-flip-ds-bottom-touchscreen.patch
 'f45ba5d7dbc004474314c9e0329014e8c9d6b111f1e00397b1072b1bde581761' # 0012-HACK-add-KConfig-to-enable-driver-specific-color-mgm.patch
 '683128d044f4df12dcb0a7b2858075f510d870460dc71f0d60f69df89cf62419' # 0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch

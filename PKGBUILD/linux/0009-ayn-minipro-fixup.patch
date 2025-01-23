@@ -1,6 +1,6 @@
 diff -rupN linux-6.12.10.orig/sound/pci/hda/patch_realtek.c linux-6.12.10/sound/pci/hda/patch_realtek.c
 --- linux-6.12.10.orig/sound/pci/hda/patch_realtek.c	2025-01-23 14:44:15.362339577 +0000
-+++ linux-6.12.10/sound/pci/hda/patch_realtek.c	2025-01-23 14:51:07.145302305 +0000
++++ linux-6.12.10/sound/pci/hda/patch_realtek.c	2025-01-23 18:32:15.070027829 +0000
 @@ -7793,6 +7793,20 @@ enum {
  	ALC233_FIXUP_MEDION_MTL_SPK,
  };
@@ -22,3 +22,14 @@ diff -rupN linux-6.12.10.orig/sound/pci/hda/patch_realtek.c linux-6.12.10/sound/
  /* A special fixup for Lenovo C940 and Yoga Duet 7;
   * both have the very same PCI SSID, and we need to apply different fixups
   * depending on the codec ID
+@@ -9061,6 +9075,10 @@ static const struct hda_fixup alc269_fix
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = alc269_fixup_headphone_volume,
+ 	},
++	[ALC269_FIXUP_DMI_MATCH] = {
++		.type = HDA_FIXUP_FUNC,
++		.v.func = alc269_fixup_match_via_dmi,
++	},
+ 	[ALC299_FIXUP_PREDATOR_SPK] = {
+ 		.type = HDA_FIXUP_PINS,
+ 		.v.pins = (const struct hda_pintbl[]) {
