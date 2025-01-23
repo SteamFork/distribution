@@ -11,9 +11,9 @@ pkgdesc="An open-source implementation of the OpenGL specification (32-bit)"
 # When updating the tag, consider if you are adding any shader compiler changes. If so,
 # or if you are not sure, regenerate the radv-build-id below. To update, see
 # https://gitlab.steamos.cloud/jupiter/docs/-/wikis/How-to-make-a-new-Mesa-release#updating-the-radv-build-id
-pkgver=24.3.3
+pkgver=24.3.4
 _tag=mesa-${pkgver}
-pkgrel=3
+pkgrel=1
 arch=('x86_64')
 makedepends=('multilib-devel' 'git' 'openssh' 'python-mako' 'python-ply' 'lib32-libxml2' 'lib32-expat' 'lib32-libx11' 'xorgproto' 'lib32-libdrm'
              'python>=3.11' 'python<3.12'
