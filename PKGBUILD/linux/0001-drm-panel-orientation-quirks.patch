@@ -1,6 +1,6 @@
-diff -rupN linux-6.12.5.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linux-6.12.5/drivers/gpu/drm/drm_panel_orientation_quirks.c
---- linux-6.12.5.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c	2024-12-14 19:04:17.000000000 +0000
-+++ linux-6.12.5/drivers/gpu/drm/drm_panel_orientation_quirks.c	2024-12-16 05:16:59.397212363 +0000
+diff -rupN linux-6.12.10.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linux-6.12.10/drivers/gpu/drm/drm_panel_orientation_quirks.c
+--- linux-6.12.10.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c	2025-01-17 12:41:00.000000000 +0000
++++ linux-6.12.10/drivers/gpu/drm/drm_panel_orientation_quirks.c	2025-01-23 22:57:06.335725677 +0000
 @@ -93,6 +93,12 @@ static const struct drm_dmi_panel_orient
  	.orientation = DRM_MODE_PANEL_ORIENTATION_RIGHT_UP,
  };
@@ -61,7 +61,7 @@ diff -rupN linux-6.12.5.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linu
  		},
  		.driver_data = (void *)&lcd800x1280_rightside_up,
  	}, {	/* AYA NEO AIR */
-@@ -202,6 +208,18 @@ static const struct dmi_system_id orientation_data[] = {
+@@ -202,6 +220,18 @@ static const struct dmi_system_id orient
  		  DMI_MATCH(DMI_PRODUCT_NAME, "AIR"),
  		},
  		.driver_data = (void *)&lcd1080x1920_leftside_up,
@@ -93,7 +93,20 @@ diff -rupN linux-6.12.5.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c linu
  	}, {    /* AYN Loki Max */
  		.matches = {
  			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ayn"),
-@@ -315,6 +351,12 @@ static const struct dmi_system_id orient
+@@ -238,6 +274,12 @@ static const struct dmi_system_id orient
+ 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Loki Zero"),
+ 		},
+ 		.driver_data = (void *)&lcd1080x1920_leftside_up,
++        }, {    /* ONEXPLAYER Mini */
++                .matches = {
++                        DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK TECHNOLOGY CO., LTD."),
++                        DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONE XPLAYER"),
++                },
++                .driver_data = (void *)&lcd800x1280_leftside_up,
+ 	}, {	/* Chuwi HiBook (CWI514) */
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "Hampoo"),
+@@ -315,6 +357,12 @@ static const struct dmi_system_id orient
  		  DMI_EXACT_MATCH(DMI_BOARD_NAME, "Default string"),
  		},
  		.driver_data = (void *)&gpd_win2,
