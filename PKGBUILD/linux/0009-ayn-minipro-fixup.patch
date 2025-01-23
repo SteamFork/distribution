@@ -1,6 +1,17 @@
 diff -rupN linux-6.12.10.orig/sound/pci/hda/patch_realtek.c linux-6.12.10/sound/pci/hda/patch_realtek.c
 --- linux-6.12.10.orig/sound/pci/hda/patch_realtek.c	2025-01-23 14:44:15.362339577 +0000
-+++ linux-6.12.10/sound/pci/hda/patch_realtek.c	2025-01-23 18:40:31.202914643 +0000
++++ linux-6.12.10/sound/pci/hda/patch_realtek.c	2025-01-23 18:47:04.385894111 +0000
+@@ -7536,8 +7536,8 @@ enum {
+ 	ALC269_FIXUP_DELL4_MIC_NO_PRESENCE,
+ 	ALC269_FIXUP_DELL4_MIC_NO_PRESENCE_QUIET,
+ 	ALC269_FIXUP_HEADSET_MODE,
+-	ALC269_FIXUP_HEADSET_AYA_2,
+-	ALC269_FIXUP_HEADSET_AYA_GEEK,
++	ALC269_FIXUP_DMI_MATCH,
++	ALC269_FIXUP_AYANEO_VOLUME,
+ 	ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC,
+ 	ALC269_FIXUP_ASPIRE_HEADSET_MIC,
+ 	ALC269_FIXUP_ASUS_X101_FUNC,
 @@ -7793,6 +7793,21 @@ enum {
  	ALC233_FIXUP_MEDION_MTL_SPK,
  };
