@@ -1,0 +1,24 @@
+diff -rupN linux-6.12.10.orig/sound/pci/hda/patch_realtek.c linux-6.12.10/sound/pci/hda/patch_realtek.c
+--- linux-6.12.10.orig/sound/pci/hda/patch_realtek.c	2025-01-23 14:44:15.362339577 +0000
++++ linux-6.12.10/sound/pci/hda/patch_realtek.c	2025-01-23 14:51:07.145302305 +0000
+@@ -7793,6 +7793,20 @@ enum {
+ 	ALC233_FIXUP_MEDION_MTL_SPK,
+ };
+ 
++/* Fix up the audio pinning on the Ayn MiniPro, as it
++ * shares a product and vendor id with other devices. */
++static void alc269_fixup_match_via_dmi(struct hda_codec *codec,
++				       const struct hda_fixup *fix, int action)
++{
++	int alc269_fix_id;
++	const char *board_name = dmi_get_system_info(DMI_BOARD_NAME);
++	if (dmi_name_in_vendors("ayn") && strcmp(board_name, "Loki MiniPro")) {
++		alc269_fix_id = ALC269VB_FIXUP_AYANEO_SPKR_PIN_FIX;
++	} else {
++		return;
++	}
++}
++
+ /* A special fixup for Lenovo C940 and Yoga Duet 7;
+  * both have the very same PCI SSID, and we need to apply different fixups
+  * depending on the codec ID
