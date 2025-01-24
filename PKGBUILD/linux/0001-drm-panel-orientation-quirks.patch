@@ -102,7 +102,7 @@ diff -rupN linux-6.12.10.orig/drivers/gpu/drm/drm_panel_orientation_quirks.c lin
 +                        DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK TECHNOLOGY CO., LTD."),
 +                        DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONE XPLAYER"),
 +                },
-+                .driver_data = (void *)&lcd800x1280_leftside_up,
++                .driver_data = (void *)&lcd1200x1920_leftside_up,
  	}, {	/* Chuwi HiBook (CWI514) */
  		.matches = {
  			DMI_MATCH(DMI_BOARD_VENDOR, "Hampoo"),
