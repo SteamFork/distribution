@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.13
-pkgrel=1
+pkgrel=2
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -56,6 +56,7 @@ source=(
   0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
   0020-add-devices-to-oxp-sensors.patch
   0031-IIO-add-aya-neo-tablet-identifier.patch
+  0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
   0033-Codec-Add-aw87xxx-codec-with-partial-acpi-implementa.patch
   0034-Updated-AW87xxx-driver-to-be-more-verbose-for-debugg.patch
   0036-Updated-AW87xxx-driver-to-automatically-enumerate-a-.patch
@@ -76,7 +77,7 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
 )
 sha256sums=('SKIP'
-'1df7ce625c7cdedff37ab1a4658dd282837b221e56d0383f04fac6c2abce6f21' # config
+'ab3a139e7195726b3f56619bdfd8a6651d6c0129bb78b7f06e9a446652ffbb81' # config
 'e40db9de280c70d83832cdd0768348de170005cdd3ba233b498db5f81dd24fa1' # 0001-drm-panel-orientation-quirks.patch
 '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
 '02f5eaede065b7d68ccf469c9f54eab3ce3f0d852624a3430d83bcd6e2bd7dbb' # 0006-Ayaneo-geek-headset-patch.patch
@@ -87,6 +88,7 @@ sha256sums=('SKIP'
 '683128d044f4df12dcb0a7b2858075f510d870460dc71f0d60f69df89cf62419' # 0013-Don-t-create-color_mgmt_properties-on-asics-SIENNA_C.patch
 '783178f81727fcec0ff37b279a32c59b6c71702d18e53e472cdf1ee0a23d5241' # 0020-add-devices-to-oxp-sensors.patch
 'd4bc9044e7e3290d6885d08b8360b61744dc4227a723aa178f9041284e062f08' # 0031-IIO-add-aya-neo-tablet-identifier.patch
+'4bb188b58ce42de2abb811ff290500c50f330365f37386fc2c8c8b739254b5bb' # 0032-iio-imu-Add-driver-for-Bosch-BMI260-IMU.patch
 '5508dedc920022b728489eb3ebbf7235fe48a7822d3c654cd678388c743442b9' # 0033-Codec-Add-aw87xxx-codec-with-partial-acpi-implementa.patch
 'a1b744c20d676e248b2da55abf5314c533cf98ec2bcf0b9b008dedfe4ebfb9ef' # 0034-Updated-AW87xxx-driver-to-be-more-verbose-for-debugg.patch
 '73a88310ac0077bedd4a4e49689c06cb8460c55774cea1395d90f9ac57252e8c' # 0036-Updated-AW87xxx-driver-to-automatically-enumerate-a-.patch
