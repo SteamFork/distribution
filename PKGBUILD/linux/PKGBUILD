@@ -97,6 +97,7 @@ sha256sums=('SKIP'
 '93087d9449f994dca23c1d5a32919204d31afecc63950d74a2ea41aaa1e3a9ec' # 0040-vcs-amdgpu-quirks.patch
 'ab8a6dccf67cee7d924ee2e3d4690285d404bcb9bab70eced09b05fa2853b288' # 0041-air-amdgpu-quirks.patch
 '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
+'9aff2d2e9a8b4f9f91a2fc3b697e3fd801a02e5821c37761fdd756459747c697' # 0060-asus-patch-series.patch
 '6931c2c683ee45a760a037fd076a6e31f67685794afa9564e2a4f3abf5b3852d' # 0065-xpad-Add-QH-Electronics-VID-PID.patch
 'b2c0775ca7f7e8aed633c056b450c972020d37508d391732d7becded53a2210b' # 0066-ASoC-acp-Support-microphone-from-Lenovo-Go-S.patch
 'b048068eeee69bf0f600d2ea390c8f681f9708776ff45a4b871e1e51136af33a' # 0070-lexar-nvme-broken-msi.patch
