@@ -1,0 +1,2 @@
+# OneXPlayer/AOKZOE Turbo button takeover
+ACTION=="add|change", KERNEL=="oxp-platform", SUBSYSTEM=="platform", ATTR{tt_toggle}="1"
