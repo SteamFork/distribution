@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.12.12
-pkgrel=1
+pkgrel=2
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -68,6 +68,8 @@ source=(
   0060-asus-patch-series.patch
   0066-ASoC-acp-Support-microphone-from-Lenovo-Go-S.patch
   0070-lexar-nvme-broken-msi.patch
+  0080-vblank-not-passed-vfp.patch
+  0081-revert-some-vrr-always-on-hack.patch
   0099-add-external-device-drivers.patch
 )
 validpgpkeys=(
@@ -99,6 +101,8 @@ sha256sums=('SKIP'
 '7c2f292b4b1a158dd7234cb7a53d5bd839a07c24d7121de72797a07ed1499c4b' # 0060-asus-patch-series.patch
 'b2c0775ca7f7e8aed633c056b450c972020d37508d391732d7becded53a2210b' # 0066-ASoC-acp-Support-microphone-from-Lenovo-Go-S.patch
 'b048068eeee69bf0f600d2ea390c8f681f9708776ff45a4b871e1e51136af33a' # 0070-lexar-nvme-broken-msi.patch
+'a0688b117326017a36d5df63ea771733ef688027ca0a17e290f88b906141ed9c' # 0080-vblank-not-passed-vfp.patch
+'9abba3bd4c5540d5453abb2cd77edeb55b7bc36650f3dc2f71ae3901466b0756' # 0081-revert-some-vrr-always-on-hack.patch
 '3b1dabc168e4884c6586720538014d6ef8955a0b783d6436dd4937af6622ee42' # 0099-add-external-device-drivers.patch
 )
 
