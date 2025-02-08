@@ -109,7 +109,8 @@ do
 	    OPTIONS_DR="true:false"
 	    if [[ ":$OPTIONS_DR:" =~ ":${2}:"  ]]
 	    then
-	        ROTATE_DIGITIZER="${2}"
+		### Default to grab any available digitizer.
+	        ROTATE_DIGITIZER="/dev/input/event*:${2}"
 	    else
 	        echo "Unrecognized value for digitizer orientation Usage: \"true:false\""
 		exit 0
@@ -171,7 +172,7 @@ then
 fi
 if [ ! -z "${ROTATE_DIGITIZER}" ]
 then
-    echo -e "export ROTATE_DIGITIZER=\"${ROTATE_DIGITIZER}\""
+    echo -e "export ROTATE_DIGITIZER=(\"${ROTATE_DIGITIZER}\")"
 fi
 if [ ! -z "${STEAMFORK_SUPPORTED_DEVICE}" ]
 then

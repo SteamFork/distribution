@@ -1,8 +1,8 @@
 # Maintainer: Fewtarius
 
 pkgname=steamfork-device-support
-pkgver=2025.02.07
-pkgrel=4
+pkgver=2025.02.08
+pkgrel=1
 pkgdesc='Hardware support provider for PC handhelds.'
 arch=('any')
 url='http://www.steamfork.org'
