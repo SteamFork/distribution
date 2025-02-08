@@ -90,7 +90,7 @@ packages-aur:
 	### Waydroid
 	${SCRIPT_DIR}/mkpackage --repo aur dnsmasq-git
 	${SCRIPT_DIR}/mkpackage --repo aur libglibutil
-	${SCRIPT_DIR}/mkpackage --repo aur libgbinder
+	${SCRIPT_DIR}/mkpackage --repo local libgbinder
 	${SCRIPT_DIR}/mkpackage --repo aur python-gbinder
 	${SCRIPT_DIR}/mkpackage --repo local waydroid
 	### Xbox Xone driver
