@@ -6,7 +6,7 @@
 #             Mikael Eriksson <mikael_eriksson@miffe.org>
 
 pkgbase=linux
-pkgver=6.13.1
+pkgver=6.13.2
 pkgrel=1
 pkgdesc="Linux Stable"
 arch=(x86_64)
@@ -67,6 +67,8 @@ source=(
   0060-asus-patch-series.patch
   0066-ASoC-acp-Support-microphone-from-Lenovo-Go-S.patch
   0070-lexar-nvme-broken-msi.patch
+  0080-vblank-not-passed-vfp.patch
+  0081-revert-some-vrr-always-on-hack.patch
   0099-add-external-device-drivers.patch
   0100-ayaneo-platform.patch
 )
@@ -98,6 +100,8 @@ sha256sums=('SKIP'
   '9aff2d2e9a8b4f9f91a2fc3b697e3fd801a02e5821c37761fdd756459747c697' # 0060-asus-patch-series.patch
   'b2c0775ca7f7e8aed633c056b450c972020d37508d391732d7becded53a2210b' # 0066-ASoC-acp-Support-microphone-from-Lenovo-Go-S.patch
   'b048068eeee69bf0f600d2ea390c8f681f9708776ff45a4b871e1e51136af33a' # 0070-lexar-nvme-broken-msi.patch
+  'a0688b117326017a36d5df63ea771733ef688027ca0a17e290f88b906141ed9c' # 0080-vblank-not-passed-vfp.patch
+  '9abba3bd4c5540d5453abb2cd77edeb55b7bc36650f3dc2f71ae3901466b0756' # 0081-revert-some-vrr-always-on-hack.patch
   '3b1dabc168e4884c6586720538014d6ef8955a0b783d6436dd4937af6622ee42' # 0099-add-external-device-drivers.patch
   '67cbe650db915155351c33f5c135e21fff70f914be947817a11838861e2fa736' # 0100-ayaneo-platform.patch
 )
