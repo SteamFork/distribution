@@ -23,6 +23,9 @@ Options:
     --desktop_rotation: (left, right, normal, inverted)
         Rotates the internal display while in desktop mode.
 
+    --digitizer_rotation: true/false
+        Rotates the touch digitizer while in desktop mode.
+
   General and additional options:
     --supported: (true/false)
         Defines a device to be supported or not, a message appears in Steam notifying of unsupported devices.  Default is true.
@@ -102,6 +105,19 @@ do
             shift # past argument
             shift # past value
         ;;
+	--digitizer_rotation)
+	    OPTIONS_DR="true:false"
+	    if [[ ":$OPTIONS_DR:" =~ ":${2}:"  ]]
+	    then
+		### Default to grab any available digitizer.
+	        ROTATE_DIGITIZER="/dev/input/event*:${2}"
+	    else
+	        echo "Unrecognized value for digitizer orientation Usage: \"true:false\""
+		exit 0
+	    fi
+	    shift # past argument
+	    shift # past value
+	    ;;
         --grub_additional_options)
             GRUB_OPTIONS="${2}"
             shift # past argument
@@ -153,6 +169,10 @@ fi
 if [ ! -z "${XRANDR_ORIENTATION}" ]
 then
     echo -e "export X11_ROTATION=\"${XRANDR_ORIENTATION}\""
+fi
+if [ ! -z "${ROTATE_DIGITIZER}" ]
+then
+    echo -e "export ROTATE_DIGITIZER=(\"${ROTATE_DIGITIZER}\")"
 fi
 if [ ! -z "${STEAMFORK_SUPPORTED_DEVICE}" ]
 then

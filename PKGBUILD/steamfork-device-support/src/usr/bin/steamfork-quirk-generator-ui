@@ -22,7 +22,7 @@ uninstall() {
 	doreboot
 }
 
-declare -a allFeatures=(false "Left" "Rotate display 90 degrees to the left." false "Right" "Rotate the display 90 degrees to the right." false "Upsidedown" "Rotate the display 180 degrees." false "Performance" "Reduce native display resolution to improve performance." false "Remove" "Removes the custom quirk.")
+declare -a allFeatures=(false "Left" "Rotate display 90 degrees to the left." false "Right" "Rotate the display 90 degrees to the right." false "Upsidedown" "Rotate the display 180 degrees." false "Performance" "Reduce native display resolution to improve performance." false "Remove" "Removes the custom quirk." false "Digitizer" "Rotate touch input.")
 
 HELPERS=$( zenity --title "Quirk Generation Tool" \
 	--list \
@@ -51,6 +51,9 @@ do
 			;;
 		performance)
 			PERFORMANCE="true"
+			;;
+		digitizer)
+			DIGITIZER_ROTATION="true"
 			;;
 		remove)
 			REMOVE="true"
@@ -92,6 +95,11 @@ then
   else
     QUIRK_DATA="${QUIRK_DATA} --desktop_rotation ${ROTATION}"
   fi
+fi
+
+if [ -n "${DIGITIZER_ROTATION}" ]
+then 
+	QUIRK_DATA="${QUIRK_DATA} --digitizer_rotation true"
 fi
 
 sudo mkdir -p ${QUIRK_PATH} 2>/dev/null
