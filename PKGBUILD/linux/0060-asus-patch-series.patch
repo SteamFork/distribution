@@ -1,7 +1,7 @@
 From 34f532ea338ce274160a722b1ccf4deca132ab44 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Tue, 17 Dec 2024 09:31:08 +1300
-Subject: [PATCH 01/28] Tmp: add GA605W & H7606W to AMD-PMF quirks.
+Subject: [PATCH 01/29] Tmp: add GA605W & H7606W to AMD-PMF quirks.
 
 This will not be submitted upstream as the entire
 quirk system is being removed in 6.14 kernel.
@@ -45,7 +45,7 @@ index 7cde5733b9ca..02b9d0b49092 100644
 From 9380bb0065b66799939cee9266f552bf1643d0f1 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 6 Jan 2025 11:22:43 +1300
-Subject: [PATCH 02/28] hid-asus: Disable OOBE mode on the ProArt P16
+Subject: [PATCH 02/29] hid-asus: Disable OOBE mode on the ProArt P16
 
 The new ASUS ProArt 16" laptop series come with their keyboards stuck in
 an Out-Of-Box-Experience mode. While in this mode most functions will
@@ -131,7 +131,7 @@ index 365e119bebaa..783e2a336861 100644
 From ff2eafd08d86d378a999340bdaae6771013e8351 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Fri, 31 Jan 2025 09:14:52 +1300
-Subject: [PATCH 03/28] platform/x86: asus-wmi: Remove all ROG Ally CSEE hacks
+Subject: [PATCH 03/29] platform/x86: asus-wmi: Remove all ROG Ally CSEE hacks
 
 Remove the hacks introduced by these commits:
 - fc73fe3b8501 "platform/x86: asus-wmi: disable USB0 hub on ROG Ally before suspend"
@@ -239,7 +239,7 @@ index 1101e5b2488e..a5ef6d7fa40d 100644
 From 504704fb55eaeb9f8f26e7bb845e401289c740ca Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 22 Sep 2024 21:40:46 +1200
-Subject: [PATCH 04/28] platform/x86: asus-wmi: export symbols used for
+Subject: [PATCH 04/29] platform/x86: asus-wmi: export symbols used for
  read/write WMI
 
 Export some rather helpful read/write WMI symbols using a namespace.
@@ -361,7 +361,7 @@ index 783e2a336861..466781cbb4bb 100644
 From 23a666b965fe18f4a1c55d7534c64f26b8ff1530 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Tue, 28 Jan 2025 19:29:27 +1300
-Subject: [PATCH 05/28] hid-asus: check ROG Ally MCU version and warn
+Subject: [PATCH 05/29] hid-asus: check ROG Ally MCU version and warn
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -516,7 +516,7 @@ index acf5e96e4d95..51898df04ff0 100644
 From 0cb1b6ae8797c002980a0c7a454f1c63f802b212 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 30 Jan 2025 20:55:02 +1300
-Subject: [PATCH 06/28] asus-wmi: disable mcu_powersave if MCU version too low
+Subject: [PATCH 06/29] asus-wmi: disable mcu_powersave if MCU version too low
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -874,7 +874,7 @@ index 466781cbb4bb..67ef5c8d35ca 100644
 From 3e87fb607cff782133322cdd326c866ef21bffcd Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 26 Aug 2024 12:49:35 +1200
-Subject: [PATCH 07/28] hid-asus-ally: Add joystick LED ring support
+Subject: [PATCH 07/29] hid-asus-ally: Add joystick LED ring support
 
 Adds basic support for the joystick RGB LED rings as a multicolour LED
 device with 4 LEDs.
@@ -1760,7 +1760,7 @@ index 9aa4d44b71f4..9aa7a0fa43f0 100644
 From 840a660ab0226f6b9e769ae3ef5c37fc9da4f1b4 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 2 Oct 2024 23:32:46 +1300
-Subject: [PATCH 08/28] hid-asus-ally: initial Ally-X gamepad
+Subject: [PATCH 08/29] hid-asus-ally: initial Ally-X gamepad
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -2233,7 +2233,7 @@ index eb8617c80c2a..458d02996bca 100644
 From 061f4d99e305898805c48e9b09d5ddeaab2c7e0e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 2 Oct 2024 23:51:36 +1300
-Subject: [PATCH 09/28] hid-asus-ally: initial gamepad configuration
+Subject: [PATCH 09/29] hid-asus-ally: initial gamepad configuration
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -2623,7 +2623,7 @@ index 458d02996bca..2b298ad4da0e 100644
 From 98ff21076e184cea25d3698ccd19ff584b7f050e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 14:58:33 +1300
-Subject: [PATCH 10/28] hid-asus-ally: add button remap attributes
+Subject: [PATCH 10/29] hid-asus-ally: add button remap attributes
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -3335,7 +3335,7 @@ index 2b298ad4da0e..f985cbd698c3 100644
 From 050b497d800e037ce2d0351365c53a9d72c79f83 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Fri, 25 Oct 2024 08:56:54 +0200
-Subject: [PATCH 11/28] hid-asus-ally: add gamepad mode selection
+Subject: [PATCH 11/29] hid-asus-ally: add gamepad mode selection
 
 ---
  drivers/hid/hid-asus-ally.c | 73 +++++++++++++++++++++++++++++++++++++
@@ -3456,7 +3456,7 @@ index f985cbd698c3..f7e21be50d8e 100644
 From 1babf97d44cc9c7e5de1d76bc3af9728927dbd25 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 15:40:09 +1300
-Subject: [PATCH 12/28] hid-asus-ally: Turbo settings for buttons
+Subject: [PATCH 12/29] hid-asus-ally: Turbo settings for buttons
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -3656,7 +3656,7 @@ index f7e21be50d8e..63a3b5caa71c 100644
 From e87e3093d69270cfa4f3a24064f466db46a40cb4 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 20:46:00 +1300
-Subject: [PATCH 13/28] hid-asus-ally: add vibration intensity settings
+Subject: [PATCH 13/29] hid-asus-ally: add vibration intensity settings
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -3827,7 +3827,7 @@ index 63a3b5caa71c..6ac79ad3c5f2 100644
 From 635e66fa99e94009a65b6f39dfd1e2e5625e4235 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 21:32:41 +1300
-Subject: [PATCH 14/28] hid-asus-ally: add JS deadzones
+Subject: [PATCH 14/29] hid-asus-ally: add JS deadzones
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -4036,7 +4036,7 @@ index 6ac79ad3c5f2..3dc14a5226f3 100644
 From 631a44cbdb74c6db5623391cc42ef09ee11e5102 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 21:37:27 +1300
-Subject: [PATCH 15/28] hid-asus-ally: add trigger deadzones
+Subject: [PATCH 15/29] hid-asus-ally: add trigger deadzones
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -4153,7 +4153,7 @@ index 3dc14a5226f3..32ed5caa3759 100644
 From 927954a804a39d03862ae263741ddd82e057e1b6 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 6 Oct 2024 19:49:24 +1300
-Subject: [PATCH 16/28] hid-asus-ally: add anti-deadzones
+Subject: [PATCH 16/29] hid-asus-ally: add anti-deadzones
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -4338,7 +4338,7 @@ index 32ed5caa3759..69f59592dd50 100644
 From f7586706c37fd927c622b8c3891cf3dd3d08536e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 6 Oct 2024 21:22:40 +1300
-Subject: [PATCH 17/28] hid-asus-ally: add JS response curves
+Subject: [PATCH 17/29] hid-asus-ally: add JS response curves
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -4577,10 +4577,66 @@ index 69f59592dd50..c83817589082 100644
 2.48.1
 
 
-From 3f10c6d4a97f895becb1dbbdacc614131cee3357 Mon Sep 17 00:00:00 2001
+From e18ee0f62cbda3d2a4308c92818c8edd7a3556cf Mon Sep 17 00:00:00 2001
+From: Luke Jones <luke@ljones.dev>
+Date: Mon, 10 Feb 2025 17:15:01 +1300
+Subject: [PATCH 18/29] hid-asus-ally: mcu_version attribute
+
+Signed-off-by: Luke Jones <luke@ljones.dev>
+---
+ drivers/hid/hid-asus-ally.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
+index aad965e069ee..def8a43afa22 100644
+--- a/drivers/hid/hid-asus-ally.c
++++ b/drivers/hid/hid-asus-ally.c
+@@ -380,6 +380,7 @@ static struct ally_drvdata {
+ 	struct ally_gamepad_cfg *gamepad_cfg;
+ 	struct ally_rgb_dev *led_rgb_dev;
+ 	struct ally_rgb_data led_rgb_data;
++	uint mcu_version;
+ } drvdata;
+ 
+ /**
+@@ -1184,6 +1185,13 @@ static ssize_t gamepad_mode_store(struct device *dev, struct device_attribute *a
+ 
+ DEVICE_ATTR_RW(gamepad_mode);
+ 
++static ssize_t gamepad_mode_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%d\n", drvdata.version);
++}
++
+++DEVICE_ATTR_RO(mcu_version);
++
+ /* ROOT LEVEL ATTRS *******************************************************************************/
+ static struct attribute *gamepad_device_attrs[] = {
+ 	&dev_attr_btn_mapping_reset.attr,
+@@ -1191,6 +1199,7 @@ static struct attribute *gamepad_device_attrs[] = {
+ 	&dev_attr_gamepad_apply_all.attr,
+ 	&dev_attr_gamepad_vibration_intensity.attr,
+ 	&dev_attr_gamepad_vibration_intensity_index.attr,
++	&dev_attr_mcu_version.attr,
+ 	NULL
+ };
+ 
+@@ -1937,6 +1946,7 @@ static void mcu_maybe_warn_version(struct hid_device *hdev, int idProduct)
+ 
+ 	min_version = ROG_ALLY_X_MIN_MCU;
+ 	version = mcu_request_version(hdev);
++	drvdata.version = version;
+ 	if (version) {
+ 		switch (idProduct) {
+ 		case USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY:
+-- 
+2.48.1
+
+
+From f57f41ad316c8c7c17cc8beb6650749a6b08a1d1 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 10 Oct 2024 11:15:36 +1300
-Subject: [PATCH 18/28] hid-asus-ally: add calibrations (wip)
+Subject: [PATCH 19/29] hid-asus-ally: add calibrations (wip)
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
@@ -4588,7 +4644,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  1 file changed, 95 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index aad965e069ee..a1015713c245 100644
+index def8a43afa22..a7a8f03e1434 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -278,6 +278,28 @@ struct response_curve {
@@ -4630,8 +4686,8 @@ index aad965e069ee..a1015713c245 100644
  };
  
  /* The hatswitch outputs integers, we use them to index this X|Y pair */
-@@ -382,6 +407,18 @@ static struct ally_drvdata {
- 	struct ally_rgb_data led_rgb_data;
+@@ -383,6 +408,18 @@ static struct ally_drvdata {
+ 	uint mcu_version;
  } drvdata;
  
 +static void reverse_bytes_in_pairs(u8 *buf, size_t size) {
@@ -4649,7 +4705,7 @@ index aad965e069ee..a1015713c245 100644
  /**
   * asus_dev_set_report - send set report request to device.
   *
-@@ -795,6 +832,63 @@ ALLY_JS_RC_POINT(axis_xy_right, response, 2);
+@@ -796,6 +833,63 @@ ALLY_JS_RC_POINT(axis_xy_right, response, 2);
  ALLY_JS_RC_POINT(axis_xy_right, response, 3);
  ALLY_JS_RC_POINT(axis_xy_right, response, 4);
  
@@ -4713,7 +4769,7 @@ index aad965e069ee..a1015713c245 100644
  static struct attribute *axis_xy_left_attrs[] = {
  	&dev_attr_axis_xy_left_anti_deadzone.attr,
  	&dev_attr_axis_xy_left_deadzone.attr,
-@@ -1266,6 +1360,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
+@@ -1275,6 +1369,7 @@ static struct ally_gamepad_cfg *ally_gamepad_cfg_create(struct hid_device *hdev)
  	ally_cfg->key_mapping[ally_cfg->mode - 1].btn_m1.button = BTN_KB_M1;
  	ally_cfg->key_mapping[ally_cfg->mode - 1].btn_m2.button = BTN_KB_M2;
  	_gamepad_apply_btn_pair(hdev, ally_cfg, btn_pair_m1_m2);
@@ -4725,17 +4781,17 @@ index aad965e069ee..a1015713c245 100644
 2.48.1
 
 
-From 7058636304e8e3c3282879c25dd2852f9d97fca1 Mon Sep 17 00:00:00 2001
+From 6ffb881c9f76a658baab1123ac6ffbec230d0367 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 6 Nov 2024 00:27:03 +0300
-Subject: [PATCH 19/28] debug by default
+Subject: [PATCH 20/29] debug by default
 
 ---
  drivers/hid/hid-asus-ally.c | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index a1015713c245..c10121ebcbb8 100644
+index a7a8f03e1434..35b1847f1c0c 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -21,6 +21,8 @@
@@ -4751,10 +4807,10 @@ index a1015713c245..c10121ebcbb8 100644
 2.48.1
 
 
-From a685d0419c912260916dd2c57f4609d12f3b68b6 Mon Sep 17 00:00:00 2001
+From e71f53119b9b79f1c765712283f0ac91bfa52509 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 22 Sep 2024 21:39:43 +1200
-Subject: [PATCH 20/28] platform/x86: asus-armoury: move existing tunings to
+Subject: [PATCH 21/29] platform/x86: asus-armoury: move existing tunings to
  asus-armoury module
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -5584,10 +5640,10 @@ index 67ef5c8d35ca..53abf5cde1ea 100644
 2.48.1
 
 
-From 2184020bbc2c1a32927bf035c79d1354d67dea17 Mon Sep 17 00:00:00 2001
+From 5dea28d603d313ccdf178d4b99ac17f0a37249f4 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 19 Sep 2024 17:23:35 +1200
-Subject: [PATCH 21/28] platform/x86: asus-armoury: add panel_hd_mode attribute
+Subject: [PATCH 22/29] platform/x86: asus-armoury: add panel_hd_mode attribute
 
 Add panel_hd_mode to toggle the panel mode between single and high
 definition modes.
@@ -5646,10 +5702,10 @@ index 53abf5cde1ea..74a6e06f9535 100644
 2.48.1
 
 
-From 2a4012f95690193381a83b7c2b0d56399d941113 Mon Sep 17 00:00:00 2001
+From 360ef6fedf9acd36f7d8772735fb7cf1242f9f07 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 2 Jun 2024 14:44:31 +1200
-Subject: [PATCH 22/28] platform/x86: asus-armoury: add apu-mem control support
+Subject: [PATCH 23/29] platform/x86: asus-armoury: add apu-mem control support
 
 Implement the APU memory size control under the asus-armoury module using
 the fw_attributes class.
@@ -5813,10 +5869,10 @@ index 74a6e06f9535..9f9e2fc16a7e 100644
 2.48.1
 
 
-From 7de7648845a09d6b718ed747f88befce8dae0128 Mon Sep 17 00:00:00 2001
+From 0dd04436414059b3d8aad31fd74d3a7279c3ac88 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 18 Sep 2024 21:19:12 +1200
-Subject: [PATCH 23/28] platform/x86: asus-armoury: add core count control
+Subject: [PATCH 24/29] platform/x86: asus-armoury: add core count control
 
 Implement Intel core enablement under the asus-armoury module using the
 fw_attributes class.
@@ -6181,10 +6237,10 @@ index 9f9e2fc16a7e..d2c563171d8c 100644
 2.48.1
 
 
-From fb1916c66ca9dfda6e7c5c75f8aad6ecc15462ea Mon Sep 17 00:00:00 2001
+From 78e13e3f1b6d3ffb9da09178ef4c508e7f5633e2 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 3 Jun 2024 12:04:41 +1200
-Subject: [PATCH 24/28] platform/x86: asus-wmi: deprecate bios features
+Subject: [PATCH 25/29] platform/x86: asus-wmi: deprecate bios features
 
 With the existence of the asus-armoury module the attributes no-longer
 need to live under the /sys/devices/platform/asus-nb-wmi/ path.
@@ -6817,10 +6873,10 @@ index d2c563171d8c..b22480adb8f1 100644
 2.48.1
 
 
-From bac890a037563f0e6bb0783887ba3c1c5fd9b1af Mon Sep 17 00:00:00 2001
+From 419668bc0a3880e8f940143668a3121255c8186b Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <mario.limonciello@amd.com>
 Date: Tue, 21 Jan 2025 16:03:52 -0600
-Subject: [PATCH 25/28] drm/amd/display: Avoid divide by zero by initializing
+Subject: [PATCH 26/29] drm/amd/display: Avoid divide by zero by initializing
  dummy pitch to 1
 
 If the dummy values in `populate_dummy_dml_surface_cfg()` aren't updated
@@ -6849,10 +6905,10 @@ index bde4250853b1..f07afe451006 100644
 2.48.1
 
 
-From 0c04b0f1a24ec89716ac12db3274a383e51f20c4 Mon Sep 17 00:00:00 2001
+From 72d2d225098cc1cc48297a8eb71b11371959ae68 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 19 Sep 2024 17:19:37 +1200
-Subject: [PATCH 26/28] platform/x86: asus-armoury: add the ppt_* and nv_*
+Subject: [PATCH 27/29] platform/x86: asus-armoury: add the ppt_* and nv_*
  tuning knobs
 
 Adds the ppt_* and nv_* tuning knobs that are available via WMI methods
@@ -6860,13 +6916,13 @@ and adds proper min/max levels plus defaults.
 
 Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
- drivers/platform/x86/asus-armoury.c        | 170 ++++-
- drivers/platform/x86/asus-armoury.h        | 708 ++++++++++++++++++++-
- include/linux/platform_data/x86/asus-wmi.h |   3 +
- 3 files changed, 868 insertions(+), 13 deletions(-)
+ drivers/platform/x86/asus-armoury.c        |  182 +++-
+ drivers/platform/x86/asus-armoury.h        | 1014 +++++++++++++++++++-
+ include/linux/platform_data/x86/asus-wmi.h |    3 +
+ 3 files changed, 1186 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
-index 49e1788d8bba..281dd1b78179 100644
+index 49e1788d8bba..5768997ea2d3 100644
 --- a/drivers/platform/x86/asus-armoury.c
 +++ b/drivers/platform/x86/asus-armoury.c
 @@ -21,6 +21,7 @@
@@ -6882,7 +6938,7 @@ index 49e1788d8bba..281dd1b78179 100644
  };
  
 +struct rog_tunables {
-+	struct power_data *tuning_limits;
++	const struct power_data *tuning_limits;
 +	u32 ppt_pl1_spl; // cpu
 +	u32 ppt_pl2_sppt; // cpu
 +	u32 ppt_pl3_fppt; // cpu
@@ -6957,7 +7013,7 @@ index 49e1788d8bba..281dd1b78179 100644
  	int err, i;
  
  	asus_armoury.fw_attr_dev = device_create(&firmware_attributes_class, NULL, MKDEV(0, 0),
-@@ -815,17 +863,45 @@ static int asus_fw_attr_add(void)
+@@ -815,17 +863,55 @@ static int asus_fw_attr_add(void)
  	}
  
  	for (i = 0; i < ARRAY_SIZE(armoury_attr_groups); i++) {
@@ -6977,22 +7033,32 @@ index 49e1788d8bba..281dd1b78179 100644
 +		 * Check ROG tunables against initialized limits, don't create attributes for any
 +		 * that might have a supported WMI method but no associated data.
 +		 */
-+		if (asus_armoury.rog_tunables && asus_armoury.rog_tunables->tuning_limits) {
-+			/* Must have AC table, and a max value for each attribute */
-+			limits = asus_armoury.rog_tunables->tuning_limits->ac_data;
-+			if (limits && (
-+			    (!strcmp(name, "ppt_pl1_spl") && !limits->ppt_pl1_spl_max) ||
-+			    (!strcmp(name, "ppt_pl2_sppt") && !limits->ppt_pl2_sppt_max) ||
-+			    (!strcmp(name, "ppt_pl3_fppt") && !limits->ppt_pl3_fppt_max) ||
-+			    (!strcmp(name, "ppt_apu_sppt") && !limits->ppt_apu_sppt_max) ||
-+			    (!strcmp(name, "ppt_platform_sppt") && !limits->ppt_platform_sppt_max) ||
-+			    (!strcmp(name, "nv_dynamic_boost") && !limits->nv_dynamic_boost_max) ||
-+			    (!strcmp(name, "nv_temp_target") && !limits->nv_temp_target_max) ||
-+			    (!strcmp(name, "dgpu_tgp") && !limits->nv_tgp_max))) {
++		if (!strcmp(name, "ppt_pl1_spl") || !strcmp(name, "ppt_pl2_sppt") ||
++			    !strcmp(name, "ppt_pl3_fppt") || !strcmp(name, "ppt_apu_sppt") ||
++			    !strcmp(name, "ppt_platform_sppt") || !strcmp(name, "nv_dynamic_boost") ||
++			    !strcmp(name, "nv_temp_target") || !strcmp(name, "nv_base_tgp") ||
++			    !strcmp(name, "dgpu_tgp"))
++		{
++			should_create = false;
++			if (asus_armoury.rog_tunables && asus_armoury.rog_tunables->tuning_limits &&
++				    asus_armoury.rog_tunables->tuning_limits->ac_data) {
++				/* Must have AC table, and a max value for each attribute */
++				limits = asus_armoury.rog_tunables->tuning_limits->ac_data;
++				should_create = limits && (
++				    (!strcmp(name, "ppt_pl1_spl") && limits->ppt_pl1_spl_max) ||
++				    (!strcmp(name, "ppt_pl2_sppt") && limits->ppt_pl2_sppt_max) ||
++				    (!strcmp(name, "ppt_pl3_fppt") && limits->ppt_pl3_fppt_max) ||
++				    (!strcmp(name, "ppt_apu_sppt") && limits->ppt_apu_sppt_max) ||
++				    (!strcmp(name, "ppt_platform_sppt") && limits->ppt_platform_sppt_max) ||
++				    (!strcmp(name, "nv_dynamic_boost") && limits->nv_dynamic_boost_max) ||
++				    (!strcmp(name, "nv_temp_target") && limits->nv_temp_target_max) ||
++				    (!strcmp(name, "nv_base_tgp") && limits->nv_tgp_max) ||
++				    (!strcmp(name, "dgpu_tgp") && limits->nv_tgp_max));
++
 +				/* Log error so users can report upstream */
-+				pr_err("Missing max value on %s for tunable: %s\n",
-+					dmi_get_system_info(DMI_BOARD_NAME), name);
-+				should_create = false;
++				if (!should_create)
++					pr_err("Missing max value on %s for tunable: %s\n",
++						dmi_get_system_info(DMI_BOARD_NAME), name);
 +			}
  		}
 -	}
@@ -7010,7 +7076,7 @@ index 49e1788d8bba..281dd1b78179 100644
  
  	return 0;
  
-@@ -849,6 +925,76 @@ static int asus_fw_attr_add(void)
+@@ -849,6 +935,78 @@ static int asus_fw_attr_add(void)
  
  /* Init / exit ****************************************************************/
  
@@ -7025,6 +7091,8 @@ index 49e1788d8bba..281dd1b78179 100644
 +	dmi_id = dmi_first_match(power_limits);
 +	if (!dmi_id) {
 +		pr_warn("No matching power limits found for this system\n");
++		// rog->tuning_limits = &default_power_data;
++		rog->tuning_limits = NULL;
 +		return false;
 +	}
 +
@@ -7036,7 +7104,7 @@ index 49e1788d8bba..281dd1b78179 100644
 +	}
 +
 +	/* Store the power limits for later use */
-+	rog->tuning_limits = (struct power_data *)power_data;
++	rog->tuning_limits = power_data;
 +
 +	if (power_supply_is_system_supplied()) {
 +		limits = power_data->ac_data;
@@ -7087,7 +7155,7 @@ index 49e1788d8bba..281dd1b78179 100644
  static int __init asus_fw_init(void)
  {
  	char *wmi_uid;
-@@ -879,6 +1025,16 @@ static int __init asus_fw_init(void)
+@@ -879,6 +1037,16 @@ static int __init asus_fw_init(void)
  		}
  	}
  
@@ -7105,7 +7173,7 @@ index 49e1788d8bba..281dd1b78179 100644
  	if (err)
  		return err;
 diff --git a/drivers/platform/x86/asus-armoury.h b/drivers/platform/x86/asus-armoury.h
-index 5d6bef6d2b12..76aec7f18a58 100644
+index 5d6bef6d2b12..735521585327 100644
 --- a/drivers/platform/x86/asus-armoury.h
 +++ b/drivers/platform/x86/asus-armoury.h
 @@ -8,6 +8,7 @@
@@ -7173,7 +7241,7 @@ index 5d6bef6d2b12..76aec7f18a58 100644
  #define ATTR_GROUP_BOOL_RO(_attrname, _fsname, _wmi, _dispname) \
  	__ATTR_CURRENT_INT_RO(_attrname, _wmi);                 \
  	__ATTR_GROUP_ENUM(_attrname, _fsname, "0;1", _dispname)
-@@ -178,4 +197,681 @@ static ssize_t int_type_show(struct kobject *kobj, struct kobj_attribute *attr,
+@@ -178,4 +197,987 @@ static ssize_t int_type_show(struct kobject *kobj, struct kobj_attribute *attr,
  		.name = _fsname, .attrs = _attrname##_attrs             \
  	}
  
@@ -7265,7 +7333,6 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +		.name = _fsname, .attrs = _attrname##_attrs                 \
 +	}
 +
-+
 +/* Default is always the maximum value unless *_def is specified */
 +struct power_limits {
 +	u32 ppt_pl1_spl_min;
@@ -7298,6 +7365,7 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +struct power_data {
 +		const struct power_limits *ac_data;
 +		const struct power_limits *dc_data;
++		bool requires_fan_curve;
 +};
 +
 +/*
@@ -7307,10 +7375,41 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +static const struct dmi_system_id power_limits[] = {
 +	{
 +		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "FA401W"),
++		},
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 15,
++				.ppt_pl1_spl_max = 80,
++				.ppt_pl2_sppt_min = 35,
++				.ppt_pl2_sppt_max = 80,
++				.ppt_pl3_fppt_min = 35,
++				.ppt_pl3_fppt_max = 80,
++				.nv_dynamic_boost_min = 5,
++				.nv_dynamic_boost_max = 25,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++				.nv_tgp_min = 55,
++				.nv_tgp_max = 75,
++			},
++			.dc_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 25,
++				.ppt_pl1_spl_max = 30,
++				.ppt_pl2_sppt_min = 31,
++				.ppt_pl2_sppt_max = 44,
++				.ppt_pl3_fppt_min = 45,
++				.ppt_pl3_fppt_max = 65,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			},
++		},
++	},
++	{
++		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "FA507R"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_max = 80,
 +				.ppt_pl2_sppt_min = 25,
@@ -7325,15 +7424,14 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "FA507X"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_max = 80,
 +				.ppt_pl2_sppt_min = 35,
 +				.ppt_pl2_sppt_max = 80,
 +				.ppt_pl3_fppt_min = 35,
 +				.ppt_pl3_fppt_max = 80,
-+				/* Only allowed in AC mode */
 +				.nv_dynamic_boost_min = 5,
 +				.nv_dynamic_boost_max = 20,
 +				.nv_temp_target_min = 75,
@@ -7341,7 +7439,7 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.nv_tgp_min = 55,
 +				.nv_tgp_max = 85,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_def = 45,
 +				.ppt_pl1_spl_max = 65,
@@ -7357,10 +7455,37 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +	},
 +	{
 +		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "FA507Z"),
++		},
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 28,
++				.ppt_pl1_spl_max = 65,
++				.ppt_pl2_sppt_min = 28,
++				.ppt_pl2_sppt_max = 105,
++				.nv_dynamic_boost_min = 5,
++				.nv_dynamic_boost_max = 15,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++				.nv_tgp_min = 55,
++				.nv_tgp_max = 85,
++			},
++			.dc_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 25,
++				.ppt_pl1_spl_max = 45,
++				.ppt_pl2_sppt_min = 35,
++				.ppt_pl2_sppt_max = 60,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			}
++		},
++	},
++	{
++		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "FA607P"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 30,
 +				.ppt_pl1_spl_def = 100,
 +				.ppt_pl1_spl_max = 135,
@@ -7369,7 +7494,6 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.ppt_pl2_sppt_max = 135,
 +				.ppt_pl3_fppt_min = 30,
 +				.ppt_pl3_fppt_max = 135,
-+				/* Only allowed in AC mode */
 +				.nv_dynamic_boost_min = 5,
 +				.nv_dynamic_boost_max = 25,
 +				.nv_temp_target_min = 75,
@@ -7377,7 +7501,7 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.nv_tgp_min = 55,
 +				.nv_tgp_max = 115,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 25,
 +				.ppt_pl1_spl_def = 45,
 +				.ppt_pl1_spl_max = 80,
@@ -7395,14 +7519,14 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "FA617NS"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_apu_sppt_min = 15,
 +				.ppt_apu_sppt_max = 80,
 +				.ppt_platform_sppt_min = 30,
 +				.ppt_platform_sppt_max = 120
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_apu_sppt_min = 25,
 +				.ppt_apu_sppt_max = 35,
 +				.ppt_platform_sppt_min = 45,
@@ -7414,14 +7538,14 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "FA617NT"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_apu_sppt_min = 15,
 +				.ppt_apu_sppt_max = 80,
 +				.ppt_platform_sppt_min = 30,
 +				.ppt_platform_sppt_max = 115
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_apu_sppt_min = 15,
 +				.ppt_apu_sppt_max = 45,
 +				.ppt_platform_sppt_min = 30,
@@ -7433,8 +7557,8 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "FA617XS"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_apu_sppt_min = 15,
 +				.ppt_apu_sppt_max = 80,
 +				.ppt_platform_sppt_min = 30,
@@ -7442,7 +7566,7 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.nv_temp_target_min = 75,
 +				.nv_temp_target_max = 87,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_apu_sppt_min = 25,
 +				.ppt_apu_sppt_max = 35,
 +				.ppt_platform_sppt_min = 45,
@@ -7456,30 +7580,30 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "FX507Z"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 28,
 +				.ppt_pl1_spl_max = 90,
 +				.ppt_pl2_sppt_min = 28,
 +				.ppt_pl2_sppt_max = 135,
-+				/* Only allowed in AC mode */
 +				.nv_dynamic_boost_min = 5,
 +				.nv_dynamic_boost_max = 15,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 25,
 +				.ppt_pl1_spl_max = 45,
 +				.ppt_pl2_sppt_min = 35,
 +				.ppt_pl2_sppt_max = 60,
-+			}
++			},
++			.requires_fan_curve = true,
 +		},
 +	},
 +	{
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "GA401Q"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_max = 80,
 +				.ppt_pl2_sppt_min = 15,
@@ -7493,14 +7617,14 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +			// This model is full AMD. No Nvidia dGPU.
 +			DMI_MATCH(DMI_BOARD_NAME, "GA402R"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_apu_sppt_min = 15,
 +				.ppt_apu_sppt_max = 80,
 +				.ppt_platform_sppt_min = 30,
 +				.ppt_platform_sppt_max = 115,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_apu_sppt_min = 25,
 +				.ppt_apu_sppt_def = 30,
 +				.ppt_apu_sppt_max = 45,
@@ -7513,8 +7637,8 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "GA402X"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_def = 35,
 +				.ppt_pl1_spl_max = 80,
@@ -7526,7 +7650,7 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.nv_temp_target_min = 75,
 +				.nv_temp_target_max = 87,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_max = 35,
 +				.ppt_pl2_sppt_min = 25,
@@ -7535,15 +7659,16 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.ppt_pl3_fppt_max = 65,
 +				.nv_temp_target_min = 75,
 +				.nv_temp_target_max = 87,
-+			}
++			},
++			.requires_fan_curve = true,
 +		},
 +	},
 +	{
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "GA403U"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_max = 80,
 +				.ppt_pl2_sppt_min = 25,
@@ -7551,22 +7676,23 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.ppt_pl3_fppt_min = 35,
 +				.ppt_pl3_fppt_max = 80
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_max = 35,
 +				.ppt_pl2_sppt_min = 25,
 +				.ppt_pl2_sppt_max = 35,
 +				.ppt_pl3_fppt_min = 35,
 +				.ppt_pl3_fppt_max = 65
-+			}
++			},
++			.requires_fan_curve = true,
 +		},
 +	},
 +	{
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "GA503R"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_def = 35,
 +				.ppt_pl1_spl_max = 80,
@@ -7580,7 +7706,7 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.nv_temp_target_min = 75,
 +				.nv_temp_target_max = 87,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_def = 25,
 +				.ppt_pl1_spl_max = 65,
@@ -7596,15 +7722,14 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "GA605W"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_max = 80,
 +				.ppt_pl2_sppt_min = 35,
 +				.ppt_pl2_sppt_max = 80,
 +				.ppt_pl3_fppt_min = 35,
 +				.ppt_pl3_fppt_max = 80,
-+				/* Only allowed in AC mode */
 +				.nv_dynamic_boost_min = 5,
 +				.nv_dynamic_boost_max = 20,
 +				.nv_temp_target_min = 75,
@@ -7612,13 +7737,40 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.nv_tgp_min = 55,
 +				.nv_tgp_max = 85,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 25,
 +				.ppt_pl1_spl_max = 35,
 +				.ppt_pl2_sppt_min = 31,
 +				.ppt_pl2_sppt_max = 44,
 +				.ppt_pl3_fppt_min = 45,
 +				.ppt_pl3_fppt_max = 65,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			},
++			.requires_fan_curve = true,
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "GU603Z"),
++		},
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 25,
++				.ppt_pl1_spl_max = 60,
++				.ppt_pl2_sppt_min = 25,
++				.ppt_pl2_sppt_max = 135,
++				/* Only allowed in AC mode */
++				.nv_dynamic_boost_min = 5,
++				.nv_dynamic_boost_max = 20,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			},
++			.dc_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 25,
++				.ppt_pl1_spl_max = 40,
++				.ppt_pl2_sppt_min = 25,
++				.ppt_pl2_sppt_max = 40,
 +				.nv_temp_target_min = 75,
 +				.nv_temp_target_max = 87,
 +			}
@@ -7628,8 +7780,8 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "GU604V"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 65,
 +				.ppt_pl1_spl_max = 120,
 +				.ppt_pl2_sppt_min = 65,
@@ -7640,12 +7792,101 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.nv_temp_target_min = 75,
 +				.nv_temp_target_max = 87,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 25,
 +				.ppt_pl1_spl_max = 40,
 +				.ppt_pl2_sppt_min = 35,
 +				.ppt_pl2_sppt_def = 40,
 +				.ppt_pl2_sppt_max = 60,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			}
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "GU605M"),
++		},
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 28,
++				.ppt_pl1_spl_max = 90,
++				.ppt_pl2_sppt_min = 28,
++				.ppt_pl2_sppt_max = 135,
++				.nv_dynamic_boost_min = 5,
++				.nv_dynamic_boost_max = 20,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			},
++			.dc_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 25,
++				.ppt_pl1_spl_max = 35,
++				.ppt_pl2_sppt_min = 38,
++				.ppt_pl2_sppt_max = 53,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			},
++			.requires_fan_curve = true,
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "GV301R"),
++		},
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 15,
++				.ppt_pl1_spl_max = 45,
++				.ppt_pl2_sppt_min = 25,
++				.ppt_pl2_sppt_max = 54,
++				.ppt_pl3_fppt_min = 35,
++				.ppt_pl3_fppt_max = 65,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			},
++			.dc_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 15,
++				.ppt_pl1_spl_max = 35,
++				.ppt_pl2_sppt_min = 25,
++				.ppt_pl2_sppt_max = 35,
++				.ppt_pl3_fppt_min = 35,
++				.ppt_pl3_fppt_max = 65,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			}
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "GV601R"),
++		},
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 15,
++				.ppt_pl1_spl_def = 35,
++				.ppt_pl1_spl_max = 90,
++				.ppt_pl2_sppt_min = 35,
++				.ppt_pl2_sppt_def = 54,
++				.ppt_pl2_sppt_max = 100,
++				.ppt_pl3_fppt_min = 35,
++				.ppt_pl3_fppt_def = 80,
++				.ppt_pl3_fppt_max = 125,
++				.nv_dynamic_boost_min = 5,
++				.nv_dynamic_boost_max = 25,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			},
++			.dc_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 15,
++				.ppt_pl1_spl_def = 28,
++				.ppt_pl1_spl_max = 65,
++				.ppt_pl2_sppt_min = 35,
++				.ppt_pl2_sppt_def = 54,
++				.ppt_pl2_sppt_def = 40,
++				.ppt_pl2_sppt_max = 60,
++				.ppt_pl3_fppt_min = 35,
++				.ppt_pl3_fppt_def = 80,
++				.ppt_pl3_fppt_max = 65,
 +				.nv_temp_target_min = 75,
 +				.nv_temp_target_max = 87,
 +			}
@@ -7655,20 +7896,19 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "GV601V"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 28,
 +				.ppt_pl1_spl_def = 100,
 +				.ppt_pl1_spl_max = 110,
 +				.ppt_pl2_sppt_min = 28,
 +				.ppt_pl2_sppt_max = 135,
-+				/* Only allowed in AC mode */
 +				.nv_dynamic_boost_min = 5,
 +				.nv_dynamic_boost_max = 20,
 +				.nv_temp_target_min = 75,
 +				.nv_temp_target_max = 87,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 25,
 +				.ppt_pl1_spl_max = 40,
 +				.ppt_pl2_sppt_min = 35,
@@ -7681,106 +7921,239 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +	},
 +	{
 +		.matches = {
-+			DMI_MATCH(DMI_BOARD_NAME, "G513Q"),
++			DMI_MATCH(DMI_BOARD_NAME, "GX650P"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 15,
++				.ppt_pl1_spl_def = 110,
++				.ppt_pl1_spl_max = 130,
++				.ppt_pl2_sppt_min = 35,
++				.ppt_pl2_sppt_def = 125,
++				.ppt_pl2_sppt_max = 130,
++				.ppt_pl3_fppt_min = 35,
++				.ppt_pl3_fppt_def = 125,
++				.ppt_pl3_fppt_max = 135,
++				.nv_dynamic_boost_min = 5,
++				.nv_dynamic_boost_max = 25,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			},
++			.dc_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 15,
++				.ppt_pl1_spl_def = 25,
++				.ppt_pl1_spl_max = 65,
++				.ppt_pl2_sppt_min = 35,
++				.ppt_pl2_sppt_def = 35,
++				.ppt_pl2_sppt_max = 65,
++				.ppt_pl3_fppt_min = 35,
++				.ppt_pl3_fppt_def = 42,
++				.ppt_pl3_fppt_max = 65,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			}
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "G513I"),
++		},
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				/* Yes this laptop is very limited */
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_max = 80,
 +				.ppt_pl2_sppt_min = 15,
 +				.ppt_pl2_sppt_max = 80,
 +			},
-+			.dc_data = NULL
++			.dc_data = NULL,
++			.requires_fan_curve = true,
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "G513QM"),
++		},
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
++				/* Yes this laptop is very limited */
++				.ppt_pl1_spl_min = 15,
++				.ppt_pl1_spl_max = 100,
++				.ppt_pl2_sppt_min = 15,
++				.ppt_pl2_sppt_max = 190,
++			},
++			.dc_data = NULL,
++			.requires_fan_curve = true,
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "G513R"),
++		},
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 35,
++				.ppt_pl1_spl_max = 90,
++				.ppt_pl2_sppt_min = 54,
++				.ppt_pl2_sppt_max = 100,
++				.ppt_pl3_fppt_min = 54,
++				.ppt_pl3_fppt_max = 125,
++				.nv_dynamic_boost_min = 5,
++				.nv_dynamic_boost_max = 25,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			},
++			.dc_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 28,
++				.ppt_pl1_spl_max = 50,
++				.ppt_pl2_sppt_min = 28,
++				.ppt_pl2_sppt_max = 50,
++				.ppt_pl3_fppt_min = 28,
++				.ppt_pl3_fppt_max = 65,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			},
++			.requires_fan_curve = true,
 +		},
 +	},
 +	{
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "G614J"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 28,
 +				.ppt_pl1_spl_max = 140,
 +				.ppt_pl2_sppt_min = 28,
 +				.ppt_pl2_sppt_max = 175,
-+				/* Only allowed in AC mode */
 +				.nv_temp_target_min = 75,
 +				.nv_temp_target_max = 87,
 +				.nv_dynamic_boost_min = 5,
 +				.nv_dynamic_boost_max = 25,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 25,
 +				.ppt_pl1_spl_max = 55,
 +				.ppt_pl2_sppt_min = 25,
 +				.ppt_pl2_sppt_max = 70,
 +				.nv_temp_target_min = 75,
 +				.nv_temp_target_max = 87,
-+			}
++			},
++			.requires_fan_curve = true,
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "G634J"),
++		},
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 28,
++				.ppt_pl1_spl_max = 140,
++				.ppt_pl2_sppt_min = 28,
++				.ppt_pl2_sppt_max = 175,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++				.nv_dynamic_boost_min = 5,
++				.nv_dynamic_boost_max = 25,
++			},
++			.dc_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 25,
++				.ppt_pl1_spl_max = 55,
++				.ppt_pl2_sppt_min = 25,
++				.ppt_pl2_sppt_max = 70,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			},
++			.requires_fan_curve = true,
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "G733C"),
++		},
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 28,
++				.ppt_pl1_spl_max = 170,
++				.ppt_pl2_sppt_min = 28,
++				.ppt_pl2_sppt_max = 175,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++				.nv_dynamic_boost_min = 5,
++				.nv_dynamic_boost_max = 25,
++			},
++			.dc_data = &(struct power_limits) {
++				.ppt_pl1_spl_min = 28,
++				.ppt_pl1_spl_max = 35,
++				.ppt_pl2_sppt_min = 28,
++				.ppt_pl2_sppt_max = 35,
++				.nv_temp_target_min = 75,
++				.nv_temp_target_max = 87,
++			},
++			.requires_fan_curve = true,
 +		},
 +	},
 +	{
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "G814J"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 28,
 +				.ppt_pl1_spl_max = 140,
 +				.ppt_pl2_sppt_min = 28,
 +				.ppt_pl2_sppt_max = 140,
-+				/* Only allowed in AC mode */
 +				.nv_dynamic_boost_min = 5,
 +				.nv_dynamic_boost_max = 25,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 25,
 +				.ppt_pl1_spl_max = 55,
 +				.ppt_pl2_sppt_min = 25,
 +				.ppt_pl2_sppt_max = 70,
-+			}
++			},
++			.requires_fan_curve = true,
 +		},
 +	},
 +	{
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "G834J"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 28,
 +				.ppt_pl1_spl_max = 140,
 +				.ppt_pl2_sppt_min = 28,
 +				.ppt_pl2_sppt_max = 175,
-+				/* Only allowed in AC mode */
 +				.nv_dynamic_boost_min = 5,
 +				.nv_dynamic_boost_max = 25,
 +				.nv_temp_target_min = 75,
 +				.nv_temp_target_max = 87,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 25,
 +				.ppt_pl1_spl_max = 55,
 +				.ppt_pl2_sppt_min = 25,
 +				.ppt_pl2_sppt_max = 70,
 +				.nv_temp_target_min = 75,
 +				.nv_temp_target_max = 87,
-+			}
++			},
++			.requires_fan_curve = true,
 +		},
 +	},
 +	{
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "H7606W"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 15,
 +				.ppt_pl1_spl_max = 80,
 +				.ppt_pl2_sppt_min = 35,
 +				.ppt_pl2_sppt_max = 80,
 +				.ppt_pl3_fppt_min = 35,
 +				.ppt_pl3_fppt_max = 80,
-+				/* Only allowed in AC mode */
 +				.nv_dynamic_boost_min = 5,
 +				.nv_dynamic_boost_max = 20,
 +				.nv_temp_target_min = 75,
@@ -7788,7 +8161,7 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.nv_tgp_min = 55,
 +				.nv_tgp_max = 85,
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 25,
 +				.ppt_pl1_spl_max = 35,
 +				.ppt_pl2_sppt_min = 31,
@@ -7804,8 +8177,8 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "RC71"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 7,
 +				.ppt_pl1_spl_max = 30,
 +				.ppt_pl2_sppt_min = 15,
@@ -7813,7 +8186,7 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.ppt_pl3_fppt_min = 15,
 +				.ppt_pl3_fppt_max = 53
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 7,
 +				.ppt_pl1_spl_def = 15,
 +				.ppt_pl1_spl_max = 25,
@@ -7830,8 +8203,8 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_NAME, "RC72"),
 +		},
-+		.driver_data = &(struct power_data){
-+			.ac_data = &(struct power_limits){
++		.driver_data = &(struct power_data) {
++			.ac_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 7,
 +				.ppt_pl1_spl_max = 30,
 +				.ppt_pl2_sppt_min = 15,
@@ -7839,7 +8212,7 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +				.ppt_pl3_fppt_min = 15,
 +				.ppt_pl3_fppt_max = 53
 +			},
-+			.dc_data = &(struct power_limits){
++			.dc_data = &(struct power_limits) {
 +				.ppt_pl1_spl_min = 7,
 +				.ppt_pl1_spl_def = 17,
 +				.ppt_pl1_spl_max = 25,
@@ -7852,6 +8225,7 @@ index 5d6bef6d2b12..76aec7f18a58 100644
 +			}
 +		},
 +	},
++	{}
 +};
 +
  #endif /* _ASUS_ARMOURY_H_ */
@@ -7873,10 +8247,10 @@ index b22480adb8f1..5e27f551f552 100644
 2.48.1
 
 
-From bd66f5b50dc73f022c85c0be40648fa2e7e65247 Mon Sep 17 00:00:00 2001
+From 98927753d8f174005800842a7d510bc3751dbb0f Mon Sep 17 00:00:00 2001
 From: Luke Jones <luke@ljones.dev>
 Date: Sat, 1 Feb 2025 11:28:50 +1300
-Subject: [PATCH 27/28] backport: asus-armoury: fix fw_attributes_class after
+Subject: [PATCH 28/29] backport: asus-armoury: fix fw_attributes_class after
  cherry-pick from wip/ally-master
 
 Signed-off-by: Luke Jones <luke@ljones.dev>
@@ -7885,7 +8259,7 @@ Signed-off-by: Luke Jones <luke@ljones.dev>
  1 file changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
-index 281dd1b78179..3e213c5cdedf 100644
+index 5768997ea2d3..05412414dc5f 100644
 --- a/drivers/platform/x86/asus-armoury.c
 +++ b/drivers/platform/x86/asus-armoury.c
 @@ -82,6 +82,8 @@ struct rog_tunables {
@@ -7912,7 +8286,7 @@ index 281dd1b78179..3e213c5cdedf 100644
  	if (IS_ERR(asus_armoury.fw_attr_dev)) {
  		err = PTR_ERR(asus_armoury.fw_attr_dev);
  		goto fail_class_get;
-@@ -918,8 +925,9 @@ static int asus_fw_attr_add(void)
+@@ -928,8 +935,9 @@ static int asus_fw_attr_add(void)
  err_destroy_kset:
  	kset_unregister(asus_armoury.fw_attr_kset);
  err_destroy_classdev:
@@ -7923,7 +8297,7 @@ index 281dd1b78179..3e213c5cdedf 100644
  	return err;
  }
  
-@@ -1048,7 +1056,8 @@ static void __exit asus_fw_exit(void)
+@@ -1060,7 +1068,8 @@ static void __exit asus_fw_exit(void)
  
  	sysfs_remove_file(&asus_armoury.fw_attr_kset->kobj, &pending_reboot.attr);
  	kset_unregister(asus_armoury.fw_attr_kset);
@@ -7937,17 +8311,43 @@ index 281dd1b78179..3e213c5cdedf 100644
 2.48.1
 
 
-From 665aa6c5bb7af1aef2e8769e238c76015e2a44a2 Mon Sep 17 00:00:00 2001
+From cb51fe25af8dde54bd0fdc5dd75496c17701713e Mon Sep 17 00:00:00 2001
 From: Luke Jones <luke@ljones.dev>
 Date: Sat, 1 Feb 2025 14:19:33 +1300
-Subject: [PATCH 28/28] backport: asus-wmi: fix symbo 'ASUS_WMI' after
+Subject: [PATCH 29/29] backport: asus-wmi: fix symbol 'ASUS_WMI' after
  cherry-pick from wip/ally-master
 
 Signed-off-by: Luke Jones <luke@ljones.dev>
 ---
- drivers/platform/x86/asus-wmi.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/hid/hid-asus.c              | 2 +-
+ drivers/platform/x86/asus-armoury.c | 2 +-
+ drivers/platform/x86/asus-wmi.c     | 6 +++---
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
+index 9aa7a0fa43f0..979b0a7e92b5 100644
+--- a/drivers/hid/hid-asus.c
++++ b/drivers/hid/hid-asus.c
+@@ -1344,5 +1344,5 @@ static struct hid_driver asus_driver = {
+ };
+ module_hid_driver(asus_driver);
+ 
+-MODULE_IMPORT_NS("ASUS_WMI");
++MODULE_IMPORT_NS(ASUS_WMI);
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/platform/x86/asus-armoury.c b/drivers/platform/x86/asus-armoury.c
+index 05412414dc5f..2dcf3ed20b2f 100644
+--- a/drivers/platform/x86/asus-armoury.c
++++ b/drivers/platform/x86/asus-armoury.c
+@@ -1077,7 +1077,7 @@ static void __exit asus_fw_exit(void)
+ module_init(asus_fw_init);
+ module_exit(asus_fw_exit);
+ 
+-MODULE_IMPORT_NS("ASUS_WMI");
++MODULE_IMPORT_NS(ASUS_WMI);
+ MODULE_AUTHOR("Luke Jones <luke@ljones.dev>");
+ MODULE_DESCRIPTION("ASUS BIOS Configuration Driver");
+ MODULE_LICENSE("GPL");
 diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
 index 48355c815668..87afaa0633f3 100644
 --- a/drivers/platform/x86/asus-wmi.c
