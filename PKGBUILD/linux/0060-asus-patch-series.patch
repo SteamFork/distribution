@@ -661,7 +661,7 @@ index acf5e96e4d95..51898df04ff0 100644
 2.48.1
 
 
-From 625942c2b7381451b7274c3bf241af2aff491624 Mon Sep 17 00:00:00 2001
+From 4ff3c1d10a128588f3cac97b8d6d4b7ef679ba68 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 26 Aug 2024 12:49:35 +1200
 Subject: [PATCH 07/29] hid-asus-ally: Add joystick LED ring support
@@ -676,10 +676,10 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
  drivers/hid/Kconfig         |   9 +
  drivers/hid/Makefile        |   1 +
- drivers/hid/hid-asus-ally.c | 627 ++++++++++++++++++++++++++++++++++++
+ drivers/hid/hid-asus-ally.c | 619 ++++++++++++++++++++++++++++++++++++
  drivers/hid/hid-asus-ally.h |  38 +++
  drivers/hid/hid-asus.c      | 105 +-----
- 5 files changed, 689 insertions(+), 91 deletions(-)
+ 5 files changed, 681 insertions(+), 91 deletions(-)
  create mode 100644 drivers/hid/hid-asus-ally.c
  create mode 100644 drivers/hid/hid-asus-ally.h
 
@@ -717,10 +717,10 @@ index 496dab54c73a..5fa65e1e1e3b 100644
  obj-$(CONFIG_HID_BETOP_FF)	+= hid-betopff.o
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
 new file mode 100644
-index 000000000000..4ceb4aab8084
+index 000000000000..6fcc6691d740
 --- /dev/null
 +++ b/drivers/hid/hid-asus-ally.c
-@@ -0,0 +1,627 @@
+@@ -0,0 +1,619 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
 + *  HID driver for Asus ROG laptops and Ally
@@ -1154,8 +1154,6 @@ index 000000000000..4ceb4aab8084
 +static void mcu_maybe_warn_version(struct hid_device *hdev, int idProduct)
 +{
 +	int min_version, version;
-+	struct asus_wmi *asus;
-+	struct device *dev;
 +
 +	min_version = ROG_ALLY_X_MIN_MCU;
 +	version = mcu_request_version(hdev);
@@ -1176,15 +1174,8 @@ index 000000000000..4ceb4aab8084
 +			 "The MCU version must be %d or greater\n"
 +			 "Please update your MCU with official ASUS firmware release\n",
 +			 min_version);
-+		/* Get the asus platform device */
-+		dev = bus_find_device_by_name(&platform_bus_type, NULL, "asus-nb-wmi");
-+		if (dev) {
-+			asus = dev_get_drvdata(dev);
-+			/* Do not show the powersave attribute if MCU version too low */
-+			if (asus)
-+				asus->mcu_powersave_available = false;
-+			put_device(dev);
-+		}
++	} else {
++		set_ally_mcu_hack_available(false);
 +	}
 +}
 +
@@ -1345,6 +1336,7 @@ index 000000000000..4ceb4aab8084
 +module_init(rog_ally_init);
 +module_exit(rog_ally_exit);
 +
++MODULE_IMPORT_NS(ASUS_WMI);
 +MODULE_AUTHOR("Luke D. Jones");
 +MODULE_DESCRIPTION("HID Driver for ASUS ROG Ally gamepad configuration.");
 +MODULE_LICENSE("GPL");
@@ -1536,7 +1528,7 @@ index 51898df04ff0..2519ee2d71b1 100644
 2.48.1
 
 
-From 36809a6f464542eb89dfdd3f9a3d3f0665f2303f Mon Sep 17 00:00:00 2001
+From 55e81cfe30b8658bac74f0cdc5c820d768edc4fd Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 2 Oct 2024 23:32:46 +1300
 Subject: [PATCH 08/29] hid-asus-ally: initial Ally-X gamepad
@@ -1548,7 +1540,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 389 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 4ceb4aab8084..3d950535c3e2 100644
+index 6fcc6691d740..9e05e4655a7c 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -50,6 +50,51 @@ static const struct hid_device_id rog_ally_devices[] = {
@@ -1946,7 +1938,7 @@ index 4ceb4aab8084..3d950535c3e2 100644
  /*
   * We don't care about any other part of the string except the version section.
   * Example strings: FGA80100.RC72LA.312_T01, FGA80100.RC71LS.318_T01
-@@ -493,7 +860,8 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
+@@ -484,7 +851,8 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
  	if (ep < 0)
  		return ep;
  
@@ -1956,7 +1948,7 @@ index 4ceb4aab8084..3d950535c3e2 100644
  		return -ENODEV;
  
  	ret = hid_parse(hdev);
-@@ -536,6 +904,17 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
+@@ -527,6 +895,17 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
  			goto err_close;
  	}
  
@@ -1974,7 +1966,7 @@ index 4ceb4aab8084..3d950535c3e2 100644
  	return 0;
  
  err_close:
-@@ -550,6 +929,9 @@ static void ally_hid_remove(struct hid_device *hdev)
+@@ -541,6 +920,9 @@ static void ally_hid_remove(struct hid_device *hdev)
  	if (drvdata.led_rgb_dev)
  		ally_rgb_remove(hdev);
  
@@ -1984,7 +1976,7 @@ index 4ceb4aab8084..3d950535c3e2 100644
  	hid_hw_close(hdev);
  	hid_hw_stop(hdev);
  }
-@@ -602,6 +984,7 @@ static struct hid_driver
+@@ -593,6 +975,7 @@ static struct hid_driver
  			 .id_table = rog_ally_devices,
  			 .probe = ally_hid_probe,
  			 .remove = ally_hid_remove,
@@ -2009,7 +2001,7 @@ index eb8617c80c2a..458d02996bca 100644
 2.48.1
 
 
-From 710e396f6b489d0848861ab9718c790ed54e349c Mon Sep 17 00:00:00 2001
+From c43981d2be0a35ecee9ea359546bfebc8c1f2c23 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 2 Oct 2024 23:51:36 +1300
 Subject: [PATCH 09/29] hid-asus-ally: initial gamepad configuration
@@ -2021,7 +2013,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 266 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 3d950535c3e2..822139e2a5c0 100644
+index 9e05e4655a7c..e15fe00928ec 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -10,7 +10,6 @@
@@ -2305,7 +2297,7 @@ index 3d950535c3e2..822139e2a5c0 100644
  	return 0;
  }
  
-@@ -900,7 +1130,13 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
+@@ -891,7 +1121,13 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
  		else
  			hid_info(hdev, "Created Ally RGB LED controls.\n");
  
@@ -2320,7 +2312,7 @@ index 3d950535c3e2..822139e2a5c0 100644
  			goto err_close;
  	}
  
-@@ -913,6 +1149,12 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
+@@ -904,6 +1140,12 @@ static int ally_hid_probe(struct hid_device *hdev, const struct hid_device_id *_
  			goto err_close;
  		}
  		hid_info(hdev, "Created Ally X controller.\n");
@@ -2399,7 +2391,7 @@ index 458d02996bca..2b298ad4da0e 100644
 2.48.1
 
 
-From aa8b9a29e25683b3e4076a3de0ffd2ff80113c37 Mon Sep 17 00:00:00 2001
+From 8048ec894d6e5597ea25fbe0e0fcd8de606022d2 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 14:58:33 +1300
 Subject: [PATCH 10/29] hid-asus-ally: add button remap attributes
@@ -2411,7 +2403,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 586 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 822139e2a5c0..884cb688197e 100644
+index e15fe00928ec..9ca9f134831e 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -57,6 +57,152 @@ struct btn_code_map {
@@ -2866,7 +2858,7 @@ index 822139e2a5c0..884cb688197e 100644
  /**************************************************************************************************/
  /* ROG Ally gamepad i/o and force-feedback                                                        */
  /**************************************************************************************************/
-@@ -1174,6 +1528,9 @@ static void ally_hid_remove(struct hid_device *hdev)
+@@ -1165,6 +1519,9 @@ static void ally_hid_remove(struct hid_device *hdev)
  	if (drvdata.ally_x)
  		ally_x_remove(hdev);
  
@@ -3111,7 +3103,7 @@ index 2b298ad4da0e..f985cbd698c3 100644
 2.48.1
 
 
-From 12410c308f34dd8ecefcb1af9ec9bf453d4c603e Mon Sep 17 00:00:00 2001
+From 6c1b2a1ab4edec955135dbfaa778dc05cc0a4639 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Fri, 25 Oct 2024 08:56:54 +0200
 Subject: [PATCH 11/29] hid-asus-ally: add gamepad mode selection
@@ -3122,7 +3114,7 @@ Subject: [PATCH 11/29] hid-asus-ally: add gamepad mode selection
  2 files changed, 75 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 884cb688197e..08e953f6a3c5 100644
+index 9ca9f134831e..1d066a99ff1a 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -647,9 +647,82 @@ static ssize_t btn_mapping_reset_store(struct device *dev, struct device_attribu
@@ -3232,7 +3224,7 @@ index f985cbd698c3..f7e21be50d8e 100644
 2.48.1
 
 
-From 6b6635e5aef6a8bbd9ed7ce68cdd19647397684c Mon Sep 17 00:00:00 2001
+From 0ebc17d24abfa44f3db854dc7d904476579d092d Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 15:40:09 +1300
 Subject: [PATCH 12/29] hid-asus-ally: Turbo settings for buttons
@@ -3244,7 +3236,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 108 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 08e953f6a3c5..53c2b36c14fb 100644
+index 1d066a99ff1a..dd742a4adbfd 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -236,6 +236,7 @@ static const char* btn_to_name(u64 key)
@@ -3432,7 +3424,7 @@ index f7e21be50d8e..63a3b5caa71c 100644
 2.48.1
 
 
-From ebc7a34c66453ef1c2e9b148df4a5e5f79a26195 Mon Sep 17 00:00:00 2001
+From f622dbcb3a77f3c1b333d1f6cec71483dc0ed387 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 20:46:00 +1300
 Subject: [PATCH 13/29] hid-asus-ally: add vibration intensity settings
@@ -3444,7 +3436,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 99 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 53c2b36c14fb..8b40b806631c 100644
+index dd742a4adbfd..5eb34c3d0809 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -270,6 +270,11 @@ struct ally_gamepad_cfg {
@@ -3603,7 +3595,7 @@ index 63a3b5caa71c..6ac79ad3c5f2 100644
 2.48.1
 
 
-From 379213faa534e4a23415fbc8edc50422ac338a88 Mon Sep 17 00:00:00 2001
+From eef58e97c9e038613284041397a8888e819b9f4e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 21:32:41 +1300
 Subject: [PATCH 14/29] hid-asus-ally: add JS deadzones
@@ -3615,7 +3607,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 123 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 8b40b806631c..64f4b466f0bb 100644
+index 5eb34c3d0809..573061372efc 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -260,6 +260,11 @@ struct btn_mapping {
@@ -3812,7 +3804,7 @@ index 6ac79ad3c5f2..3dc14a5226f3 100644
 2.48.1
 
 
-From 5174811c1f17aa9edcf4df21c7d2c28986d84c87 Mon Sep 17 00:00:00 2001
+From c880e258ca0192f498fa423760d5481eaced6259 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sat, 5 Oct 2024 21:37:27 +1300
 Subject: [PATCH 15/29] hid-asus-ally: add trigger deadzones
@@ -3824,7 +3816,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 44 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 64f4b466f0bb..4a3e7cea1c5e 100644
+index 573061372efc..87068682da96 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -284,6 +284,8 @@ struct ally_gamepad_cfg {
@@ -3929,7 +3921,7 @@ index 3dc14a5226f3..32ed5caa3759 100644
 2.48.1
 
 
-From 4beb9dea58ad94589e5c9a1f737455f9f35f1904 Mon Sep 17 00:00:00 2001
+From e5e77def41910b06136a97ecb6a0c3278b089d48 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 6 Oct 2024 19:49:24 +1300
 Subject: [PATCH 16/29] hid-asus-ally: add anti-deadzones
@@ -3941,7 +3933,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 112 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 4a3e7cea1c5e..ff1c2cf61e66 100644
+index 87068682da96..d5ddfa14aceb 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -286,6 +286,9 @@ struct ally_gamepad_cfg {
@@ -4114,7 +4106,7 @@ index 32ed5caa3759..69f59592dd50 100644
 2.48.1
 
 
-From 90fe69973aff67774b858d628180de8554c09160 Mon Sep 17 00:00:00 2001
+From 3aa86658cf21c413c3a2ba95d40362a517268785 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 6 Oct 2024 21:22:40 +1300
 Subject: [PATCH 17/29] hid-asus-ally: add JS response curves
@@ -4126,7 +4118,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  2 files changed, 141 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index ff1c2cf61e66..aad965e069ee 100644
+index d5ddfa14aceb..227d04dfb0b0 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -5,10 +5,12 @@
@@ -4356,18 +4348,18 @@ index 69f59592dd50..c83817589082 100644
 2.48.1
 
 
-From ee10bb7dacb3fa9d1072588d036e9c65267892cf Mon Sep 17 00:00:00 2001
+From ba8018c778d17f5a6772add06852d16076207b7e Mon Sep 17 00:00:00 2001
 From: Luke Jones <luke@ljones.dev>
 Date: Mon, 10 Feb 2025 17:15:01 +1300
 Subject: [PATCH 18/29] hid-asus-ally: mcu_version attribute
 
 Signed-off-by: Luke Jones <luke@ljones.dev>
 ---
- drivers/hid/hid-asus-ally.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/hid/hid-asus-ally.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index aad965e069ee..db87754a2828 100644
+index 227d04dfb0b0..9f8780c234ff 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -380,6 +380,7 @@ static struct ally_drvdata {
@@ -4400,12 +4392,7 @@ index aad965e069ee..db87754a2828 100644
  	NULL
  };
  
-@@ -1932,11 +1941,10 @@ static int mcu_request_version(struct hid_device *hdev)
- static void mcu_maybe_warn_version(struct hid_device *hdev, int idProduct)
- {
- 	int min_version, version;
--	struct asus_wmi *asus;
--	struct device *dev;
+@@ -1935,6 +1944,7 @@ static void mcu_maybe_warn_version(struct hid_device *hdev, int idProduct)
  
  	min_version = ROG_ALLY_X_MIN_MCU;
  	version = mcu_request_version(hdev);
@@ -4417,7 +4404,7 @@ index aad965e069ee..db87754a2828 100644
 2.48.1
 
 
-From 96f5485b1ff52d142b20bc347a97c8c065c8e7eb Mon Sep 17 00:00:00 2001
+From e1f53dcf2fce298e66977a2bc52305c8f082afb9 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 10 Oct 2024 11:15:36 +1300
 Subject: [PATCH 19/29] hid-asus-ally: add calibrations (wip)
@@ -4428,7 +4415,7 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  1 file changed, 95 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index db87754a2828..75019538c62e 100644
+index 9f8780c234ff..4ff164d7b149 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -278,6 +278,28 @@ struct response_curve {
@@ -4565,7 +4552,7 @@ index db87754a2828..75019538c62e 100644
 2.48.1
 
 
-From 10a7fe75ada94f2e5534149e46df158c8d9b6236 Mon Sep 17 00:00:00 2001
+From 773dd2ddb8737fa3f6469c8d49529184d2514f9e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 6 Nov 2024 00:27:03 +0300
 Subject: [PATCH 20/29] debug by default
@@ -4575,7 +4562,7 @@ Subject: [PATCH 20/29] debug by default
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
-index 75019538c62e..80954e474ea3 100644
+index 4ff164d7b149..dd791ff0f2ca 100644
 --- a/drivers/hid/hid-asus-ally.c
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -21,6 +21,8 @@
@@ -4591,7 +4578,7 @@ index 75019538c62e..80954e474ea3 100644
 2.48.1
 
 
-From b9f5702c69f94788578079951ef122644857b8cd Mon Sep 17 00:00:00 2001
+From ecf413f0b91e1664b44086fe1ed862c3ca0d120b Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 22 Sep 2024 21:39:43 +1200
 Subject: [PATCH 21/29] platform/x86: asus-armoury: move existing tunings to
@@ -5424,7 +5411,7 @@ index 7c886a93d554..3fd11c782ee2 100644
 2.48.1
 
 
-From e7d89637963738f94f17cb54ccf3a892aa9c02fd Mon Sep 17 00:00:00 2001
+From d2abf1035f6d66e8228b46275b26ab87102d2c3e Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 19 Sep 2024 17:23:35 +1200
 Subject: [PATCH 22/29] platform/x86: asus-armoury: add panel_hd_mode attribute
@@ -5486,7 +5473,7 @@ index 3fd11c782ee2..e1ae2c1e229c 100644
 2.48.1
 
 
-From eec97fd9715faa9d87b488fd9d4c11c8597eb656 Mon Sep 17 00:00:00 2001
+From f44e4e12122785ba6f60ed62d14c62a68a0858ec Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Sun, 2 Jun 2024 14:44:31 +1200
 Subject: [PATCH 23/29] platform/x86: asus-armoury: add apu-mem control support
@@ -5653,7 +5640,7 @@ index e1ae2c1e229c..b7e2582763a8 100644
 2.48.1
 
 
-From 0df1f7d0873b12eba9c95fcf1ae1a0263acdef96 Mon Sep 17 00:00:00 2001
+From b8019fdcab8d29eb45b2f74e09533d60093a9b06 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Wed, 18 Sep 2024 21:19:12 +1200
 Subject: [PATCH 24/29] platform/x86: asus-armoury: add core count control
@@ -6021,7 +6008,7 @@ index b7e2582763a8..0f45d5549e10 100644
 2.48.1
 
 
-From a1a8eb3497d88eb68694591dc2dea81920ae9915 Mon Sep 17 00:00:00 2001
+From 1719ecb19b84edd7c348b4317693eac2a40df537 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Mon, 3 Jun 2024 12:04:41 +1200
 Subject: [PATCH 25/29] platform/x86: asus-wmi: deprecate bios features
@@ -6037,8 +6024,8 @@ Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
 ---
  .../ABI/testing/sysfs-platform-asus-wmi       |  17 +++
  drivers/platform/x86/Kconfig                  |   9 ++
- drivers/platform/x86/asus-wmi.c               | 126 ++++++++++++++----
- 3 files changed, 126 insertions(+), 26 deletions(-)
+ drivers/platform/x86/asus-wmi.c               | 124 ++++++++++++++----
+ 3 files changed, 125 insertions(+), 25 deletions(-)
 
 diff --git a/Documentation/ABI/testing/sysfs-platform-asus-wmi b/Documentation/ABI/testing/sysfs-platform-asus-wmi
 index 28144371a0f1..765d50b0d9df 100644
@@ -6201,18 +6188,9 @@ index 80ec8b45022d..d0fc68d93f48 100644
  	tristate "Asus Notebook WMI Driver"
  	depends on ASUS_WMI
 diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
-index 9aa4373607de..bb1ac5d981e9 100644
+index 9aa4373607de..bd512ff1cd28 100644
 --- a/drivers/platform/x86/asus-wmi.c
 +++ b/drivers/platform/x86/asus-wmi.c
-@@ -273,7 +273,7 @@ struct asus_wmi {
- 	int tablet_switch_event_code;
- 	u32 tablet_switch_dev_id;
- 	bool tablet_switch_inverted;
--
-+)
- 	enum fan_type fan_type;
- 	enum fan_type gpu_fan_type;
- 	enum fan_type mid_fan_type;
 @@ -286,11 +286,12 @@ struct asus_wmi {
  	u8 fan_boost_mode_mask;
  	u8 fan_boost_mode;
@@ -6635,7 +6613,7 @@ index 9aa4373607de..bb1ac5d981e9 100644
 2.48.1
 
 
-From 8a1081513edd7da15065615810130c2d06b85b0f Mon Sep 17 00:00:00 2001
+From 22515554fb92db19756a4c5f4fb324e6b1cfc717 Mon Sep 17 00:00:00 2001
 From: Mario Limonciello <mario.limonciello@amd.com>
 Date: Tue, 21 Jan 2025 16:03:52 -0600
 Subject: [PATCH 26/29] drm/amd/display: Avoid divide by zero by initializing
@@ -6667,7 +6645,7 @@ index bde4250853b1..f07afe451006 100644
 2.48.1
 
 
-From 74d91a89915d2c93286726be98de54303d03261d Mon Sep 17 00:00:00 2001
+From 6742e63d9d896a0b6a65171d3fba16353b365f57 Mon Sep 17 00:00:00 2001
 From: "Luke D. Jones" <luke@ljones.dev>
 Date: Thu, 19 Sep 2024 17:19:37 +1200
 Subject: [PATCH 27/29] platform/x86: asus-armoury: add the ppt_* and nv_*
@@ -8009,7 +7987,7 @@ index 0f45d5549e10..8e90d2221706 100644
 2.48.1
 
 
-From df1d1e8533d89a0394ad2bc9c381e570c1cbf7b3 Mon Sep 17 00:00:00 2001
+From 9547f936ed1b1fbc8d4dca5b9cd3c131c3351296 Mon Sep 17 00:00:00 2001
 From: Luke Jones <luke@ljones.dev>
 Date: Sat, 1 Feb 2025 11:28:50 +1300
 Subject: [PATCH 28/29] backport: asus-armoury: fix fw_attributes_class after
@@ -8073,7 +8051,7 @@ index 5768997ea2d3..05412414dc5f 100644
 2.48.1
 
 
-From a838bfe9d3dd7aa7bd77dc0e3783348fa0340f6d Mon Sep 17 00:00:00 2001
+From 6bf610a8770d9bd7b4a47d528a344840f4c9f284 Mon Sep 17 00:00:00 2001
 From: Luke Jones <luke@ljones.dev>
 Date: Sat, 1 Feb 2025 14:19:33 +1300
 Subject: [PATCH 29/29] backport: asus-wmi: fix symbol 'ASUS_WMI' after
@@ -8111,7 +8089,7 @@ index 05412414dc5f..2dcf3ed20b2f 100644
  MODULE_DESCRIPTION("ASUS BIOS Configuration Driver");
  MODULE_LICENSE("GPL");
 diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
-index bb1ac5d981e9..41d78051ccd3 100644
+index bd512ff1cd28..16a3251702c8 100644
 --- a/drivers/platform/x86/asus-wmi.c
 +++ b/drivers/platform/x86/asus-wmi.c
 @@ -404,7 +404,7 @@ int asus_wmi_evaluate_method(u32 method_id, u32 arg0, u32 arg1, u32 *retval)
