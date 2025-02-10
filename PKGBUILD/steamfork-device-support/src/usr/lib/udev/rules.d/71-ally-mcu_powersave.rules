@@ -1,0 +1,2 @@
+# ROG Ally MCU Powersave
+ACTION=="add|change", KERNEL=="asus-armoury", SUBSYSTEM=="firmware-attributes", ATTR{attributes/mcu_powersave/current_value}="1"
