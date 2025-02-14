@@ -1,6 +1,0 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2024 Fewtarius
-
-### Disable the touch display (top on DS) until issues can be resolved.
-echo 1 >$(find /sys/devices/platform -name inhibited | grep GDIX1002)
