@@ -1,12 +1,14 @@
 diff -rupN linux-6.13.2.orig/drivers/iio/imu/bmi270/bmi270_i2c.c linux-6.13.2/drivers/iio/imu/bmi270/bmi270_i2c.c
 --- linux-6.13.2.orig/drivers/iio/imu/bmi270/bmi270_i2c.c	2025-02-08 09:02:27.000000000 +0000
-+++ linux-6.13.2/drivers/iio/imu/bmi270/bmi270_i2c.c	2025-02-14 12:21:01.159352826 +0000
-@@ -40,6 +40,8 @@ static const struct i2c_device_id bmi270
++++ linux-6.13.2/drivers/iio/imu/bmi270/bmi270_i2c.c	2025-02-14 13:22:22.746835530 +0000
+@@ -40,6 +40,10 @@ static const struct i2c_device_id bmi270
  static const struct acpi_device_id bmi270_acpi_match[] = {
  	/* GPD Win Mini, Aya Neo AIR Pro, OXP Mini Pro, etc. */
  	{ "BMI0160",  (kernel_ulong_t)&bmi260_chip_info },
-+	/* GPD Win Max 2 2023(sincice BIOS v0.40), etc. */
 +	{ "BMI0260",  (kernel_ulong_t)&bmi260_chip_info },
++	{ "BOSC0260", (kernel_ulong_t)&bmi260_chip_info },
++	{ "BOSC0160", (kernel_ulong_t)&bmi260_chip_info },
++	{ "10EC5280", (kernel_ulong_t)&bmi260_chip_info },
  	{ }
  };
  
