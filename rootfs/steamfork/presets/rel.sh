@@ -45,7 +45,7 @@ export DISABLED_SERVICES=(jupiter-controller-update.service
 export PLYMOUTH_THEME="steamos"
 export FINAL_DISTRIB_IMAGE=${BUILDVER}
 export KERNELCHOICE="linux"
-export BASE_BOOTSTRAP_PKGS="base base-devel linux-firmware amd-ucode intel-ucode sddm-wayland dkms jq btrfs-progs core-${STEAMOS_VERSION}/grub efibootmgr openssh plymouth"
+export BASE_BOOTSTRAP_PKGS="base base-devel linux-firmware amd-ucode intel-ucode sddm dkms jq btrfs-progs core-${STEAMOS_VERSION}/grub efibootmgr openssh plymouth"
 export STEAMOS_PKGS="accounts-qml-module
                     accountsservice
                     acl
@@ -279,19 +279,15 @@ export STEAMOS_PKGS="accounts-qml-module
                     kde-gtk-config
                     kdeconnect
                     kdecoration
-                    kdelibs4support
                     kdeplasma-addons
                     kdialog
                     kdsoap
                     kdsoap-ws-discovery-client
-                    kemoticons
                     kexec-tools
                     keyutils
-                    khotkeys
                     kinfocenter
                     kirigami2
                     kitty-terminfo
-                    kjs
                     kmenuedit
                     kmod
                     konsole
@@ -756,7 +752,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     python-semantic-version
                     python-sniffio
                     python-systemd
-                    python-sysv_ipc
                     python-typing_extensions
                     python-utils
                     python-yaml
@@ -764,24 +759,19 @@ export STEAMOS_PKGS="accounts-qml-module
                     pyzy
                     qca-qt5
                     qrencode
-                    qt5-base
-                    qt5-declarative
-                    qt5-feedback
-                    qt5-graphicaleffects
-                    qt5-location
-                    qt5-multimedia
-                    qt5-quickcontrols
-                    qt5-quickcontrols2
-                    qt5-sensors
-                    qt5-speech
-                    qt5-svg
-                    qt5-tools
-                    qt5-translations
-                    qt5-wayland
-                    qt5-webchannel
-                    qt5-webengine
-                    qt5-webview
-                    qt5-x11extras
+                    qt6-base
+                    qt6-declarative
+                    qt6-location
+                    qt6-multimedia
+                    qt6-sensors
+                    qt6-speech
+                    qt6-svg
+                    qt6-tools
+                    qt6-translations
+                    qt6-wayland
+                    qt6-webchannel
+                    qt6-webengine
+                    qt6-webview
                     rauc
                     rav1e
                     re2
@@ -793,7 +783,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     rtkit
                     rxvt-unicode-terminfo
                     sbc
-                    sddm-wayland
+                    sddm
                     sdl2
                     seatd
                     sed
@@ -872,7 +862,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     vid.stab
                     vim
                     vim-runtime
-                    vkmark-git
                     vmaf
                     volume_key
                     vulkan-icd-loader
@@ -939,102 +928,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     zsh
                     zstd
                     zxing-cpp"
-
-### Do not add:
-# attica
-# baloo
-# baloo-widgets
-# bash-bats
-# bluez-qt
-# breeze-grub
-# breeze-gtk
-# frameworkintegration
-# grub
-# jupiter-fan-control
-# kactivities
-# kactivities-stats
-# karchive
-# kauth
-# kbookmarks
-# kcmutils
-# kcodecs
-# kcolorpicker
-# kcompletion
-# kconfig
-# kconfigwidgets
-# kcontacts
-# kcoreaddons
-# kcrash
-# kdbusaddons
-# kdeclarative
-# kded
-# kdesu
-# kdnssd
-# kdumpst
-# kfilemetadata
-# kgamma5
-# kglobalaccel
-# kguiaddons
-# kholidays
-# ki18n
-# kiconthemes
-# kidletime
-# kimageannotator
-# kio
-# kio-extras
-# kio-fuse
-# kirigami-addons
-# kitemmodels
-# kitemviews
-# kjobwidgets
-# knewstuff
-# knotifications
-# knotifyconfig
-# kpackage
-# kparts
-# kpeople
-# kpeoplevcard
-# kpty
-# kquickcharts
-# krunner
-# kservice
-# ktexteditor
-# ktextwidgets
-# kunitconversion
-# kuserfeedback
-# kwallet
-# kwallet-pam
-# kwayland
-# kwayland-integration
-# kwidgetsaddons
-# kwindowsystem
-# kxmlgui
-# libkdcraw
-# libva-intel-driver
-# linux-firmware-neptune
-# linux-firmware-neptune-whence
-# linux-neptune-61
-# modemmanager-qt
-# networkmanager-qt
-# plasma-framework
-# prison
-# purpose
-# qqc2-desktop-style
-# sddm-kcm
-# signon-kwallet-extension
-# solid
-# sonnet
-# steamos-customizations-jupiter
-# steamos-kdumpst-layer
-# syndication
-# syntax-highlighting
-# systemd-swap
-# threadweaver
-# vpower
-# xorg-xwayland-jupiter
-# zenity-light
-
-# packagekit-qt5
 
 export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   bc
