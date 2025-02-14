@@ -54,6 +54,7 @@ images-release:
 packages-all: packages-local packages-aur
 
 packages-local:
+	${SCRIPT_DIR}/mkpackage --repo local sequoia-sq
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-keyring
 	${SCRIPT_DIR}/mkpackage --repo local linux-firmware
 	${SCRIPT_DIR}/mkpackage --repo local linux
