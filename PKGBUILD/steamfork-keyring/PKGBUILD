@@ -1,7 +1,7 @@
 # Maintainer: Fewtarius <fewtarius@steamfork.org>
 
 pkgname=steamfork-keyring
-pkgver=20240802
+pkgver=20250214
 pkgrel=1
 pkgdesc='SteamFork PGP keyring'
 arch=('any')
@@ -17,7 +17,7 @@ validpgpkeys=('A33991EE2981A3B05368EF5E75C1E5647441B94C')  # Fewtarius <fewtariu
 
 build() {
   cd steamfork-keyring/
-  git checkout compat
+  git checkout 3.7
   mkdir -p keyring/main
 
   make build

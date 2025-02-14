@@ -9,7 +9,7 @@ export REPO_DIR		:= ${BUILD_DIR}/release/repos
 export BUILD_VER	:= $(shell date +%Y%m%d.%H%M)
 export RELEASE_TAG	:= $(shell date +%Y%m%d)
 export UPSTREAM_REPO	:= upstream
-export STEAMOS_VERSION	:= 3.6
+export STEAMOS_VERSION	:= 3.7
 
 RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(RUN_ARGS):;@:)
