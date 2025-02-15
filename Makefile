@@ -7,8 +7,8 @@ export INSTALLER_DIR	:= ${BUILD_DIR}/rootfs/installer
 export OS_DIR		:= ${BUILD_DIR}/rootfs/steamfork
 export SCRIPT_DIR	:= ${BUILD_DIR}/scripts
 export WORK_DIR		:= ${BUILD_DIR}/_work
-export IMAGE_DIR	:= ${BUILD_DIR}/release/images
-export REPO_DIR		:= ${BUILD_DIR}/release/repos
+export IMAGE_DIR	:= ${BUILD_DIR}/release/images/${STEAMOS_VERSION}
+export REPO_DIR		:= ${BUILD_DIR}/release/repos/${STEAMOS_VERSION}
 export UPSTREAM_REPO	:= upstream
 
 RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -28,9 +28,12 @@ repo-clean:
 repo-check:
 	${SCRIPT_DIR}/sync check
 
-image-clean:
+image-prep:
 	sudo umount -qR ${WORK_DIR}/image/buildwork/rootfs_mnt ||:
-	sudo rm -rf ${WORK_DIR} ${IMAGE_DIR}
+	sudo rm -rf ${WORK_DIR}
+
+image-clean: image-prep
+	sudo rm -rf ${IMAGE_DIR}
 
 build-clean:
 	sudo rm -f /var/lib/pacman/db.lck
@@ -38,12 +41,12 @@ build-clean:
 
 images-all: images
 
-image: image-clean
+image: image-prep
 	${SCRIPT_DIR}/mkimage $(RUN_ARGS)
 
-images:
+images: image-prep
 	${SCRIPT_DIR}/mkimage minimal $(RUN_ARGS)
-	${SCRIPT_DIR}/mkimage rel $(RUN_ARGS)
+	${SCRIPT_DIR}/mkimage stable $(RUN_ARGS)
 
 images-sync:
 	${SCRIPT_DIR}/sync os-sync
