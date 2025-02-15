@@ -11,7 +11,7 @@ else
 fi
 
 SCRIPT="$(realpath "${0}")"
-IMAGE_DIR="${IMAGE_DIR}/${RELEASE_TYPE}/images"
+IMAGE_DIR="${IMAGE_DIR}/${RELEASE_TYPE}"
 WORK_DIR="${WORK_DIR}/image"
 
 export IMAGE_DIR WORK_DIR

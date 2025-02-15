@@ -4,7 +4,7 @@ rm -rf /tmp/build_temp_ver
 
 export DISTRO_NAME="SteamFork"
 export IMAGE_HOSTNAME="steamfork"
-export OS_CODENAME="Rel"
+export OS_CODENAME="Stable"
 export OS_FS_PREFIX="sf"
 
 export HOME_URL="https://www.steamfork.org"
