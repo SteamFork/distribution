@@ -1,0 +1,15 @@
+diff --git a/subprojects/libliftoff/layer.c b/subprojects/libliftoff/layer.c
+index 73a8186492037490ecbc790f847f381b3327a313..6510ea77ed92934d9cf1155d892f7e90219f9935 100644
+--- a/subprojects/libliftoff/layer.c
++++ b/subprojects/libliftoff/layer.c
+@@ -17,8 +17,8 @@ liftoff_layer_create(struct liftoff_output *output)
+ 		return NULL;
+ 	}
+ 	layer->output = output;
+-	layer->candidate_planes = calloc(sizeof(layer->candidate_planes[0]),
+-					 output->device->planes_cap);
++	layer->candidate_planes = calloc(output->device->planes_cap,
++					 sizeof(layer->candidate_planes[0]));
+ 	if (layer->candidate_planes == NULL) {
+ 		liftoff_log_errno(LIFTOFF_ERROR, "calloc");
+ 		free(layer);
