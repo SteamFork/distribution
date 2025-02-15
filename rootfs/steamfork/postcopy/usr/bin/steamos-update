@@ -5,6 +5,7 @@ then
     exec pkexec --disable-internal-agent "$0" "$@"
 fi
 
+source /etc/os-release
 source /etc/steamfork-release
 
 ### Refresh the mirrors
@@ -40,9 +41,9 @@ else
 fi
 
 if [[ -n "${UPDATE_BRANCH_OVERRIDE}" ]]; then
-    downloadendpoint=${download_url}/images/${UPDATE_BRANCH_OVERRIDE}
+    downloadendpoint=${download_url}/images/${STEAMOS_VERSION}/${UPDATE_BRANCH_OVERRIDE}
 else
-    downloadendpoint=${download_url}/images
+    downloadendpoint=${download_url}/images/${STEAMOS_VERSION}/${UPD_BRANCH}
 fi
 
 
