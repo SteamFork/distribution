@@ -1,5 +1,7 @@
-# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
-# Maintainer: David Runge <dvzrv@archlinux.org>
+# Maintainer: Fewtarius
+# Upstream:
+#   Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+#   Maintainer: David Runge <dvzrv@archlinux.org>
 
 pkgname=sequoia-sq
 pkgver=1.2.0
