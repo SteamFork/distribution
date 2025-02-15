@@ -41,9 +41,9 @@ else
 fi
 
 if [[ -n "${UPDATE_BRANCH_OVERRIDE}" ]]; then
-    downloadendpoint=${download_url}/images/${UPDATE_BRANCH_OVERRIDE}
+    downloadendpoint=${download_url}/images/${STEAMOS_VERSION}/${UPDATE_BRANCH_OVERRIDE}
 else
-    downloadendpoint=${download_url}/images/${STEAMOS_VERSION}
+    downloadendpoint=${download_url}/images/${STEAMOS_VERSION}/${UPD_BRANCH}
 fi
 
 
