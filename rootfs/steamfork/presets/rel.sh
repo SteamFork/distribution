@@ -696,7 +696,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     plasma-thunderbolt
                     plasma-vault
                     plasma-wayland-protocols
-                    plasma-wayland-session
                     plasma-welcome
                     plasma-workspace
                     plasma-workspace-wallpapers
