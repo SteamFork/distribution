@@ -29,6 +29,7 @@ jobs:
       - name: Build Release Images
         run: |
           set -e
+          make image minimal BUILD_VER="${{ steps.version.outputs.version }}"
           make image stable BUILD_VER="${{ steps.version.outputs.version }}"
   sync:
     if: startsWith(github.ref, 'refs/tags/2')
