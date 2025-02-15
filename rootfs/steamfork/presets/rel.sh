@@ -758,6 +758,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     pyzy
                     qca-qt5
                     qrencode
+		    qt5-tools
                     qt6-base
                     qt6-declarative
                     qt6-location
