@@ -16,8 +16,7 @@ _tag=mesa-${pkgver}
 pkgrel=1
 arch=('x86_64')
 makedepends=('git' 'openssh' 'python-mako' 'python-ply' 'libxml2' 'libx11' 'xorgproto' 'libdrm' 'libxshmfence'
-             'python>=3.11' 'python<3.12'
-             'wayland' 'wayland-protocols' 'zstd' 'elfutils' 'llvm'
+             'python' 'wayland' 'wayland-protocols' 'zstd' 'elfutils' 'llvm'
              'libunwind' 'libxrandr'
              'valgrind' 'meson' 'glslang' 'python-sphinx-hawkmoth' 'spirv-llvm-translator')
 url="https://www.mesa3d.org/"
@@ -116,7 +115,7 @@ _install() {
 
 package_vulkan-mesa-layers() {
   pkgdesc="Mesa's Vulkan layers"
-  depends=('libdrm' 'libxcb' 'wayland' 'python>=3.11' 'python<3.12')
+  depends=('libdrm' 'libxcb' 'wayland' 'python')
   conflicts=('vulkan-mesa-layer')
   replaces=('vulkan-mesa-layer')
 
