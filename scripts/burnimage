@@ -3,8 +3,16 @@
 # Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
 # Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
 
-IMAGE_PATH="release/images/stable"
-source ${IMAGE_PATH}/latest_stable.releasemeta
+VERSION=${1:-3.7}
+BRANCH=${2:-stable}
+IMAGE_PATH="release/images/${VERSION}/${BRANCH}"
+if [ -f ${IMAGE_PATH}/latest_${BRANCH}.releasemeta ]
+then
+  source ${IMAGE_PATH}/latest_${BRANCH}.releasemeta
+else
+  echo "Release not found (${VERSION}/${BRANCH})."
+  exit 1
+fi
 ARCH="x86_64"
 ISO="${IMAGE_PATH}/installer/${IMAGEFILE//_/-}-${ARCH}.iso"
 
