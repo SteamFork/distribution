@@ -1,3 +1,6 @@
+export STEAMOS_VERSION	:= 3.6
+export BUILD_VER	:= $(shell date +%Y%m%d.%H%M)
+export RELEASE_TAG	:= $(shell date +%Y%m%d)
 export SHELL		:= /usr/bin/bash
 export BUILD_DIR	:= $(shell pwd)
 export INSTALLER_DIR	:= ${BUILD_DIR}/rootfs/installer
@@ -5,11 +8,8 @@ export OS_DIR		:= ${BUILD_DIR}/rootfs/steamfork
 export SCRIPT_DIR	:= ${BUILD_DIR}/scripts
 export WORK_DIR		:= ${BUILD_DIR}/_work
 export IMAGE_DIR	:= ${BUILD_DIR}/release/images
-export REPO_DIR		:= ${BUILD_DIR}/release/repos
-export BUILD_VER	:= $(shell date +%Y%m%d.%H%M)
-export RELEASE_TAG	:= $(shell date +%Y%m%d)
+export REPO_DIR		:= ${BUILD_DIR}/release/repos/${STEAMOS_VERSION}/
 export UPSTREAM_REPO	:= upstream
-export STEAMOS_VERSION	:= 3.6
 
 RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(RUN_ARGS):;@:)
