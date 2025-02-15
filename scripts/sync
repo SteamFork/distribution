@@ -36,7 +36,7 @@ done
 case ${1} in
 pkgs | repo)
 	echo "Syncing repository to ${WWWHOST}."
-	rsync -av --delete --progress --stats ${REPO_DIR} ${WWWUSER}@${WWWHOST}:${WWWROOT}/
+	rsync -av --delete --progress --stats ${REPO_DIR}/${STEAMOS_VERSION}/ ${WWWUSER}@${WWWHOST}:${WWWROOT}/repos/${STEAMOS_VERSION}/
 	ssh -tt ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/"
 	;;
 os-sync)
