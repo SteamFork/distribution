@@ -26,7 +26,7 @@ function fetch_count() {
   DATA="$2"
   if [ -z "${DATA}" ]
   then
-    DATA="latest_rel.releasemeta"
+    DATA="latest_stable.releasemeta"
   fi
   VAL=$(ssh -q ${HOST} "grep \"${DATA}\" ${LOG_PATH} | awk '{print \$1}' | sort | uniq | wc -l")
   printf "${VAL}"
@@ -36,7 +36,7 @@ function total_count() {
   DATA=${1}
   if [ -z "${DATA}" ]
   then
-    DATA="latest_rel.releasemeta"
+    DATA="latest_stable.releasemeta"
   fi
   for HOST in ${WEB_HOSTS[@]}
   do
@@ -74,7 +74,7 @@ do
 done
 
 OUTPUT="${OUTPUT}## Total Unique Download Requests ($(date --date=' 1 days ago' +%m/%d/%Y))\n"
-TOTAL_METADATA=$(total_count "latest_rel.releasemeta")
+TOTAL_METADATA=$(total_count "latest_stable.releasemeta")
 OUTPUT="${OUTPUT}* Platform Metadata: ${TOTAL_METADATA}\n"
 TOTAL_ISOS=$(total_count "steamfork.*iso")
 OUTPUT="${OUTPUT}* Installation ISOs: ${TOTAL_ISOS}\n"
