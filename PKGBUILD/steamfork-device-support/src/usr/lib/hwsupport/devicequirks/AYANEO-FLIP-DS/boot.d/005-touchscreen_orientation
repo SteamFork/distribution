@@ -1,14 +1,21 @@
 #!/bin/bash
 
-# Generate calibration matrix for bottom touchscreen
+# Generate calibration matrix for touchscreens
 # TODO: Find literally any other way to do this
 
-cat <<EOF | sudo tee /etc/X11/xorg.conf.d/99-touchscreen_orientation.conf
+cat <<EOF | sudo tee /etc/X11/xorg.conf.d/98-flipds.conf
 Section "InputClass"
-	Identifier "Coordinate Transformation Matrix"
-	MatchIsTouchscreen "on"
-	MatchDevicePath "/dev/input/event*"
-	MatchDriver "libinput"
-	Option "CalibrationMatrix" "0 -0.5 0.75 0.37209302 0 0.62790698 0 0 1"
+        Identifier "Coordinate Transformation Matrix Top"
+        MatchIsTouchscreen "on"
+        MatchProduct "InputPlumber Touchscreen"
+        MatchDriver "libinput"
+        Option "CalibrationMatrix" "0 -1 1 0.62790698 0 0 0 0 1"
+EndSection
+Section "InputClass"
+        Identifier "Coordinate Transformation Matrix Bottom"
+        MatchIsTouchscreen "on"
+        MatchProduct "Goodix Capacitive TouchScreen"
+        MatchDriver "libinput"
+        Option "CalibrationMatrix" "0 -0.5 0.75 0.37209302 0 0.62790698 0 0 1"
 EndSection
 EOF
