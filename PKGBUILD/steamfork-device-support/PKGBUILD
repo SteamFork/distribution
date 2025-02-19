@@ -2,7 +2,7 @@
 
 pkgname=steamfork-device-support
 pkgver=2025.02.19
-pkgrel=1
+pkgrel=2
 pkgdesc='Hardware support provider for PC handhelds.'
 arch=('any')
 url='http://www.steamfork.org'
