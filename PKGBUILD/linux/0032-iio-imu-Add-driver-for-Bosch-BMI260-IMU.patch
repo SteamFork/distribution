@@ -39,8 +39,8 @@ index 52a155ff325047..1797f67c2a576c 100644
  
  source "drivers/iio/imu/bmi160/Kconfig"
 +source "drivers/iio/imu/bmi260/Kconfig"
+ source "drivers/iio/imu/bmi270/Kconfig"
  source "drivers/iio/imu/bmi323/Kconfig"
- source "drivers/iio/imu/bno055/Kconfig"
  
 diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
 index 7e2d7d5c3b7bc7..1d833ee7b9d7ad 100644
@@ -51,8 +51,8 @@ index 7e2d7d5c3b7bc7..1d833ee7b9d7ad 100644
  
  obj-y += bmi160/
 +obj-y += bmi260/
+ obj-y += bmi270/
  obj-y += bmi323/
- obj-y += bno055/
  
 diff --git a/drivers/iio/imu/bmi260/Kconfig b/drivers/iio/imu/bmi260/Kconfig
 new file mode 100644
