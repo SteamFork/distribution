@@ -2,7 +2,7 @@
 
 local panel_id = "lenovo_legiongo_lcd"
 local panel_name = "Lenovo Legion Go LCD"
-local panel_refresh_rates = { 60, 144 }
+local panel_refresh_rates = { 144, 60 }
 
 gamescope.config.known_displays[panel_id] = {
   pretty_name = panel_name,
