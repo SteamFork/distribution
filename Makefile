@@ -107,11 +107,11 @@ package:
 package-aur:
 	${SCRIPT_DIR}/mkpackage --repo aur $(RUN_ARGS)
 
-#packages-sync:
-#	${SCRIPT_DIR}/sync repo
+packages-sync:
+	${SCRIPT_DIR}/sync repo
 
-#mirrors-sync:
-#	${SCRIPT_DIR}/sync mirrors
+mirrors-sync:
+	${SCRIPT_DIR}/sync mirrors
 
 .PHONY: release
 
