@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.13.3
-pkgrel=1
+pkgrel=2
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -66,7 +66,7 @@ source=(
   0040-vcs-amdgpu-quirks.patch
   0041-air-amdgpu-quirks.patch
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
-  #0060-asus-patch-series.patch
+  0060-asus-patch-series.patch
   0066-ASoC-acp-Support-microphone-from-Lenovo-Go-S.patch
   0070-lexar-nvme-broken-msi.patch
   0080-vblank-not-passed-vfp.patch
@@ -101,7 +101,7 @@ sha256sums=('SKIP'
   '93087d9449f994dca23c1d5a32919204d31afecc63950d74a2ea41aaa1e3a9ec' # 0040-vcs-amdgpu-quirks.patch
   'ab8a6dccf67cee7d924ee2e3d4690285d404bcb9bab70eced09b05fa2853b288' # 0041-air-amdgpu-quirks.patch
   '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
-  #'9aff2d2e9a8b4f9f91a2fc3b697e3fd801a02e5821c37761fdd756459747c697' # 0060-asus-patch-series.patch
+  'd2bb7cfda33cdc4c7bd2950e35f68a1bad00fe9d26fc2ad787d344c5c9524e29' # 0060-asus-patch-series.patch
   'b2c0775ca7f7e8aed633c056b450c972020d37508d391732d7becded53a2210b' # 0066-ASoC-acp-Support-microphone-from-Lenovo-Go-S.patch
   'b048068eeee69bf0f600d2ea390c8f681f9708776ff45a4b871e1e51136af33a' # 0070-lexar-nvme-broken-msi.patch
   'a0688b117326017a36d5df63ea771733ef688027ca0a17e290f88b906141ed9c' # 0080-vblank-not-passed-vfp.patch
