@@ -75,6 +75,7 @@ packages-local:
 	${SCRIPT_DIR}/mkpackage --repo local mesa-radv
 	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa
 	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa-radv
+	${SCRIPT_DIR}/mkpackage --repo local sddm-wayland
 	${SCRIPT_DIR}/mkpackage --repo local gamescope
 	${SCRIPT_DIR}/mkpackage --repo local gamescope-legacy
 	${SCRIPT_DIR}/mkpackage --repo local ectool
@@ -84,7 +85,6 @@ packages-local:
 	${SCRIPT_DIR}/mkpackage --repo local steamfork-installer
 	${SCRIPT_DIR}/mkpackage --repo local webrtc-audio-processing
 	${SCRIPT_DIR}/mkpackage --repo local inputplumber
-	${SCRIPT_DIR}/mkpackage --repo local steam-powerbuttond
 	${SCRIPT_DIR}/mkpackage --repo local ryzenadj
 	${SCRIPT_DIR}/mkpackage --repo local pikaur
 	${SCRIPT_DIR}/mkpackage --repo local grafana-alloy
