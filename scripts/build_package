@@ -84,7 +84,7 @@ case ${PKGSOURCE} in
     fi
   ;;
   *)
-    echo "scripts/mkpackage type repo"
+    echo "scripts/build_package type repo"
     exit 1
   ;;
 esac

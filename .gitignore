@@ -7,3 +7,4 @@ rootfs/installer/airootfs/etc/pacman.conf
 rootfs/installer/airootfs/etc/install.image/
 **/*.xz
 **/*.gz
+**/.checksum
