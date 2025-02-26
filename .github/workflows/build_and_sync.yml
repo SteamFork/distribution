@@ -14,6 +14,17 @@ jobs:
         with:
           clean: false
 
+      - name: Import GPG key
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import --passphrase ${{ secrets.GPG_PASSPHRASE }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Save GPG key to file
+        run: |
+          gpg --export-secret-keys --armor ${{ secrets.GPG_KEY_ID }} > ~/.gnupg/private.key
+
       - name: Cache GPG key
         id: gpg-key
         uses: actions/cache@v3
@@ -39,23 +50,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-ssh-key
 
+      - name: Import SSH key
+        run: |
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Configure SSH
+        run: |
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Configure ccache
         run: |
           ccache --max-size=50G
-
-      - name: Import GPG key
-        run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import --passphrase ${{ secrets.GPG_PASSPHRASE }}
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-      - name: Cache imported GPG key
-        run: |
-          gpg --export-secret-keys --armor ${{ secrets.GPG_KEY_ID }} > /tmp/private.key
-          mkdir -p ~/.gnupg
-          cp /tmp/private.key ~/.gnupg/private.key
-          rm /tmp/private.key
 
       - name: Set GPG trust level
         run: |
