@@ -1,0 +1,94 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
+
+get_dependencies() {
+    local PKG=$1
+    if [[ -f "${SCRIPT_DIR}/../PKGBUILD/${PKG}/PKGBUILD" ]]; then
+        grep -Po '(?<=^depends=\().*(?=\))' "${SCRIPT_DIR}/../PKGBUILD/${PKG}/PKGBUILD" | tr -d "'"
+    else
+        echo ""
+    fi
+}
+
+get_pkgbuild_version() {
+    local PKG=$1
+    if [[ -f "${SCRIPT_DIR}/../PKGBUILD/${PKG}/PKGBUILD" ]]; then
+        (source "${SCRIPT_DIR}/../PKGBUILD/${PKG}/PKGBUILD" && echo "${pkgver}-${pkgrel}")
+    else
+        echo ""
+    fi
+}
+
+is_package_in_repo() {
+    local PKG=$1
+    local PKG_VERSION=$2
+    local REPO_VERSION
+    REPO_VERSION=$(pacman -Ss "^${PKG}$" | awk '{print $2; exit}')
+    echo "PKGBUILD version for ${PKG}: ${PKG_VERSION}"
+    echo "Repo version for ${PKG}: ${REPO_VERSION}"
+    if [[ -z "${REPO_VERSION}" ]]; then
+        echo "Package ${PKG} not found in repository."
+        return 1
+    fi
+    if [[ "$(vercmp "${REPO_VERSION}" "${PKG_VERSION}")" -lt 0 ]]; then
+        return 1
+    else
+        echo "Skipping ${PKG}, repository version ${REPO_VERSION} is newer or the same."
+        return 0
+    fi
+}
+
+build_package() {
+    local PKG=$1
+    local REPO_FLAG=$2
+    echo "Building ${PKG} with repo flag ${REPO_FLAG}..."
+    cd "${SCRIPT_DIR}/../PKGBUILD/${PKG}" || exit
+    ${SCRIPT_DIR}/build_package --repo ${REPO_FLAG} ${PKG}
+    cd - || exit
+}
+
+build_with_dependencies() {
+    local PKG=$1
+
+    if [[ " ${BUILT[@]} " =~ " ${PKG} " ]]; then
+        return
+    fi
+
+    local PKG_VERSION
+    PKG_VERSION=$(get_pkgbuild_version "${PKG}")
+
+    echo "Checking if ${PKG} is in the repository..."
+    if is_package_in_repo "${PKG}" "${PKG_VERSION}"; then
+        echo "Skipping ${PKG}, already in repository with version ${PKG_VERSION}."
+        BUILT+=("${PKG}")
+        return
+    fi
+
+    local DEPS
+    DEPS=$(get_dependencies "${PKG}")
+
+    for DEP in ${DEPS}; do
+        if is_package_in_repo "${DEP}" "$(get_pkgbuild_version "${DEP}")"; then
+            echo "Skipping ${DEP}, already in repository."
+        elif [[ -f "${SCRIPT_DIR}/../PKGBUILD/${DEP}/PKGBUILD" ]]; then
+            build_with_dependencies "${DEP}"
+        else
+            echo "Building ${DEP} from AUR."
+            build_package "${DEP}" "aur"
+        fi
+    done
+
+    build_package "${PKG}" "local"
+    BUILT+=("${PKG}")
+}
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <package>"
+    exit 1
+fi
+
+declare -a BUILT
+build_with_dependencies "$1"

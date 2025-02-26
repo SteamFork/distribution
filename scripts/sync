@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
+
 if [ -f "${HOME}/.SteamFork/options" ]; then
 	source "${HOME}/.SteamFork/options"
 fi
