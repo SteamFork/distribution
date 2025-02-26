@@ -1,11 +1,6 @@
 name: Automated Package Build and Sync
 
 on:
-  branch:
-    - main
-  push:
-    paths:
-      - 'PKGBUILD/**'
   workflow_dispatch:
 
 jobs:
