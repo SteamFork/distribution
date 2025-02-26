@@ -84,7 +84,7 @@ jobs:
         id: checksum
         run: |
           cd $GITHUB_WORKSPACE
-          OUTPUT=$(./scripts/checksum_pkgbuild.sh)
+          OUTPUT=$(./scripts/checksum_pkgbuild)
           echo "::set-output name=packages::$OUTPUT"
 
       - name: Build with dependencies
