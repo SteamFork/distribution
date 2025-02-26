@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          clean: false
 
       - name: Cache GPG key
         id: gpg-key
@@ -22,7 +24,7 @@ jobs:
 
       - name: Cache SSH key
         id: ssh-key
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.ssh
           key: ${{ runner.os }}-ssh-key
