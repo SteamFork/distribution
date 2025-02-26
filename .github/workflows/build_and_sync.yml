@@ -14,6 +14,16 @@ jobs:
         with:
           clean: false
 
+      - name: Configure GPG agent
+        run: |
+          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          echo "default-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf
+          echo "max-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf
+          gpgconf --kill gpg-agent
+          gpgconf --launch gpg-agent
+
       - name: Import GPG key
         run: |
           echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import --passphrase ${{ secrets.GPG_PASSPHRASE }}
