@@ -24,16 +24,11 @@ jobs:
           gpgconf --kill gpg-agent
           gpgconf --launch gpg-agent
 
-      - name: Import GPG key
-        run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import --pinentry-mode loopback --passphrase ${{ secrets.GPG_PASSPHRASE }}
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
       - name: Save GPG key to file
         run: |
-          gpg --batch --pinentry-mode loopback --export-secret-keys --armor ${{ secrets.GPG_KEY_ID }} > ~/.gnupg/private.key
+          echo "$GPG_PRIVATE_KEY" > ~/.gnupg/private.key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
       - name: Cache GPG key
         id: gpg-key
@@ -43,13 +38,6 @@ jobs:
           key: ${{ runner.os }}-gpg-key
           restore-keys: |
             ${{ runner.os }}-gpg-key
-
-      - name: Verify GPG key
-        run: |
-          if [ ! -f ~/.gnupg/private.key ]; then
-            echo "GPG key not found in cache"
-            exit 1
-          fi
 
       - name: Cache SSH key
         id: ssh-key
