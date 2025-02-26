@@ -10,6 +10,10 @@ else
   RELEASE_TYPE="rel"
 fi
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
+
 SCRIPT="$(realpath "${0}")"
 IMAGE_DIR="${IMAGE_DIR}/${RELEASE_TYPE}"
 WORK_DIR="${WORK_DIR}/image"
