@@ -9,6 +9,7 @@ export REPO_DIR		:= ${BUILD_DIR}/release/repos
 export BUILD_VER	:= $(shell date +%Y%m%d.%H%M)
 export RELEASE_TAG	:= $(shell date +%Y%m%d)
 export UPSTREAM_REPO	:= upstream
+export OS_ARCH		:= $(shell uname -m)
 export STEAMOS_VERSION	:= 3.6
 
 RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -28,6 +29,7 @@ env:
 	@echo "export BUILD_VER=${BUILD_VER}"
 	@echo "export RELEASE_TAG=${RELEASE_TAG}"
 	@echo "export UPSTREAM_REPO=${UPSTREAM_REPO}"
+	@echo "export OS_ARCH=${OS_ARCH}"
 	@echo "export STEAMOS_VERSION=${STEAMOS_VERSION}"
 
 world: packages-local packages-aur packages-sync images images-sync
