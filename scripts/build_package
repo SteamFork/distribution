@@ -5,6 +5,11 @@
 set -e
 set -x
 
+# Source the environment variables from the Makefile
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MAKEFILE_PATH="${SCRIPT_DIR}/../Makefile"
+eval $(make -s -f "${MAKEFILE_PATH}" env)
+
 if [ -f "${HOME}/.SteamFork/options" ]
 then
  source "${HOME}/.SteamFork/options"
@@ -120,3 +125,7 @@ do
 done
 cd ${REPO_DIR}
 repo-add --verify --sign -k ${SIGNKEY} steamfork.db.tar.gz *zst
+
+# Generate the checksum file
+CHECKSUM=$(find "${SCRIPT_DIR}/../PKGBUILD/${PKG}" -type f -not -name '.checksum' -not -name '*.gz' -not -name '*.bz2' -not -name '*.xz' -printf '%T@ %p\n' | sha256sum | awk '{print $1}')
+echo "${CHECKSUM}" > "${SCRIPT_DIR}/../PKGBUILD/${PKG}/.checksum"

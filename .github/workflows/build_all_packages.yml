@@ -1,12 +1,10 @@
-name: Build and Sync
+name: Build All Packages
 
 on:
-  push:
-    paths:
-      - 'PKGBUILD/**'
+  workflow_dispatch:
 
 jobs:
-  build_and_sync:
+  build_all_packages:
     runs-on: self-hosted
 
     steps:
@@ -48,23 +46,12 @@ jobs:
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
-      - name: Run checksum_pkgbuild script
-        id: checksum
+      - name: Build all packages
         run: |
-          chmod +x ./scripts/checksum_pkgbuild.sh
-          OUTPUT=$(./scripts/checksum_pkgbuild.sh)
-          echo "::set-output name=packages::$OUTPUT"
-
-      - name: Build with dependencies
-        run: |
-          PACKAGES="${{ steps.checksum.outputs.packages }}"
-          IFS=' ' read -r -a PACKAGE_ARRAY <<< "$PACKAGES"
-          for PKG in "${PACKAGE_ARRAY[@]}"; do
-            ./scripts/build_with_dependencies "$PKG"
-          done
+                    ./scripts/build_all_packages.sh
 
       #- name: Sync packages
-      #run: make packages-sync
+      #  run: make packages-sync
 
       #- name: Sync mirrors
-      #run: make mirrors-sync
+      #  run: make mirrors-sync

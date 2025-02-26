@@ -1,18 +1,20 @@
-export SHELL						:= /usr/bin/bash
-export BUILD_DIR				:= $(shell pwd)
-export INSTALLER_DIR		:= ${BUILD_DIR}/rootfs/installer
-export OS_DIR						:= ${BUILD_DIR}/rootfs/steamfork
-export SCRIPT_DIR				:= ${BUILD_DIR}/scripts
-export WORK_DIR					:= ${BUILD_DIR}/_work
-export IMAGE_DIR				:= ${BUILD_DIR}/release/images
-export REPO_DIR					:= ${BUILD_DIR}/release/repos
-export BUILD_VER				:= $(shell date +%Y%m%d.%H%M)
-export RELEASE_TAG			:= $(shell date +%Y%m%d)
-export UPSTREAM_REPO		:= upstream
+export SHELL		:= /usr/bin/bash
+export BUILD_DIR	:= $(shell pwd)
+export INSTALLER_DIR	:= ${BUILD_DIR}/rootfs/installer
+export OS_DIR		:= ${BUILD_DIR}/rootfs/steamfork
+export SCRIPT_DIR	:= ${BUILD_DIR}/scripts
+export WORK_DIR		:= ${BUILD_DIR}/_work
+export IMAGE_DIR	:= ${BUILD_DIR}/release/images
+export REPO_DIR		:= ${BUILD_DIR}/release/repos
+export BUILD_VER	:= $(shell date +%Y%m%d.%H%M)
+export RELEASE_TAG	:= $(shell date +%Y%m%d)
+export UPSTREAM_REPO	:= upstream
 export STEAMOS_VERSION	:= 3.6
 
 RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(RUN_ARGS):;@:)
+
+PACKAGES_LIST := $(shell cat metadata/packages.list)
 
 env:
 	@echo "export SHELL=${SHELL}"
@@ -65,54 +67,11 @@ images-sync:
 images-release:
 	${SCRIPT_DIR}/sync os-release
 
-packages-all: packages-local packages-aur
-
-packages-local:
-	${SCRIPT_DIR}/build_package --repo local steamfork-keyring
-	${SCRIPT_DIR}/build_package --repo local linux-firmware
-	${SCRIPT_DIR}/build_package --repo local linux
-	${SCRIPT_DIR}/build_package --repo aur   python-strictyaml
-	${SCRIPT_DIR}/build_package --repo local python-sphinx-hawkmoth
-	${SCRIPT_DIR}/build_package --repo local libdrm
-	${SCRIPT_DIR}/build_package --repo local lib32-libdrm
-	${SCRIPT_DIR}/build_package --repo local libglvnd
-	${SCRIPT_DIR}/build_package --repo local lib32-libglvnd
-	${SCRIPT_DIR}/build_package --repo local wayland
-	${SCRIPT_DIR}/build_package --repo local lib32-wayland
-	${SCRIPT_DIR}/build_package --repo local wayland-protocols
-	${SCRIPT_DIR}/build_package --repo local xorg-xwayland
-	${SCRIPT_DIR}/build_package --repo local mesa
-	${SCRIPT_DIR}/build_package --repo local mesa-radv
-	${SCRIPT_DIR}/build_package --repo local lib32-mesa
-	${SCRIPT_DIR}/build_package --repo local lib32-mesa-radv
-	${SCRIPT_DIR}/build_package --repo local gamescope
-	${SCRIPT_DIR}/build_package --repo local gamescope-legacy
-	${SCRIPT_DIR}/build_package --repo local ectool
-	${SCRIPT_DIR}/build_package --repo local steam-powerbuttond
-	${SCRIPT_DIR}/build_package --repo local steamfork-customizations
-	${SCRIPT_DIR}/build_package --repo local steamfork-device-support
-	${SCRIPT_DIR}/build_package --repo local steamfork-installer
-	${SCRIPT_DIR}/build_package --repo local webrtc-audio-processing
-	${SCRIPT_DIR}/build_package --repo local inputplumber
-	${SCRIPT_DIR}/build_package --repo local steam-powerbuttond
-	${SCRIPT_DIR}/build_package --repo local ryzenadj
-	${SCRIPT_DIR}/build_package --repo local pikaur
-	${SCRIPT_DIR}/build_package --repo local grafana-alloy
-
-packages-aur:
-	${SCRIPT_DIR}/build_package --repo aur wlr-randr
-	### Waydroid
-	${SCRIPT_DIR}/build_package --repo aur dnsmasq-git
-	${SCRIPT_DIR}/build_package --repo aur libglibutil
-	${SCRIPT_DIR}/build_package --repo aur libgbinder
-	${SCRIPT_DIR}/build_package --repo local python-gbinder
-	${SCRIPT_DIR}/build_package --repo local waydroid
-	### Xbox Xone driver
-	${SCRIPT_DIR}/build_package --repo aur xone-dongle-firmware
-	${SCRIPT_DIR}/build_package --repo aur xone-dkms
+packages-all:
+	${SCRIPT_DIR}/build_all_packages
 
 package:
-	${SCRIPT_DIR}/build_package $(RUN_ARGS)
+	${SCRIPT_DIR}/build_package --repo local $(RUN_ARGS)
 
 package-aur:
 	${SCRIPT_DIR}/build_package --repo aur $(RUN_ARGS)
