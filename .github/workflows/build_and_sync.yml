@@ -85,12 +85,12 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           OUTPUT=$(./scripts/checksum_pkgbuild)
-          echo "::set-output name=packages::$OUTPUT"
+          echo "packages=$OUTPUT" >> $GITHUB_ENV
 
       - name: Build with dependencies
         run: |
           cd $GITHUB_WORKSPACE
-          PACKAGES="${{ steps.checksum.outputs.packages }}"
+          PACKAGES="${{ env.packages }}"
           IFS=' ' read -r -a PACKAGE_ARRAY <<< "$PACKAGES"
           for PKG in "${PACKAGE_ARRAY[@]}"; do
             ./scripts/build_with_dependencies "$PKG"
