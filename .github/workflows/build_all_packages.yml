@@ -5,6 +5,7 @@ on:
 
 jobs:
   build_all_packages:
+    timeout-minutes: 1440
     runs-on: self-hosted
 
     steps:
