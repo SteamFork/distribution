@@ -28,10 +28,13 @@ else
   GPG_OPTS="--batch --yes --pinentry-mode loopback"
 fi
 
-echo "Cache key" | gpg ${GPG_OPTS} --sign -o /dev/null
-if [ ! "$?" = 0 ]; then
-  echo "Unable to cache signing key, quitting..."
-  exit 1
+# Cache the GPG key if not already cached
+if ! gpg ${GPG_OPTS} --list-keys "${SIGNKEY}" > /dev/null 2>&1; then
+  echo "Cache key" | gpg ${GPG_OPTS} --sign -o /dev/null
+  if [ ! "$?" = 0 ]; then
+    echo "Unable to cache signing key, quitting..."
+    exit 1
+  fi
 fi
 
 while [[ $# -ge 2 ]]; do
