@@ -9,7 +9,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Create blank repository
+        run: |
+          eval $(make -s env)
+          mkdir -p "${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}"
+          repo-add "${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}/steamfork.db.tar.gz"
 
       - name: Set up environment
         run: |
@@ -42,14 +48,14 @@ jobs:
 
       - name: Set GPG trust level
         run: |
-          echo "${{ secrets.GPG_KEY_ID }}:6:" | gpg --import-ownertrust
+          echo "${{ secrets.GPG_KEY_ID }}:6:" | gpg --batch --yes --import-ownertrust
 
       - name: Build all packages
         run: |
-          make packages-all
+          ./scripts/build_all_packages.sh
 
-    #- name: Sync packages
-    #  run: make packages-sync
+#      - name: Sync packages
+#        run: make packages-sync
 
-    #- name: Sync mirrors
-    #  run: make mirrors-sync
+#      - name: Sync mirrors
+#        run: make mirrors-sync
