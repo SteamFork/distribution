@@ -23,7 +23,7 @@ jobs:
 
       - name: Save GPG key to file
         run: |
-          gpg --export-secret-keys --armor ${{ secrets.GPG_KEY_ID }} > ~/.gnupg/private.key
+          gpg --batch --export-secret-keys --armor ${{ secrets.GPG_KEY_ID }} > ~/.gnupg/private.key
 
       - name: Cache GPG key
         id: gpg-key
