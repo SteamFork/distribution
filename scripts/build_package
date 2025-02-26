@@ -10,6 +10,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MAKEFILE_PATH="${SCRIPT_DIR}/../Makefile"
 eval $(make -s -f "${MAKEFILE_PATH}" env)
 
+# Make sure we're always using ccache when it's available.
+export PATH="/usr/lib/ccache/bin:$PATH"
+
 if [ -f "${HOME}/.SteamFork/options" ]; then
   source "${HOME}/.SteamFork/options"
 fi

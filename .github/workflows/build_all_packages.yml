@@ -32,6 +32,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-ssh-key
 
+      - name: Configure ccache
+        run: |
+          ccache --max-size=50G
+
       - name: Import GPG key
         run: |
           echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
