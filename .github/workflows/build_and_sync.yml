@@ -17,6 +17,13 @@ jobs:
         with:
           clean: false
 
+      - name: Verify the repo exists, or fail.
+        run: |
+          if [ ! -d "$GITHUB_WORKSPACE/release/repos" ]; then
+            echo "The repository does not exist, can not continue."
+            exit 1
+          fi
+
       - name: Configure GPG agent
         run: |
           echo "use-agent" >> ~/.gnupg/gpg.conf

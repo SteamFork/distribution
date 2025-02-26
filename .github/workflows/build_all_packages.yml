@@ -80,6 +80,10 @@ jobs:
         run: |
           sudo pacman -Scc --noconfirm
 
+      - name: Clean repository
+        run: |
+          make repo-clean
+
       - name: Create blank repository
         run: |
           eval $(make -s env)
