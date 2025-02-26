@@ -23,6 +23,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gpg-key
 
+      - name: Verify GPG key
+        run: |
+          if [ ! -f ~/.gnupg/private.key ]; then
+            echo "GPG key not found in cache"
+            exit 1
+          fi
+
       - name: Cache SSH key
         id: ssh-key
         uses: actions/cache@v3
@@ -38,22 +45,28 @@ jobs:
 
       - name: Import GPG key
         run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import --passphrase ${{ secrets.GPG_PASSPHRASE }}
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Cache imported GPG key
+        run: |
+          gpg --export-secret-keys --armor ${{ secrets.GPG_KEY_ID }} > /tmp/private.key
+          mkdir -p ~/.gnupg
+          cp /tmp/private.key ~/.gnupg/private.key
+          rm /tmp/private.key
 
       - name: Set GPG trust level
         run: |
-          echo "${{ secrets.GPG_KEY_ID }}:6:" | gpg --batch --yes --import-ownertrust
+          echo "${{ secrets.GPG_KEY_ID }}:5:" | gpg --batch --yes --import-ownertrust
 
       - name: Trust GPG key for pacman
         run: |
-          echo "$GPG_PRIVATE_KEY" > /tmp/private.key
           sudo pacman-key --init
-          sudo pacman-key --add /tmp/private.key
+          sudo pacman-key --add ~/.gnupg/private.key
           sudo pacman-key --lsign-key ${{ secrets.GPG_KEY_ID }}
           sudo pacman-key --populate steamfork
-          rm /tmp/private.key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
