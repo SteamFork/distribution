@@ -68,7 +68,7 @@ jobs:
 
       - name: Import SSH key
         run: |
-          echo "$SSH_PRIVATE_KEY" | base64 --decode > ~/.ssh/id_rsa
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
