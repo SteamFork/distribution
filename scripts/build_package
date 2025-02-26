@@ -118,7 +118,7 @@ find ${REPO_DIR}/*.pkg.tar* -type f -name '*:*' -execdir bash -c 'mv "$1" "${1//
 for PKG in ${pkgbase} ${pkgbase}-debug ${pkgname[@]}; do
   for TOSIGN in ${REPO_DIR}/${PKG}-${pkgver}*tar.zst; do
     if [ -f "${TOSIGN}" ]; then
-      gpg ${GPG_OPTS} --detach-sign --use-agent --no-armor ${TOSIGN}
+      gpg ${GPG_OPTS} --detach-sign --no-armor ${TOSIGN}
     fi
   done
 done
