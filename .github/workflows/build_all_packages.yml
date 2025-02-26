@@ -27,7 +27,7 @@ jobs:
 
       - name: Save GPG key to file
         run: |
-          echo "$GPG_PRIVATE_KEY" | base64 --decode > ~/.gnupg/private.key
+          echo "$GPG_PRIVATE_KEY" > ~/.gnupg/private.key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
