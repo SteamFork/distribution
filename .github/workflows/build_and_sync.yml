@@ -8,6 +8,7 @@ on:
 
 jobs:
   build_and_sync:
+    timeout-minutes: 1440
     runs-on: self-hosted
 
     steps:
