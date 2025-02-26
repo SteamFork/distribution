@@ -10,55 +10,56 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MAKEFILE_PATH="${SCRIPT_DIR}/../Makefile"
 eval $(make -s -f "${MAKEFILE_PATH}" env)
 
-if [ -f "${HOME}/.SteamFork/options" ]
-then
- source "${HOME}/.SteamFork/options"
+if [ -f "${HOME}/.SteamFork/options" ]; then
+  source "${HOME}/.SteamFork/options"
 fi
 
-for KEY in SIGNKEY
-do
-  if [ -z "${!KEY}" ]
-  then
+for KEY in SIGNKEY; do
+  if [ -z "${!KEY}" ]; then
     echo "Export ${KEY} before using this script."
     exit 1
   fi
 done
 
-echo "Cache key" | gpg --sign -o /dev/null
-if [ ! "$?" = 0 ]
-then
-  echo "Unable to cache signing key, quitting..."
+# Check if running in an interactive shell
+if [[ -t 1 ]]; then
+  GPG_OPTS=""
+else
+  GPG_OPTS="--batch --yes --pinentry-mode loopback"
 fi
 
-while [[ $# -ge 2 ]]
-do
+echo "Cache key" | gpg ${GPG_OPTS} --sign -o /dev/null
+if [ ! "$?" = 0 ]; then
+  echo "Unable to cache signing key, quitting..."
+  exit 1
+fi
+
+while [[ $# -ge 2 ]]; do
   KEY="$1"
   case ${KEY} in
-      --branch)
+    --branch)
       STEAMOS_VERSION="$2"
       shift # past argument
       shift # past value
       ;;
-      --repo)
+    --repo)
       PKGSOURCE="$2"
       shift # past argument
       shift # past value
       ;;
-      --*)
-        echo "Unknown option ${KEY}"
-	exit 1
+    --*)
+      echo "Unknown option ${KEY}"
+      exit 1
       ;;
   esac
 done
 
-if [ -z "${PKGSOURCE}" ]
-then
+if [ -z "${PKGSOURCE}" ]; then
   PKGSOURCE="local"
 fi
 
-if [ -z "${OS_ARCH}" ]
-then
-	OS_ARCH=$(uname -m)
+if [ -z "${OS_ARCH}" ]; then
+  OS_ARCH=$(uname -m)
 fi
 
 BUILDUSER=${USER}
@@ -75,29 +76,27 @@ sudo chown ${BUILDUSER}:${BUILDUSER} ${WORK_DIR} ${REPO_DIR}
 case ${PKGSOURCE} in
   aur)
     git clone --depth=1 https://aur.archlinux.org/${1}.git ${WORK_DIR}
-  ;;
+    ;;
   sf)
     git clone --depth=1 git@github.com:steamfork/${1}.git ${WORK_DIR}
-  ;;
+    ;;
   local)
-    if [ -d "$(pwd)/PKGBUILD/${1}" ]
-    then
+    if [ -d "$(pwd)/PKGBUILD/${1}" ]; then
       cp -r "$(pwd)/PKGBUILD/${1}/"* ${WORK_DIR}
     else
       echo "No local package, don't know what to do."
       exit 1
     fi
-  ;;
+    ;;
   *)
     echo "scripts/build_package type repo"
     exit 1
-  ;;
+    ;;
 esac
 
 source ${WORK_DIR}/PKGBUILD
 
-for STALE_PACKAGE in ${pkgbase} ${pkgbase}-debug ${pkgname[@]} ${pkgname[@]}-debug
-do
+for STALE_PACKAGE in ${pkgbase} ${pkgbase}-debug ${pkgname[@]} ${pkgname[@]}-debug; do
   rm -f ${REPO_DIR}/${STALE_PACKAGE}-[0-9]*
 done
 
@@ -106,20 +105,17 @@ PIKAUR_RUN=(bash -c "${PIKAUR_CMD}")
 "${PIKAUR_RUN[@]}"
 # if aur package is not successfully built, exit
 if [ $? -ne 0 ]; then
-    echo "Build failed. Stopping..."
-    exit -1
+  echo "Build failed. Stopping..."
+  exit -1
 fi
 # remove any epoch (:) in name, replace with -- since not allowed in artifacts
 find ${REPO_DIR}/*.pkg.tar* -type f -name '*:*' -execdir bash -c 'mv "$1" "${1//:/--}"' bash {} \;
 
 # Sign packages.
-for PKG in ${pkgbase} ${pkgbase}-debug ${pkgname[@]}
-do
-  for TOSIGN in ${REPO_DIR}/${PKG}-${pkgver}*tar.zst
-  do
-    if [ -f "${TOSIGN}" ]
-    then
-      gpg --yes --detach-sign --use-agent --no-armor ${TOSIGN}
+for PKG in ${pkgbase} ${pkgbase}-debug ${pkgname[@]}; do
+  for TOSIGN in ${REPO_DIR}/${PKG}-${pkgver}*tar.zst; do
+    if [ -f "${TOSIGN}" ]; then
+      gpg ${GPG_OPTS} --detach-sign --use-agent --no-armor ${TOSIGN}
     fi
   done
 done
