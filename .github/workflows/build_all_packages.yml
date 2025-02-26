@@ -94,6 +94,10 @@ jobs:
           mkdir -p "${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}" ||:
           repo-add -s -k ${{ secrets.GPG_KEY_ID }} "${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}/steamfork.db.tar.gz"
 
+      - name: Verify GPG key
+        run: |
+          gpg --list-secret-keys --keyid-format LONG | grep ${{ secrets.GPG_KEY_ID }}
+
       - name: Build all packages
         run: |
           make packages-all

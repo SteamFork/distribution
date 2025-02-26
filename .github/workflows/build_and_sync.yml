@@ -94,6 +94,10 @@ jobs:
         run: |
           sudo pacman -Scc --noconfirm
 
+      - name: Verify GPG key
+        run: |
+          gpg --list-secret-keys --keyid-format LONG | grep ${{ secrets.GPG_KEY_ID }}
+
       - name: Run checksum_pkgbuild script
         id: checksum
         run: |
