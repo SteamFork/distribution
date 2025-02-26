@@ -36,13 +36,13 @@ jobs:
 
       - name: Import GPG key
         run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --import
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
       - name: Unlock GPG key
         run: |
-          echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --edit-key <your-key-id> trust quit
+          echo "$GPG_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 --edit-key 91B595AC84B53C9C356FE747A895A180F515D6D8 trust quit
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
@@ -50,8 +50,8 @@ jobs:
         run: |
                     ./scripts/build_all_packages.sh
 
-      #- name: Sync packages
-      #  run: make packages-sync
+#      #- name: Sync packages
+#        #  run: make packages-sync
 
-      #- name: Sync mirrors
-      #  run: make mirrors-sync
+#      #- name: Sync mirrors
+#        #  run: make mirrors-sync
