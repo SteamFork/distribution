@@ -26,14 +26,14 @@ jobs:
 
       - name: Import GPG key
         run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import --passphrase ${{ secrets.GPG_PASSPHRASE }}
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import --pinentry-mode loopback --passphrase ${{ secrets.GPG_PASSPHRASE }}
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Save GPG key to file
         run: |
-          gpg --batch --export-secret-keys --armor ${{ secrets.GPG_KEY_ID }} > ~/.gnupg/private.key
+          echo "$GPG_PASSPHRASE" | gpg --batch --export-secret-keys --armor ${{ secrets.GPG_KEY_ID }} > ~/.gnupg/private.key
 
       - name: Cache GPG key
         id: gpg-key
