@@ -52,9 +52,14 @@ jobs:
           sudo pacman-key --init
           sudo pacman-key --add /tmp/private.key
           sudo pacman-key --lsign-key ${{ secrets.GPG_KEY_ID }}
+          sudo pacman-key --populate steamfork
           rm /tmp/private.key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+
+      - name: Clear pacman cache
+        run: |
+          sudo pacman -Scc --noconfirm
 
       - name: Run checksum_pkgbuild script
         id: checksum
