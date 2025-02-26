@@ -17,6 +17,11 @@ jobs:
           mkdir -p "${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}"
           repo-add "${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}/steamfork.db.tar.gz"
 
+      - name: Set up environment
+        run: |
+          sudo pacman -Syu --noconfirm
+          sudo pacman -S --noconfirm make gpgme pikaur openssh
+
       - name: Cache GPG key
         id: gpg-key
         uses: actions/cache@v2
@@ -47,9 +52,11 @@ jobs:
 
       - name: Trust GPG key for pacman
         run: |
+          echo "$GPG_PRIVATE_KEY" > /tmp/private.key
           sudo pacman-key --init
-          sudo pacman-key --add <(echo "$GPG_PRIVATE_KEY")
+          sudo pacman-key --add /tmp/private.key
           sudo pacman-key --lsign-key ${{ secrets.GPG_KEY_ID }}
+          rm /tmp.private.key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
