@@ -125,6 +125,8 @@ done
 cd ${REPO_DIR}
 repo-add --verify --sign -k ${SIGNKEY} steamfork.db.tar.gz *zst
 
-# Generate the checksum file
-CHECKSUM=$(find "${SCRIPT_DIR}/../PKGBUILD/${PKG}" -type f -not -name '.checksum' -not -name '*.gz' -not -name '*.bz2' -not -name '*.xz' -printf '%T@ %p\n' | sha256sum | awk '{print $1}')
-echo "${CHECKSUM}" > "${SCRIPT_DIR}/../PKGBUILD/${PKG}/.checksum"
+# Generate the checksum file only for local packages
+if [ "${PKGSOURCE}" == "local" ]; then
+  CHECKSUM=$(find "${SCRIPT_DIR}/../PKGBUILD/${PKG}" -type f -not -name '.checksum' -not -name '*.gz' -not -name '*.bz2' -not -name '*.xz' -printf '%T@ %p\n' | sha256sum | awk '{print $1}')
+  echo "${CHECKSUM}" > "${SCRIPT_DIR}/../PKGBUILD/${PKG}/.checksum"
+fi
