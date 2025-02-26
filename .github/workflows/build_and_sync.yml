@@ -33,7 +33,7 @@ jobs:
 
       - name: Save GPG key to file
         run: |
-          echo "$GPG_PASSPHRASE" | gpg --batch --pinentry-mode loopback --export-secret-keys --armor ${{ secrets.GPG_KEY_ID }} > ~/.gnupg/private.key
+          gpg --batch --pinentry-mode loopback --export-secret-keys --armor ${{ secrets.GPG_KEY_ID }} > ~/.gnupg/private.key
 
       - name: Cache GPG key
         id: gpg-key
