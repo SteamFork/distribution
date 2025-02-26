@@ -3,7 +3,6 @@
 # Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
 
 set -e
-set -x
 
 # Source the environment variables from the Makefile
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
