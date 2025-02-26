@@ -1,0 +1,70 @@
+name: Build and Sync
+
+on:
+  push:
+    paths:
+      - 'PKGBUILD/**'
+
+jobs:
+  build_and_sync:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up environment
+        run: |
+          sudo pacman -Syu --noconfirm
+          sudo pacman -S --noconfirm make gpgme pikaur openssh
+
+      - name: Cache GPG key
+        id: gpg-key
+        uses: actions/cache@v2
+        with:
+          path: ~/.gnupg
+          key: ${{ runner.os }}-gpg-key
+          restore-keys: |
+            ${{ runner.os }}-gpg-key
+
+      - name: Cache SSH key
+        id: ssh-key
+        uses: actions/cache@v2
+        with:
+          path: ~/.ssh
+          key: ${{ runner.os }}-ssh-key
+          restore-keys: |
+            ${{ runner.os }}-ssh-key
+
+      - name: Import GPG key
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --import
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+
+      - name: Unlock GPG key
+        run: |
+          echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --edit-key <your-key-id> trust quit
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Run checksum_pkgbuild script
+        id: checksum
+        run: |
+          chmod +x ./scripts/checksum_pkgbuild.sh
+          OUTPUT=$(./scripts/checksum_pkgbuild.sh)
+          echo "::set-output name=packages::$OUTPUT"
+
+      - name: Build with dependencies
+        run: |
+          PACKAGES="${{ steps.checksum.outputs.packages }}"
+          IFS=' ' read -r -a PACKAGE_ARRAY <<< "$PACKAGES"
+          for PKG in "${PACKAGE_ARRAY[@]}"; do
+            ./scripts/build_with_dependencies "$PKG"
+          done
+
+      #- name: Sync packages
+      #run: make packages-sync
+
+      #- name: Sync mirrors
+      #run: make mirrors-sync

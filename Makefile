@@ -14,6 +14,22 @@ export STEAMOS_VERSION	:= 3.6
 RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(RUN_ARGS):;@:)
 
+PACKAGES_LIST := $(shell cat metadata/packages.list)
+
+env:
+	@echo "export SHELL=${SHELL}"
+	@echo "export BUILD_DIR=${BUILD_DIR}"
+	@echo "export INSTALLER_DIR=${INSTALLER_DIR}"
+	@echo "export OS_DIR=${OS_DIR}"
+	@echo "export SCRIPT_DIR=${SCRIPT_DIR}"
+	@echo "export WORK_DIR=${WORK_DIR}"
+	@echo "export IMAGE_DIR=${IMAGE_DIR}"
+	@echo "export REPO_DIR=${REPO_DIR}"
+	@echo "export BUILD_VER=${BUILD_VER}"
+	@echo "export RELEASE_TAG=${RELEASE_TAG}"
+	@echo "export UPSTREAM_REPO=${UPSTREAM_REPO}"
+	@echo "export STEAMOS_VERSION=${STEAMOS_VERSION}"
+
 world: packages-local packages-aur packages-sync images images-sync
 
 upload: packages-sync images-sync
@@ -51,57 +67,14 @@ images-sync:
 images-release:
 	${SCRIPT_DIR}/sync os-release
 
-packages-all: packages-local packages-aur
-
-packages-local:
-	${SCRIPT_DIR}/mkpackage --repo local steamfork-keyring
-	${SCRIPT_DIR}/mkpackage --repo local linux-firmware
-	${SCRIPT_DIR}/mkpackage --repo local linux
-	${SCRIPT_DIR}/mkpackage --repo aur   python-strictyaml
-	${SCRIPT_DIR}/mkpackage --repo local python-sphinx-hawkmoth
-	${SCRIPT_DIR}/mkpackage --repo local libdrm
-	${SCRIPT_DIR}/mkpackage --repo local lib32-libdrm
-	${SCRIPT_DIR}/mkpackage --repo local libglvnd
-	${SCRIPT_DIR}/mkpackage --repo local lib32-libglvnd
-	${SCRIPT_DIR}/mkpackage --repo local wayland
-	${SCRIPT_DIR}/mkpackage --repo local lib32-wayland
-	${SCRIPT_DIR}/mkpackage --repo local wayland-protocols
-	${SCRIPT_DIR}/mkpackage --repo local xorg-xwayland
-	${SCRIPT_DIR}/mkpackage --repo local mesa
-	${SCRIPT_DIR}/mkpackage --repo local mesa-radv
-	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa
-	${SCRIPT_DIR}/mkpackage --repo local lib32-mesa-radv
-	${SCRIPT_DIR}/mkpackage --repo local gamescope
-	${SCRIPT_DIR}/mkpackage --repo local gamescope-legacy
-	${SCRIPT_DIR}/mkpackage --repo local ectool
-	${SCRIPT_DIR}/mkpackage --repo local steam-powerbuttond
-	${SCRIPT_DIR}/mkpackage --repo local steamfork-customizations
-	${SCRIPT_DIR}/mkpackage --repo local steamfork-device-support
-	${SCRIPT_DIR}/mkpackage --repo local steamfork-installer
-	${SCRIPT_DIR}/mkpackage --repo local webrtc-audio-processing
-	${SCRIPT_DIR}/mkpackage --repo local inputplumber
-	${SCRIPT_DIR}/mkpackage --repo local steam-powerbuttond
-	${SCRIPT_DIR}/mkpackage --repo local ryzenadj
-	${SCRIPT_DIR}/mkpackage --repo local pikaur
-	${SCRIPT_DIR}/mkpackage --repo local grafana-alloy
-
-packages-aur:
-	${SCRIPT_DIR}/mkpackage --repo aur wlr-randr
-	### Waydroid
-	${SCRIPT_DIR}/mkpackage --repo aur dnsmasq-git
-	${SCRIPT_DIR}/mkpackage --repo aur libglibutil
-	${SCRIPT_DIR}/mkpackage --repo aur libgbinder
-	${SCRIPT_DIR}/mkpackage --repo local python-gbinder
-	${SCRIPT_DIR}/mkpackage --repo local waydroid
-	### Xbox Xone driver
-	${SCRIPT_DIR}/mkpackage --repo aur xone-dongle-firmware
-	${SCRIPT_DIR}/mkpackage --repo aur xone-dkms
+packages-all:
+	${SCRIPT_DIR}/build_all_packages
 
 package:
-	${SCRIPT_DIR}/mkpackage $(RUN_ARGS)
+	${SCRIPT_DIR}/build_package --repo local $(RUN_ARGS)
 
 package-aur:
-	${SCRIPT_DIR}/mkpackage --repo aur $(RUN_ARGS)
+	${SCRIPT_DIR}/build_package --repo aur $(RUN_ARGS)
 
 packages-sync:
 	${SCRIPT_DIR}/sync repo
