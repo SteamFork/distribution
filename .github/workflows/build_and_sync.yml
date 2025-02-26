@@ -1,7 +1,9 @@
-name: Build and Sync
+name: Automated Package Build and Sync
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'PKGBUILD/**'
   workflow_dispatch:
@@ -17,23 +19,15 @@ jobs:
         with:
           clean: false
 
-      - name: Cache GPG key
-        id: gpg-key
-        uses: actions/cache@v4
+      - name: Cache GPG and SSH keys
+        uses: actions/cache@v3
         with:
-          path: ~/.gnupg
-          key: ${{ runner.os }}-gpg-key
+          path: |
+            ~/.gnupg
+            ~/.ssh
+          key: ${{ runner.os }}-keys
           restore-keys: |
-            ${{ runner.os }}-gpg-key
-
-      - name: Cache SSH key
-        id: ssh-key
-        uses: actions/cache@v2
-        with:
-          path: ~/.ssh
-          key: ${{ runner.os }}-ssh-key
-          restore-keys: |
-            ${{ runner.os }}-ssh-key
+            ${{ runner.os }}-keys
 
       - name: Import GPG key
         run: |
