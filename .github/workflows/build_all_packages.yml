@@ -16,6 +16,7 @@ jobs:
 
       - name: Configure GPG agent
         run: |
+          mkdir -p ~/.gnupg
           echo "use-agent" >> ~/.gnupg/gpg.conf
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
@@ -26,7 +27,7 @@ jobs:
 
       - name: Save GPG key to file
         run: |
-          echo "$GPG_PRIVATE_KEY" > ~/.gnupg/private.key
+          echo "$GPG_PRIVATE_KEY" | base64 --decode > ~/.gnupg/private.key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
@@ -36,7 +37,7 @@ jobs:
 
       - name: Set GPG trust level
         run: |
-          echo "${{ secrets.GPG_KEY_ID }}:5:" | gpg --batch --yes --import-ownertrust
+          echo "${{ secrets.GPG_KEY_ID }}:6:" | gpg --batch --yes --import-ownertrust
 
       - name: Trust GPG key for pacman
         run: |
@@ -67,7 +68,7 @@ jobs:
 
       - name: Import SSH key
         run: |
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          echo "$SSH_PRIVATE_KEY" | base64 --decode > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
