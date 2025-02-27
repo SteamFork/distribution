@@ -31,7 +31,7 @@ jobs:
       - name: Configure GPG agent
         run: |
           mkdir -p ~/.gnupg
-          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "use-agent" > ~/.gnupg/gpg.conf
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
           echo "default-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf

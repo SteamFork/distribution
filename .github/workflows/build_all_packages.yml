@@ -19,14 +19,15 @@ jobs:
           clean: false
 
       - name: Clean repository
-        if: ${{ exists('Makefile') }}
         run: |
-          make repo-clean
+          if [ -f Makefile ]; then
+            make repo-clean
+          fi
 
       - name: Configure GPG agent
         run: |
           mkdir -p ~/.gnupg
-          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "use-agent" > ~/.gnupg/gpg.conf
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
           echo "default-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf
