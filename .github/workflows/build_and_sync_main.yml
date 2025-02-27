@@ -2,10 +2,13 @@ name: Automated Build and Sync (main)
 
 on:
   push:
+    paths-ignore:
+      - '.github/**'
+      - '.gitignore'
+      - '**'
+      - '!PKGBUILD/**'
     branches:
       - main
-    paths:
-      - 'PKGBUILD/**'
   workflow_dispatch:
 
 jobs:
