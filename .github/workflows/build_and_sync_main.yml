@@ -27,6 +27,14 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
+      - name: Set default repository
+        run: |
+          gh repo set-default ${{ github.repository }}
+
+      - name: List available workflows
+        run: |
+          gh workflow list
+          
       - name: Trigger build_and_sync workflow
         run: |
-          gh workflow run .github/workflows/build_and_sync.yml --ref main
+          gh workflow run build_and_sync.yml --ref main
