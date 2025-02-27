@@ -2,9 +2,6 @@ name: Automated Package Build and Sync
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'PKGBUILD/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,9 +11,6 @@ jobs:
   build_and_sync:
     timeout-minutes: 1440
     runs-on: self-hosted
-    if: github.ref == 'refs/heads/main' && contains(github.runner_labels, 'main') ||
-        github.ref == 'refs/heads/3.6' && contains(github.runner_labels, '3.6') ||
-        github.ref == 'refs/heads/3.7' && contains(github.runner_labels, '3.7')
 
     steps:
       - name: Set up job

@@ -1,0 +1,18 @@
+name: Automated Package Build and Sync (main)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'PKGBUILD/**'
+
+jobs:
+  trigger_build_and_sync:
+    runs-on: self-hosted
+    if: contains(github.runner_labels, 'main')
+
+    steps:
+      - name: Trigger build_and_sync workflow
+        run: |
+          gh workflow run build_and_sync.yml --ref main
