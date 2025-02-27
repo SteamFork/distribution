@@ -86,8 +86,8 @@ case ${PKGSOURCE} in
     git clone --depth=1 git@github.com:steamfork/${1}.git ${WORK_DIR}
     ;;
   local)
-    if [ -d "$(pwd)/PKGBUILD/${1}" ]; then
-      cp -r "$(pwd)/PKGBUILD/${1}/"* ${WORK_DIR}
+    if [ -d "${SCRIPT_DIR}/../PKGBUILD/${1}" ]; then
+      cp -r "${SCRIPT_DIR}/../PKGBUILD/${1}/"* ${WORK_DIR}
     else
       echo "No local package, don't know what to do."
       exit 1
