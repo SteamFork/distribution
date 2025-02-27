@@ -3,6 +3,7 @@
 # Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
 
 set -e
+set -x  # Enable debug output
 
 # Source the environment variables from the Makefile
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -23,19 +24,20 @@ for KEY in SIGNKEY; do
   fi
 done
 
-# Check if running in an interactive shell, and cache the GPG key if not already cached
+# Check if running in an interactive shell
 if [[ -t 1 ]]; then
   GPG_OPTS=""
-  export GPG_TTY=$(tty)
-  echo "Cache key" | gpg --sign -o /dev/null
 else
   GPG_OPTS="--batch --yes --pinentry-mode loopback"
-  echo "Cache key" | gpg ${GPG_OPTS} --sign -o /dev/null
 fi
 
-if [ ! "$?" = 0 ]; then
-  echo "Unable to cache signing key, quitting..."
-  exit 1
+# Cache the GPG key if not already cached
+if ! gpg ${GPG_OPTS} --list-keys "${SIGNKEY}" > /dev/null 2>&1; then
+  echo "Cache key" | gpg ${GPG_OPTS} --sign -o /dev/null
+  if [ ! "$?" = 0 ]; then
+    echo "Unable to cache signing key, quitting..."
+    exit 1
+  fi
 fi
 
 while [[ $# -ge 2 ]]; do
@@ -65,7 +67,6 @@ fi
 if [ -z "${OS_ARCH}" ]; then
   OS_ARCH=$(uname -m)
 fi
-
 
 BUILDUSER=${USER}
 PACKAGE=${1}

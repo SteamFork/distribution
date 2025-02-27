@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
 
+set -x  # Enable debug output
+
 # Source the environment variables from the Makefile
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MAKEFILE_PATH="${SCRIPT_DIR}/../Makefile"
@@ -20,8 +22,19 @@ refresh_gpg_key_periodically &
 
 PACKAGES_LIST="${SCRIPT_DIR}/../metadata/packages.list"
 
+# Function to check disk space
+check_disk_space() {
+    local available_space=$(df --output=avail / | tail -n 1)
+    if (( available_space < 1048576 )); then  # Less than 1GB available
+        echo "Error: Not enough disk space available. Exiting."
+        exit 1
+    fi
+}
+
 # Read the packages list and build each package with dependencies
 while IFS= read -r line; do
+    check_disk_space
+
     if [[ "$line" == local:* ]]; then
         PKG="${line#local:}"
         REPO_FLAG="local"
@@ -36,4 +49,9 @@ while IFS= read -r line; do
     echo "Building package: $PKG (repo: $REPO_FLAG)"
     sudo pacman -Scc --noconfirm
     "${SCRIPT_DIR}/build_package" --repo ${REPO_FLAG} "$PKG"
+
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to build package $PKG. Exiting."
+        exit 1
+    fi
 done < "$PACKAGES_LIST"
