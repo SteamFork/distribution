@@ -21,7 +21,7 @@ concurrency:
 jobs:
   build_and_sync:
     timeout-minutes: 1440
-    runs-on: [self-hosted, Linux, X64, ${{ matrix.branch }}]
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
