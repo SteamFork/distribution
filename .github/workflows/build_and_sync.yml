@@ -27,7 +27,7 @@ jobs:
       matrix:
         branch: [main, 3.6, 3.7]
 
-    if: github.ref == 'refs/heads/${{ matrix.branch }}' || github.event.inputs.branch == '${{ matrix.branch }}'
+    if: github.ref == 'refs/heads/' + matrix.branch || github.event.inputs.branch == matrix.branch
 
     steps:
       - name: Checkout repository
