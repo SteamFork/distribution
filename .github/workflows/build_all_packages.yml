@@ -3,6 +3,10 @@ name: Build All Packages
 on:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build_all_packages:
     timeout-minutes: 1440

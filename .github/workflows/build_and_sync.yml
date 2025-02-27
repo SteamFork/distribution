@@ -6,6 +6,10 @@ on:
     paths:
       - 'PKGBUILD/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build_and_sync:
     timeout-minutes: 1440
