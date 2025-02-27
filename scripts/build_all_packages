@@ -1,7 +1,9 @@
 #!/bin/bash
 
+# Ensure the script directory is correctly set
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+
 # Source the environment variables from the Makefile
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MAKEFILE_PATH="${SCRIPT_DIR}/../Makefile"
 eval $(make -s -f "${MAKEFILE_PATH}" env)
 
@@ -16,6 +18,7 @@ refresh_gpg_key_periodically() {
 # Start the GPG key refresh in the background
 refresh_gpg_key_periodically &
 
+# Define the path to the packages list
 PACKAGES_LIST="${SCRIPT_DIR}/../metadata/packages.list"
 
 # Read the packages list and build each package with dependencies
