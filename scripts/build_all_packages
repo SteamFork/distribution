@@ -34,5 +34,6 @@ while IFS= read -r line; do
     fi
 
     echo "Building package: $PKG (repo: $REPO_FLAG)"
+    sudo pacman -Scc --noconfirm
     "${SCRIPT_DIR}/build_package" --repo ${REPO_FLAG} "$PKG"
 done < "$PACKAGES_LIST"
