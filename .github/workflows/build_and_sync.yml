@@ -27,9 +27,11 @@ jobs:
       matrix:
         branch: [main, 3.6, 3.7]
 
-    if: startsWith(github.ref, 'refs/heads/') && contains(matrix.branch, github.ref_name) || github.event.inputs.branch == matrix.branch
-
     steps:
+      - name: Set up job
+        run: echo "Running job on branch ${{ matrix.branch }}"
+        if: github.ref == 'refs/heads/${{ matrix.branch }}' || github.event.inputs.branch == '${{ matrix.branch }}'
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
