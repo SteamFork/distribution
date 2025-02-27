@@ -1,4 +1,4 @@
-name: Automated Package Build and Sync (main)
+name: Automated Build and Sync (main)
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'PKGBUILD/**'
+  workflow_dispatch:
 
 jobs:
   trigger_build_and_sync:
