@@ -3,7 +3,7 @@
 pkgname=gamescope
 _srctag=3.16.1
 pkgver=${_srctag//-/.}.SteamFork
-pkgrel=5
+pkgrel=6
 pkgdesc="gaming shell based on Xwayland, powered by Vulkan and DRM"
 arch=(x86_64)
 url="https://github.com/ValveSoftware/gamescope"
