@@ -29,4 +29,4 @@ jobs:
 
       - name: Trigger build_and_sync workflow
         run: |
-          gh workflow run build_and_sync.yml --ref main
+          gh workflow run .github/workflows/build_and_sync.yml --ref main
