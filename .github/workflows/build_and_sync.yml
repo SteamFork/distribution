@@ -1,10 +1,7 @@
-name: Automated Package Build and Sync
+name: Build and Sync Service
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'PKGBUILD/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,6 +13,9 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Set up job
+        run: echo "Running job on branch ${{ github.ref }}"
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -31,7 +31,7 @@ jobs:
       - name: Configure GPG agent
         run: |
           mkdir -p ~/.gnupg
-          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "use-agent" > ~/.gnupg/gpg.conf
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
           echo "default-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf
@@ -66,6 +66,7 @@ jobs:
         run: |
           touch emptyfile
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --sign emptyfile
+          rm -f emptyfile emptyfile.gpg
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 

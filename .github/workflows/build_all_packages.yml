@@ -13,6 +13,12 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Clean repository
+        run: |
+          if [ -f Makefile ]; then
+            make repo-clean
+          fi
+          
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -21,7 +27,7 @@ jobs:
       - name: Configure GPG agent
         run: |
           mkdir -p ~/.gnupg
-          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "use-agent" > ~/.gnupg/gpg.conf
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
           echo "default-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf
@@ -56,6 +62,7 @@ jobs:
         run: |
           touch emptyfile
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --sign emptyfile
+          rm -f emptyfile emptyfile.gpg
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
@@ -66,10 +73,6 @@ jobs:
       - name: Clear pacman cache
         run: |
           sudo pacman -Scc --noconfirm
-
-      - name: Clean repository
-        run: |
-          make repo-clean
 
       - name: Create blank repository
         run: |
