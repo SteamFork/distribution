@@ -13,16 +13,16 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          clean: false
-
       - name: Clean repository
         run: |
           if [ -f Makefile ]; then
             make repo-clean
           fi
+          
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          clean: false
 
       - name: Configure GPG agent
         run: |
