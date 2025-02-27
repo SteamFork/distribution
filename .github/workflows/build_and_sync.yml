@@ -14,13 +14,12 @@ jobs:
   build_and_sync:
     timeout-minutes: 1440
     runs-on: self-hosted
+    if: github.ref == 'refs/heads/main' && contains(github.runner_labels, 'main') ||
+        github.ref == 'refs/heads/3.6' && contains(github.runner_labels, '3.6') ||
+        github.ref == 'refs/heads/3.7' && contains(github.runner_labels, '3.7')
 
     steps:
       - name: Set up job
-        if: contains(github.runner_labels, 'self-hosted') &&
-            (contains(github.runner_labels, 'main') && github.ref == 'refs/heads/main' ||
-             contains(github.runner_labels, '3.6') && github.ref == 'refs/heads/3.6' ||
-             contains(github.runner_labels, '3.7') && github.ref == 'refs/heads/3.7')
         run: echo "Running job on branch ${{ github.ref }}"
 
       - name: Checkout repository
