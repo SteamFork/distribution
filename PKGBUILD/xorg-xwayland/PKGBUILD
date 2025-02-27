@@ -6,7 +6,7 @@
 #   Contributor: AndyRTR <andyrtr@archlinux.org>
 
 pkgname=xorg-xwayland
-pkgver=24.1.5
+pkgver=24.1.6
 pkgrel=1
 arch=('x86_64')
 license=(

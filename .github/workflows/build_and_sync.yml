@@ -2,6 +2,9 @@ name: Automated Package Build and Sync
 
 on:
   workflow_dispatch:
+#  push:
+#    paths:
+#      - 'PKGBUILD/**'
 
 jobs:
   build_and_sync:
@@ -14,33 +17,33 @@ jobs:
         with:
           clean: false
 
-      - name: Cache GPG key
-        id: gpg-key
-        uses: actions/cache@v3
-        with:
-          path: ~/.gnupg
-          key: ${{ runner.os }}-gpg-key
-          restore-keys: |
-            ${{ runner.os }}-gpg-key
-
-      - name: Cache SSH key
-        id: ssh-key
-        uses: actions/cache@v3
-        with:
-          path: ~/.ssh
-          key: ${{ runner.os }}-ssh-key
-          restore-keys: |
-            ${{ runner.os }}-ssh-key
-
-      - name: Configure ccache
+      - name: Verify the repo exists, or fail.
         run: |
-          ccache --max-size=50G
+          if [ ! -d "$GITHUB_WORKSPACE/release/repos" ]; then
+            echo "The repository does not exist, can not continue."
+            exit 1
+          fi
+
+      - name: Configure GPG agent
+        run: |
+          mkdir -p ~/.gnupg
+          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          echo "default-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf
+          echo "max-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf
+          gpgconf --kill gpg-agent
+          gpgconf --launch gpg-agent
+
+      - name: Save GPG key to file
+        run: |
+          echo "$GPG_PRIVATE_KEY" > ~/.gnupg/private.key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
       - name: Import GPG key
         run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg --batch --yes --import ~/.gnupg/private.key
 
       - name: Set GPG trust level
         run: |
@@ -48,14 +51,23 @@ jobs:
 
       - name: Trust GPG key for pacman
         run: |
-          echo "$GPG_PRIVATE_KEY" > /tmp/private.key
           sudo pacman-key --init
-          sudo pacman-key --add /tmp/private.key
+          sudo pacman-key --add ~/.gnupg/private.key
           sudo pacman-key --lsign-key ${{ secrets.GPG_KEY_ID }}
           sudo pacman-key --populate steamfork
-          rm /tmp/private.key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+
+      - name: Sign an empty file to ensure GPG key is available
+        run: |
+          touch emptyfile
+          echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --sign emptyfile
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Configure ccache
+        run: |
+          ccache --max-size=50G
 
       - name: Clear pacman cache
         run: |
@@ -64,19 +76,23 @@ jobs:
       - name: Run checksum_pkgbuild script
         id: checksum
         run: |
-          OUTPUT=$(./scripts/checksum_pkgbuild.sh)
-          echo "::set-output name=packages::$OUTPUT"
+          cd $GITHUB_WORKSPACE
+          OUTPUT=$(./scripts/checksum_pkgbuild)
+          echo "packages=$OUTPUT" >> $GITHUB_ENV
 
       - name: Build with dependencies
         run: |
-          PACKAGES="${{ steps.checksum.outputs.packages }}"
+          cd $GITHUB_WORKSPACE
+          PACKAGES="${{ env.packages }}"
           IFS=' ' read -r -a PACKAGE_ARRAY <<< "$PACKAGES"
           for PKG in "${PACKAGE_ARRAY[@]}"; do
             ./scripts/build_with_dependencies "$PKG"
           done
 
 #      - name: Sync packages
+#        if: github.repository == 'SteamFork/distribution'
 #        run: make packages-sync
 
 #      - name: Sync mirrors
+#        if: github.repository == 'SteamFork/distribution'
 #        run: make mirrors-sync
