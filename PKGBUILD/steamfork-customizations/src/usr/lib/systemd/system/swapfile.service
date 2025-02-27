@@ -13,7 +13,6 @@ DefaultDependencies=no
 Before=shutdown.target home-swapfile.swap
 Conflicts=shutdown.target
 ConditionFileIsExecutable=/usr/bin/steamfork-enable-swap
-ConditionPathExists=!/home/swapfile
 RequiresMountsFor=/home/swapfile
 
 [Service]

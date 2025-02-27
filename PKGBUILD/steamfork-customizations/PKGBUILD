@@ -1,7 +1,7 @@
 # Maintainer: Fewtarius
 
 pkgname=steamfork-customizations
-pkgver=2025.01.14
+pkgver=2025.02.27
 pkgrel=1
 pkgdesc='SteamFork customizations provider.'
 arch=('any')
