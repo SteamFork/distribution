@@ -1,4 +1,4 @@
-name: SteamFork Build and Release Workflow
+name: Build and Release Images
 permissions:
   contents: write
 on:
@@ -8,7 +8,8 @@ on:
       - "*"
 
 concurrency:
-  group: main
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
