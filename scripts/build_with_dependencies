@@ -1,10 +1,6 @@
 #!/bin/bash
 
-# Ensure the script directory is correctly set
-SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-
-# Define the path to the packages list
-PACKAGES_LIST="${SCRIPT_DIR}/../metadata/packages.list"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
 
