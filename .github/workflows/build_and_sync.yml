@@ -16,6 +16,13 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Set up job
+        if: contains(github.runner_labels, 'self-hosted') &&
+            (contains(github.runner_labels, 'main') && github.ref == 'refs/heads/main' ||
+             contains(github.runner_labels, '3.6') && github.ref == 'refs/heads/3.6' ||
+             contains(github.runner_labels, '3.7') && github.ref == 'refs/heads/3.7')
+        run: echo "Running job on branch ${{ github.ref }}"
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
