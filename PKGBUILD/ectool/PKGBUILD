@@ -3,7 +3,7 @@
 
 pkgname=ectool
 pkgver=1.0
-pkgrel=5
+pkgrel=2
 pkgdesc="A simple tool for manipulating the embedded controller."
 arch=('any')
 url="https://review.coreboot.org/coreboot/util/ectool"
