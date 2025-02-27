@@ -23,10 +23,9 @@ jobs:
     timeout-minutes: 1440
     runs-on: [self-hosted, Linux, X64, ${{ matrix.branch }}]
     strategy:
+      fail-fast: false
       matrix:
         branch: [main, 3.6, 3.7]
-      fail-fast: false
-      max-parallel: 1
 
     if: github.ref == 'refs/heads/${{ matrix.branch }}' || github.event.inputs.branch == '${{ matrix.branch }}'
 
