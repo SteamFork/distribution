@@ -18,6 +18,11 @@ jobs:
         with:
           clean: false
 
+      - name: Clean repository
+        if: ${{ exists('Makefile') }}
+        run: |
+          make repo-clean
+
       - name: Configure GPG agent
         run: |
           mkdir -p ~/.gnupg
@@ -67,10 +72,6 @@ jobs:
       - name: Clear pacman cache
         run: |
           sudo pacman -Scc --noconfirm
-
-      - name: Clean repository
-        run: |
-          make repo-clean
 
       - name: Create blank repository
         run: |
