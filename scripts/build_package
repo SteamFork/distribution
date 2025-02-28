@@ -23,20 +23,19 @@ for KEY in SIGNKEY; do
   fi
 done
 
-# Check if running in an interactive shell
+# Check if running in an interactive shell, and cache the GPG key if not already cached
 if [[ -t 1 ]]; then
   GPG_OPTS=""
+  export GPG_TTY=$(tty)
+  echo "Cache key" | gpg --sign -o /dev/null
 else
   GPG_OPTS="--batch --yes --pinentry-mode loopback"
+  echo "Cache key" | gpg ${GPG_OPTS} --sign -o /dev/null
 fi
 
-# Cache the GPG key if not already cached
-if ! gpg ${GPG_OPTS} --list-keys "${SIGNKEY}" > /dev/null 2>&1; then
-  echo "Cache key" | gpg ${GPG_OPTS} --sign -o /dev/null
-  if [ ! "$?" = 0 ]; then
-    echo "Unable to cache signing key, quitting..."
-    exit 1
-  fi
+if [ ! "$?" = 0 ]; then
+  echo "Unable to cache signing key, quitting..."
+  exit 1
 fi
 
 while [[ $# -ge 2 ]]; do
