@@ -60,7 +60,7 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     fi
 
     log "Building package: $PKG (repo: $REPO_FLAG)"
-    echo "${SCRIPT_DIR}/build_package" --repo ${REPO_FLAG} "$PKG"
+    "${SCRIPT_DIR}/build_package" --repo ${REPO_FLAG} "$PKG"
     if [ $? -ne 0 ]; then
         log "Error: Failed to build package $PKG. Exiting."
         exit 1
