@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
+# This workflow triggers the build_and_sync workflow for the target branch when packages are added or modified in the repository.
+
 name: Automated Build and Sync (main)
 
 on:
