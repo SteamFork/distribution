@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
+# Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
 
 set -e
 
@@ -123,7 +123,7 @@ if [ $? -ne 0 ]; then
 fi
 
 log "Cloning ${PKGSOURCE} sources..."
-case ${PKGSOURCE} in
+case ${REPO_FLAG} in
   aur)
     git clone --depth=1 https://aur.archlinux.org/${PACKAGE}.git ${WORK_DIR}
     ;;
@@ -139,7 +139,7 @@ case ${PKGSOURCE} in
     fi
     ;;
   *)
-    log "scripts/build_package type repo"
+    log "Unknown repository flag: ${REPO_FLAG}"
     exit 1
     ;;
 esac
