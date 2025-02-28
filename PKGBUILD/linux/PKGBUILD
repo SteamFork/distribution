@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.13.5
-pkgrel=1
+pkgrel=2
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -65,6 +65,7 @@ source=(
   0038-fixup-aw87xx-warnings.patch
   0040-vcs-amdgpu-quirks.patch
   0041-air-amdgpu-quirks.patch
+  0042-Fix-use-after-free-when-detaching-device.patch
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
   0060-asus-patch-series.patch
   0066-ASoC-acp-Support-microphone-from-Lenovo-Go-S.patch
@@ -100,6 +101,7 @@ sha256sums=('SKIP'
   '23d91695bf8e5d5cdb9503a47468c6c5cf220bc7966a4720aa46645357e29ee6' # 0038-fixup-aw87xx-warnings.patch
   '93087d9449f994dca23c1d5a32919204d31afecc63950d74a2ea41aaa1e3a9ec' # 0040-vcs-amdgpu-quirks.patch
   'ab8a6dccf67cee7d924ee2e3d4690285d404bcb9bab70eced09b05fa2853b288' # 0041-air-amdgpu-quirks.patch
+  'a972dcd4a29116ba91f85f4dd78be505380f871f144b6e5fcce0c272bbeaed90' # 0042-Fix-use-after-free-when-detaching-device.patch
   '7c7df8d4427c807e2cea0f1e147efcdfb1e7c1c5271823cc6bb49f10b1846d19' # 0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
   '86524537cc4c0d4bc5f4a71519cf7a024382a98739af6a4c4373ecdcf7642585' # 0060-asus-patch-series.patch
   'b2c0775ca7f7e8aed633c056b450c972020d37508d391732d7becded53a2210b' # 0066-ASoC-acp-Support-microphone-from-Lenovo-Go-S.patch
