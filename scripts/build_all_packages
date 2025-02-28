@@ -36,35 +36,37 @@ check_disk_space() {
 }
 
 # Read the packages list and build each package with dependencies
-while IFS= read -r line; do
+while IFS= read -r line || [[ -n "$line" ]]; do
+    log "Processing line: $line"
     check_disk_space
     if [ $? -ne 0 ]; then
         log "Error: Not enough disk space available. Exiting."
         exit 1
     fi
 
-    if [[ "$line" == local:* ]]; then
-        PKG="${line#local:}"
-        REPO_FLAG="local"
-    elif [[ "$line" == aur:* ]]; then
-        PKG="${line#aur:}"
-        REPO_FLAG="aur"
-    else
+    PKG=$(echo "$line" | awk -F: '{print $2}')
+    REPO_FLAG=$(echo "$line" | awk -F: '{print $1}')
+
+    if [[ -z "$PKG" || -z "$REPO_FLAG" ]]; then
         log "Unknown package type: $line"
         continue
     fi
 
     log "Clearing pacman cache..."
-    sudo pacman -Scc --noconfirm
+    yes | sudo pacman -Scc --noconfirm
     if [ $? -ne 0 ]; then
         log "Error: Failed to clear pacman cache."
         exit 1
     fi
 
     log "Building package: $PKG (repo: $REPO_FLAG)"
-    "${SCRIPT_DIR}/build_package" --repo ${REPO_FLAG} "$PKG"
+    echo "${SCRIPT_DIR}/build_package" --repo ${REPO_FLAG} "$PKG"
     if [ $? -ne 0 ]; then
         log "Error: Failed to build package $PKG. Exiting."
         exit 1
     fi
+
+    log "Successfully built package: $PKG"
 done < "$PACKAGES_LIST"
+
+log "All packages built successfully."
