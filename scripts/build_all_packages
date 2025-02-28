@@ -2,6 +2,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
 
+# Log function for consistent output
+log() {
+  local msg="$1"
+  echo "$(date +'%Y-%m-%d %H:%M:%S') - ${msg}"
+}
+
 # Source the environment variables from the Makefile
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MAKEFILE_PATH="${SCRIPT_DIR}/../Makefile"
@@ -24,7 +30,7 @@ PACKAGES_LIST="${SCRIPT_DIR}/../metadata/packages.list"
 check_disk_space() {
     local available_space=$(df --output=avail / | tail -n 1)
     if (( available_space < 1048576 )); then  # Less than 1GB available
-        echo "Error: Not enough disk space available. Exiting."
+        log "Error: Not enough disk space available. Exiting."
         exit 1
     fi
 }
@@ -32,6 +38,10 @@ check_disk_space() {
 # Read the packages list and build each package with dependencies
 while IFS= read -r line; do
     check_disk_space
+    if [ $? -ne 0 ]; then
+        log "Error: Not enough disk space available. Exiting."
+        exit 1
+    fi
 
     if [[ "$line" == local:* ]]; then
         PKG="${line#local:}"
@@ -40,16 +50,21 @@ while IFS= read -r line; do
         PKG="${line#aur:}"
         REPO_FLAG="aur"
     else
-        echo "Unknown package type: $line"
+        log "Unknown package type: $line"
         continue
     fi
 
-    echo "Building package: $PKG (repo: $REPO_FLAG)"
+    log "Clearing pacman cache..."
     sudo pacman -Scc --noconfirm
-    "${SCRIPT_DIR}/build_package" --repo ${REPO_FLAG} "$PKG"
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to clear pacman cache."
+        exit 1
+    fi
 
-    if [[ $? -ne 0 ]]; then
-        echo "Error: Failed to build package $PKG. Exiting."
+    log "Building package: $PKG (repo: $REPO_FLAG)"
+    "${SCRIPT_DIR}/build_package" --repo ${REPO_FLAG} "$PKG"
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to build package $PKG. Exiting."
         exit 1
     fi
 done < "$PACKAGES_LIST"
