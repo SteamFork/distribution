@@ -76,7 +76,7 @@ jobs:
 
       - name: Clear pacman cache
         run: |
-          yes | sudo pacman -Scc --noconfirm
+          sudo pacman -Scc --noconfirm
 
       - name: Create blank repository
         run: |

@@ -95,7 +95,6 @@ if [ $? -ne 0 ]; then
 fi
 
 log "Synchronizing package databases..."
-yes | sudo pacman -Scc
 sudo pacman -Sy ||:
 if [ $? -ne 0 ]; then
   log "Failed to synchronize package databases."

@@ -55,7 +55,7 @@ while IFS= read -r line; do
     fi
 
     log "Clearing pacman cache..."
-    yes | sudo pacman -Scc
+    sudo pacman -Scc --noconfirm
     if [ $? -ne 0 ]; then
         log "Error: Failed to clear pacman cache."
         exit 1
@@ -67,8 +67,4 @@ while IFS= read -r line; do
         log "Error: Failed to build package $PKG. Exiting."
         exit 1
     fi
-
-    log "Successfully built package: $PKG"
 done < "$PACKAGES_LIST"
-
-log "All packages built successfully."
