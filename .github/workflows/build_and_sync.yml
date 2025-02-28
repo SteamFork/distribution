@@ -2,7 +2,15 @@ name: Automated Package Build and Sync
 
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to run the workflow on'
+        required: true
   push:
+    branches:
+      - main
+      - 3.6
+      - 3.7
     paths:
       - 'PKGBUILD/**'
 
@@ -14,8 +22,16 @@ jobs:
   build_and_sync:
     timeout-minutes: 1440
     runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: [main, 3.6, 3.7]
 
     steps:
+      - name: Set up job
+        run: echo "Running job on branch ${{ matrix.branch }}"
+        if: github.ref == 'refs/heads/${{ matrix.branch }}' || github.event.inputs.branch == '${{ matrix.branch }}'
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
