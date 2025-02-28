@@ -30,8 +30,10 @@ if [[ -t 1 ]]; then
   export GPG_TTY=$(tty)
   echo "Cache key" | gpg --sign -o /dev/null
 else
-  GPG_OPTS="--batch --yes --pinentry-mode loopback"
-  echo "Cache key" | gpg ${GPG_OPTS} --sign -o /dev/null
+  GPG_OPTS="--batch --yes --passphrase-fd 0 --pinentry-mode loopback"
+  touch emptyfile
+  echo "${GPG_PASSPHRASE}" | gpg  --sign emptyfile
+  rm -f emptyfile emptyfile.gpg
 fi
 
 if [ ! "$?" = 0 ]; then
@@ -84,6 +86,11 @@ sudo pacman -Sy ||:
 echo "Creating work and repository directories..."
 sudo mkdir -p ${WORK_DIR} ${REPO_DIR} 2>/dev/null
 sudo chown ${BUILDUSER}:${BUILDUSER} ${WORK_DIR} ${REPO_DIR}
+
+# Update /etc/pacman.conf to use the local repository
+echo "Updating /etc/pacman.conf to use the local repository..."
+sudo sed -i '/^\[steamfork\]/,/^Include/ {/^Include/d;}' /etc/pacman.conf
+sudo sed -i '/^\[steamfork\]/a Server = file://'${REPO_DIR} /etc/pacman.conf
 
 echo "Cloning package source..."
 case ${PKGSOURCE} in
