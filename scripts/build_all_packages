@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
 
-set -x  # Enable debug output
-
 # Source the environment variables from the Makefile
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MAKEFILE_PATH="${SCRIPT_DIR}/../Makefile"
