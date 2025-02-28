@@ -72,7 +72,7 @@ jobs:
 
       - name: Configure ccache
         run: |
-          ccache --max-size=50G
+          ccache --max-size=10G
 
       - name: Clear pacman cache
         run: |
