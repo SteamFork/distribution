@@ -37,7 +37,6 @@ fi
 if [ ! "$?" = 0 ]; then
     echo "Unable to cache signing key, quitting..."
     exit 1
-  fi
 fi
 
 while [[ $# -ge 2 ]]; do
