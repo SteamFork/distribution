@@ -4,10 +4,12 @@
 
 set -e
 
+SCRIPT_NAME=$(basename "$0")
+
 # Log function for consistent output
 log() {
   local msg="$1"
-  echo "$(date +'%Y-%m-%d %H:%M:%S') - ${msg}"
+  echo "$(date +'%Y-%m-%d %H:%M:%S') - ${SCRIPT_NAME}: ${msg}"
 }
 
 # Source the environment variables from the Makefile
