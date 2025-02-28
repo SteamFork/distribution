@@ -21,20 +21,18 @@ mapfile -t packages < "$PACKAGES_LIST"
 # Read the packages list and build each package with dependencies
 for ((i = 0; i < ${#packages[@]}; i++)); do
     line="${packages[$i]}"
-    log "Processing line: $line"
 
     # Use awk to parse the line
     PKG=$(echo "$line" | awk -F'|' '{print $2}')
     REPO_FLAG=$(echo "$line" | awk -F'|' '{print $1}')
 
-    log "Parsed PKG: $PKG, REPO_FLAG: $REPO_FLAG"
-
     if [[ -z "$PKG" || -z "$REPO_FLAG" ]]; then
-        log "Unknown package type: $line"
+        log "Unable to parse data from line: $line"
         continue
     fi
 
-    # Check if the package is in the correct order
+    # Check if the package is in the correct order to trap conditions
+    # where a package may be skipped when building.
     if [[ "$line" != "${packages[$i]}" ]]; then
         log "Error: Package $PKG is out of order. Exiting."
         exit 1
