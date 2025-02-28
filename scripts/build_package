@@ -71,10 +71,6 @@ fi
 
 log "Starting build for package: $PKG (repo: $REPO_FLAG)"
 
-if [ -z "${PKGSOURCE}" ]; then
-  PKGSOURCE="local"
-fi
-
 if [ -z "${OS_ARCH}" ]; then
   OS_ARCH=$(uname -m)
 fi
@@ -122,7 +118,7 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-log "Cloning ${PKGSOURCE} sources..."
+log "Preparing ${PKG} sources..."
 case ${REPO_FLAG} in
   aur)
     git clone --depth=1 https://aur.archlinux.org/${PACKAGE}.git ${WORK_DIR}
@@ -201,7 +197,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Generate the checksum file only for local packages
-if [ "${PKGSOURCE}" == "local" ]; then
+if [ "${REPO_FLAG}" == "local" ]; then
   CHECKSUM=$(find "${SCRIPT_DIR}/../PKGBUILD/${PACKAGE}" -type f -not -name '.checksum' -not -name '*.gz' -not -name '*.bz2' -not -name '*.xz' -printf '%T@ %p\n' | sha256sum | awk '{print $1}')
   echo "${CHECKSUM}" > "${SCRIPT_DIR}/../PKGBUILD/${PACKAGE}/.checksum"
   if [ $? -ne 0 ]; then
