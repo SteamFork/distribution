@@ -36,7 +36,7 @@ check_disk_space() {
 }
 
 # Read the packages list and build each package with dependencies
-cat "$PACKAGES_LIST" | while IFS= read -r line; do
+while IFS= read -r line; do
     log "Processing line: $line"
     check_disk_space
     if [ $? -ne 0 ]; then
@@ -44,6 +44,7 @@ cat "$PACKAGES_LIST" | while IFS= read -r line; do
         exit 1
     fi
 
+    # Use awk to parse the line
     PKG=$(echo "$line" | awk -F: '{print $2}')
     REPO_FLAG=$(echo "$line" | awk -F: '{print $1}')
 
@@ -69,6 +70,6 @@ cat "$PACKAGES_LIST" | while IFS= read -r line; do
     fi
 
     log "Successfully built package: $PKG"
-done
+done < "$PACKAGES_LIST"
 
 log "All packages built successfully."

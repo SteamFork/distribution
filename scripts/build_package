@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
+# Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
 
 set -e
 
@@ -47,25 +47,29 @@ if [ ! "$?" = 0 ]; then
     exit 1
 fi
 
-while [[ $# -ge 2 ]]; do
-  KEY="$1"
-  case ${KEY} in
-    --branch)
-      STEAMOS_VERSION="$2"
-      shift # past argument
-      shift # past value
-      ;;
+# Parse arguments
+REPO_FLAG=""
+PKG=""
+while [[ $# -gt 0 ]]; do
+  case $1 in
     --repo)
-      PKGSOURCE="$2"
-      shift # past argument
-      shift # past value
+      REPO_FLAG="$2"
+      shift 2
       ;;
-    --*)
-      log "Unknown option ${KEY}"
-      exit 1
+    *)
+      PKG="$1"
+      shift
       ;;
   esac
 done
+
+# Validate arguments
+if [[ -z "$REPO_FLAG" || -z "$PKG" ]]; then
+  log "Error: Missing required arguments. Usage: $0 --repo <repo_flag> <package>"
+  exit 1
+fi
+
+log "Starting build for package: $PKG (repo: $REPO_FLAG)"
 
 if [ -z "${PKGSOURCE}" ]; then
   PKGSOURCE="local"
@@ -76,7 +80,7 @@ if [ -z "${OS_ARCH}" ]; then
 fi
 
 BUILDUSER=${USER}
-PACKAGE=${1}
+PACKAGE=${PKG}
 WORK_DIR="${WORK_DIR}/packages/${PACKAGE}"
 REPO_DIR="${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}"
 
