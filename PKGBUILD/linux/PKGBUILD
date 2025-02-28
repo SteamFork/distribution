@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.13.5
-pkgrel=2
+pkgrel=3
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -74,6 +74,7 @@ source=(
   0081-revert-some-vrr-always-on-hack.patch
   0099-add-external-device-drivers.patch
   0100-ayaneo-platform.patch
+  9000-upstreamed-drm-panel-orientation-quirks.patch
 )
 validpgpkeys=(
   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
@@ -82,7 +83,7 @@ validpgpkeys=(
 )
 sha256sums=('SKIP'
   'cf7eb7732cfb8707ba78994a68949cee0e925e11c14d9cbea0dc7484eab17ec5' # config
-  'e40db9de280c70d83832cdd0768348de170005cdd3ba233b498db5f81dd24fa1' # 0001-drm-panel-orientation-quirks.patch
+  'a06bbe8968fe179bc3c71fe8bd333e926dceefe5bbfef55d8107bba2f50c18fc' # 0001-drm-panel-orientation-quirks.patch
   '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
   '02f5eaede065b7d68ccf469c9f54eab3ce3f0d852624a3430d83bcd6e2bd7dbb' # 0006-Ayaneo-geek-headset-patch.patch
   '3805f3b8b39d9d49586fb5d2a445a9ee54cf00cd1cdedd226e727420196cc568' # 0007-ayaneo-2-headphone-fix.patch
@@ -110,6 +111,7 @@ sha256sums=('SKIP'
   '9abba3bd4c5540d5453abb2cd77edeb55b7bc36650f3dc2f71ae3901466b0756' # 0081-revert-some-vrr-always-on-hack.patch
   '3b1dabc168e4884c6586720538014d6ef8955a0b783d6436dd4937af6622ee42' # 0099-add-external-device-drivers.patch
   '67cbe650db915155351c33f5c135e21fff70f914be947817a11838861e2fa736' # 0100-ayaneo-platform.patch
+  '55f1601311cef3d82d191949f5ff2b632ce7ebd16e99736b4c2fade3ad838cf5' # 9000-upstreamed-drm-panel-orientation-quirks.patch
 )
 
 export KBUILD_BUILD_HOST=$(hostnamectl hostname)
