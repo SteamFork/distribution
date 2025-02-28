@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
+# This workflow destroys and recreates the SteamFork package repository and then syncs it to all known mirrors.
+
 name: Build All Packages
 
 on:
