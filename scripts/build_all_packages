@@ -15,23 +15,29 @@ eval $(make -s -f "${MAKEFILE_PATH}" env)
 
 PACKAGES_LIST="${SCRIPT_DIR}/../metadata/packages.list"
 
+# Load packages list into an array
+mapfile -t packages < "$PACKAGES_LIST"
+
 # Read the packages list and build each package with dependencies
-while IFS= read -r line; do
+for ((i = 0; i < ${#packages[@]}; i++)); do
+    line="${packages[$i]}"
     log "Processing line: $line"
-    if [ $? -ne 0 ]; then
-        log "Error: Not enough disk space available. Exiting."
-        exit 1
-    fi
 
     # Use awk to parse the line
-    PKG=$(echo "$line" | awk -F: '{print $2}')
-    REPO_FLAG=$(echo "$line" | awk -F: '{print $1}')
+    PKG=$(echo "$line" | awk -F'|' '{print $2}')
+    REPO_FLAG=$(echo "$line" | awk -F'|' '{print $1}')
 
     log "Parsed PKG: $PKG, REPO_FLAG: $REPO_FLAG"
 
     if [[ -z "$PKG" || -z "$REPO_FLAG" ]]; then
         log "Unknown package type: $line"
         continue
+    fi
+
+    # Check if the package is in the correct order
+    if [[ "$line" != "${packages[$i]}" ]]; then
+        log "Error: Package $PKG is out of order. Exiting."
+        exit 1
     fi
 
     log "Clearing pacman cache..."
@@ -49,6 +55,6 @@ while IFS= read -r line; do
     fi
 
     log "Successfully built package: $PKG"
-done < "$PACKAGES_LIST"
+done
 
 log "All packages built successfully."
