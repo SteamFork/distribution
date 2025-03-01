@@ -29,6 +29,12 @@ then
     exit 0
 fi
 
+### Get audio routing setting
+AUDIO_ROUTING=$(steamfork-get-setting audio.routing)
+if [ -z "${AUDIO_ROUTING}" ]; then
+    AUDIO_ROUTING="bluetooth usb hdmi"
+fi
+
 function restart_wireplumber() {
 	systemctl restart --user wireplumber
 	exit 1
@@ -127,20 +133,24 @@ do
 done
 
 ### When we start up, try connecting to any external sinks.
-$VERBOSE && >&2 echo "Startup: Check for connected bluetooth devices."
-BT_SINK=$(connect_sink "Bluetooth" "bluez" 5 10)
-
-if [[ ! "${BT_SINK}" =~ bluez ]]
-then
-	$VERBOSE && >&2 echo "Startup: Check for connected USB devices."
-	USB_SINK=$(connect_sink "USB" "usb" 5 10)
+if [[ "${AUDIO_ROUTING}" =~ bluetooth ]]; then
+    $VERBOSE && >&2 echo "Startup: Check for connected bluetooth devices."
+    BT_SINK=$(connect_sink "Bluetooth" "bluez" 5 10)
 fi
 
-if [[ ! "${BT_SINK}" =~ bluez ]] && \
-   [[ ! "${USB_SINK}" =~ usb ]]
-then
-	$VERBOSE && >&2 echo "Startup: Check for connected HDMI/DP devices."
-	HDMI_SINK=$(connect_sink "HDMI/DP" "hdmi|dp" 5 10)
+if [[ "${AUDIO_ROUTING}" =~ usb ]]; then
+    if [[ ! "${BT_SINK}" =~ bluez ]]; then
+        $VERBOSE && >&2 echo "Startup: Check for connected USB devices."
+        USB_SINK=$(connect_sink "USB" "usb" 5 10)
+    fi
+fi
+
+if [[ "${AUDIO_ROUTING}" =~ hdmi ]]; then
+    if [[ ! "${BT_SINK}" =~ bluez ]] && \
+       [[ ! "${USB_SINK}" =~ usb ]]; then
+        $VERBOSE && >&2 echo "Startup: Check for connected HDMI/DP devices."
+        HDMI_SINK=$(connect_sink "HDMI/DP" "hdmi|dp" 5 10)
+    fi
 fi
 
 ### Watch for events.
@@ -155,50 +165,56 @@ do
 	then
 		$VERBOSE && >&2 echo "Incoming event on ${CARD}."
 
-		### Connect bluetooth devices (Priority 1)
-		for BT_DEVICE in $(bluetoothctl devices Connected 2>/dev/null | awk '{print $2}')
-		do
-			IS_AUDIO=$(bluetoothctl info ${BT_DEVICE} 2>/dev/null | grep "Audio Sink")
+		if [[ "${AUDIO_ROUTING}" =~ bluetooth ]]; then
+			### Connect bluetooth devices (Priority 1)
+			for BT_DEVICE in $(bluetoothctl devices Connected 2>/dev/null | awk '{print $2}')
+			do
+				IS_AUDIO=$(bluetoothctl info ${BT_DEVICE} 2>/dev/null | grep "Audio Sink")
+				if [ -n "${IS_AUDIO}" ]
+				then
+					$VERBOSE && >&2 echo "Bluetooth: ${BT_DEVICE} has an audio sink."
+					break
+				else
+					$VERBOSE && >&2 echo "Bluetooth: ${BT_DEVICE} has no audio sink."
+					continue
+				fi
+			done
+
 			if [ -n "${IS_AUDIO}" ]
 			then
-				$VERBOSE && >&2 echo "Bluetooth: ${BT_DEVICE} has an audio sink."
-				break
+				connect_sink "Bluetooth" "bluez" "12" "2"
+				SINK_CHECK=$(pactl get-default-sink)
+				if [[ "${SINK_CHECK}" =~ bluez ]]
+				then
+					continue
+				fi
+			fi
+		fi
+
+		if [[ "${AUDIO_ROUTING}" =~ usb ]]; then
+			### Connect USB devices (Priority 2)
+			connect_sink "USB" "usb" "5" "2"
+			SINK_CHECK=$(pactl get-default-sink)
+			if [[ "${SINK_CHECK}" =~ usb ]]
+			then
+				continue
+			fi
+		fi
+
+		if [[ "${AUDIO_ROUTING}" =~ hdmi ]]; then
+			### Connect HDMI/DP devices (Priority 3)
+			PRIORITY_DEVICES=$(pactl list short cards | awk '/usb|bluez/ {print $2; exit}')
+			if [ -z "${PRIORITY_DEVICES}" ]
+			then
+				connect_sink "HDMI/DP" "hdmi|dp" "10" "2"
+				SINK_CHECK=$(pactl get-default-sink)
+				if [[ "${SINK_CHECK}" =~ hdmi ]]
+				then
+					continue
+				fi
 			else
-				$VERBOSE && >&2 echo "Bluetooth: ${BT_DEVICE} has no audio sink."
-				continue
+				${VERBOSE} && >&2 echo "HDMI/DP: A higher priority device is available (${PRIORITY_DEVICES})."
 			fi
-		done
-
-		if [ -n "${IS_AUDIO}" ]
-		then
-			connect_sink "Bluetooth" "bluez" "12" "2"
-			SINK_CHECK=$(pactl get-default-sink)
-			if [[ "${SINK_CHECK}" =~ bluez ]]
-			then
-				continue
-			fi
-		fi
-
-		### Connect USB devices (Priority 2)
-		connect_sink "USB" "usb" "5" "2"
-		SINK_CHECK=$(pactl get-default-sink)
-		if [[ "${SINK_CHECK}" =~ usb ]]
-		then
-			continue
-		fi
-
-		### Connect HDMI/DP devices (Priority 3)
-		PRIORITY_DEVICES=$(pactl list short cards | awk '/usb|bluez/ {print $2; exit}')
-		if [ -z "${PRIORITY_DEVICES}" ]
-		then
-			connect_sink "HDMI/DP" "hdmi|dp" "10" "2"
-			SINK_CHECK=$(pactl get-default-sink)
-			if [[ "${SINK_CHECK}" =~ hdmi ]]
-			then
-				continue
-			fi
-		else
-			${VERBOSE} && >&2 echo "HDMI/DP: A higher priority device is available (${PRIORITY_DEVICES})."
 		fi
 	fi
 	sleep .1

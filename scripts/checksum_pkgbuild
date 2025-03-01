@@ -41,9 +41,18 @@ check_checksums() {
     echo "${CHECKSUM}" > "${PKG_DIR}/.checksum"
 }
 
+# Collect package names with mismatched checksums
+PACKAGES=()
+
 # Iterate over each directory in PKGBUILD and check for mismatched checksums
 for PKG_DIR in "${PKGBUILD_DIR}"/*; do
     if [[ -d "${PKG_DIR}" ]]; then
-        check_checksums "${PKG_DIR}"
+        PKG_NAME=$(check_checksums "${PKG_DIR}")
+        if [[ -n "${PKG_NAME}" ]]; then
+            PACKAGES+=("${PKG_NAME}")
+        fi
     fi
 done
+
+# Output package names in a space-separated format
+echo "${PACKAGES[@]}"
