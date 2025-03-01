@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
+# This workflow triggers the build_and_sync workflow for the target branch when packages are added or modified in the repository.
+
+name: Automated Build and Sync (main)
+
+on:
+  push:
+    paths-ignore:
+      - '.github/**'
+      - '.gitignore'
+      - '**'
+      - '!PKGBUILD/**'
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  trigger_build_and_sync:
+    runs-on: self-hosted
+    if: contains(github.ref, 'refs/heads/main')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          clean: false
+
+      - name: Install GitHub CLI
+        run: |
+          sudo pacman -Sy --noconfirm github-cli
+
+      - name: Authenticate GitHub CLI
+        run: |
+          gh auth status || echo "${{ secrets.WORKFLOW_TOKEN }}" | gh auth login --with-token
+
+      - name: Set default repository
+        run: |
+          gh repo set-default ${{ github.repository }}
+
+      - name: List available workflows
+        run: |
+          gh workflow list
+          
+      - name: Trigger build_and_sync workflow
+        run: |
+          gh workflow run build_and_sync.yml --ref main

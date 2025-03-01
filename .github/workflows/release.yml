@@ -1,4 +1,8 @@
-name: SteamFork Build and Release Workflow
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
+# This workflow builds and releases official installation and update images for the SteamFork distribution.
+
+name: Image Build and Release
 permissions:
   contents: write
 on:
@@ -8,7 +12,8 @@ on:
       - "*"
 
 concurrency:
-  group: main
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:

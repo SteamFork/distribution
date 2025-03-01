@@ -4,6 +4,14 @@
 
 set -e
 
+SCRIPT_NAME=$(basename "$0")
+
+# Log function for consistent output
+log() {
+  local msg="$1"
+  echo "$(date +'%Y-%m-%d %H:%M:%S') - ${SCRIPT_NAME}: ${msg}"
+}
+
 # Source the environment variables from the Makefile
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MAKEFILE_PATH="${SCRIPT_DIR}/../Makefile"
@@ -18,117 +26,186 @@ fi
 
 for KEY in SIGNKEY; do
   if [ -z "${!KEY}" ]; then
-    echo "Export ${KEY} before using this script."
+    log "Export ${KEY} before using this script."
     exit 1
   fi
 done
 
-# Check if running in an interactive shell
+# Check if running in an interactive shell, and cache the GPG key if not already cached
 if [[ -t 1 ]]; then
   GPG_OPTS=""
+  export GPG_TTY=$(tty)
+  log "Caching GPG key..."
+  echo "Cache key" | gpg --sign -o /dev/null
 else
-  GPG_OPTS="--batch --yes --pinentry-mode loopback"
+  GPG_OPTS="--batch --yes --passphrase-fd 0 --pinentry-mode loopback"
+  touch emptyfile
+  echo "${GPG_PASSPHRASE}" | gpg --sign emptyfile
+  rm -f emptyfile emptyfile.gpg
 fi
 
-# Cache the GPG key if not already cached
-if ! gpg ${GPG_OPTS} --list-keys "${SIGNKEY}" > /dev/null 2>&1; then
-  echo "Cache key" | gpg ${GPG_OPTS} --sign -o /dev/null
-  if [ ! "$?" = 0 ]; then
-    echo "Unable to cache signing key, quitting..."
+if [ ! "$?" = 0 ]; then
+    log "Unable to cache signing key, quitting..."
     exit 1
-  fi
 fi
 
-while [[ $# -ge 2 ]]; do
-  KEY="$1"
-  case ${KEY} in
-    --branch)
-      STEAMOS_VERSION="$2"
-      shift # past argument
-      shift # past value
-      ;;
+# Parse arguments
+REPO_FLAG=""
+PKG=""
+while [[ $# -gt 0 ]]; do
+  case $1 in
     --repo)
-      PKGSOURCE="$2"
-      shift # past argument
-      shift # past value
+      REPO_FLAG="$2"
+      shift 2
       ;;
-    --*)
-      echo "Unknown option ${KEY}"
-      exit 1
+    *)
+      PKG="$1"
+      shift
       ;;
   esac
 done
 
-if [ -z "${PKGSOURCE}" ]; then
-  PKGSOURCE="local"
+# Validate arguments
+if [[ -z "$REPO_FLAG" || -z "$PKG" ]]; then
+  log "Error: Missing required arguments. Usage: $0 --repo <repo_flag> <package>"
+  exit 1
 fi
+
+log "Starting build for package: $PKG (repo: $REPO_FLAG)"
 
 if [ -z "${OS_ARCH}" ]; then
   OS_ARCH=$(uname -m)
 fi
 
 BUILDUSER=${USER}
-WORK_DIR="${WORK_DIR}/packages/${1}"
+PACKAGE=${PKG}
+WORK_DIR="${WORK_DIR}/packages/${PACKAGE}"
 REPO_DIR="${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}"
 
+log "Disabling read-only mode..."
 sudo steamos-readonly disable
-sudo rm -rf /var/lib/pacman/db.lck ${WORK_DIR}
-sudo pacman -Sy ||:
+if [ $? -ne 0 ]; then
+  log "Failed to disable read-only mode."
+  exit 1
+fi
 
+log "Removing any existing pacman lock and work directory..."
+sudo rm -rf /var/lib/pacman/db.lck ${WORK_DIR}
+if [ $? -ne 0 ]; then
+  log "Failed to remove pacman lock and work directory."
+  exit 1
+fi
+
+log "Synchronizing package databases..."
+sudo pacman -Sy ||:
+if [ $? -ne 0 ]; then
+  log "Failed to synchronize package databases."
+  exit 1
+fi
+
+log "Creating work and repository directories..."
 sudo mkdir -p ${WORK_DIR} ${REPO_DIR} 2>/dev/null
 sudo chown ${BUILDUSER}:${BUILDUSER} ${WORK_DIR} ${REPO_DIR}
+if [ $? -ne 0 ]; then
+  log "Failed to create work and repository directories."
+  exit 1
+fi
 
-case ${PKGSOURCE} in
+# Update /etc/pacman.conf to use the local repository
+log "Updating /etc/pacman.conf to use the local repository..."
+sudo sed -i '/^\[steamfork\]/,/^Include/ {/^Include/d;}' /etc/pacman.conf
+sudo sed -i '/^\[steamfork\]/a Server = file://'${REPO_DIR} /etc/pacman.conf
+if [ $? -ne 0 ]; then
+  log "Failed to update /etc/pacman.conf."
+  exit 1
+fi
+
+log "Preparing ${PKG} sources..."
+case ${REPO_FLAG} in
   aur)
-    git clone --depth=1 https://aur.archlinux.org/${1}.git ${WORK_DIR}
+    git clone --depth=1 https://aur.archlinux.org/${PACKAGE}.git ${WORK_DIR}
     ;;
   sf)
-    git clone --depth=1 git@github.com:steamfork/${1}.git ${WORK_DIR}
+    git clone --depth=1 git@github.com:steamfork/${PACKAGE}.git ${WORK_DIR}
     ;;
   local)
-    if [ -d "$(pwd)/PKGBUILD/${1}" ]; then
-      cp -r "$(pwd)/PKGBUILD/${1}/"* ${WORK_DIR}
+    if [ -d "${SCRIPT_DIR}/../PKGBUILD/${PACKAGE}" ]; then
+      cp -r "${SCRIPT_DIR}/../PKGBUILD/${PACKAGE}/"* ${WORK_DIR}
     else
-      echo "No local package, don't know what to do."
+      log "No local package, don't know what to do."
       exit 1
     fi
     ;;
   *)
-    echo "scripts/build_package type repo"
+    log "Unknown repository flag: ${REPO_FLAG}"
     exit 1
     ;;
 esac
 
+if [ $? -ne 0 ]; then
+  log "Failed to clone package source."
+  exit 1
+fi
+
 source ${WORK_DIR}/PKGBUILD
 
+log "Removing stale packages..."
 for STALE_PACKAGE in ${pkgbase} ${pkgbase}-debug ${pkgname[@]} ${pkgname[@]}-debug; do
   rm -f ${REPO_DIR}/${STALE_PACKAGE}-[0-9]*
 done
 
+if [ $? -ne 0 ]; then
+  log "Failed to remove stale packages."
+  exit 1
+fi
+
+log "Building package with pikaur..."
 PIKAUR_CMD="PKGDEST=${REPO_DIR} pikaur --noconfirm --rebuild --build-gpgdir /etc/pacman.d/gnupg -S -P ${WORK_DIR}/PKGBUILD"
 PIKAUR_RUN=(bash -c "${PIKAUR_CMD}")
 "${PIKAUR_RUN[@]}"
-# if aur package is not successfully built, exit
 if [ $? -ne 0 ]; then
-  echo "Build failed. Stopping..."
-  exit -1
+  log "Build failed. Stopping..."
+  exit 1
 fi
+
+log "Renaming packages to remove epoch..."
 # remove any epoch (:) in name, replace with -- since not allowed in artifacts
 find ${REPO_DIR}/*.pkg.tar* -type f -name '*:*' -execdir bash -c 'mv "$1" "${1//:/--}"' bash {} \;
+if [ $? -ne 0 ]; then
+  log "Failed to rename packages to remove epoch."
+  exit 1
+fi
 
+log "Signing packages..."
 # Sign packages.
 for PKG in ${pkgbase} ${pkgbase}-debug ${pkgname[@]}; do
   for TOSIGN in ${REPO_DIR}/${PKG}-${pkgver}*tar.zst; do
     if [ -f "${TOSIGN}" ]; then
-      gpg ${GPG_OPTS} --detach-sign --no-armor ${TOSIGN}
+      gpg ${GPG_OPTS} --yes --detach-sign --no-armor ${TOSIGN}
+      if [ $? -ne 0 ]; then
+        log "Failed to sign package ${TOSIGN}."
+        exit 1
+      fi
     fi
   done
 done
+
+log "Updating repository database..."
 cd ${REPO_DIR}
 repo-add --verify --sign -k ${SIGNKEY} steamfork.db.tar.gz *zst
+if [ $? -ne 0 ]; then
+  log "Failed to update repository database."
+  exit 1
+fi
 
 # Generate the checksum file only for local packages
-if [ "${PKGSOURCE}" == "local" ]; then
-  CHECKSUM=$(find "${SCRIPT_DIR}/../PKGBUILD/${PKG}" -type f -not -name '.checksum' -not -name '*.gz' -not -name '*.bz2' -not -name '*.xz' -printf '%T@ %p\n' | sha256sum | awk '{print $1}')
-  echo "${CHECKSUM}" > "${SCRIPT_DIR}/../PKGBUILD/${PKG}/.checksum"
+if [ "${REPO_FLAG}" == "local" ]; then
+  CHECKSUM=$(find "${SCRIPT_DIR}/../PKGBUILD/${PACKAGE}" -type f -not -name '.checksum' -not -name '*.gz' -not -name '*.bz2' -not -name '*.xz' -printf '%T@ %p\n' | sha256sum | awk '{print $1}')
+  echo "${CHECKSUM}" > "${SCRIPT_DIR}/../PKGBUILD/${PACKAGE}/.checksum"
+  if [ $? -ne 0 ]; then
+    log "Failed to generate checksum file."
+    exit 1
+  fi
 fi
+
+log "Package build complete."

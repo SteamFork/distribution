@@ -5,7 +5,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-eval $(make -s -f "${SCRIPT_DIR}/Makefile" env)
+eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
 
 IMAGE_PATH="release/images/rel/images"
 source ${IMAGE_PATH}/latest_rel.releasemeta
