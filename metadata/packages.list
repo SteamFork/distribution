@@ -12,9 +12,7 @@ local|lib32-wayland
 local|wayland-protocols
 local|xorg-xwayland
 local|mesa
-local|mesa-radv
 local|lib32-mesa
-local|lib32-mesa-radv
 local|gamescope
 local|gamescope-legacy
 local|ectool
@@ -24,7 +22,6 @@ local|steamfork-device-support
 local|steamfork-installer
 local|webrtc-audio-processing
 local|inputplumber
-local|steam-powerbuttond
 local|ryzenadj
 local|pikaur
 local|grafana-alloy

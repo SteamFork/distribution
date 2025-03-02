@@ -355,7 +355,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-libunistring
                     lib32-libunwind
                     lib32-libva
-                    lib32-libva-mesa-driver
                     lib32-libvdpau
                     lib32-libvorbis
                     lib32-libx11
@@ -379,7 +378,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-lm_sensors
                     lib32-mangohud
                     steamfork/lib32-mesa
-                    steamfork/lib32-mesa-vdpau
                     lib32-ncurses
                     lib32-nspr
                     lib32-nss
@@ -398,7 +396,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-vulkan-icd-loader
                     steamfork/lib32-vulkan-radeon
 		    steamfork/lib32-vulkan-virtio
-		    lib32-vulkan-mesa-layers
+		    steamfork/lib32-vulkan-mesa-layers
                     lib32-wayland
                     lib32-xcb-util-keysyms
                     lib32-xz
@@ -541,7 +539,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     libusbmuxd
                     libutempter
                     libva
-                    libva-mesa-driver
                     libvdpau
                     libverto
                     libvorbis
@@ -609,7 +606,6 @@ export STEAMOS_PKGS="accounts-qml-module
                     media-player-info
                     steamfork/mesa
                     mesa-utils
-                    steamfork/mesa-vdpau
                     milou
                     minizip
                     mkinitcpio
@@ -1044,6 +1040,8 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   kdegraphics-thumbnailers
                   kwrite
 		  steamfork/lib32-vulkan-intel
+		  steamfork/lib32-vulkan-swrast
+		  steamfork/lib32-vulkan-nouveau
                   libcap.so
                   libdisplay-info.so
                   libliftoff.so
@@ -1066,6 +1064,8 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
 		  steamfork-keyring
                   vlc
 		  steamfork/vulkan-intel
+		  steamfork/vulkan-swrast
+		  steamfork/vulkan-nouveau
                   wlroots
                   wlr-randr
                   xorg-xwayland
