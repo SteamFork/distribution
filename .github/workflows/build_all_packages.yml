@@ -56,9 +56,9 @@ jobs:
       - name: Trust GPG key for pacman
         run: |
           sudo pacman-key --init
+          sudo pacman-key --populate
           sudo pacman-key --add ~/.gnupg/private.key
           sudo pacman-key --lsign-key ${{ secrets.GPG_KEY_ID }}
-          sudo pacman-key --populate steamfork
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
