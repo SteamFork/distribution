@@ -198,14 +198,4 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Generate the checksum file only for local packages
-if [ "${REPO_FLAG}" == "local" ]; then
-  CHECKSUM=$(find "${SCRIPT_DIR}/../PKGBUILD/${PACKAGE}" -type f -not -name '.checksum' -not -name '*.gz' -not -name '*.bz2' -not -name '*.xz' -printf '%T@ %p\n' | sha256sum | awk '{print $1}')
-  echo "${CHECKSUM}" > "${SCRIPT_DIR}/../PKGBUILD/${PACKAGE}/.checksum"
-  if [ $? -ne 0 ]; then
-    log "Failed to generate checksum file."
-    exit 1
-  fi
-fi
-
 log "Package build complete."
