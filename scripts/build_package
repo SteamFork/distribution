@@ -150,7 +150,7 @@ case ${REPO_FLAG} in
     ;;
   local)
     if [ -d "${SCRIPT_DIR}/../PKGBUILD/${PACKAGE}" ]; then
-      cp -r "${SCRIPT_DIR}/../PKGBUILD/${PACKAGE}/"* ${WORK_DIR}
+      cp -r "${SCRIPT_DIR}/../PKGBUILD/${PACKAGE}/"* "${WORK_DIR}/"
     else
       log "No local package, don't know what to do."
       exit 1
@@ -181,7 +181,7 @@ fi
 
 log "Building package with makepkg..."
 cd ${WORK_DIR}
-makepkg --syncdeps --noconfirm --cleanbuild
+makepkg --syncdeps --noconfirm
 if [ $? -ne 0 ]; then
   log "Build failed. Stopping..."
   exit 1
