@@ -126,8 +126,11 @@ fi
 
 # Update /etc/pacman.conf to use the local repository
 log "Updating /etc/pacman.conf to use the local repository..."
-sudo sed -i '/^\[steamfork\]/,/^Include/ {/^Include/d;}' /etc/pacman.conf
-sudo sed -i '/^\[steamfork\]/a Server = file://'${REPO_DIR} /etc/pacman.conf
+if ! grep -q "Server = file://${REPO_DIR}" /etc/pacman.conf; then
+  sudo sed -i '/^\[steamfork\]/,/^Include/ {/^Include/d;}' /etc/pacman.conf
+  sudo sed -i '/^\[steamfork\]/a Server = file://'${REPO_DIR} /etc/pacman.conf
+fi
+
 if [ $? -ne 0 ]; then
   log "Failed to update /etc/pacman.conf."
   exit 1
