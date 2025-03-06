@@ -31,7 +31,7 @@ if [ -f "${HOME}/.SteamFork/options" ]; then
   source "${HOME}/.SteamFork/options"
 fi
 
-for KEY in SIGNKEY; do
+for KEY in SIGNKEY GPG_PASSPHRASE; do
   if [ -z "${!KEY}" ]; then
     log "Export ${KEY} before using this script."
     exit 1
@@ -39,15 +39,19 @@ for KEY in SIGNKEY; do
 done
 
 # Check if running in an interactive shell, and cache the GPG key if not already cached
+log "Restarting GPG agent..."
+gpgconf --kill gpg-agent
+gpgconf --launch gpg-agent
+
+log "Caching GPG key..."
 if [[ -t 1 ]]; then
-  GPG_OPTS=""
+  GPG_OPTS="--batch --yes --passphrase ${GPG_PASSPHRASE} --pinentry-mode loopback"
   export GPG_TTY=$(tty)
-  log "Caching GPG key..."
-  echo "Cache key" | gpg --sign -o /dev/null
+  echo "Cache key" | gpg ${GPG_OPTS} --sign -o /dev/null
 else
   GPG_OPTS="--batch --yes --passphrase-fd 0 --pinentry-mode loopback"
   touch emptyfile
-  echo "${GPG_PASSPHRASE}" | gpg --sign emptyfile
+  echo "${GPG_PASSPHRASE}" | gpg ${GPG_OPTS} --sign emptyfile
   rm -f emptyfile emptyfile.gpg
 fi
 
@@ -84,6 +88,9 @@ if [ -z "${OS_ARCH}" ]; then
   OS_ARCH=$(uname -m)
 fi
 
+# Always clean the work directory
+sudo rm -rf "${WORK_DIR}"
+
 BUILDUSER=${USER}
 PACKAGE=${PKG}
 WORK_DIR="${WORK_DIR}/packages/${PACKAGE}"
@@ -103,16 +110,15 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-log "Synchronizing package databases..."
-sudo pacman -Sy ||:
-if [ $? -ne 0 ]; then
-  log "Failed to synchronize package databases."
-  exit 1
+log "Creating work and repository directories..."
+# Create the local repository if it doesn't already exist
+mkdir -p "${REPO_DIR}" "${WORK_DIR}"
+sudo chown -R ${BUILDUSER}:${BUILDUSER} "${REPO_DIR}" "${WORK_DIR}"
+if [ ! -f "${REPO_DIR}/steamfork.db.tar.gz" ]
+then
+  repo-add -s -k ${SIGNKEY} "${REPO_DIR}/steamfork.db.tar.gz"
 fi
 
-log "Creating work and repository directories..."
-sudo mkdir -p ${WORK_DIR} ${REPO_DIR} 2>/dev/null
-sudo chown ${BUILDUSER}:${BUILDUSER} ${WORK_DIR} ${REPO_DIR}
 if [ $? -ne 0 ]; then
   log "Failed to create work and repository directories."
   exit 1
@@ -124,6 +130,13 @@ sudo sed -i '/^\[steamfork\]/,/^Include/ {/^Include/d;}' /etc/pacman.conf
 sudo sed -i '/^\[steamfork\]/a Server = file://'${REPO_DIR} /etc/pacman.conf
 if [ $? -ne 0 ]; then
   log "Failed to update /etc/pacman.conf."
+  exit 1
+fi
+
+log "Synchronizing package databases..."
+sudo pacman -Sy
+if [ $? -ne 0 ]; then
+  log "Failed to synchronize package databases."
   exit 1
 fi
 
