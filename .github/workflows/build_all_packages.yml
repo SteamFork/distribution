@@ -56,9 +56,9 @@ jobs:
       - name: Trust GPG key for pacman
         run: |
           sudo pacman-key --init
+          sudo pacman-key --populate
           sudo pacman-key --add ~/.gnupg/private.key
           sudo pacman-key --lsign-key ${{ secrets.GPG_KEY_ID }}
-          sudo pacman-key --populate steamfork
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
@@ -77,12 +77,6 @@ jobs:
       - name: Clear pacman cache
         run: |
           sudo pacman -Scc --noconfirm
-
-      - name: Create blank repository
-        run: |
-          eval $(make -s env)
-          mkdir -p "${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}" ||:
-          repo-add -s -k ${{ secrets.GPG_KEY_ID }} "${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}/steamfork.db.tar.gz"
 
       - name: Build all packages
         run: |

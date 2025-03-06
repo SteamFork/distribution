@@ -41,7 +41,7 @@ clean: image-clean build-clean
 dist-clean: repo-clean image-clean build-clean
 
 repo-clean:
-	sudo rm -rf ${REPO_DIR}
+	sudo rm -rf ${WORK_DIR} ${REPO_DIR}
 
 repo-check:
 	${SCRIPT_DIR}/sync check
