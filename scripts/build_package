@@ -20,6 +20,13 @@ eval $(make -s -f "${MAKEFILE_PATH}" env)
 # Make sure we're always using ccache when it's available.
 export PATH="/usr/lib/ccache/bin:$PATH"
 
+# Ensure ccache is enabled in makepkg.conf
+if grep -q "!ccache" /etc/makepkg.conf; then
+  sudo sed -i 's/!ccache/ccache/' /etc/makepkg.conf
+elif ! grep -q "ccache" /etc/makepkg.conf; then
+  sudo sed -i 's/^BUILDENV=(/BUILDENV=(ccache /' /etc/makepkg.conf
+fi
+
 if [ -f "${HOME}/.SteamFork/options" ]; then
   source "${HOME}/.SteamFork/options"
 fi
