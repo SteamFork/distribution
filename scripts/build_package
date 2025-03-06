@@ -159,12 +159,18 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-log "Building package with pikaur..."
-PIKAUR_CMD="PKGDEST=${REPO_DIR} pikaur --noconfirm --rebuild --build-gpgdir /etc/pacman.d/gnupg -S -P ${WORK_DIR}/PKGBUILD"
-PIKAUR_RUN=(bash -c "${PIKAUR_CMD}")
-"${PIKAUR_RUN[@]}"
+log "Building package with makepkg..."
+cd ${WORK_DIR}
+makepkg --syncdeps --noconfirm --cleanbuild
 if [ $? -ne 0 ]; then
   log "Build failed. Stopping..."
+  exit 1
+fi
+
+log "Moving built packages to repository directory..."
+mv ${WORK_DIR}/*.pkg.tar* ${REPO_DIR}
+if [ $? -ne 0 ]; then
+  log "Failed to move built packages to repository directory."
   exit 1
 fi
 
