@@ -1,7 +1,18 @@
-name: Build and Sync Service
+name: Automated Package Build and Sync
 
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to run the workflow on'
+        required: true
+  push:
+    branches:
+      - main
+      - 3.6
+      - 3.7
+    paths:
+      - 'PKGBUILD/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -11,10 +22,15 @@ jobs:
   build_and_sync:
     timeout-minutes: 1440
     runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: [main, 3.6, 3.7]
 
     steps:
       - name: Set up job
-        run: echo "Running job on branch ${{ github.ref }}"
+        run: echo "Running job on branch ${{ matrix.branch }}"
+        if: github.ref == 'refs/heads/${{ matrix.branch }}' || github.event.inputs.branch == '${{ matrix.branch }}'
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,7 +47,7 @@ jobs:
       - name: Configure GPG agent
         run: |
           mkdir -p ~/.gnupg
-          echo "use-agent" > ~/.gnupg/gpg.conf
+          echo "use-agent" >> ~/.gnupg/gpg.conf
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
           echo "default-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf
@@ -66,7 +82,6 @@ jobs:
         run: |
           touch emptyfile
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --sign emptyfile
-          rm -f emptyfile emptyfile.gpg
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
@@ -94,10 +109,10 @@ jobs:
             ./scripts/build_with_dependencies "$PKG"
           done
 
-      - name: Sync packages
-        if: github.repository == 'SteamFork/distribution'
-        run: make packages-sync
+#      - name: Sync packages
+#        if: github.repository == 'SteamFork/distribution'
+#        run: make packages-sync
 
-      - name: Sync mirrors
-        if: github.repository == 'SteamFork/distribution'
-        run: make mirrors-sync
+#      - name: Sync mirrors
+#        if: github.repository == 'SteamFork/distribution'
+#        run: make mirrors-sync
