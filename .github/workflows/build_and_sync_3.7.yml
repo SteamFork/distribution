@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
-# This workflow triggers the build_and_sync workflow for the target branch when packages are added or modified in the repository.
+# This workflow triggers the build_and_sync workflow for the 3.7 branch when packages are added or modified in the repository.
 
-name: Automated Build and Sync (main)
+name: Automated Build and Sync (3.7)
 
 on:
   push:
@@ -12,13 +12,13 @@ on:
       - '**'
       - '!PKGBUILD/**'
     branches:
-      - main
+      - 3.7
   workflow_dispatch:
 
 jobs:
   trigger_build_and_sync:
     runs-on: self-hosted
-    if: contains(github.ref, 'refs/heads/main')
+    if: contains(github.ref, 'refs/heads/3.7')
 
     steps:
       - name: Checkout repository
@@ -44,4 +44,4 @@ jobs:
           
       - name: Trigger build_and_sync workflow
         run: |
-          gh workflow run build_and_sync.yml --ref main -f runner_tag=main
+          gh workflow run build_and_sync.yml --ref 3.7 -f runner_tag=3.7
