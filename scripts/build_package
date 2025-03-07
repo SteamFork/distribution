@@ -38,27 +38,29 @@ for KEY in SIGNKEY GPG_PASSPHRASE; do
   fi
 done
 
-# Check if running in an interactive shell, and cache the GPG key if not already cached
-log "Restarting GPG agent..."
-gpgconf --kill gpg-agent
-gpgconf --launch gpg-agent
+# Function to cache GPG key
+cache_gpg_key() {
+  log "Restarting GPG agent..."
+  gpgconf --kill gpg-agent
+  gpgconf --launch gpg-agent
 
-log "Caching GPG key..."
-if [[ -t 1 ]]; then
-  GPG_OPTS="--batch --yes --passphrase ${GPG_PASSPHRASE} --pinentry-mode loopback"
-  export GPG_TTY=$(tty)
-  echo "Cache key" | gpg ${GPG_OPTS} --sign -o /dev/null
-else
-  GPG_OPTS="--batch --yes --passphrase-fd 0 --pinentry-mode loopback"
-  touch emptyfile
-  echo "${GPG_PASSPHRASE}" | gpg ${GPG_OPTS} --sign emptyfile
-  rm -f emptyfile emptyfile.gpg
-fi
+  log "Caching GPG key..."
+  if [[ -t 1 ]]; then
+    GPG_OPTS="--batch --yes --passphrase ${GPG_PASSPHRASE} --pinentry-mode loopback"
+    export GPG_TTY=$(tty)
+    echo "Cache key" | gpg ${GPG_OPTS} --sign -o /dev/null
+  else
+    GPG_OPTS="--batch --yes --passphrase-fd 0 --pinentry-mode loopback"
+    touch emptyfile
+    echo "${GPG_PASSPHRASE}" | gpg ${GPG_OPTS} --sign emptyfile
+    rm -f emptyfile emptyfile.gpg
+  fi
 
-if [ ! "$?" = 0 ]; then
-    log "Unable to cache signing key, quitting..."
-    exit 1
-fi
+  if [ ! "$?" = 0 ]; then
+      log "Unable to cache signing key, quitting..."
+      exit 1
+  fi
+}
 
 # Parse arguments
 REPO_FLAG=""
@@ -182,6 +184,9 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# Cache GPG key before starting the build
+cache_gpg_key
+
 log "Building package with makepkg..."
 cd ${WORK_DIR}
 makepkg --syncdeps --noconfirm
@@ -189,6 +194,9 @@ if [ $? -ne 0 ]; then
   log "Build failed. Stopping..."
   exit 1
 fi
+
+# Cache GPG key before signing packages
+cache_gpg_key
 
 log "Moving built packages to repository directory..."
 mv ${WORK_DIR}/*.pkg.tar* ${REPO_DIR}
