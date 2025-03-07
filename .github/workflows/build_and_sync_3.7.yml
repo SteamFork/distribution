@@ -25,6 +25,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           clean: false
+          ref: 3.7
 
       - name: Install GitHub CLI
         run: |
