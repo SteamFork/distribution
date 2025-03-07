@@ -9,7 +9,7 @@ export OS_DIR           := ${BUILD_DIR}/rootfs/steamfork
 export SCRIPT_DIR       := ${BUILD_DIR}/scripts
 export WORK_DIR         := ${BUILD_DIR}/_work
 export IMAGE_DIR        := ${BUILD_DIR}/release/images/${STEAMOS_VERSION}
-export REPO_DIR         := ${BUILD_DIR}/release/repos/${STEAMOS_VERSION}
+export REPO_DIR         := ${BUILD_DIR}/release/repos/
 export IMAGE_DIR        := ${BUILD_DIR}/release/images
 export UPSTREAM_REPO	:= upstream
 
