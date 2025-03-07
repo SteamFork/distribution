@@ -1,7 +1,7 @@
 # Maintainer: Fewtarius <fewtarius@steamfork.org>
 
 pkgname=steamfork-keyring
-pkgver=20250226
+pkgver=20250307
 pkgrel=1
 pkgdesc='SteamFork PGP keyring'
 arch=('any')
