@@ -1,5 +1,5 @@
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 88aa57c15..95d1ab597 100644
+index 88aa57c15..d004d7291 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
 @@ -178,6 +178,12 @@ static const struct dmi_system_id orientation_data[] = {
@@ -34,3 +34,29 @@ index 88aa57c15..95d1ab597 100644
  		},
  		.driver_data = (void *)&lcd800x1280_rightside_up,
  	}, {	/* AYA NEO AIR */
+@@ -485,6 +497,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONE XPLAYER"),
+ 		},
+ 		.driver_data = (void *)&lcd1200x1920_leftside_up,
++	}, {	/* OneXPlayer OneXFly F1 Pro */
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK"),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONEXPLAYER F1Pro"),
++		},
++		.driver_data = (void *)&lcd1080x1920_leftside_up,
+ 	}, {	/* OrangePi Neo */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "OrangePi"),
+@@ -497,6 +515,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Galaxy Book 10.6"),
+ 		},
+ 		.driver_data = (void *)&lcd1280x1920_rightside_up,
++	}, {    /* Tectoy Zeenix Lite (AYN Loki Zero Rebadge) */
++                .matches = {
++                        DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Tectoy"),
++                        DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Zeenix Lite"),
++                },
++                .driver_data = (void *)&lcd1080x1920_leftside_up,
+ 	}, {	/* Valve Steam Deck (Jupiter) */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Valve"),
