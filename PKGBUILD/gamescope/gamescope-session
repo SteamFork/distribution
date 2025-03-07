@@ -250,28 +250,26 @@ fi
 
 function get_active_display() {
 	local DRM_PATH="/sys/class/drm"
-	local ACTIVE_DISPLAYS=""
 	for CARD in $(seq 0 1 9)
 	do
-		### Preference order: DP, HDMI, DVI, VGA, eDP, LVDS, DSI
-		for DISPLAY in ${DRM_PATH}/card${CARD}-DP* ${DRM_PATH}/card${CARD}-HDMI* \
-			${DRM_PATH}/card${CARD}-DVI* ${DRM_PATH}/card${CARD}-VGA* \
-			${DRM_PATH}/card${CARD}-eDP* ${DRM_PATH}/card${CARD}-LVDS* \
-			${DRM_PATH}/card${CARD}-DSI*
+		### Preference order: eDP, DP, HDMI.
+		for DISPLAY in ${DRM_PATH}/card${CARD}-eDP* ${DRM_PATH}/card${CARD}-DP* ${DRM_PATH}/card${CARD}-HDMI*
 		do
 			MY_DISPLAY=$(echo ${DISPLAY#*card${CARD}-})
 			DISPLAY_STATUS=$(cat ${DISPLAY}/status 2>/dev/null)
-			if [ "${DISPLAY_STATUS}" != "connected" ]
+			if [ "${DISPLAY_STATUS}" = "connected" ]
 			then
+				break
+			else
 				unset MY_DISPLAY DISPLAY_STATUS
 			fi
-		        if [ -n "${MY_DISPLAY}" ]
-		        then
-			        ACTIVE_DISPLAYS="${ACTIVE_DISPLAYS}${MY_DISPLAY},"
-		        fi
 		done
+		if [ -n "${MY_DISPLAY}" ]
+		then
+			echo "${MY_DISPLAY}"
+			break
+		fi
 	done
-	echo "${ACTIVE_DISPLAYS}"
 }
 
 cleanup_loop() {
@@ -383,7 +381,7 @@ sudo udevadm trigger && ${GAMESCOPE_BINARY} \
 	--fade-out-duration 200 \
 	--cursor-scale-height 720 \
 	-e -R "$socket" -T "$stats" \
-	-O ${GAMESCOPE_DISPLAY} \
+	-O '*',${GAMESCOPE_DISPLAY} \
 	&
 gamescope_pid="$!"
 
