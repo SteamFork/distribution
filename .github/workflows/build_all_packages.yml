@@ -1,7 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
+# This workflow destroys and recreates the SteamFork package repository and then syncs it to all known mirrors.
+
 name: Build All Packages
 
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build'
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -10,7 +18,7 @@ concurrency:
 jobs:
   build_all_packages:
     timeout-minutes: 1440
-    runs-on: self-hosted
+    runs-on: ${{ github.event.inputs.branch }}
 
     steps:
       - name: Clean repository
@@ -23,6 +31,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           clean: false
+          ref: ${{ github.event.inputs.branch }}
 
       - name: Configure GPG agent
         run: |
@@ -52,9 +61,9 @@ jobs:
       - name: Trust GPG key for pacman
         run: |
           sudo pacman-key --init
+          sudo pacman-key --populate
           sudo pacman-key --add ~/.gnupg/private.key
           sudo pacman-key --lsign-key ${{ secrets.GPG_KEY_ID }}
-          sudo pacman-key --populate steamfork
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
@@ -68,17 +77,11 @@ jobs:
 
       - name: Configure ccache
         run: |
-          ccache --max-size=50G
+          ccache --max-size=10G
 
       - name: Clear pacman cache
         run: |
           sudo pacman -Scc --noconfirm
-
-      - name: Create blank repository
-        run: |
-          eval $(make -s env)
-          mkdir -p "${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}" ||:
-          repo-add -s -k ${{ secrets.GPG_KEY_ID }} "${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}/steamfork.db.tar.gz"
 
       - name: Build all packages
         run: |

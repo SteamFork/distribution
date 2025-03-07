@@ -1,7 +1,15 @@
-name: Build and Sync Service
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
+# This workflow builds and syncs packages for the SteamFork distribution.
+
+name: Package Build and Sync
 
 on:
   workflow_dispatch:
+    inputs:
+      runner_tag:
+        description: 'Runner tag'
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -10,7 +18,7 @@ concurrency:
 jobs:
   build_and_sync:
     timeout-minutes: 1440
-    runs-on: self-hosted
+    runs-on: ${{ github.event.inputs.runner_tag }}
 
     steps:
       - name: Set up job
@@ -20,6 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           clean: false
+          ref: ${{ github.ref }}
 
       - name: Verify the repo exists, or fail.
         run: |
@@ -56,9 +65,9 @@ jobs:
       - name: Trust GPG key for pacman
         run: |
           sudo pacman-key --init
+          sudo pacman-key --populate
           sudo pacman-key --add ~/.gnupg/private.key
           sudo pacman-key --lsign-key ${{ secrets.GPG_KEY_ID }}
-          sudo pacman-key --populate steamfork
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
@@ -78,17 +87,17 @@ jobs:
         run: |
           sudo pacman -Scc --noconfirm
 
-      - name: Run checksum_pkgbuild script
-        id: checksum
+      - name: Build package list from metadata
+        id: build_package_list
         run: |
           cd $GITHUB_WORKSPACE
-          OUTPUT=$(./scripts/checksum_pkgbuild)
-          echo "packages=$OUTPUT" >> $GITHUB_ENV
+          LOCAL_PACKAGES=$(awk 'BEGIN {FS="|"} /^local/ {printf $2" "}' metadata/packages.list)
+          echo "local_packages=$LOCAL_PACKAGES" >> $GITHUB_ENV
 
       - name: Build with dependencies
         run: |
           cd $GITHUB_WORKSPACE
-          PACKAGES="${{ env.packages }}"
+          PACKAGES="${{ env.local_packages }}"
           IFS=' ' read -r -a PACKAGE_ARRAY <<< "$PACKAGES"
           for PKG in "${PACKAGE_ARRAY[@]}"; do
             ./scripts/build_with_dependencies "$PKG"

@@ -48,13 +48,14 @@ build_package() {
     local REPO_FLAG=$2
     echo "Building ${PKG} with repo flag ${REPO_FLAG}..."
     ${SCRIPT_DIR}/build_package --repo ${REPO_FLAG} ${PKG}
+    return $?
 }
 
 build_with_dependencies() {
     local PKG=$1
 
     if [[ " ${BUILT[@]} " =~ " ${PKG} " ]]; then
-        return
+        return 0
     fi
 
     local PKG_VERSION
@@ -64,7 +65,7 @@ build_with_dependencies() {
     if is_package_in_repo "${PKG}" "${PKG_VERSION}"; then
         echo "Skipping ${PKG}, already in repository with version ${PKG_VERSION}."
         BUILT+=("${PKG}")
-        return
+        return 0
     fi
 
     local DEPS
@@ -74,15 +75,16 @@ build_with_dependencies() {
         if is_package_in_repo "${DEP}" "$(get_pkgbuild_version "${DEP}")"; then
             echo "Skipping ${DEP}, already in repository."
         elif [[ -f "${SCRIPT_DIR}/../PKGBUILD/${DEP}/PKGBUILD" ]]; then
-            build_with_dependencies "${DEP}"
+            build_with_dependencies "${DEP}" || return 1
         else
             echo "Building ${DEP} from AUR."
-            build_package "${DEP}" "aur"
+            build_package "${DEP}" "aur" || return 1
         fi
     done
 
-    build_package "${PKG}" "local"
+    build_package "${PKG}" "local" || return 1
     BUILT+=("${PKG}")
+    return 0
 }
 
 if [ -z "$1" ]; then
@@ -92,3 +94,4 @@ fi
 
 declare -a BUILT
 build_with_dependencies "$1"
+exit $?
