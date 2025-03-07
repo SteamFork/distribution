@@ -1,7 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
+# This workflow destroys and recreates the SteamFork package repository and then syncs it to all known mirrors.
+
 name: Build All Packages
 
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build'
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -10,18 +18,25 @@ concurrency:
 jobs:
   build_all_packages:
     timeout-minutes: 1440
-    runs-on: self-hosted
+    runs-on: ${{ github.event.inputs.branch }}
 
     steps:
+      - name: Clean repository
+        run: |
+          if [ -f Makefile ]; then
+            make repo-clean
+          fi
+          
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           clean: false
+          ref: ${{ github.event.inputs.branch }}
 
       - name: Configure GPG agent
         run: |
           mkdir -p ~/.gnupg
-          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "use-agent" > ~/.gnupg/gpg.conf
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
           echo "default-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf
@@ -46,9 +61,9 @@ jobs:
       - name: Trust GPG key for pacman
         run: |
           sudo pacman-key --init
+          sudo pacman-key --populate
           sudo pacman-key --add ~/.gnupg/private.key
           sudo pacman-key --lsign-key ${{ secrets.GPG_KEY_ID }}
-          sudo pacman-key --populate steamfork
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
@@ -56,35 +71,26 @@ jobs:
         run: |
           touch emptyfile
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --sign emptyfile
+          rm -f emptyfile emptyfile.gpg
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Configure ccache
         run: |
-          ccache --max-size=50G
+          ccache --max-size=10G
 
       - name: Clear pacman cache
         run: |
           sudo pacman -Scc --noconfirm
 
-      - name: Clean repository
-        run: |
-          make repo-clean
-
-      - name: Create blank repository
-        run: |
-          eval $(make -s env)
-          mkdir -p "${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}" ||:
-          repo-add -s -k ${{ secrets.GPG_KEY_ID }} "${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}/steamfork.db.tar.gz"
-
       - name: Build all packages
         run: |
           make packages-all
 
-#      - name: Sync packages
-#        if: github.repository == 'SteamFork/distribution'
-#        run: make packages-sync
+      - name: Sync packages
+        if: github.repository == 'SteamFork/distribution'
+        run: make packages-sync
 
-#      - name: Sync mirrors
-#        if: github.repository == 'SteamFork/distribution'
-#        run: make mirrors-sync
+      - name: Sync mirrors
+        if: github.repository == 'SteamFork/distribution'
+        run: make mirrors-sync

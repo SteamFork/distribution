@@ -1,18 +1,15 @@
-name: Automated Package Build and Sync
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
+# This workflow builds and syncs packages for the SteamFork distribution.
+
+name: Package Build and Sync
 
 on:
   workflow_dispatch:
     inputs:
-      branch:
-        description: 'Branch to run the workflow on'
+      runner_tag:
+        description: 'Runner tag'
         required: true
-  push:
-    branches:
-      - main
-      - 3.6
-      - 3.7
-    paths:
-      - 'PKGBUILD/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -21,21 +18,17 @@ concurrency:
 jobs:
   build_and_sync:
     timeout-minutes: 1440
-    runs-on: self-hosted
-    strategy:
-      fail-fast: false
-      matrix:
-        branch: [main, 3.6, 3.7]
+    runs-on: ${{ github.event.inputs.runner_tag }}
 
     steps:
       - name: Set up job
-        run: echo "Running job on branch ${{ matrix.branch }}"
-        if: github.ref == 'refs/heads/${{ matrix.branch }}' || github.event.inputs.branch == '${{ matrix.branch }}'
+        run: echo "Running job on branch ${{ github.ref }}"
 
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           clean: false
+          ref: ${{ github.ref }}
 
       - name: Verify the repo exists, or fail.
         run: |
@@ -47,7 +40,7 @@ jobs:
       - name: Configure GPG agent
         run: |
           mkdir -p ~/.gnupg
-          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "use-agent" > ~/.gnupg/gpg.conf
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
           echo "default-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf
@@ -72,9 +65,9 @@ jobs:
       - name: Trust GPG key for pacman
         run: |
           sudo pacman-key --init
+          sudo pacman-key --populate
           sudo pacman-key --add ~/.gnupg/private.key
           sudo pacman-key --lsign-key ${{ secrets.GPG_KEY_ID }}
-          sudo pacman-key --populate steamfork
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
@@ -82,6 +75,7 @@ jobs:
         run: |
           touch emptyfile
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --sign emptyfile
+          rm -f emptyfile emptyfile.gpg
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
@@ -93,26 +87,26 @@ jobs:
         run: |
           sudo pacman -Scc --noconfirm
 
-      - name: Run checksum_pkgbuild script
-        id: checksum
+      - name: Build package list from metadata
+        id: build_package_list
         run: |
           cd $GITHUB_WORKSPACE
-          OUTPUT=$(./scripts/checksum_pkgbuild)
-          echo "packages=$OUTPUT" >> $GITHUB_ENV
+          LOCAL_PACKAGES=$(awk 'BEGIN {FS="|"} /^local/ {printf $2" "}' metadata/packages.list)
+          echo "local_packages=$LOCAL_PACKAGES" >> $GITHUB_ENV
 
       - name: Build with dependencies
         run: |
           cd $GITHUB_WORKSPACE
-          PACKAGES="${{ env.packages }}"
+          PACKAGES="${{ env.local_packages }}"
           IFS=' ' read -r -a PACKAGE_ARRAY <<< "$PACKAGES"
           for PKG in "${PACKAGE_ARRAY[@]}"; do
             ./scripts/build_with_dependencies "$PKG"
           done
 
-#      - name: Sync packages
-#        if: github.repository == 'SteamFork/distribution'
-#        run: make packages-sync
+      - name: Sync packages
+        if: github.repository == 'SteamFork/distribution'
+        run: make packages-sync
 
-#      - name: Sync mirrors
-#        if: github.repository == 'SteamFork/distribution'
-#        run: make mirrors-sync
+      - name: Sync mirrors
+        if: github.repository == 'SteamFork/distribution'
+        run: make mirrors-sync
