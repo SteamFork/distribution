@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
-# This workflow tags a release in the repository and starts the release process.
+# This workflow tags a release in the repository.
 
 name: Tag for Release
 
@@ -17,6 +17,12 @@ jobs:
         with:
           clean: false
 
+      - name: Define the release tag.
+        id: create_tag
+        run: |
+          RELEASE_TAG=$(date +%Y%m%d)
+          echo "RELEASE_TAG=${RELEASE_TAG}" >> $GITHUB_ENV
+
       - name: Verify the repo exists, or fail the build.
         run: |
           if [ ! -d "${GITHUB_WORKSPACE}/release/repos" ]; then
@@ -28,18 +34,18 @@ jobs:
         run: |
           ${GITHUB_WORKSPACE}/scripts/sync check
 
-      - name: Define the release tag.
-        id: create_tag
+      - name: Configure Git
         run: |
-          RELEASE_TAG=$(date +%Y%m%d)
-          echo "RELEASE_TAG=${RELEASE_TAG}" >> $GITHUB_ENV
+          git config --global user.name "SteamFork Release Bot"
+          git config --global user.email "SteamFork Release Bot@users.noreply.github.com"
+          ORIGINAL_URL=$(git remote get-url origin)
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
-      - name: Create the release tag to trigger the release.
-        uses: actions/create-release@v1
-        with:
-          tag_name: ${{ env.RELEASE_TAG }}
-          release_name: Release ${{ env.RELEASE_TAG }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create and push the release tag
+        run: |
+          git tag ${{ env.RELEASE_TAG }}
+          git push origin ${{ env.RELEASE_TAG }}
+
+      - name: Restore original origin URL
+        run: |
+          git remote set-url origin $ORIGINAL_URL
