@@ -38,7 +38,7 @@ jobs:
         run: |
           git config --global user.name "SteamFork Release Bot"
           git config --global user.email "SteamFork Release Bot@users.noreply.github.com"
-          ORIGINAL_URL=$(git remote get-url origin)
+          echo "ORIGINAL_URL=$(git remote get-url origin)" >> $GITHUB_ENV
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
       - name: Create and push the release tag
@@ -48,4 +48,4 @@ jobs:
 
       - name: Restore original origin URL
         run: |
-          git remote set-url origin $ORIGINAL_URL
+          git remote set-url origin ${{ env.ORIGINAL_URL }}
