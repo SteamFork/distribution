@@ -16,6 +16,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           clean: false
+          persist-credentials: false
+          fetch-depth: 0
 
       - name: Define the release tag.
         id: create_tag
