@@ -13,7 +13,7 @@ license=('GPL')
 depends=('lxc' 'python-gbinder' 'python-gobject' 'nftables' 'dnsmasq' 'gtk3' 'dbus-python')
 makedepends=('git')
 optdepends=('python-pyclip: share clipboard with container')
-_commit="9cd66662ba53d491ce7e3c74218b5194267a6f68" # tags/1.4.3
+_commit="61d5be43dc7b4ccb07f08179ec44a4acc838e94e" # tags/1.5.0
 source=("waydroid::git+https://github.com/waydroid/waydroid.git#commit=$_commit")
 
 pkgver() {
