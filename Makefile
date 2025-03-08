@@ -52,6 +52,7 @@ image-clean:
 
 build-clean:
 	sudo rm -f /var/lib/pacman/db.lck
+	sudo rm -rf ${WORK_DIR}
 	yes | sudo pacman -Scc
 
 images-all: images
