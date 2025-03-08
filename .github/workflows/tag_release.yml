@@ -6,10 +6,6 @@ name: Tag for Release
 
 on:
   workflow_dispatch:
-    inputs:
-      release_tag:
-        description: 'Release tag'
-        required: true
 
 jobs:
   tag_release:
