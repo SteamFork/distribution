@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
+# This workflow tags a release in the repository and starts the release process.
+
+name: Tag for Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag'
+        required: true
+
+jobs:
+  tag_release:
+    runs-on: [self-hosted, main]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          clean: false
+
+      - name: Verify the repo exists, or fail the build.
+        run: |
+          if [ ! -d "${GITHUB_WORKSPACE}/release/repos" ]; then
+            echo "The repository does not exist, can not continue."
+            exit 1
+          fi
+
+      - name: Verify that the local repository is in sync.
+        run: |
+          ${GITHUB_WORKSPACE}/scripts/sync check
+
+      - name: Define the release tag.
+        id: create_tag
+        run: |
+          RELEASE_TAG=$(date +%Y%m%d)
+          echo "RELEASE_TAG=${RELEASE_TAG}" >> $GITHUB_ENV
+
+      - name: Create the release tag to trigger the release.
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          release_name: Release ${{ env.RELEASE_TAG }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
