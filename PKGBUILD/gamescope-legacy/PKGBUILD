@@ -3,7 +3,7 @@
 pkgname=gamescope-legacy
 _srctag=3.14.2
 pkgver=${_srctag//-/.}
-pkgrel=1
+pkgrel=3
 pkgdesc="gaming shell based on Xwayland, powered by Vulkan and DRM"
 arch=(x86_64)
 url="https://github.com/ValveSoftware/gamescope"
