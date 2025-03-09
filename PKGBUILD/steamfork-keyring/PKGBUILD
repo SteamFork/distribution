@@ -19,7 +19,7 @@ validpgpkeys=('A33991EE2981A3B05368EF5E75C1E5647441B94C' # Fewtarius <fewtarius@
 
 build() {
   cd steamfork-keyring/
-  git checkout 3.7
+  git checkout compat
   mkdir -p keyring/main
 
   make build

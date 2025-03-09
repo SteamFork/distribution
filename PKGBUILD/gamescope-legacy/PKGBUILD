@@ -3,7 +3,7 @@
 pkgname=gamescope-legacy
 _srctag=3.14.2
 pkgver=${_srctag//-/.}
-pkgrel=2
+pkgrel=1
 pkgdesc="gaming shell based on Xwayland, powered by Vulkan and DRM"
 arch=(x86_64)
 url="https://github.com/ValveSoftware/gamescope"
@@ -18,8 +18,6 @@ source=(
         # FIXME Upstream gamescope is just selecting master branch at build time, so we are arbitrarily snapshotting a
         #       revision when bumping the version here such that the build is reproducible.
         "git+https://github.com/nothings/stb.git#commit=af1a5bc352164740c1cc1354942b1c6b72eacb8a"
-	001-fix-wlroots-gcc-14.patch
-	002-libliftoff-gcc-14.patch
 	)
 
 sha256sums=(
@@ -28,27 +26,25 @@ sha256sums=(
             'SKIP'
             'SKIP'
             'SKIP'
-	    'd60d77d97b9af1d4d34b5de918aba04a315f935b560da224f622070db3a7dfa8' # 001-fix-wlroots-gcc-14.patch
-	    '6aa1d6df23c920af7d5f09a69a39b90dcd6ebf674d427a785f62dffa8cf07b61' # 002-libliftoff-gcc-14.patch
 	    )
 
 prepare() {
 	cd "gamescope"
+
+	local src
+	for src in "${source[@]}"; do
+		src="${src%%::*}"
+		src="${src##*/}"
+		[[ $src = *.patch ]] || continue
+		echo "Applying patch $src..."
+		patch -Np1 < "../$src"
+	done
 
 	# git submodules
 	git submodule init
 	git config submodule.subprojects/wlroots.url "$srcdir/wlroots"
 	git config submodule.subprojects/libliftoff.url "$srcdir/libliftoff"
 	git -c protocol.file.allow=always submodule update
-
-        local src
-        for src in "${source[@]}"; do
-                src="${src%%::*}"
-                src="${src##*/}"
-                [[ $src = *.patch ]] || continue
-                echo "Applying patch $src..."
-                patch -Np1 < "../$src"
-        done
 
 	# meson subprojects
 	rm -rf subprojects/stb
