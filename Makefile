@@ -86,9 +86,3 @@ mirrors-sync:
 	${SCRIPT_DIR}/sync mirrors
 
 .PHONY: release
-
-release: 
-	git merge ${UPSTREAM_REPO}/main
-	${SCRIPT_DIR}/sync check
-	git tag ${RELEASE_TAG}
-	git push ${UPSTREAM_REPO} ${RELEASE_TAG}
