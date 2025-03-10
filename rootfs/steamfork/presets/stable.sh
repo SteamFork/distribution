@@ -783,7 +783,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     rtkit
                     rxvt-unicode-terminfo
                     sbc
-                    sddm-wayland
+                    sddm
                     sdl2
                     seatd
                     sed
