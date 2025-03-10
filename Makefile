@@ -8,9 +8,8 @@ export INSTALLER_DIR    := ${BUILD_DIR}/rootfs/installer
 export OS_DIR           := ${BUILD_DIR}/rootfs/steamfork
 export SCRIPT_DIR       := ${BUILD_DIR}/scripts
 export WORK_DIR         := ${BUILD_DIR}/_work
-export IMAGE_DIR        := ${BUILD_DIR}/release/images/${STEAMOS_VERSION}
+export IMAGE_DIR        := ${BUILD_DIR}/release/images/${STEAMOS_VERSION}/
 export REPO_DIR         := ${BUILD_DIR}/release/repos/
-export IMAGE_DIR        := ${BUILD_DIR}/release/images
 export UPSTREAM_REPO	:= upstream
 
 RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -62,7 +61,7 @@ image: image-clean
 
 images:
 	${SCRIPT_DIR}/mkimage minimal $(RUN_ARGS)
-	${SCRIPT_DIR}/mkimage rel $(RUN_ARGS)
+	${SCRIPT_DIR}/mkimage stable $(RUN_ARGS)
 
 images-sync:
 	${SCRIPT_DIR}/sync os-sync

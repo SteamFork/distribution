@@ -7,7 +7,7 @@ if [ -n "${1}" ]
 then
   RELEASE_TYPE="${1}"
 else
-  RELEASE_TYPE="rel"
+  RELEASE_TYPE="stable"
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -15,7 +15,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
 
 SCRIPT="$(realpath "${0}")"
-IMAGE_DIR="${IMAGE_DIR}/${RELEASE_TYPE}/images"
 WORK_DIR="${WORK_DIR}/image"
 
 export IMAGE_DIR WORK_DIR
