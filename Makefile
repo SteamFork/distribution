@@ -62,7 +62,7 @@ image: image-clean
 
 images:
 	${SCRIPT_DIR}/mkimage minimal $(RUN_ARGS)
-	${SCRIPT_DIR}/mkimage rel $(RUN_ARGS)
+	${SCRIPT_DIR}/mkimage stable $(RUN_ARGS)
 
 images-sync:
 	${SCRIPT_DIR}/sync os-sync
