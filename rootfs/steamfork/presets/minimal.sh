@@ -298,7 +298,6 @@ export STEAMOS_PKGS="acl
                     perl-error
                     perl-mailtools
                     perl-timedate
-                    pikaur
                     pinentry
                     pixman
                     pkgconf
