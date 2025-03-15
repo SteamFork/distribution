@@ -243,7 +243,7 @@ export STEAMOS_PKGS="7zip
                     graphene
                     graphite
                     grep
-                    grub
+                    core-${STEAMOS_VERSION}/grub
                     gsettings-desktop-schemas
                     gsettings-system-schemas
                     gsm
