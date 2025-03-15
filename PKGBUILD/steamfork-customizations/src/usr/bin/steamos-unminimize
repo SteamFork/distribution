@@ -1,0 +1,152 @@
+#!/bin/bash
+# -*- mode: sh; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: et sts=2 sw=2
+
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  Copyright © 2024 Valve Corporation.
+#
+#  This file is part of steamos-customizations.
+#
+#  steamos-customizations is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public License as
+#  published by the Free Software Foundation; either version 2.1 of the License,
+#  or (at your option) any later version.
+
+
+set -euo pipefail
+# shellcheck source=../libexec/steamos-shellutil.sh.in
+source /usr/lib/steamos/steamos-shellutil.sh
+
+# Additional packages/groups we should install as part of enabling devmode
+DEVMODE_PACKAGES=(base-devel multilib-devel)
+
+NOCONFIRM=0
+
+usage() {
+  echo "Usage: ${0##*/} [--dev] [--noconfirm] [directory [directory ...]]"
+  echo ""
+  echo "Scans for packages with missing files and reinstalls them.  Can be used to undo"
+  echo "the minimization that occurs at SteamOS image building time, installing missing"
+  echo "files such as man pages and includes."
+  echo ""
+  echo "With directory argument(s), will only scan/reinstall packages with affected"
+  echo "files in the given paths.  E.g. \`steamos-unminimize /usr/include\`."
+  echo ""
+  echo "This is largely a wrapper around \`pacman -Qk\`."
+  echo ""
+  echo "--dev"
+  echo "  Install additional useful development packages, including \`base-devel\`"
+  echo "  and \`multilib-devel\` packages."
+  echo ""
+  echo "--noconfirm"
+  echo "  Do not confirm (re)installation of selected packages."
+}
+
+# unminimize_packages [target_dir [...]]
+#
+# Scan all packages that have files under listed directories for missing files with `pacman -Qo` + `-Qk`, and reinstall
+# any matches to restore the files.  Reverses the effect of image-based installs pruning package files like manpages.
+#
+# If no arguments are passed, scan all packages.
+unminimize_packages() {
+  local target_dirs=("$@")
+
+  # `pacman -Qo /` does not work correctly for whatever reason. But if `/` is in the targets list, we can just omit the
+  # list and check all packages as we would with no args.
+  #
+  # Note: Technically, there's a difference here in that we will include packages with zero files in the check, whereas
+  #       `-Qo /` would only include packages with at least one file (if it worked).  But as said packages will never
+  #       show up as missing a file, so it is moot.
+  for target in "${target_dirs[@]}"; do
+    if [[ $target = / ]]; then
+      target_dirs=()
+      break
+    fi
+  done
+
+  noconfirm_arg=""
+  (( NOCONFIRM )) && noconfirm_arg="--noconfirm"
+
+  einfo "Checking for minimized packages"
+  local check_packages=() # Extra packages to pass the -Qk check
+
+  # If we were given a directory list, resolve it to a list of packages to check
+  if [[ ${#target_dirs[@]} -gt 0 ]]; then
+    readarray -t check_packages < <(pacman -Qqo -- "${target_dirs[@]}" | sort | uniq)
+
+    if [[ ${#check_packages[@]} -lt 1 ]]; then
+      # Didn't find any packages in these directories, done
+      einfo "No packages own files under the given directories"
+      return 1
+    fi
+  fi
+
+  # Run missing files check
+  local unminimize_packages=()
+  readarray -t unminimize_packages < <(cmd pacman -Qkq -- "${check_packages[@]}" | cut -d' ' -f1 | sort | uniq)
+
+  # Reinstall any we found
+  if (( ${#unminimize_packages[@]} )); then
+    # Split to native (in-repos) vs foreign packages (e.g. AUR, not in a repo, can't reinstall)
+    local unminimize_native=()
+    readarray -t unminimize_native < <(pacman -Qnq -- "${unminimize_packages[@]}")
+
+    if (( ${#unminimize_native[@]} )); then
+      estat "Reinstalling ${#unminimize_packages[@]} packages with pruned files"
+      cmd pacman -S $noconfirm_arg -- "${unminimize_packages[@]}"
+    fi
+
+    # Same with foreign packages, but just complain about them
+    local unminimize_foreign=()
+    readarray -t unminimize_foreign < <(pacman -Qmq -- "${unminimize_packages[@]}")
+
+    if (( ${#unminimize_foreign[@]} )); then
+      ewarn "Found ${#unminimize_foreign[@]} packages with missing files that are not in the"
+      ewarn "repositories. These may be orphaned or installed from the AUR:"
+      local pkg
+      for pkg in "${unminimize_foreign[@]}"; do
+        ewarn2 "$pkg"
+      done
+    fi
+  else
+    estat "No missing files found, no packages need reinstalling"
+  fi
+}
+
+install_devpkgs() {
+  cmd pacman -S --needed $noconfirm_arg -- "${DEVMODE_PACKAGES[@]}"
+}
+
+[[ "$EUID" -eq 0 ]] || die "$(basename -- "$0") needs to be run as root"
+
+verb=""
+arg_dev=0
+opts_ended=0
+args=()
+while [[ $# -gt 0 ]]; do
+  if (( opts_ended )); then
+    args+=("$1")
+  elif [[ $1 = "--" ]]; then
+    opts_ended=1
+  elif [[ $1 = "--dev" ]]; then
+    arg_dev=1
+  elif [[ $1 = "--noconfirm" ]]; then
+    NOCONFIRM=1
+  elif [[ ${1#-} != "$1" ]]; then
+    eerr "Invalid argument: $1"
+    usage
+    exit 1
+  else
+    args+=("$1")
+  fi
+
+  shift
+done
+
+estat "Unminimizing packages"
+unminimize_packages "${args[@]}"
+if (( arg_dev )); then
+  estat "Installing needed development packages"
+  install_devpkgs
+fi

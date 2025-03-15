@@ -1,0 +1,113 @@
+#!/bin/bash
+# -*- mode: sh; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+# vim: et sts=4 sw=4
+
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  Copyright © 2020-2021 Collabora Ltd.
+#  Copyright © 2020-2021 Valve Corporation.
+#
+#  This file is part of steamos-customizations.
+#
+#  steamos-customizations is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public License as
+#  published by the Free Software Foundation; either version 2.1 of the License,
+#  or (at your option) any later version.
+
+SETTINGS_DIR=/efi/settings
+
+# Copy steam-settings files from /efi/steam-settings to /home/steamos/.steam-settings/ folder.
+if [ -d /efi/steam-settings ]; then
+    # Create target folder if it doesn't exist
+    mkdir -p /home/steamos/.steam-settings
+    # Copy all settings files to .steam-settings
+    cp /efi/steam-settings/* /home/steamos/.steam-settings
+    # Change the owner so steam client can read the files.
+    chown -R steamos:steamos /home/steamos/.steam-settings
+fi
+
+if ! [ -d $SETTINGS_DIR ]; then
+    exit 0
+fi
+
+# Make sure to consume the settings dir, whatever happens
+trap "rm -fr $SETTINGS_DIR" EXIT
+
+# Import user settings
+if [ -f $SETTINGS_DIR/settings.conf ]; then
+
+    . $SETTINGS_DIR/settings.conf
+
+    if [ "$LOCALE" ]; then
+        echo "Setting locale: $LOCALE"
+        localectl set-locale $LOCALE
+    fi
+
+    if [ "$TZ" ]; then
+        echo "Setting timezone: $TZ"
+        timedatectl set-timezone $TZ
+    fi
+
+    if [ "$KEYBOARD" ]; then
+        KBDLAYOUT=$(echo $KEYBOARD | cut -d ':' -f 1)
+
+        KBDMODEL="pc105"
+        case "$KBDLAYOUT" in
+            "jp" )
+                KBDMODEL="jp106"
+                ;;
+        esac
+
+        KBDVARIANT=""
+        if grep -q ':' <<< "$KEYBOARD"; then
+            KBDVARIANT=$(echo $KEYBOARD | cut -d ':' -f 2)
+        fi
+
+        echo "Setting keyboard: layout=$KBDLAYOUT, model=$KBDMODEL, variant=$KBDVARIANT (from '$KEYBOARD')"
+        localectl set-x11-keymap $KBDLAYOUT $KBDMODEL $KBDVARIANT
+
+        # Make sure X will start with the right keyboard layout
+        mkdir -p /etc/X11/xorg.conf.d
+        cat > /etc/X11/xorg.conf.d/00-keyboard.conf << EOF
+# Read and parsed by systemd-localed. It's probably wise not to edit this file
+# manually too freely.
+Section "InputClass"
+        Identifier "system-keyboard"
+        MatchIsKeyboard "on"
+        Option "XkbLayout" "$KBDLAYOUT"
+        Option "XkbModel" "$KBDMODEL"
+        Option "XkbVariant" "$KBDVARIANT"
+EndSection
+EOF
+
+        # Make sure the layout is applied to all ttys
+        # XXX No setupcon on ArchLinux, I guess we need something else,
+        # like loadkeys?
+        if command -v setupcon >/dev/null 2>&1; then
+            setupcon
+        fi
+    fi
+fi
+
+# Import steam libraries
+if [ -f $SETTINGS_DIR/steamlibtab ]; then
+    echo "Setting steamlibtab:"
+    cat $SETTINGS_DIR/steamlibtab | tee --append /etc/steamlibtab
+    systemctl daemon-reload
+    systemctl restart local-fs.target
+fi
+
+# Import network configuration
+if [ -d $SETTINGS_DIR/network-connections ]; then
+    echo "Installing network configuration"
+    mkdir -p /etc/NetworkManager/system-connections
+    install -v -m 0600 $SETTINGS_DIR/network-connections/* /etc/NetworkManager/system-connections/
+fi
+
+# Mark setup as complete to prevent initial setup from running
+mkdir -p /var/lib/calamares-steamos
+touch /var/lib/calamares-steamos/initial_setup_complete
+rm -f /etc/sddm.conf.d/calamares-initial-setup.conf \
+      /root/.config/kwinrulesrc \
+      /root/.xsessions/steamos-initial-setup.desktop
+

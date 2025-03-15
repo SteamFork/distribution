@@ -1,0 +1,256 @@
+#!/bin/bash
+# -*- mode: sh; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+# vim: et sts=4 sw=4
+
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  Copyright © 2020 Collabora Ltd.
+#  Copyright © 2020 Valve Corporation.
+#
+#  This file is part of steamos-customizations.
+#
+#  steamos-customizations is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public License as
+#  published by the Free Software Foundation; either version 2.1 of the License,
+#  or (at your option) any later version.
+
+set -euo pipefail
+
+usage() {
+    cat <<EOF
+Usage: ${0##*/} [-o fs-options] DEVICE MOUNTPOINT
+       ${0##*/} -u MOUNTPOINT
+
+Mount all the SteamOS filesystems on MOUNTPOINT using the DEVICE partitions.
+
+Options:
+ -o, --options <list>    comma-separated list of mount options
+ -u                      umount
+ -h, --help              display this help
+
+Options for disk:
+ partset=<self|other|A|B|dev>
+                         explicitly specifies partset
+ noesp                   no mount /esp
+ noefi                   no mount /efi
+ novar                   no mount /var (implies nooverlay and noboot)
+ nohome                  no mount /home (implies nooffload)
+ nooffload               no bind-mount offloaded directories
+ nooverlay               no mount overlayed /etc
+ noboot                  no bind-mount /boot
+EOF
+}
+
+partset="${partset:-other}"
+while [[ "$#" -ne 0 ]]
+do
+    if [[ "$1" =~ ^(-h|--help)$ ]]
+    then
+        usage
+        exit
+    elif [[ "$1" =~ ^(-u)$ ]]
+    then
+        unmount=1
+    elif [[ "$1" =~ ^(-o) ]]
+    then
+        if [[ "$1" == "-o" ]]
+        then
+            shift
+            opt="$1"
+        elif [[ "$1" =~ ^-o= ]]
+        then
+            opt="${1/-o=/}"
+        else
+            opt="${1/-o/}"
+        fi
+
+        IFS=, read -a opts <<<"$opt"
+        for opt in "${opts[@]}"
+        do
+            if [[ "${opt%%=*}" = "$opt" ]]
+            then
+                opt+="=1"
+            fi
+            eval "$(echo "$opt")"
+        done
+    elif [[ "${dev:-}" ]] || ( [[ -n "${unmount:-}" ]] && [[ "${mnt:-}" ]] )
+    then
+        usage
+        echo "$1: Too many arguments" >&2
+        exit 1
+    elif [[ ! "${mnt:-}" ]]
+    then
+        mnt="$1"
+    else
+        dev="$mnt"
+        mnt="$1"
+    fi
+    shift
+done
+
+if [[ ! "${mnt:-}" ]]
+then
+    usage
+    exit 1
+fi
+
+# Unmount all partitions
+if [[ "${unmount:-}" ]]
+then
+    exec umount -R "$mnt"
+fi
+
+# Mount all partitions
+if [[ ! "${dev:-}" ]]
+then
+    usage
+    exit 1
+fi
+
+# Get the list of partitions
+case "${partset:-other}" in
+A|B|dev)
+    PARTITIONS=("efi-$partset" "rootfs-$partset" "var-$partset")
+    ;;
+*)
+    if [[ ! -d "/dev/disk/by-partsets/$partset" ]]
+    then
+        echo "$partset: No such partset" >&2
+        exit 1
+    fi
+
+    mapfile -t PARTITIONS < <(blkid -s PARTLABEL -o value "/dev/disk/by-partsets/$partset"/*)
+    ;;
+esac
+PARTITIONS+=("esp" "home")
+
+# Get the devices
+mapfile -t devs < <(sfdisk -o "device,name" -l "$dev" | sed -n '/Device/,/^$/{//d;p}')
+declare -A devices
+for dev in "${devs[@]}"
+do
+    read -r -a device < <(echo "$dev")
+    if [[ ${#device[@]} -lt 2 ]]
+    then
+        continue
+    fi
+
+    # check if the device is a SteamOS partition using the GPT partition label:
+    for part in "${PARTITIONS[@]}"
+    do
+        if [[ "$part" == "${device[1]}" ]]
+        then
+            devices[${device[1]}]="${device[0]}"
+            break
+        fi
+    done
+done
+
+for dev in "${!devices[@]}"
+do
+    case "$dev" in
+    esp)
+        esp="${devices[$dev]}"
+        ;;
+    efi-*)
+        efi="${devices[$dev]}"
+        ;;
+    rootfs-*)
+        rootfs="${devices[$dev]}"
+        ;;
+    var-*)
+        var="${devices[$dev]}"
+        ;;
+    home)
+        home="${devices[$dev]}"
+        ;;
+    esac
+done
+
+if [[ ! "${esp:-}" ]]
+then
+    # Get the first EFI System Partition
+    mapfile -t esps < <(sfdisk -o "device,uuid,type" -l "$dev" | sed -n '/Device/,/^$/{//d;/EFI System$/p}')
+    for dev in "${esps[@]}"
+    do
+        read -r -a device < <(echo "$dev")
+        if [[ ${#device[@]} -lt 2 ]]
+        then
+            continue
+        fi
+
+        esp="${device[0]}"
+        break
+    done
+fi
+
+if [[ ! "${noesp:-}" ]] && [[ ! "${esp:-}" ]]
+then
+    echo "esp: No such device" >&2
+    exit 1
+elif [[ ! "${noefi:-}" ]] && [[ ! "${efi:-}" ]]
+then
+    echo "efi: No such device" >&2
+    exit 1
+elif [[ ! "${rootfs:-}" ]]
+then
+    echo "rootfs: No such device" >&2
+    exit 1
+elif [[ ! "${novar:-}" ]] && [[ ! "${var:-}" ]]
+then
+    echo "var: No such device" >&2
+    exit 1
+elif [[ ! "${nohome:-}" ]] && [[ ! "${home:-}" ]]
+then
+    echo "home: No such device" >&2
+    exit 1
+fi
+
+# Mount partset
+mount "$rootfs" "$mnt"
+trap 'umount -R "$mnt"' 0
+if [[ ! "${nohome:-}" ]]
+then
+    mount "$home" "$mnt/home"
+fi
+if [[ ! "${novar:-}" ]]
+then
+    mount "$var" "$mnt/var"
+fi
+if [[ ! "${noefi:-}" ]]
+then
+    mount "$efi" "$mnt/efi"
+fi
+if [[ ! "${noesp:-}" ]]
+then
+    mount "$esp" "$mnt/esp"
+fi
+
+# Mount offload
+if [[ ! "${nohome:-}" ]] && [[ ! "${nooverlay:-}" ]]
+then
+    for i in /opt /root /srv /usr/lib/debug /usr/local
+    do
+        mount --bind "$mnt/home/.steamos/offload$i" "$mnt$i"
+    done
+    if [[ ! "${novar:-}" ]]
+    then
+        for i in /var/cache/pacman /var/lib/docker /var/lib/flatpak /var/lib/systemd/coredump /var/log /var/tmp
+        do
+            mount --bind "$mnt/home/.steamos/offload$i" "$mnt$i"
+        done
+    fi
+fi
+
+# Mount overlay
+if [[ ! "${novar:-}" ]] && [[ ! "${nooverlay:-}" ]]
+then
+    mount -t overlay -o "lowerdir=$mnt/etc,upperdir=$mnt/var/lib/overlays/etc/upper,workdir=$mnt/var/lib/overlays/etc/work" none "$mnt/etc"
+fi
+
+# Mount boot
+if [[ ! "${novar:-}" ]] && [[ ! "${noboot:-}" ]]
+then
+    mount --bind "$mnt/var/boot" "$mnt/boot"
+fi
+trap - 0
