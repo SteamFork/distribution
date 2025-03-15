@@ -1,0 +1,48 @@
+# Maintainer: Fewtarius
+
+pkgname=steamfork-theme
+pkgver=2025.03.15
+pkgrel=1
+pkgdesc='SteamFork plymouth theme.'
+arch=('any')
+url='http://www.steamfork.org'
+license=('LGPLv2+')
+depends=('base')
+makedepends=('file')
+
+installit() {
+  TYPE=$(file --no-sandbox "${1}")
+  echo "Process ${1} ${TYPE}"
+  if [[ "${TYPE}" =~ script ]] || \
+     [[ "${1}" =~ desktop ]]
+  then
+    PERM="755"
+  elif [[ "${TYPE}" =~ link ]]
+  then
+    FILE_PATH="${pkgdir}/$(dirname "${1}")"
+    if [ ! -d "${FILE_PATH}" ]
+    then
+      echo "Mkdir ${FILE_PATH}"
+      mkdir -p "${FILE_PATH}"
+    fi
+    TARGET=$(readlink "$1")
+    echo "Changedir ${FILE_PATH}"
+    cd "${FILE_PATH}"
+    echo "Linking ${TARGET} ."
+    ln -sf ${TARGET} $(basename ${1})
+    cd -
+    return
+  else
+    PERM="644"
+  fi
+  echo "Install ${PERM}: ${1}"
+  install -Dm ${PERM} "${1}" "${pkgdir}/${1}"
+}
+
+package() {
+  cd "${srcdir}" || exit 2
+  find -type f -o -type l | while read FILE
+  do
+    installit "${FILE}"
+  done
+}

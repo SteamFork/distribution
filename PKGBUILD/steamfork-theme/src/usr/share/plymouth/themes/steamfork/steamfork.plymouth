@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=steamfork
+Description=Simple SteamFork splash screen
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/steamfork
+ScriptFile=/usr/share/plymouth/themes/steamfork/steamfork.script
