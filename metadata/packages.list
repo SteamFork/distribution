@@ -11,6 +11,7 @@ local|wayland
 local|lib32-wayland
 local|wayland-protocols
 local|xorg-xwayland
+local|sddm-wayland
 local|mesa
 local|mesa-radv
 local|lib32-mesa
@@ -26,7 +27,7 @@ local|webrtc-audio-processing
 local|inputplumber
 local|steam-powerbuttond
 local|ryzenadj
-local|pikaur
+local|sequoia-sq
 local|grafana-alloy
 aur|wlr-randr
 aur|dnsmasq-git
