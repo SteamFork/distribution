@@ -13,9 +13,7 @@ local|wayland-protocols
 local|xorg-xwayland
 local|sddm-wayland
 local|mesa
-local|mesa-radv
 local|lib32-mesa
-local|lib32-mesa-radv
 local|gamescope
 local|gamescope-legacy
 local|ectool
