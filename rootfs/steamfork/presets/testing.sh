@@ -18,13 +18,13 @@ export IMAGEFILE="${BUILDVER}"
 export ENABLED_SERVICES=( sddm
                         bluetooth
                         systemd-timesyncd
-			systemd-resolved
+			                  systemd-resolved
                         NetworkManager
-			firewalld
-			inputplumber
-			steam-powerbuttond
+			                  firewalld
+			                  inputplumber
+			                  steam-powerbuttond
                         steamos-offload.target
-			fstrim.timer
+			                  fstrim.timer
                         var-lib-pacman.mount
                         etc.mount
                         nix.mount
@@ -46,12 +46,17 @@ export PLYMOUTH_THEME="steamos"
 export FINAL_DISTRIB_IMAGE=${BUILDVER}
 export KERNELCHOICE="linux"
 export BASE_BOOTSTRAP_PKGS="base base-devel linux-firmware amd-ucode intel-ucode sddm-wayland dkms jq btrfs-progs core-${STEAMOS_VERSION}/grub efibootmgr openssh plymouth"
-export STEAMOS_PKGS="accounts-qml-module
+export STEAMOS_PKGS="7zip
+                    a52dec
+                    aardvark-dns
+                    abseil-cpp
+                    accounts-qml-module
                     accountsservice
                     acl
                     adobe-source-code-pro-fonts
                     adwaita-cursors
                     adwaita-icon-theme
+                    adwaita-icon-theme-legacy
                     aha
                     alsa-card-profiles
                     alsa-lib
@@ -68,28 +73,36 @@ export STEAMOS_PKGS="accounts-qml-module
                     archlinux-appstream-data
                     archlinux-keyring
                     argon2
+                    aribb24
                     ark
                     aspell
                     aspell-en
                     assimp
                     at-spi2-core
-		    atomupd-daemon
-                    atkmm
+                    atomupd-daemon
+                    attica
                     attr
                     audit
                     avahi
+                    baloo
+                    baloo-widgets
                     base
                     bash
                     bash-completion
+                    bats
                     binutils
+                    blas
                     bluedevil
                     bluez
                     bluez-libs
+                    bluez-qt
                     bluez-utils
                     bolt
                     boost-libs
                     breakpad
                     breeze
+                    breeze-grub
+                    breeze-gtk
                     breeze-icons
                     brotli
                     btop
@@ -100,16 +113,17 @@ export STEAMOS_PKGS="accounts-qml-module
                     ca-certificates-mozilla
                     ca-certificates-utils
                     cairo
-                    cairomm
+                    cairomm-1.16
                     cantarell-fonts
                     caps
                     casync
                     catatonit
+                    cblas
                     cdparanoia
                     cfitsio
                     cifs-utils
                     clinfo
-                    confuse
+                    composefs
                     conmon
                     containers-common
                     convertlit
@@ -118,13 +132,18 @@ export STEAMOS_PKGS="accounts-qml-module
                     criu
                     crun
                     cryptsetup
+                    cups
+                    cups-filters
+                    cups-pdf
                     curl
                     dav1d
-                    db
                     db5.3
                     dbus
-                    dbus-python
+                    dbus-broker
+                    dbus-broker-units
+                    dbus-units
                     dconf
+                    ddcutil
                     default-cursors
                     desktop-file-utils
                     desync
@@ -136,15 +155,16 @@ export STEAMOS_PKGS="accounts-qml-module
                     distrobox
                     djvulibre
                     dmidecode
-                    dnssec-anchors
                     dolphin
                     dos2unix
                     dosfstools
                     double-conversion
                     drkonqi
                     drm_info
+                    drm_janitor
                     duktape
                     e2fsprogs
+                    earlyoom
                     ebook-tools
                     editorconfig-core-c
                     efibootmgr
@@ -157,57 +177,64 @@ export STEAMOS_PKGS="accounts-qml-module
                     exiv2
                     expat
                     f3
+                    faad2
                     fatresize
                     fd
                     ffmpeg
+                    ffmpeg4.4
+                    ffmpegthumbs
+                    fftw
                     file
+                    filelight
                     filesystem
                     findutils
                     firewalld
                     fish
                     flac
-                    flashrom
                     flatpak
                     flatpak-kcm
                     fontconfig
+                    frameworkintegration
                     freeglut
                     freerdp
+                    freerdp2
                     freetype2
                     fribidi
                     fuse-common
                     fuse-overlayfs
                     fuse2
                     fuse3
-                    fwupd
                     fwupd-efi
+                    fwupd-minimal
                     galileo-mura
                     gamemode
                     steamfork/gamescope
-		    steamfork/gamescope-legacy
+                    steamfork/gamescope-legacy
                     gawk
                     gc
-                    gcab
                     gcc-libs
                     gdb
                     gdb-common
                     gdbm
                     gdk-pixbuf2
-                    geoclue
                     gettext
                     ghostscript
                     giflib
                     git
                     glew
-                    glfw-x11
+                    glfw
                     glib-networking
                     glib2
                     glibc
-                    glibmm
+                    glibmm-2.68
+                    glslang
                     glu
                     gmp
+                    gnulib-l10n
                     gnupg
                     gnutls
                     gobject-introspection-runtime
+                    gocryptfs
                     gperftools
                     gpgme
                     gpm
@@ -216,16 +243,25 @@ export STEAMOS_PKGS="accounts-qml-module
                     graphene
                     graphite
                     grep
+                    grub
                     gsettings-desktop-schemas
+                    gsettings-system-schemas
                     gsm
+                    gssdp
                     gssproxy
+                    gst-plugin-pipewire
+                    gst-plugins-bad-libs
                     gst-plugins-base
                     gst-plugins-base-libs
                     gstreamer
+                    gtest
                     gtk-update-icon-cache
                     gtk3
-                    gtkmm3
+                    gtk4
+                    gtkmm-4.0
                     guile
+                    gupnp
+                    gupnp-igd
                     gwenview
                     gzip
                     harfbuzz
@@ -234,13 +270,19 @@ export STEAMOS_PKGS="accounts-qml-module
                     highway
                     holo-desync
                     holo-dmi-rules
+                    holo-earlyoom
                     holo-fstab-repair
+                    holo-glibc-locales
                     holo-keyring
+                    holo-nfs-utils-tmpfiles
                     holo-nix-offload
                     holo-sudo
+                    holo-zram-swap
                     htop
                     hunspell
                     hwdata
+                    hwloc
+                    i2c-tools
                     iana-etc
                     ibus
                     ibus-anthy
@@ -251,6 +293,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     icu
                     ijs
                     imath
+                    inputplumber
                     intel-ucode
                     iotop
                     iproute2
@@ -262,10 +305,13 @@ export STEAMOS_PKGS="accounts-qml-module
                     jansson
                     jasper
                     jbig2dec
+                    jbigkit
                     jq
                     json-c
                     json-glib
+                    jsoncpp
                     jupiter-dock-updater-bin
+                    jupiter-fan-control
                     jupiter-firewall
                     jupiter-hw-support
                     jupiter-legacy-support
@@ -273,39 +319,98 @@ export STEAMOS_PKGS="accounts-qml-module
                     jupiter-steamos-log-submitter
                     kaccounts-integration
                     kactivitymanagerd
+                    karchive
                     kate
+                    kauth
                     kbd
+                    kbookmarks
+                    kcmutils
+                    kcodecs
+                    kcolorpicker
+                    kcolorscheme
+                    kcompletion
+                    kconfig
+                    kconfigwidgets
+                    kcontacts
+                    kcoreaddons
+                    kcrash
+                    kdbusaddons
                     kde-cli-tools
                     kde-gtk-config
+                    kdeclarative
                     kdeconnect
                     kdecoration
+                    kded
                     kdeplasma-addons
+                    kdesu
                     kdialog
-                    kdsoap
+                    kdnssd
+                    kdsoap-qt6
                     kdsoap-ws-discovery-client
+                    kdumpst
                     kexec-tools
                     keyutils
+                    kfilemetadata
+                    kgamma
+                    kglobalaccel
+                    kglobalacceld
+                    kguiaddons
+                    kholidays
+                    ki18n
+                    kiconthemes
+                    kidletime
+                    kimageannotator
                     kinfocenter
-                    kirigami2
+                    kio
+                    kio-extras
+                    kio-fuse
+                    kirigami
+                    kirigami-addons
+                    kitemmodels
+                    kitemviews
                     kitty-terminfo
+                    kjobwidgets
                     kmenuedit
                     kmod
+                    knewstuff
+                    knotifications
+                    knotifyconfig
                     konsole
+                    kpackage
+                    kparts
+                    kpeople
                     kpipewire
                     kpmcore
+                    kpty
+                    kquickcharts
                     krb5
+                    krdp
+                    krunner
                     kscreen
                     kscreenlocker
+                    kservice
                     ksshaskpass
+                    kstatusnotifieritem
+                    ksvg
                     ksystemstats
+                    ktexteditor
+                    ktextwidgets
+                    kunitconversion
+                    kuserfeedback
+                    kwallet
+                    kwallet-pam
+                    kwayland
+                    kwidgetsaddons
                     kwin
+                    kwindowsystem
                     kwrited
+                    kxmlgui
                     l-smash
                     lame
+                    lapack
                     layer-shell-qt
                     lcms2
                     ldb
-                    ldns
                     less
                     lib32-alsa-lib
                     lib32-alsa-plugins
@@ -325,11 +430,12 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-glibc
                     lib32-harfbuzz
                     lib32-icu
+                    lib32-json-c
                     lib32-keyutils
                     lib32-krb5
                     lib32-libasyncns
                     lib32-libcap
-                    steamfork/lib32-libdrm
+                    lib32-libdrm
                     lib32-libelf
                     lib32-libffi
                     lib32-libgcrypt
@@ -337,7 +443,10 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-libgpg-error
                     lib32-libidn2
                     lib32-libldap
+                    lib32-libnghttp2
+                    lib32-libnghttp3
                     lib32-libnm
+                    lib32-libnsl
                     lib32-libogg
                     lib32-libpciaccess
                     lib32-libpipewire
@@ -363,13 +472,10 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-libxdmcp
                     lib32-libxext
                     lib32-libxfixes
-                    lib32-libxi
                     lib32-libxinerama
-		    lib32-libxkbcommon
                     lib32-libxml2
                     lib32-libxshmfence
                     lib32-libxss
-                    lib32-libxtst
                     lib32-libxxf86vm
                     lib32-llvm-libs
                     lib32-lm_sensors
@@ -387,14 +493,14 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-pcre2
                     lib32-pipewire
                     lib32-renderdoc-minimal
-		    lib32-spirv-tools
+                    lib32-spirv-llvm-translator
+                    lib32-spirv-tools
                     lib32-sqlite
                     lib32-systemd
                     lib32-util-linux
                     lib32-vulkan-icd-loader
                     steamfork/lib32-vulkan-radeon
-		    steamfork/lib32-vulkan-virtio
-		    lib32-vulkan-mesa-layers
+                    steamfork/lib32-vulkan-virtio
                     lib32-wayland
                     lib32-xcb-util-keysyms
                     lib32-xz
@@ -402,13 +508,23 @@ export STEAMOS_PKGS="accounts-qml-module
                     lib32-zstd
                     libaccounts-glib
                     libaccounts-qt
+                    libaio
                     libarchive
                     libass
                     libassuan
                     libasyncns
                     libatasmart
                     libavc1394
+                    libavif
+                    libb2
                     libblockdev
+                    libblockdev-crypto
+                    libblockdev-fs
+                    libblockdev-loop
+                    libblockdev-mdraid
+                    libblockdev-nvme
+                    libblockdev-part
+                    libblockdev-swap
                     libbluray
                     libbpf
                     libbs2b
@@ -422,56 +538,76 @@ export STEAMOS_PKGS="accounts-qml-module
                     libcloudproviders
                     libcolord
                     libcups
+                    libcupsfilters
                     libdaemon
                     libdatrie
-                    libdbusmenu-qt5
+                    libdbusmenu-glib
+                    libdbusmenu-gtk3
+                    libdc1394
+                    libdca
                     libdecor
+                    libdeflate
+                    libdisplay-info
                     libdmtx
-                    steamfork/libdrm
+                    libdovi
+                    libdrm
+                    libdvbpsi
+                    libdvdnav
+                    libdvdread
+                    libebml
                     libedit
+                    libei
                     libelf
                     libepoxy
                     libevdev
                     libevent
+                    libexif
                     libfakekey
                     libfdk-aac
                     libffi
                     libfontenc
                     libfreeaptx
-                    libftdi
                     libgcrypt
                     libgirepository
                     libglvnd
                     libgpg-error
                     libgudev
-                    libgusb
                     libhangul
                     libibus
-                    libical
                     libice
                     libidn
                     libidn2
                     libiec61883
+                    libiio
                     libimobiledevice
+                    libimobiledevice-glue
                     libinih
                     libinput
                     libjcat
                     libjpeg-turbo
                     libjxl
+                    libkdcraw
                     libkexiv2
                     libksba
                     libkscreen
                     libksysguard
+                    liblc3
                     libldac
                     libldap
+                    libmad
                     libmalcontent
+                    libmatroska
                     libmbim
                     libmd
                     libmfx
                     libmm-glib
+                    libmng
                     libmnl
                     libmodplug
+                    libmpcdec
+                    libmpeg2
                     libmtp
+                    libmysofa
                     libndp
                     libnet
                     libnetfilter_conntrack
@@ -479,24 +615,31 @@ export STEAMOS_PKGS="accounts-qml-module
                     libnfnetlink
                     libnftnl
                     libnghttp2
+                    libnghttp3
+                    libnice
                     libnl
                     libnm
                     libnotify
                     libnsl
+                    libnvme
                     libogg
-                    libomxil-bellagio
                     libopenmpt
                     libp11-kit
                     libpaper
                     libpcap
                     libpciaccess
+                    libpfm
                     libpgm
+                    libpipewire
+                    libplacebo
+                    libplasma
                     libplist
                     libpng
+                    libppd
                     libproxy
                     libpsl
                     libpulse
-                    libqaccessibilityclient
+                    libqaccessibilityclient-qt6
                     libqalculate
                     libqmi
                     libqrtr-glib
@@ -507,13 +650,11 @@ export STEAMOS_PKGS="accounts-qml-module
                     libsasl
                     libseccomp
                     libsecret
-                    libsigc++
-                    libslirp
+                    libserialport
+                    libsigc++-3.0
                     libsm
-                    libsmbios
                     libsndfile
                     libsodium
-                    libsoup
                     libsoup3
                     libsoxr
                     libspectre
@@ -521,6 +662,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     libssh2
                     libstemmer
                     libsysprof-capture
+                    libtar
                     libtasn1
                     libteam
                     libthai
@@ -531,20 +673,26 @@ export STEAMOS_PKGS="accounts-qml-module
                     libtool
                     libtraceevent
                     libtracefs
+                    libunibreak
                     libunistring
                     libunwind
+                    libupnp
                     libusb
                     libusbmuxd
                     libutempter
                     libva
+                    libva-intel-driver
                     libva-mesa-driver
                     libvdpau
                     libverto
+                    libvlc
                     libvorbis
+                    libvpl
                     libvpx
                     libwacom
                     libwbclient
                     libwebp
+                    libwireplumber
                     libx11
                     libxau
                     libxaw
@@ -580,6 +728,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     libxv
                     libxxf86vm
                     libyaml
+                    libyuv
                     libzip
                     licenses
                     lilv
@@ -612,6 +761,8 @@ export STEAMOS_PKGS="accounts-qml-module
                     mkinitcpio-busybox
                     mobile-broadband-provider-info
                     modemmanager
+                    modemmanager-qt
+                    mpdecimal
                     mpfr
                     mpg123
                     mtdev
@@ -623,6 +774,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     nettle
                     networkmanager
                     networkmanager-openvpn
+                    networkmanager-qt
                     nfs-utils
                     nfsidmap
                     nftables
@@ -636,33 +788,38 @@ export STEAMOS_PKGS="accounts-qml-module
                     ntfs-3g
                     numactl
                     nvme-cli
+                    ocean-sound-theme
                     ocl-icd
                     okular
+                    onetbb
                     oniguruma
                     openal
                     opencore-amr
+                    opencv
                     openexr
                     openjpeg2
                     openssh
                     openssl
                     openvpn
+                    openxr
                     opus
                     orc
                     ostree
                     oxygen
                     oxygen-sounds
                     p11-kit
-                    p7zip
                     p8-platform
                     pacman
                     pacman-mirrorlist
                     pam
                     pambase
                     pango
-                    pangomm
+                    pangomm-2.48
+                    parallel
                     parted
                     partitionmanager
                     paru
+                    passt
                     pavucontrol
                     pciutils
                     pcre
@@ -673,16 +830,20 @@ export STEAMOS_PKGS="accounts-qml-module
                     perl-error
                     perl-mailtools
                     perl-timedate
-                    phonon-qt5
-                    phonon-qt5-gstreamer
+                    phonon-qt6
+                    phonon-qt6-vlc
                     pinentry
                     pipewire
                     pipewire-alsa
                     pipewire-audio
                     pipewire-jack
                     pipewire-pulse
+                    pipewire-v4l2
+                    pipewire-x11-bell
                     pixman
                     pkcs11-helper
+                    plasma-activities
+                    plasma-activities-stats
                     plasma-browser-integration
                     plasma-desktop
                     plasma-disks
@@ -699,38 +860,39 @@ export STEAMOS_PKGS="accounts-qml-module
                     plasma-welcome
                     plasma-workspace
                     plasma-workspace-wallpapers
+                    plasma5support
                     podman
                     polkit
                     polkit-kde-agent
-                    polkit-qt5
+                    polkit-qt6
                     poppler
                     poppler-data
-                    poppler-qt5
+                    poppler-qt6
                     popt
                     portaudio
-                    powerbuttond
                     powerdevil
                     powertop
                     ppp
+                    print-manager
+                    prison
                     procps-ng
                     protobuf
                     protobuf-c
                     psmisc
                     pulseaudio-qt
+                    purpose
                     python
+                    python-aiohappyeyeballs
                     python-aiohttp
                     python-aiosignal
                     python-anyio
-                    python-async-timeout
                     python-attrs
                     python-capng
                     python-certifi
-                    python-chardet
-                    python-charset-normalizer
                     python-click
                     python-crcmod
+                    python-dbus
                     python-dbus-next
-                    python-distro
                     python-evdev
                     python-frozenlist
                     python-gobject
@@ -739,6 +901,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     python-httpcore
                     python-httpx
                     python-idna
+                    python-minidump
                     python-multidict
                     python-progressbar
                     python-protobuf
@@ -747,65 +910,98 @@ export STEAMOS_PKGS="accounts-qml-module
                     python-pyaml
                     python-pyelftools
                     python-pyenchant
-                    python-pyinotify
+                    python-pygdbmi
                     python-semantic-version
+                    python-sentry_sdk
                     python-sniffio
-                    python-systemd
                     python-typing_extensions
+                    python-urllib3
                     python-utils
                     python-yaml
                     python-yarl
                     pyzy
-                    qca-qt5
+                    qca-qt6
+                    qcoro
+                    qpdf
+                    qqc2-breeze-style
+                    qqc2-desktop-style
                     qrencode
-		    qt5-tools
+                    qt5-base
+                    qt5-declarative
+                    qt5-feedback
+                    qt5-graphicaleffects
+                    qt5-multimedia
+                    qt5-quickcontrols2
+                    qt5-svg
+                    qt5-tools
+                    qt5-translations
+                    qt5-wayland
+                    qt5-x11extras
+                    qt6-5compat
                     qt6-base
+                    qt6-connectivity
                     qt6-declarative
-                    qt6-location
+                    qt6-imageformats
                     qt6-multimedia
+                    qt6-multimedia-ffmpeg
+                    qt6-positioning
+                    qt6-quick3d
+                    qt6-quicktimeline
                     qt6-sensors
+                    qt6-shadertools
                     qt6-speech
                     qt6-svg
                     qt6-tools
                     qt6-translations
+                    qt6-virtualkeyboard
                     qt6-wayland
                     qt6-webchannel
                     qt6-webengine
+                    qt6-websockets
                     qt6-webview
+                    qtkeychain-qt6
                     rauc
                     rav1e
                     re2
                     readline
                     renderdoc-minimal
                     ripgrep
+                    ripgrep-all
                     rpcbind
                     rsync
                     rtkit
+                    rubberband
                     rxvt-unicode-terminfo
                     sbc
                     sddm-wayland
+                    sddm-kcm
                     sdl2
+                    sdl2_ttf
                     seatd
                     sed
                     serd
+                    shaderc
                     shadow
                     shared-mime-info
+                    signon-kwallet-extension
                     signon-plugin-oauth2
                     signon-ui
                     signond
                     slang
-                    slirp4netns
                     smartmontools
                     smbclient
                     snappy
                     socat
-                    sof-firmware
+                    solid
+                    sonnet
                     sord
                     sound-theme-freedesktop
                     source-highlight
                     spectacle
                     speex
                     speexdsp
+                    spirv-llvm-translator
+                    spirv-tools
                     sqlite
                     squashfs-tools
                     sratom
@@ -816,19 +1012,23 @@ export STEAMOS_PKGS="accounts-qml-module
                     steam_notif_daemon
                     steamdeck-dsp
                     steamdeck-kde-presets
-		    steamos-atomupd-client
+                    steamos-atomupd-client
+                    steamos-customizations-jupiter
                     steamos-devkit-service
                     steamos-efi
+                    steamos-kdumpst-layer
                     steamos-log-submitter
                     steamos-manager
                     steamos-networking-tools
-		    steamos-reset
+                    steamos-powerbuttond
+                    steamos-reset
                     steamos-systemreport
                     steamos-tweak-mtu-probing
                     strace
                     sudo
                     svt-av1
-		    swh-plugins
+                    syndication
+                    syntax-highlighting
                     systemd
                     systemd-libs
                     systemd-sysvcompat
@@ -839,11 +1039,12 @@ export STEAMOS_PKGS="accounts-qml-module
                     tcl
                     tdb
                     tevent
+                    threadweaver
+                    tinysparql
                     tk
                     tmux
                     tpm2-tss
                     trace-cmd
-                    tracker3
                     tree
                     tslib
                     ttf-dejavu
@@ -851,6 +1052,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     ttf-twemoji-default
                     tzdata
                     udisks2
+                    umr
                     unrar
                     unzip
                     upower
@@ -859,19 +1061,25 @@ export STEAMOS_PKGS="accounts-qml-module
                     util-linux
                     util-linux-libs
                     v4l-utils
+                    vapoursynth
+                    verdict
                     vid.stab
                     vim
                     vim-runtime
+                    vkmark
+                    vlc
                     vmaf
                     volume_key
+                    vpower
+                    vulkan-headers
                     vulkan-icd-loader
                     steamfork/vulkan-radeon
-		    steamfork/vulkan-virtio
                     vulkan-tools
-                    steamfork/vulkan-mesa-layers
+                    steamfork/vulkan-virtio
+                    wakehook
                     wayland
                     wayland-utils
-                    webrtc-audio-processing
+                    webrtc-audio-processing-1
                     wget
                     which
                     wireguard-tools
@@ -893,6 +1101,7 @@ export STEAMOS_PKGS="accounts-qml-module
                     xcb-util-wm
                     xdg-dbus-proxy
                     xdg-desktop-portal
+                    xdg-desktop-portal-gtk
                     xdg-desktop-portal-kde
                     xdg-user-dirs
                     xdg-utils
@@ -914,29 +1123,35 @@ export STEAMOS_PKGS="accounts-qml-module
                     xorg-xrdb
                     xorg-xset
                     xorg-xsetroot
+                    xorg-xwayland
                     xorg-xwininfo
                     xorgproto
+                    xsettingsd
                     xterm
                     xvidcore
                     xxhash
                     xz
                     yajl
+                    zenity-gtk3
                     zeromq
                     zimg
                     zip
+                    zix
                     zlib
+                    zram-generator
                     zsh
                     zstd
-                    zxing-cpp"
+                    zxing-cpp
+"
 
 export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   bc
                   ectool
                   hunspell-en_us
-		  inputplumber
+		              inputplumber
                   kdegraphics-thumbnailers
                   kwrite
-		  steamfork/lib32-vulkan-intel
+		              steamfork/lib32-vulkan-intel
                   libcap.so
                   libdisplay-info.so
                   libliftoff.so
@@ -953,12 +1168,12 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   python-setuptools
                   python-wheel
                   ryzenadj
-		  steam-powerbuttond
+		              steamfork/steam-powerbuttond
                   steamfork-customizations
                   steamfork-device-support
-		  steamfork-keyring
+		              steamfork-keyring
                   vlc
-		  steamfork/vulkan-intel
+		              steamfork/vulkan-intel
                   wlroots
                   wlr-randr
                   xorg-xwayland

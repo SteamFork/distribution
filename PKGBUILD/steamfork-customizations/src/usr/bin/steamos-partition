@@ -1,0 +1,31 @@
+#!/bin/bash
+# -*- mode: sh; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+# vim: et sts=4 sw=4
+
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  Copyright © 2022 Collabora Ltd.
+#  Copyright © 2022 Valve Corporation.
+#
+#  This file is part of steamos-customizations.
+#
+#  steamos-partition is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public License as
+#  published by the Free Software Foundation; either version 2.1 of the License,
+#  or (at your option) any later version.
+#
+#  This script is used by kinfocenter to show whether we are currently using
+#  A or B partition. But will only show up once jupiter gets a kcm-about-distrorc
+#  file specifying this script to run.
+
+set -euo pipefail
+
+partition=$(findmnt -no partlabel /)
+echo -e "Partition:"
+if [[ "$partition" == "rootfs-A" ]]; then
+    echo -e "A"
+elif [[ "$partition" == "rootfs-B" ]]; then
+    echo -e "B"
+else
+    echo -e "Unknown"
+fi

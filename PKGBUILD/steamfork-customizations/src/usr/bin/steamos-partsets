@@ -1,0 +1,354 @@
+#!/bin/bash
+# -*- mode: sh; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+# vim: et sts=4 sw=4
+
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  Copyright © 2019-2020 Collabora Ltd.
+#  Copyright © 2019-2020 Valve Corporation.
+#
+#  This file is part of steamos-customizations.
+#
+#  steamos-customizations is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public License as
+#  published by the Free Software Foundation; either version 2.1 of the License,
+#  or (at your option) any later version.
+
+set -euo pipefail
+
+OUTDIR=  # $1
+DEVICES= # --devices=
+
+# Helpers
+
+get_parent_device() {
+
+    # Get the parent of a block device, for example:
+    # /dev/sda3 -> /dev/sda
+
+    local device=$(realpath "$1")
+    [ -b "$device" ] || return
+
+    local devname=$(basename "$device")
+    local diskname=$(basename "$(realpath "/sys/class/block/$devname/..")")
+    local disk="/dev/$diskname"
+    [ -b "$disk" ] || return
+
+    echo "$disk"
+}
+
+get_slave_devices() {
+
+    # Get the slaves owned by a block device, for example:
+    # /dev/dm-0 -> /dev/sda4 /dev/sda6  (separated with newlines)
+
+    local device=$(realpath "$1")
+    [ -b "$device" ] || return
+
+    local devname=$(basename "$device")
+    [ -d "/sys/class/block/$devname/slaves/" ] || return
+
+    local slavenames=$(ls -1 "/sys/class/block/$devname/slaves/")
+    local slaves=$(printf "/dev/%s\n" $slavenames)
+
+    echo "$slaves"
+}
+
+get_partlabel() {
+
+    # Get the partlabel for a given block device, for example:
+    # /dev/sda2 -> efi-A
+
+    local device=$(realpath "$1")
+    [ -b "$device" ] || return
+
+    local disk=$(get_parent_device "$device")
+    [ -b "$disk" ] || return
+
+    while read dev name; do
+        if [ "$dev" == "$device" ]; then echo "$name"; return; fi
+    done < <(sfdisk -ql -o device,name "$disk" | tail +2)
+}
+
+#
+# lsblk(8), blkid(8) helpers  --  util-linux package
+#
+#    ~ Caveats ~
+#
+# lsblk(8) is recommended over blkid, however it requires udev to be around,
+# otherwise it fails to get some information. When is udev not around, you
+# might ask? In containers. blkid(8), OTOH, seems to behave just fine without
+# udev.
+#
+# Hence these functions call lsblk first, and fall back to blkid on failure.
+#
+
+lsblk_fstype() {
+
+    # Get the filesystem type for a given block device, for example:
+    # /dev/sda6 -> ext4
+
+    local device=$(realpath "$1")
+    [ -b "$device" ] || return
+
+    local fstype=
+
+    fstype=$(lsblk --nodeps -no fstype "$device")
+    if [ "$fstype" ]; then echo "$fstype"; return; fi
+
+    fstype=$(blkid -o value -s TYPE "$device")
+    if [ "$fstype" ]; then echo "$fstype"; return; fi
+}
+
+find_device_for_mountpoint() {
+
+    # Get the block device backing a mountpoint, for example:
+    # /var -> /dev/sda8
+    # /    -> /dev/dm-0
+
+    local mountpoint=$(realpath "$1")
+    mountpoint -q "$mountpoint" || return
+
+    # make sure autofs mountpoints is mounted
+    local fstype=$(findmnt -no fstype "$mountpoint")
+    if [ "$fstype" == "autofs" ]; then
+        ls >/dev/null "$mountpoint"
+    fi
+
+    local source=$(findmnt --real -nvo source "$mountpoint")
+    [ "$source" ] || return
+
+    realpath "$source"
+}
+
+find_device_for_mountpoint_deep() {
+
+    # Similar to find_device_for_mountpoint(), except that in case the device
+    # found is a device mapper, we go further and resolve it to the "real"
+    # block device.
+    #
+    # This was intended for dm-verity, and tested with dm-verity. Other kind
+    # of device mappers were not tested, and might not work.
+    #
+    # For example:
+    # / -> /dev/sda6
+
+    local mountpoint=$(realpath "$1")
+    mountpoint -q "$mountpoint" || return
+
+    local device=$(find_device_for_mountpoint "$mountpoint")
+    if [[ "$device" != /dev/dm-* ]]; then echo "$device"; return; fi
+
+    while read slave; do
+        # discard slaves whose fstype is DM_*
+        if [[ "$(lsblk_fstype "$slave")" == DM_* ]]; then continue; fi
+        # return first match
+        echo "$slave"; return
+    done < <(get_slave_devices "$device")
+}
+
+get_partition_set() {
+
+    # Get the partition set for a given partlabel, for example:
+    # efi-A -> A
+    # var   ->
+
+    local partlabel=$1
+    local suffix=
+
+    suffix=${partlabel##*-}
+    if [ "$suffix" = "$partlabel" ]; then
+        # delimiter was not found, hence partition set is empty
+        return
+    fi
+
+    echo "$suffix"
+}
+
+get_partition_linkname() {
+
+    # Get the partition symlink name for a given partlabel, for example:
+    # efi-A -> efi
+    # var   -> var
+
+    local partlabel=$1
+
+    echo "${partlabel%-*}"
+}
+
+log () { echo >&2 "$@"; }
+fail() { echo >&2 "$@"; exit 1; }
+
+usage() {
+    local status=${1-2}
+
+    if [ $status -ne 0 ]; then
+        exec >&2
+    fi
+
+    echo
+    echo "Usage: $(basename $0) [--devices 'efi esp-A esp-B ...'] OUTDIR"
+    echo
+    echo "In the output directory, this script creates 4 files that define the SteamOS"
+    echo "partition definitions: all, self, other, shared."
+    echo
+    echo "The output directory should not exist."
+    echo
+    echo "This program starts off the / mountpoint, and from there it guesses the disk"
+    echo "on which SteamOS is installed, if the current root partition belongs to A or B,"
+    echo "and then which partitions belong to 'self', 'other' or 'shared'."
+    echo
+    echo "It is assumed that all partitions on the disk belong to SteamOS, unless you"
+    echo "use --devices to provide a space-separated list of partitions. In such case,"
+    echo "only the partitions that belong to this list are kept."
+    echo
+    echo "This program should be used during the build of a SteamOS disk image,"
+    echo "and also when SteamOS is installed to another disk. Apart from that,"
+    echo "I don't see any other use-cases."
+    echo
+
+    exit $status
+}
+
+# Handle arguments
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            usage 0
+            ;;
+        --devices)
+            shift
+            DEVICES=$1
+            shift
+            ;;
+        *)
+            if ! [ "$OUTDIR" ]; then OUTDIR=$1; shift; continue; fi
+            usage 1
+            ;;
+    esac
+done
+
+[ -n "$OUTDIR" ] || fail "Too few argument"
+
+# Get to know who we are: A, B or dev?
+
+ROOTDEV=$(find_device_for_mountpoint_deep '/')
+[ -b "$ROOTDEV" ] || fail "Failed to get device for '/'"
+
+ROOTLABEL=$(get_partlabel "$ROOTDEV")
+[ "$ROOTLABEL" ] || fail "Failed to get partition label for '$ROOTDEV'"
+
+SELF=$(get_partition_set "$ROOTLABEL")
+[ "$SELF" ] || fail "Failed to determine partition set for label '$ROOTLABEL'"
+
+OTHER=
+case "$SELF" in
+    (A) OTHER=B;;
+    (B) OTHER=A;;
+esac
+[ "$OTHER" ] || [ "$SELF" == "dev" ] || fail "Failed to determine 'other' for self=$SELF"
+
+# Get the disk on which SteamOS lives
+
+DISK=$(get_parent_device "$ROOTDEV")
+[ -b "$DISK" ] || fail "Failed to get disk for root device '$ROOTDEV'"
+
+# We know everything, let's go
+
+log "SteamOS root device: $ROOTDEV ($ROOTLABEL)"
+log "SteamOS disk       : $DISK"
+log "A/B/dev status     : self=$SELF, other=$OTHER"
+log "Creating partition definitions in $OUTDIR ..."
+
+[ -e "$OUTDIR" ] && fail "'$OUTDIR' already exists"
+mkdir -p "$OUTDIR"
+
+while read device partuuid typeuuid partlabel; do
+
+    # NOTE that 'type-uuid' and 'name' might not be set, and that break us.
+    # Ie. if type-uuid is not set, but name is set, then we end up with
+    # name assigned to typeuuid, which is problematic.
+    #
+    # Well it's not that bad, as we expect caller to provide a list of
+    # partitions in case there's more than one OS on the disk, and all
+    # those partitions belong to SteamOS (so we know that we set all
+    # those fields), EXCEPT for the ESP, which is shared with other OS.
+    #
+    # So we identify the ESP based on the typeuuid, which means that we
+    # must take care that sfdisk outputs the typeuuid before the label,
+    # in case there's no label set.
+
+    # If a device list was provided by caller, accept only those,
+    # otherwise assume all devices on the disk belong to SteamOS.
+    accepted=0
+    if [ -z "$DEVICES" ]; then
+        accepted=1
+    else
+        for d in $DEVICES; do
+            if [ "$d" == "$device" ]; then
+                accepted=1
+                break
+            fi
+        done
+    fi
+
+    if [ $accepted -eq 0 ]; then
+        log "Discarding partition '$device' ($partlabel), not part of SteamOS"
+        continue
+    fi
+
+    # Hack for ESP, as it's the only one which doesn't belong to
+    # SteamOS, hence we can't control the name. So we identify it
+    # using the type uuid, and pretend that the name is 'esp'.
+    if [ "${typeuuid,,}" == c12a7328-f81f-11d2-ba4b-00a0c93ec93b ]; then
+        partlabel=esp
+    fi
+
+    if [ ! "$partlabel" ]; then
+        log "Discarding partition '$device', label is empty"
+        continue
+    fi
+
+    # Guess partition set (A, B or dev) and linkname from label.
+    partset=$(get_partition_set "$partlabel")
+    linkname=$(get_partition_linkname "$partlabel")
+    partuuid=${partuuid,,}
+    group=
+
+    # Find the group, based on partset
+    case "$partset" in
+        ("")
+            group=shared
+            ;;
+        ("$SELF")
+            group=self
+            echo "$linkname $partuuid"  >> "$OUTDIR/$partset"
+            if [ "$SELF" == "dev" ]; then
+                echo "$linkname $partuuid"  >> "$OUTDIR/dev"
+            fi
+            ;;
+        ("$OTHER")
+            group=other
+            echo "$linkname $partuuid"  >> "$OUTDIR/$partset"
+            ;;
+        ("dev")
+            group=dev
+            ;;
+        ("A")
+            group=A
+            ;;
+        ("B")
+            group=B
+            ;;
+        (*)
+            log "Discarding partition '$partlabel' with unexpected suffix '$partset'"
+            continue
+            ;;
+    esac
+
+    # Add to partition definition files
+    echo "$linkname $partuuid"  >> "$OUTDIR/$group"
+    echo "$partlabel $partuuid" >> "$OUTDIR/all"
+
+done < <(sfdisk -ql -o device,uuid,type-uuid,name "$DISK" | tail +2)

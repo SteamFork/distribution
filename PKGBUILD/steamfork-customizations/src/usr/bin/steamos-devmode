@@ -1,0 +1,143 @@
+#!/bin/bash
+# -*- mode: sh; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: et sts=2 sw=2
+
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  Copyright © 2024 Valve Corporation.
+#
+#  This file is part of steamos-customizations.
+#
+#  steamos-customizations is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public License as
+#  published by the Free Software Foundation; either version 2.1 of the License,
+#  or (at your option) any later version.
+
+set -euo pipefail
+
+# shellcheck source=../libexec/steamos-shellutil.sh.in
+source /usr/lib/steamos/steamos-shellutil.sh
+
+# a file that gets removed when the image changes that we can touch to see if this script has previously been run on
+# this install.  This is purposefully under /usr/ so it is associated with the rootfs we're modifying.
+TOUCHFILE=/usr/share/steamos/devmode-enabled
+
+# Whether to suppress prompting.  Set by --no-prompt below
+NOPROMPT=0
+
+print_warning() {
+  # 80 cols
+  echo ""
+  echo "${sh_header_bold}SteamOS${sh_header} Developer Mode"
+  echo ""
+  echo "${sh_warn}Important:${sh_highlight} This will allow potentially breaking changes to the root filesystem."
+  echo "  This is meant for developers and technical users who know what they are doing."
+  echo "  Changes to the root filesystem will be overwritten by the next SteamOS update.${sh_reset}"
+  echo ""
+  echo "${sh_note_bold}Developers:${sh_note}"
+  echo "  - Consider packaging your application with flatpak, rather than"
+  echo "    invoking/requiring this script.  This is a much better (and safer) experience"
+  echo "    for users"
+  echo "  - Consider building your package in the Holo container images with"
+  echo "    distrobox/toolbox${sh_reset}"
+  echo ""
+}
+
+usage() {
+  echo "Usage: ${0##*/} enable|status [--no-prompt]"
+  echo ""
+
+  # 80 cols
+  echo "A helper script to enable developer mode on SteamOS"
+  echo "  - Disables read-only mode."
+  echo "  - Populates the pacman keyring."
+  echo ""
+  echo "--no-prompt"
+  echo "  Skips interactive confirmation"
+  echo ""
+  echo "If you wish to re-enable readonly mode after using this script, you can use the"
+  echo "\"steamos-readonly enable\" command.  This does not undo changes performed"
+  echo "while in dev mode."
+  echo ""
+  echo "See also \`steamos-unminimize\`"
+}
+
+enable_devmode() {
+  # ask nicely and give some guidance
+  print_warning
+
+  if (( ! NOPROMPT )) && ! eprompt_yn "Are you sure you wish to enable developer mode?"; then
+    exit 1;
+  fi
+
+  out ""
+
+  # don't bother running steamos-readonly disable again.
+  # if it's already writeable, produces concerning spew.
+  if steamos-readonly status >/dev/null 2>&1; then
+    emsg "Disabling read-only mode"
+    steamos-readonly disable
+  fi
+
+  # Fix keyring
+  if [[ -d /etc/pacman.d/gnupg/ ]]; then
+    ewarn "Deleting existing pacman keyring"
+    cmd rm -rf --one-file-system /etc/pacman.d/gnupg/
+  elif [[ -e /etc/pacman.d/gnupg ]]; then
+    die "/etc/pacman.d/gnupg exists but is not a normal directory"
+  fi
+
+  estat "Initializing pacman keyring"
+  cmd pacman-key --init
+  cmd pacman-key --populate
+
+  out ""
+
+  estat "Developer mode enabled"
+  einfo "  See also \`steamos-unminimize --dev\` to recover package files pruned"
+  einfo "  from the image and install development packages."
+
+  touch "$TOUCHFILE"
+}
+
+# returns if 'dev mode' is enabled,
+# ie. we are writeable and we know
+# we have restored the packages on this install
+status() {
+  if ! steamos-readonly status >/dev/null 2>&1 && [[ -f "$TOUCHFILE" ]]; then
+    echo "enabled"
+  else
+    echo "disabled"
+    return 1
+  fi
+}
+
+[[ "$EUID" -eq 0 ]] || die "$(basename -- "$0") needs to be run as root"
+
+verb=""
+
+while [[ $# -gt 0 ]]; do
+  if [[ $1 = "--no-prompt" ]]; then
+    NOPROMPT=1
+  elif [[ -z "$verb" && -n "$1" ]]; then
+    verb="$1"
+  else
+    eerr "Invalid argument: $1"
+    usage
+    exit 1
+  fi
+
+  shift
+done
+
+case "${verb}" in
+  enable)
+    enable_devmode
+    ;;
+  status)
+    status
+    ;;
+  *)
+    usage
+    exit 1
+esac
