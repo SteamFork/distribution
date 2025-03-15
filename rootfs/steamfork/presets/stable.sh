@@ -18,13 +18,13 @@ export IMAGEFILE="${BUILDVER}"
 export ENABLED_SERVICES=( sddm
                         bluetooth
                         systemd-timesyncd
-			                  systemd-resolved
+                        systemd-resolved
                         NetworkManager
-			                  firewalld
-			                  inputplumber
-			                  steam-powerbuttond
+                        firewalld
+                        inputplumber
+                        steam-powerbuttond
                         steamos-offload.target
-			                  fstrim.timer
+                        fstrim.timer
                         var-lib-pacman.mount
                         etc.mount
                         nix.mount
@@ -42,7 +42,7 @@ export ENABLED_SERVICES=( sddm
 export DISABLED_SERVICES=(jupiter-controller-update.service
 			  wpa_supplicant.service
 		  	  iwd.service)
-export PLYMOUTH_THEME="steamos"
+export PLYMOUTH_THEME="steamfork"
 export FINAL_DISTRIB_IMAGE=${BUILDVER}
 export KERNELCHOICE="linux"
 export BASE_BOOTSTRAP_PKGS="base base-devel linux-firmware amd-ucode intel-ucode sddm-wayland dkms jq btrfs-progs core-${STEAMOS_VERSION}/grub efibootmgr openssh plymouth"
@@ -1170,6 +1170,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   ryzenadj
                   steamfork/steam-powerbuttond
                   steamfork-customizations
+		  steamfork-theme
                   steamfork-device-support
                   steamfork-keyring
                   vlc
