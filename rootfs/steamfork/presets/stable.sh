@@ -1079,7 +1079,7 @@ export STEAMOS_PKGS="7zip
                     wakehook
                     wayland
                     wayland-utils
-                    webrtc-audio-processing-1
+                    webrtc-audio-processing
                     wget
                     which
                     wireguard-tools
@@ -1148,10 +1148,10 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   bc
                   ectool
                   hunspell-en_us
-		              inputplumber
+                  steamfork/inputplumber
                   kdegraphics-thumbnailers
                   kwrite
-		              steamfork/lib32-vulkan-intel
+                  steamfork/lib32-vulkan-intel
                   libcap.so
                   libdisplay-info.so
                   libliftoff.so
@@ -1168,12 +1168,12 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   python-setuptools
                   python-wheel
                   ryzenadj
-		              steamfork/steam-powerbuttond
+                  steamfork/steam-powerbuttond
                   steamfork-customizations
                   steamfork-device-support
-		              steamfork-keyring
+                  steamfork-keyring
                   vlc
-		              steamfork/vulkan-intel
+                  steamfork/vulkan-intel
                   wlroots
                   wlr-randr
                   xorg-xwayland
