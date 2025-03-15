@@ -53,6 +53,8 @@ function cleanup() {
 		/tmp/buildinfo \
 		${INSTALLER_DIR}/packages.x86_64 \
 		${WORK_DIR}/image-build
+
+  sudo rm -f /var/cache/pacman/pkg/webrtc-audio-processing*
 }
 
 # Clean up from any previous builds.
