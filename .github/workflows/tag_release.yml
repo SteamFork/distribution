@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
+# This workflow tags a release in the repository.
+
+name: Tag for Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  tag_release:
+    runs-on: [self-hosted, main]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          clean: false
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Define the release tag.
+        id: create_tag
+        run: |
+          RELEASE_TAG=$(date +%Y%m%d)
+          echo "RELEASE_TAG=${RELEASE_TAG}" >> $GITHUB_ENV
+
+      - name: Verify the repo exists, or fail the build.
+        run: |
+          if [ ! -d "${GITHUB_WORKSPACE}/release/repos" ]; then
+            echo "The repository does not exist, can not continue."
+            exit 1
+          fi
+
+      - name: Verify that the local repository is in sync.
+        run: |
+          ${GITHUB_WORKSPACE}/scripts/sync check
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "SteamFork Release Bot"
+          git config --global user.email "SteamFork Release Bot@users.noreply.github.com"
+          echo "ORIGINAL_URL=$(git remote get-url origin)" >> $GITHUB_ENV
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+      - name: Create and push the release tag
+        run: |
+          git tag ${{ env.RELEASE_TAG }}
+          git push origin ${{ env.RELEASE_TAG }}
+
+      - name: Restore original origin URL
+        run: |
+          git remote set-url origin ${{ env.ORIGINAL_URL }}
