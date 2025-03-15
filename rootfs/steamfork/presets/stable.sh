@@ -1079,7 +1079,7 @@ export STEAMOS_PKGS="7zip
                     wakehook
                     wayland
                     wayland-utils
-                    webrtc-audio-processing-1
+                    webrtc-audio-processing
                     wget
                     which
                     wireguard-tools
