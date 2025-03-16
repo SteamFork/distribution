@@ -1,7 +1,5 @@
 #!/bin/bash
 
-plymouth-set-default-theme -R steamos
-
 chmod +x -R /usr/bin /etc/lib /etc/X11 /home/liveuser/Desktop
 systemctl enable sddm
 
@@ -21,6 +19,9 @@ do
     rm -f "${CONFLICT}"
   fi
 done
+
+# Ensure our splash is set.
+plymouth-set-default-theme -R steamfork
 
 # Clean up the installer to free space.
 rm -rf /{usr/,}include
