@@ -8,12 +8,12 @@ eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
 
 VERSION=${1:-3.7}
 BRANCH=${2:-stable}
-IMAGE_PATH="release/images/${VERSION}"
+IMAGE_PATH="release/images/${VERSION}/${BRANCH}"
 if [ -f ${IMAGE_PATH}/latest_${BRANCH}.releasemeta ]
 then
   source ${IMAGE_PATH}/latest_${BRANCH}.releasemeta
 else
-  echo "Release not found (${VERSION}/${BRANCH})."
+  echo "Release not found (${IMAGE_PATH}/latest_${BRANCH}.releasemeta)."
   exit 1
 fi
 ARCH="x86_64"
