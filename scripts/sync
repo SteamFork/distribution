@@ -44,42 +44,44 @@ pkgs | repo)
 	ssh -tt ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/"
 	;;
 os-sync)
-	echo "Remove stale image directories on ${WWWHOST}."
-	ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/; rm -rf images.new ||:; cp -rf images images.new"
-	for REL in rel minimal; do
-		DEPLOY_DIR="${IMAGE_DIR}/${REL}/images"
-		if [ -e "${DEPLOY_DIR}/latest_${REL}.releasemeta" ]; then
-			echo "Syncing ${REL} to ${WWWHOST}."
-			source ${DEPLOY_DIR}/latest_${REL}.releasemeta
-			UPDATEFILE=${IMAGEFILE}
-			IMAGEFILE="$(echo ${IMAGEFILE} | sed 's~_~-~g')"
-			ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images.new; rm -f \$(ls | grep steamfork_${REL}_ | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
-			ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images.new/installer; rm -f \$(ls | grep steamfork-${REL}- | grep -v ${STAGING_OS_TAG}) latest_${REL}*"
-			while true; do
-				rsync -av --progress --stats ${DEPLOY_DIR}/* ${WWWUSER}@${WWWHOST}:${WWWROOT}/images.new/
-				if [ $? = 0 ]; then
-					break
-				fi
-				sleep 5
-			done
-			ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images.new/installer/; sha256sum ${IMAGEFILE}-x86_64.iso | tee -a ${IMAGEFILE}-x86_64.iso.sha256"
-			ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images.new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso steamfork-${REL}-latest-x86_64.iso"
-			ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images.new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso.sha256 steamfork-${REL}-latest-x86_64.iso.sha256"
-		fi
-	done
-	scp /tmp/mirrorlist.txt ${WWWUSER}@${WWWHOST}:${WWWROOT}/
-	ssh -tt ${WWWUSER}@${WWWHOST} "mkdir -p ${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck; echo "{ }" >${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck/${STAGING_OS_TAG}.json"
-
-	;;
+    echo "Remove stale image directories on ${WWWHOST}."
+    for BRANCH in stable testing minimal; do
+        DEPLOY_DIR="${IMAGE_DIR}/${BRANCH}/images"
+        ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; rm -rf ${BRANCH}.new ||:; cp -rf ${BRANCH} ${BRANCH}.new"
+        if [ -e "${DEPLOY_DIR}/latest_${BRANCH}.releasemeta" ]; then
+            echo "Syncing ${BRANCH} to ${WWWHOST}."
+            source ${DEPLOY_DIR}/latest_${BRANCH}.releasemeta
+            UPDATEFILE=${IMAGEFILE}
+            IMAGEFILE="$(echo ${IMAGEFILE} | sed 's~_~-~g')"
+            ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new; rm -f \$(ls | grep steamfork_${BRANCH}_ | grep -v ${STAGING_OS_TAG}) latest_${BRANCH}*"
+            ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer; rm -f \$(ls | grep steamfork-${BRANCH}- | grep -v ${STAGING_OS_TAG}) latest_${BRANCH}*"
+            while true; do
+                rsync -av --progress --stats ${DEPLOY_DIR}/* ${WWWUSER}@${WWWHOST}:${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/
+                if [ $? = 0 ]; then
+                    break
+                fi
+                sleep 5
+            done
+            ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer/; sha256sum ${IMAGEFILE}-x86_64.iso | tee -a ${IMAGEFILE}-x86_64.iso.sha256"
+            ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso steamfork-${BRANCH}-latest-x86_64.iso"
+            ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso.sha256 steamfork-${BRANCH}-latest-x86_64.iso.sha256"
+        fi
+    done
+    scp /tmp/mirrorlist.txt ${WWWUSER}@${WWWHOST}:${WWWROOT}/
+    ssh -tt ${WWWUSER}@${WWWHOST} "mkdir -p ${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck; echo "{ }" >${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck/${STAGING_OS_TAG}.json"
+    ;;
 os-release)
-	private_key add
-	for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
-		echo "Swap to release images on ${HOST}."
-		ssh -tt ${HOST} "sudo chown -R www-data:www-data ${WWWROOT}/images.new"
-		ssh -tt ${HOST} "sudo rm -rf ${WWWROOT}/images.prev; sudo mv ${WWWROOT}/images ${WWWROOT}/images.prev; sudo mv ${WWWROOT}/images.new/ ${WWWROOT}/images"
-	done
-	private_key remove
-	;;
+    private_key add
+    for BRANCH in stable testing minimal; do
+        for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
+            echo "Swap to release images on ${HOST} for ${BRANCH}."
+            ssh -tt ${HOST} "sudo chown -R www-data:www-data ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new"
+            ssh -tt ${HOST} "sudo mv ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH} ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.prev; sudo mv ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/ ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}"
+            ssh -tt ${HOST} "sudo rm -rf ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.prev"
+        done
+    done
+    private_key remove
+    ;;
 mirrors)
 	private_key add
 	echo "Push mirror list to ${WWWHOST}."
