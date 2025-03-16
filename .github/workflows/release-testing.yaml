@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
+# This workflow builds and releases testing images for the SteamFork distribution.
+
+name: Build and Sync Testing Images (3.7)
+permissions:
+  contents: write
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    timeout-minutes: 1440
+    runs-on: [self-hosted, 3.7]
+    steps:
+      - uses: actions/checkout@v4
+        name: checkout
+        with:
+          clean: false
+          ref: 3.7
+      - name: Set the tag
+        id: tag
+        run: echo "tag=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+      - name: Set the version
+        id: version
+        run: echo "version=$(date +'%Y%m%d.%H%M')" >> $GITHUB_OUTPUT
+      - name: Build Testing Image
+        run: |
+          set -e
+          make image testing BUILD_VER="${{ steps.version.outputs.version }}"
+  sync:
+    if: github.repository == 'SteamFork/distribution' && github.ref == 'refs/heads/3.7'
+    timeout-minutes: 1440
+    runs-on: [self-hosted, 3.7]
+    needs: build
+    steps:
+      - name: Sync testing images to the primary instance
+        run: |
+          set -e
+          make images-sync
+      - name: Sync images to each mirror
+        run: |
+          set -e
+          make mirrors-sync
