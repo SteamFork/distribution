@@ -1,0 +1,8 @@
+#!/bin/bash
+
+steamargs=("-steamos3" "-steampal" "-steamdeck" "-gamepadui")
+if [[ -x $HOME/devkit-game/devkit-steam ]]; then
+	exec "$HOME"/devkit-game/devkit-steam "${steamargs[@]}"
+else
+	exec steam "${steamargs[@]}"
+fi

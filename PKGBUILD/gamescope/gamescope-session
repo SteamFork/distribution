@@ -159,24 +159,26 @@ export XCURSOR_THEME=steam
 export XCURSOR_SCALE=256
 
 # Chromium (and therefore Steam) ignore XCursor and use on the GTK config
-kwriteconfig5 --file gtk-3.0/settings.ini  --group Settings --key gtk-cursor-theme-name steam
+kwriteconfig6 --file gtk-3.0/settings.ini  --group Settings --key gtk-cursor-theme-name steam
 
 # Workaround for Steam login issue while Steam client change propagates out of Beta
 touch ~/.steam/root/config/SteamAppData.vdf || true
 
 board_name=$(cat /sys/class/dmi/id/board_name)
 if [[ $board_name = "Galileo" ]]; then
-	ui_background=/usr/share/plymouth/themes/steamos/steamos-galileo.png
+        ui_background=/usr/share/plymouth/themes/steamos/steamos-galileo.png
 
-	# Set refresh rate range for the legacy refresh swtching UI
-	export STEAM_DISPLAY_REFRESH_LIMITS=45,90
-	export STEAM_GAMESCOPE_FORCE_HDR_DEFAULT=1
-	export STEAM_GAMESCOPE_FORCE_OUTPUT_TO_HDR10PQ_DEFAULT=1
+        # Set refresh rate range for the legacy refresh swtching UI
+        export STEAM_DISPLAY_REFRESH_LIMITS=45,90
+        export STEAM_GAMESCOPE_FORCE_HDR_DEFAULT=1
+        export STEAM_GAMESCOPE_FORCE_OUTPUT_TO_HDR10PQ_DEFAULT=1
+elif [[ $board_name = "Jupiter" ]]; then
+        ui_background=/usr/share/plymouth/themes/steamos/steamos-jupiter.png
+
+        # Set refresh rate range for the legacy refresh swtching UI
+        export STEAM_DISPLAY_REFRESH_LIMITS=40,60
 else
-	ui_background=/usr/share/plymouth/themes/steamos/steamos-jupiter.png
-
-	# Set refresh rate range for the legacy refresh swtching UI
-	export STEAM_DISPLAY_REFRESH_LIMITS=40,60
+        ui_background=/usr/share/plymouth/themes/steamfork/steamfork.png
 fi
 export STEAM_UPDATEUI_PNG_BACKGROUND=$ui_background
 
@@ -248,6 +250,17 @@ else
 	echo >&2 "!! Failed to claim global gamescope stats session"
 fi
 
+function read_gamescope_env() {
+        if read -r -t 3 response_x_display response_wl_display <> "$socket"; then
+                export DISPLAY="$response_x_display"
+                export GAMESCOPE_WAYLAND_DISPLAY="$response_wl_display"
+
+                # Sync environment variables to systemd, then notify we are ready to launch subsequent services
+                env > $XDG_RUNTIME_DIR/gamescope-environment
+                systemd-notify --ready
+        fi
+}
+
 function get_active_display() {
 	local DRM_PATH="/sys/class/drm"
 	local ACTIVE_DISPLAYS=""
@@ -274,68 +287,8 @@ function get_active_display() {
 	echo "${ACTIVE_DISPLAYS}"
 }
 
-cleanup_loop() {
-    if [ -n "$pid" ]; then
-        kill "$pid"
-    fi
-    exit 0
-}
-
-# Make sure we stop the loop and cleanup properly, with a wait for our
-# children, when we have a recurring background command.
-loop_background() {
-    (
-        pid=
-        trap cleanup_loop TERM
-        while true; do
-            "$@" &
-            pid=$!
-            wait "$pid"
-	    sleep .1
-        done
-    ) &
-}
-
-print_children() {
-    ps h -o pid --ppid "$1" | sed 's/^[[:space:]]*//'
-}
-
-send_signals() {
-    kill -TERM "$@"
-}
-
-cleanup() {
-    local timeout="$1"
-    shift
-    local children=("$@")
-    local sleep_pid pid ret
-
-    # Start a background sleep as a timeout because we don't trust it
-    sleep "$timeout" &
-    sleep_pid=$!
-
-    for pid in "${children[@]}"; do
-        if ! kill -0 "$pid" 2>/dev/null; then
-            continue
-        fi
-
-        # Wait for child or the sleep to finish for timeout purposes
-        ret=0
-        wait -np finished_pid "$pid" "$sleep_pid" || ret=$?
-
-        # Our sleep command finished; we timed out
-        if [[ "$finished_pid" == "$sleep_pid" ]]; then
-            return 2
-        fi
-
-        # Signal received by wait when already in cleanup; bail out
-        if (( ret > 128 )); then
-            return 1
-        fi
-    done
-
-    kill "$sleep_pid"
-}
+# Spawned in parallel to read values from gamescope
+(read_gamescope_env &)
 
 ### Default to the current version of Gamescope.
 GAMESCOPE_BINARY="gamescope"
@@ -372,7 +325,7 @@ then
   GAMESCOPE_DISPLAY="eDP-1"
 fi
 
-sudo udevadm trigger && ${GAMESCOPE_BINARY} \
+sudo udevadm trigger && exec ${GAMESCOPE_BINARY} \
 	--generate-drm-mode fixed \
 	--xwayland-count 2 \
 	${GAMESCOPE_ADDITIONAL_OPTIONS} \
@@ -383,130 +336,4 @@ sudo udevadm trigger && ${GAMESCOPE_BINARY} \
 	--fade-out-duration 200 \
 	--cursor-scale-height 720 \
 	-e -R "$socket" -T "$stats" \
-	-O '*',${GAMESCOPE_DISPLAY} \
-	&
-gamescope_pid="$!"
-
-if read -r -t 3 response_x_display response_wl_display <> "$socket"; then
-	export DISPLAY="$response_x_display"
-	export GAMESCOPE_WAYLAND_DISPLAY="$response_wl_display"
-	# We're done!
-else
-	kill -9 "$gamescope_pid"
-	wait
-	exit 0
-	# SDDM will restart us
-fi
-
-xbindkeys -n -f /etc/xbindkeysrc &
-
-steamargs=("-steamos3" "-steampal" "-steamdeck" "-gamepadui")
-
-# Input method support
-/usr/bin/ibus-daemon -r --panel=disable --emoji-extension=disable &
-
-# steamargs+=("-steamfs")
-
-### We use the ShadowBlip power button watchdog.
-#loop_background /usr/lib/hwsupport/powerbuttond
-
-short_session_tracker_file="/tmp/steamos-short-session-tracker"
-short_session_duration=60
-short_session_count_before_reset=3
-SECONDS=0
-
-short_session_count=$(< "$short_session_tracker_file" wc -l)
-
-if [[ "$short_session_count" -ge "$short_session_count_before_reset" ]]; then
-	echo >&2 "gamescope-session: detected broken Steam, bootstrapping from OS copy..."
-	# at this point, might as well make sure we won't relaunch on a sideloaded build
-	rm -f -- "$HOME/devkit-game/devkit-steam"
-	mkdir -p ~/.local/share/Steam
-	# remove some caches and stateful things known to cause Steam to fail to start if corrupt
-	rm -rf --one-file-system ~/.local/share/Steam/config/widevine
-	# cleanup the steam config dir, i.e. ~/.steam. We should try to preserve registry.vdf if possible
-	steam_config_dir="$HOME/.steam"
-	steam_config_backup_dir="$HOME/dot-steam.bak.$(date +%s)"
-	registry_vdf="$steam_config_dir/registry.vdf"
-	registry_backup_vdf="$steam_config_backup_dir/.steam/registry.vdf"
-	mv "$steam_config_dir" "$steam_config_backup_dir"
-	mkdir -p "$steam_config_dir"
-	cp -f "$registry_backup_vdf" "$registry_vdf" || true
-	# restore clean copy of binaries from RO partition
-	tar xf /usr/lib/steam/bootstraplinux_ubuntu12_32.tar.xz -C ~/.local/share/Steam
-	# rearm
-	rm "$short_session_tracker_file"
-fi
-
-steam_notif_daemon &
-galileo-mura-setup &
-loop_background mangoapp
-
-if [[ -x $HOME/devkit-game/devkit-steam ]]; then
-	"$HOME"/devkit-game/devkit-steam "${steamargs[@]}" &
-	steam_wrapper_pid=$!
-else
-	steam "${steamargs[@]}" &
-	steam_wrapper_pid=$!
-fi
-
-kill_steam() {
-	# We need to kill the children of the wrapper, since the wrapper
-	# lacks signal handling (and so killing it does not properly kill
-	# steam)
-	readarray -t pids < <(print_children "$steam_wrapper_pid")
-
-	if [[ "${#pids[@]}" -gt 0 ]]; then
-		kill -TERM "${pids[@]}"
-	else
-		kill -TERM "$steam_wrapper_pid"
-	fi
-}
-
-trap kill_steam TERM
-
-wait "$steam_wrapper_pid"
-exit_code=$?
-
-trap - TERM
-
-if (( exit_code > 128 )); then
-	wait "$steam_wrapper_pid"
-fi
-
-if [[ "$SECONDS" -lt "$short_session_duration" ]]; then
-	echo "frog" >> "$short_session_tracker_file"
-else
-	rm "$short_session_tracker_file"
-fi
-
-# Ask all children to exit nicely, now that steam has exited
-readarray -t children < <(print_children $$)
-
-send_signals "${children[@]}"
-
-cleanup 5 "${children[@]}"
-cleanup_status=$!
-
-# If we get a SIGTERM/etc while waiting this happens.  Proceed to kill -9 everything but complain
-if (( cleanup_status == 1 )); then
-	echo >&2 "gamescope-session: Interrupted while waiting on teardown, force-killing remaining tasks"
-fi
-
-# Kill all remaining jobs and warn if unexpected things are in there (should be just sleep_pid, unless gamescope failed
-# to exit in time or we hit the interrupt case above)
-for job in $(jobs -p); do
-	# Warn about unexpected things
-	if (( cleanup_status == 1 )) && [[ $job = "$gamescope_pid" ]]; then
-		echo >&2 "gamescope-session: gamescope timed out while exiting, killing"
-	elif (( cleanup_status == 1 )) && [[ $job != "$sleep_pid" ]]; then
-		echo >&2 "gamescope-session: unexpected background pid $job at teardown: "
-		# spew some debug about it
-		ps -p "$job" >&2
-	fi
-	kill -KILL "$job"
-done
-
-# This should just be waiting on kill -9'd things. Another signal will cause us to give up, but we should be a little
-# stubborn about not letting the session die with gamescope holding on to things.
-wait
+	-O '*',${GAMESCOPE_DISPLAY}

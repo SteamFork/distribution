@@ -1,0 +1,57 @@
+#!/bin/bash
+
+short_session_tracker_file="/tmp/steamos-short-session-tracker"
+short_session_start_file="/tmp/steamos-short-session-start"
+short_session_duration=60
+short_session_count_before_reset=3
+
+handle_started() {
+    short_session_count=$(< "$short_session_tracker_file" wc -l)
+    touch $short_session_start_file
+
+    if [[ "$short_session_count" -ge "$short_session_count_before_reset" ]]; then
+        echo >&2 "gamescope-session: detected broken Steam, bootstrapping from OS copy..."
+        # at this point, might as well make sure we won't relaunch on a sideloaded build
+        rm -f -- "$HOME/devkit-game/devkit-steam"
+        mkdir -p ~/.local/share/Steam
+        # remove some caches and stateful things known to cause Steam to fail to start if corrupt
+        rm -rf --one-file-system ~/.local/share/Steam/config/widevine
+        # cleanup the steam config dir, i.e. ~/.steam. We should try to preserve registry.vdf if possible
+        steam_config_dir="$HOME/.steam"
+        steam_config_backup_dir="$HOME/dot-steam.bak.$(date +%s)"
+        registry_vdf="$steam_config_dir/registry.vdf"
+        registry_backup_vdf="$steam_config_backup_dir/.steam/registry.vdf"
+        mv "$steam_config_dir" "$steam_config_backup_dir"
+        mkdir -p "$steam_config_dir"
+        cp -f "$registry_backup_vdf" "$registry_vdf" || true
+        # restore clean copy of binaries from RO partition
+        tar xf /usr/lib/steam/bootstraplinux_ubuntu12_32.tar.xz -C ~/.local/share/Steam
+        # rearm
+        rm "$short_session_tracker_file"
+    fi
+}
+
+handle_stopped() {
+    seconds_since_started=$(($(date +%s) - $(date +%s -r "$short_session_start_file")))
+
+    if [[ "seconds_since_started" -lt "$short_session_duration" ]]; then
+        echo "frog" >> "$short_session_tracker_file"
+    else
+        rm "$short_session_tracker_file"
+    fi
+}
+
+case "$1" in
+    --started)
+        handle_started
+        ;;
+    --stopped)
+        handle_stopped
+        ;;
+    *)
+        echo "Usage: $0 --started | --stopped"
+        exit 1
+        ;;
+esac
+
+exit 0

@@ -1,0 +1,11 @@
+[Unit]
+Description=Steam Short Session Tracker
+After=steam-launcher.service
+Requires=steam-launcher.service
+RefuseManualStart=true
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/lib/steamos/steam-short-session-tracker --started
+ExecStop=/usr/lib/steamos/steam-short-session-tracker --stopped
+RemainAfterExit=true
