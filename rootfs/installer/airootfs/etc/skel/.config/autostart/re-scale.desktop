@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Re-Scale Desktop
+Exec=/usr/bin/konsole -e "/usr/bin/bash /home/liveuser/.config/rescale.sh"
+Terminal=false
+Type=Application
+X-KDE-autostart-after=panel
+StartupNotify=true

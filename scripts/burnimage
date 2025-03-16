@@ -49,7 +49,7 @@ then
   read -n 1 -s -r -p "PRESS CONTROL-C NOW TO ABORT, OR ANY OTHER KEY TO CONTINUE!"
   if [ -e "${ISO}" ]
   then
-    echo "Wiping ${SDDEVICE} partition data"
+    echo -e "\n\nWiping ${SDDEVICE} partition data"
     sudo wipefs -a ${SDDEVICE} 2>/dev/null ||:
     echo "Writing ${ISO} to ${SDDEVICE}"
     sudo dd if=${ISO} of=/dev/${SDDEVICE} bs=1M
