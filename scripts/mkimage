@@ -16,6 +16,7 @@ eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
 
 SCRIPT="$(realpath "${0}")"
 WORK_DIR="${WORK_DIR}/image"
+IMAGE_DIR="${IMAGE_DIR}/${RELEASE_TYPE}"
 
 export IMAGE_DIR WORK_DIR
 

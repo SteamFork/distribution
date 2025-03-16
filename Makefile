@@ -1,3 +1,6 @@
+RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+$(eval $(RUN_ARGS):;@:)
+
 export SHELL		:= /usr/bin/bash
 export BUILD_DIR	:= $(shell pwd)
 export STEAMOS_VERSION  := 3.7
@@ -8,16 +11,14 @@ export INSTALLER_DIR    := ${BUILD_DIR}/rootfs/installer
 export OS_DIR           := ${BUILD_DIR}/rootfs/steamfork
 export SCRIPT_DIR       := ${BUILD_DIR}/scripts
 export WORK_DIR         := ${BUILD_DIR}/_work
-export IMAGE_DIR        := ${BUILD_DIR}/release/images/${STEAMOS_VERSION}/
-export REPO_DIR         := ${BUILD_DIR}/release/repos/
+export IMAGE_DIR        := ${BUILD_DIR}/release/images/${STEAMOS_VERSION}
+export REPO_DIR         := ${BUILD_DIR}/release/repos
 export UPSTREAM_REPO	:= upstream
-
-RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-$(eval $(RUN_ARGS):;@:)
 
 PACKAGES_LIST := $(shell cat metadata/packages.list)
 
 env:
+	@echo "RUN_ARGS=$(RUN_ARGS)"
 	@echo "export SHELL=${SHELL}"
 	@echo "export BUILD_DIR=${BUILD_DIR}"
 	@echo "export INSTALLER_DIR=${INSTALLER_DIR}"
