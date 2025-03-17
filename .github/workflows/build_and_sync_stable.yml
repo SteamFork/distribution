@@ -21,11 +21,14 @@ jobs:
     if: contains(github.ref, 'refs/heads/3.6')
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          clean: false
-          ref: 3.6
+      - name: Set up Git
+        run: |
+          if [ ! -d ".git" ]; then
+            git init
+            git remote add origin https://github.com/${{ github.repository }}.git
+          fi
+          git fetch origin 3.6
+          git checkout -b 3.6 origin/3.6
 
       - name: Install GitHub CLI
         run: |
