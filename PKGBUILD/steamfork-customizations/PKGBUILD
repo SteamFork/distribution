@@ -2,7 +2,7 @@
 
 pkgname=steamfork-customizations
 pkgver=2025.03.17
-pkgrel=1
+pkgrel=2
 pkgdesc='SteamFork customizations provider.'
 arch=('any')
 url='http://www.steamfork.org'
