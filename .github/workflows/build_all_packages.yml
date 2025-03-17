@@ -27,11 +27,18 @@ jobs:
             make repo-clean
           fi
           
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          clean: false
-          ref: ${{ github.event.inputs.branch }}
+      - name: Set up Git
+        run: |
+          if [ ! -d ".git" ]; then
+            git init
+            git remote add origin https://github.com/${{ github.repository }}.git
+          fi
+          git fetch origin ${{ github.event.inputs.branch }}
+          if [ $(git branch --list ${{ github.event.inputs.branch }}) ]; then
+            git checkout ${{ github.event.inputs.branch }}
+          else
+            git checkout -b ${{ github.event.inputs.branch }} origin/${{ github.event.inputs.branch }}
+          fi
 
       - name: Configure GPG agent
         run: |
