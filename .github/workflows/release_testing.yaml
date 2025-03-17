@@ -17,11 +17,15 @@ jobs:
     timeout-minutes: 1440
     runs-on: 3.7
     steps:
-      - uses: actions/checkout@v4
-        name: checkout
-        with:
-          clean: false
-          ref: 3.7
+      - name: Set up Git
+        run: |
+          if [ ! -d ".git" ]; then
+            git init
+            git remote add origin https://github.com/${{ github.repository }}.git
+          fi
+          git fetch origin 3.7
+          git checkout -b 3.7 origin/3.7
+
       - name: Set the tag
         id: tag
         run: echo "tag=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT

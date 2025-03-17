@@ -18,8 +18,8 @@ jobs:
             git init
             git remote add origin https://github.com/${{ github.repository }}.git
           fi
-          git fetch origin
-          git checkout 3.6
+          git fetch origin 3.6
+          git checkout -b 3.6 origin/3.6
 
       - name: Define the release tag.
         id: create_tag

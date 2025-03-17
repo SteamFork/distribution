@@ -24,11 +24,14 @@ jobs:
       - name: Set up job
         run: echo "Running job on branch ${{ github.ref }}"
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          clean: false
-          ref: ${{ github.ref }}
+      - name: Set up Git
+        run: |
+          if [ ! -d ".git" ]; then
+            git init
+            git remote add origin https://github.com/${{ github.repository }}.git
+          fi
+          git fetch origin
+          git checkout ${{ github.ref }}
 
       - name: Verify the repo exists, or fail.
         run: |
