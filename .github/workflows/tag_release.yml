@@ -12,13 +12,20 @@ jobs:
     runs-on: 3.6
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          clean: false
-          persist-credentials: false
-          fetch-depth: 0
-          ref: 3.6
+      - name: Set up Git
+        env:
+          BRANCH_NAME: 3.6
+        run: |
+          if [ ! -d ".git" ]; then
+            git init
+            git remote add origin https://github.com/${{ github.repository }}.git
+          fi
+          git fetch origin "${BRANCH_NAME}"
+          if [ "$(git branch --list "${BRANCH_NAME}")" ]; then
+            git checkout "${BRANCH_NAME}"
+          else
+            git checkout -b "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
+          fi
 
       - name: Define the release tag.
         id: create_tag

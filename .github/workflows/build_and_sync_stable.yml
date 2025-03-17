@@ -17,15 +17,24 @@ on:
 
 jobs:
   trigger_build_and_sync:
-    runs-on: self-hosted
+    runs-on: 3.7
     if: contains(github.ref, 'refs/heads/3.6')
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          clean: false
-          ref: 3.6
+      - name: Set up Git
+        env:
+          BRANCH_NAME: 3.6
+        run: |
+          if [ ! -d ".git" ]; then
+            git init
+            git remote add origin https://github.com/${{ github.repository }}.git
+          fi
+          git fetch origin "${BRANCH_NAME}"
+          if [ "$(git branch --list "${BRANCH_NAME}")" ]; then
+            git checkout "${BRANCH_NAME}"
+          else
+            git checkout -b "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
+          fi
 
       - name: Install GitHub CLI
         run: |
@@ -45,4 +54,4 @@ jobs:
           
       - name: Trigger build_and_sync workflow
         run: |
-          gh workflow run build_and_sync.yml --ref 3.6 -f runner_tag=3.6
+          gh workflow run build_and_sync.yml --ref ${{ github.ref }} -f runner_tag=${{ github.ref_name }}
