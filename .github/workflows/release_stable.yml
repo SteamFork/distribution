@@ -2,7 +2,7 @@
 # Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
 # This workflow builds and releases official installation and update images for the SteamFork distribution.
 
-name: Image Build and Release (Stable)
+name: Stable - Image Build and Release
 permissions:
   contents: write
 on:
@@ -18,13 +18,23 @@ concurrency:
 jobs:
   build:
     timeout-minutes: 1440
-    runs-on: main
+    runs-on: 3.6
     steps:
-      - uses: actions/checkout@v4
-        name: checkout
-        with:
-          clean: false
-          ref: "${{ steps.branch.outputs.branch }}"
+      - name: Set up Git
+        env:
+          BRANCH_NAME: 3.6
+        run: |
+          if [ ! -d ".git" ]; then
+            git init
+            git remote add origin https://github.com/${{ github.repository }}.git
+          fi
+          git fetch origin "${BRANCH_NAME}"
+          if [ "$(git branch --list "${BRANCH_NAME}")" ]; then
+            git checkout "${BRANCH_NAME}"
+          else
+            git checkout -b "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
+          fi
+
       - name: Set the tag
         id: tag
         run: echo "tag=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
@@ -38,7 +48,7 @@ jobs:
   sync:
     if: github.repository == 'SteamFork/distribution' && startsWith(github.ref, 'refs/tags/2')
     timeout-minutes: 1440
-    runs-on: main
+    runs-on: 3.6
     needs: build
     steps:
       - name: Sync release images to the primary instance
@@ -52,7 +62,7 @@ jobs:
   release:
     if: github.repository == 'SteamFork/distribution' && startsWith(github.ref, 'refs/tags/2')
     timeout-minutes: 1440
-    runs-on: main
+    runs-on: 3.6
     needs: sync
     steps:
       - name: Release images to the public
@@ -70,11 +80,11 @@ jobs:
             | Branch | URL | Checksum |
             | -- | -- | -- |
             | Primary | [LATEST](https://www.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) |
-            | New York | [LATEST](https://www1.ny.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www1.ny.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) ||
-            | Dallas | [LATEST](https://www1.da.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www1.da.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) ||
-            | San Jose | [LATEST](https://www1.sj.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www1.sj.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) ||
-            | Ashburn | [LATEST](https://www1.as.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www1.as.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) ||
-            | Ashburn | [LATEST](https://www2.as.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www2.as.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) ||
+            | New York | [LATEST](https://www1.ny.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www1.ny.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) |
+            | Dallas | [LATEST](https://www1.da.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www1.da.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) |
+            | San Jose | [LATEST](https://www1.sj.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www1.sj.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) |
+            | Ashburn | [LATEST](https://www1.as.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www1.as.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) |
+            | Ashburn | [LATEST](https://www2.as.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso) | [SHA256](https://www2.as.steamfork.org/images/installer/steamfork-rel-latest-x86_64.iso.sha256) |
             For installation instructions and other documentation, visit the [main project page](https://github.com/SteamFork).
 
           prerelease: false
