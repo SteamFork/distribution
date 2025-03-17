@@ -2,7 +2,7 @@
 # Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
 # This workflow tags a release in the repository.
 
-name: Tag for Release (Stable)
+name: Stable - Tag for Release
 
 on:
   workflow_dispatch:

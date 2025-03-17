@@ -2,7 +2,7 @@
 # Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
 # This workflow destroys and recreates the SteamFork package repository and then syncs it to all known mirrors.
 
-name: Populate Repository (Selected Branch)
+name: Manual - Populate Repository
 
 on:
   workflow_dispatch:
