@@ -2,7 +2,7 @@
 # Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
 # This workflow triggers the build_and_sync workflow for the 3.7 branch when packages are added or modified in the repository.
 
-name: Packages Build and Sync (Testing)
+name: Testing - Packages Build and Sync
 
 on:
   push:
