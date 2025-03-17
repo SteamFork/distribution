@@ -77,7 +77,7 @@ os-switch)
     if [ -e "${DEPLOY_DIR}/latest_${BRANCH}.releasemeta" ]; then
       for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
         echo "Update the ${BRANCH} images on ${HOST}."
-        ssh -tt ${HOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; if [ -d "${BRANCH}.new" ]; then chown -R www-data:www-data ${BRANCH}.new; rm -rf ${BRANCH}; mv ${BRANCH}.new ${BRANCH}; fi"
+        ssh -tt ${HOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; if [ -d "${BRANCH}.new" ]; then sudo chown -R www-data:www-data ${BRANCH}.new; sudo rm -rf ${BRANCH}; sudo mv ${BRANCH}.new ${BRANCH}; fi"
       done
     fi
   done
