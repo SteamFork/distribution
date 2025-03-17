@@ -12,15 +12,13 @@ jobs:
     runs-on: 3.6
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          clean: false
-          persist-credentials: false
-          fetch-depth: 0
-
-      - name: Checkout 3.6 branch
+      - name: Set up Git
         run: |
+          if [ ! -d ".git" ]; then
+            git init
+            git remote add origin https://github.com/${{ github.repository }}.git
+          fi
+          git fetch origin
           git checkout 3.6
 
       - name: Define the release tag.
