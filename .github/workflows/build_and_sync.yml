@@ -2,7 +2,7 @@
 # Copyright (C) 2025 SteamFork (https://github.com/SteamFork)
 # This workflow builds and syncs packages for the SteamFork distribution.
 
-name: Package Build and Sync
+name: Automated - Package Build and Sync
 
 on:
   workflow_dispatch:
