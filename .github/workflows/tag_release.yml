@@ -9,7 +9,7 @@ on:
 
 jobs:
   tag_release:
-    runs-on: [self-hosted, main]
+    runs-on: 3.6
 
     steps:
       - name: Checkout repository

@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build:
     timeout-minutes: 1440
-    runs-on: [self-hosted, 3.7]
+    runs-on: 3.7
     steps:
       - uses: actions/checkout@v4
         name: checkout
@@ -35,7 +35,7 @@ jobs:
   sync:
     if: github.repository == 'SteamFork/distribution' && github.ref == 'refs/heads/3.7'
     timeout-minutes: 1440
-    runs-on: [self-hosted, 3.7]
+    runs-on: 3.7
     needs: build
     steps:
       - name: Sync testing images to the primary instance
