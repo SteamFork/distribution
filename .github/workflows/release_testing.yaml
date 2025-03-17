@@ -23,11 +23,11 @@ jobs:
             git init
             git remote add origin https://github.com/${{ github.repository }}.git
           fi
-          git fetch origin ${{ github.ref }}
-          if [ $(git branch --list ${{ github.ref }}) ]; then
-            git checkout ${{ github.ref }}
+          git fetch origin ${{ github.ref_name }}
+          if [ $(git branch --list ${{ github.ref_name }}) ]; then
+            git checkout ${{ github.ref_name }}
           else
-            git checkout -b ${{ github.ref }} origin/${{ github.ref }}
+            git checkout -b ${{ github.ref_name }} origin/${{ github.ref_name }}
           fi
 
       - name: Set the tag
