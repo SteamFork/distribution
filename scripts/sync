@@ -75,7 +75,10 @@ os-switch)
   for BRANCH in stable testing minimal; do
     DEPLOY_DIR="${IMAGE_DIR}/${BRANCH}"
     if [ -e "${DEPLOY_DIR}/latest_${BRANCH}.releasemeta" ]; then
-      ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; if [ -d "${BRANCH}.new" ]; then chown -R www-data:www-data ${BRANCH}.new; rm -rf ${BRANCH}; mv ${BRANCH}.new ${BRANCH}; fi"
+      for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
+        echo "Update the ${BRANCH} images on ${HOST}."
+        ssh -tt ${HOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; if [ -d "${BRANCH}.new" ]; then chown -R www-data:www-data ${BRANCH}.new; rm -rf ${BRANCH}; mv ${BRANCH}.new ${BRANCH}; fi"
+      done
     fi
   done
   ;;
