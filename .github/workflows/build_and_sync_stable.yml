@@ -17,7 +17,7 @@ on:
 
 jobs:
   trigger_build_and_sync:
-    runs-on: self-hosted
+    runs-on: 3.7
     if: contains(github.ref, 'refs/heads/3.6')
 
     steps:
@@ -27,8 +27,12 @@ jobs:
             git init
             git remote add origin https://github.com/${{ github.repository }}.git
           fi
-          git fetch origin 3.6
-          git checkout -b 3.6 origin/3.6
+          git fetch origin ${{ github.ref }}
+          if [ $(git branch --list ${{ github.ref }}) ]; then
+            git checkout ${{ github.ref }}
+          else
+            git checkout -b ${{ github.ref }} origin/${{ github.ref }}
+          fi
 
       - name: Install GitHub CLI
         run: |
@@ -48,4 +52,4 @@ jobs:
           
       - name: Trigger build_and_sync workflow
         run: |
-          gh workflow run build_and_sync.yml --ref 3.6 -f runner_tag=3.6
+          gh workflow run build_and_sync.yml --ref ${{ github.ref }} -f runner_tag=${{ github.ref }}
