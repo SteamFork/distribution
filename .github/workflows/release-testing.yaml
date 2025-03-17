@@ -33,7 +33,7 @@ jobs:
           set -e
           make image testing BUILD_VER="${{ steps.version.outputs.version }}"
   sync:
-    if: github.repository == 'SteamFork/distribution' && github.ref == 'refs/heads/3.7'
+    if: github.repository == 'SteamFork/distribution'
     timeout-minutes: 1440
     runs-on: [self-hosted, 3.7]
     needs: build
