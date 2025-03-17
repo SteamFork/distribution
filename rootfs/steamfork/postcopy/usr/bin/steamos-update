@@ -31,22 +31,8 @@ else
     UPD_BRANCH=${RELEASETYPE}
 fi
 
-if [[ -f "/etc/manual-enroll-override" ]]; then
-    UPDATE_VERSION_OVERRIDE=$(cat /etc/manual-enroll-override)
-else
-    if [[ -n "${UPDATE_VERSION_OVERRIDE}" ]]; then
-        echo -e "Update version override: $UPDATE_VERSION_OVERRIDE\n"
-    fi
-fi
-
-if [[ -n "${UPDATE_VERSION_OVERRIDE}" ]]; then
-    downloadendpoint=${download_url}/images/${UPDATE_VERSION_OVERRIDE}
-else
-    downloadendpoint=${download_url}/images
-fi
-
-
 preferred_imgtype=".img.zst"
+downloadendpoint=${download_url}/images
 endpoint=${downloadendpoint}/latest_${UPD_BRANCH}.releasemeta
 downloadpath=/home/.steamos/updatecontainer
 

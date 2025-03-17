@@ -46,3 +46,7 @@ jobs:
         run: |
           set -e
           make mirrors-sync
+      - name: Switch the images to the latest
+        run: |
+          set -e
+          make images-switch

@@ -67,6 +67,9 @@ images:
 images-sync:
 	${SCRIPT_DIR}/sync os-sync
 
+images-switch:
+	${SCRIPT_DIR}/sync os-switch
+
 images-release:
 	${SCRIPT_DIR}/sync os-release
 
