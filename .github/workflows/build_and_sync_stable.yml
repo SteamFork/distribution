@@ -22,16 +22,18 @@ jobs:
 
     steps:
       - name: Set up Git
+        env:
+          BRANCH_NAME: 3.6
         run: |
           if [ ! -d ".git" ]; then
             git init
             git remote add origin https://github.com/${{ github.repository }}.git
           fi
-          git fetch origin "${{ github.ref_name }}"
-          if [ "$(git branch --list "${{ github.ref_name }}")" ]; then
-            git checkout "${{ github.ref_name }}"
+          git fetch origin "${BRANCH_NAME}"
+          if [ "$(git branch --list "${BRANCH_NAME}")" ]; then
+            git checkout "${BRANCH_NAME}"
           else
-            git checkout -b "${{ github.ref_name }}" origin/"${{ github.ref_name }}"
+            git checkout -b "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
           fi
 
       - name: Install GitHub CLI
@@ -52,4 +54,4 @@ jobs:
           
       - name: Trigger build_and_sync workflow
         run: |
-          gh workflow run build_and_sync.yml --ref ${{ github.ref }} -f runner_tag=${{ github.ref }}
+          gh workflow run build_and_sync.yml --ref ${{ github.ref }} -f runner_tag=${{ github.ref_name }}

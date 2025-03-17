@@ -18,16 +18,18 @@ jobs:
     runs-on: 3.7
     steps:
       - name: Set up Git
+        env:
+          BRANCH_NAME: 3.7
         run: |
           if [ ! -d ".git" ]; then
             git init
             git remote add origin https://github.com/${{ github.repository }}.git
           fi
-          git fetch origin "${{ github.ref_name }}"
-          if [ "$(git branch --list "${{ github.ref_name }}")" ]; then
-            git checkout "${{ github.ref_name }}"
+          git fetch origin "${BRANCH_NAME}"
+          if [ "$(git branch --list "${BRANCH_NAME}")" ]; then
+            git checkout "${BRANCH_NAME}"
           else
-            git checkout -b "${{ github.ref_name }}" origin/"${{ github.ref_name }}"
+            git checkout -b "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
           fi
 
       - name: Set the tag
