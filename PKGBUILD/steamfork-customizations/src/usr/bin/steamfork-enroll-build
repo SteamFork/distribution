@@ -1,4 +1,5 @@
 #!/bin/bash
+. /etc/os-release
 
 if [[ $EUID -ne 0 ]];
 then
@@ -6,6 +7,6 @@ then
     exit 1
 fi
 
-echo -n "Enter development branch you would like to opt-in to: "
-read branch
-echo $branch > /etc/manual-enroll-override
+echo -n "Enter the version and branch you would like to opt-in to (${STEAMOS_VERSION}/${VARIANT_ID}): "
+read version
+echo $version > /etc/manual-enroll-override
