@@ -99,3 +99,5 @@ cp ${WORK_DIR}/buildwork/pacman.conf ${INSTALLER_DIR}/airootfs/etc/
 
 # Build the installation image
 sudo mkarchiso -v -w ${WORK_DIR}/image-build -o ${IMAGE_DIR}/installer ${INSTALLER_DIR}
+
+sudo rm ${IMAGE_DIR}/currentcandidate ${INSTALLER_DIR}/buildinfo
