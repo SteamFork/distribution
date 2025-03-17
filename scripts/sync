@@ -66,23 +66,23 @@ os-sync)
             ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer/; sha256sum ${IMAGEFILE}-x86_64.iso | tee -a ${IMAGEFILE}-x86_64.iso.sha256"
             ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso steamfork-${BRANCH}-latest-x86_64.iso"
             ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso.sha256 steamfork-${BRANCH}-latest-x86_64.iso.sha256"
+            ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; chown -R www-data:www-data ${BRANCH}.new; rm -rf ${BRANCH}; mv ${BRANCH}.new ${BRANCH}"
         fi
     done
     scp /tmp/mirrorlist.txt ${WWWUSER}@${WWWHOST}:${WWWROOT}/
     ssh -tt ${WWWUSER}@${WWWHOST} "mkdir -p ${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck; echo "{ }" >${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck/${STAGING_OS_TAG}.json"
     ;;
 os-release)
-    private_key add
-    for BRANCH in stable testing minimal; do
-        for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
-            echo "Swap to release images on ${HOST} for ${BRANCH}."
-            ssh -tt ${HOST} "sudo chown -R www-data:www-data ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new"
-            ssh -tt ${HOST} "sudo mv ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH} ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.prev; sudo mv ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/ ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}"
-            ssh -tt ${HOST} "sudo rm -rf ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.prev"
-        done
-    done
-    private_key remove
-    ;;
+	private_key add
+  BRANCH="stable"
+  DEPLOY_DIR="${IMAGE_DIR}/${BRANCH}"
+  DEPLOY_DIR="$(echo ${DEPLOY_DIR} | sed 's~'${WWWROOT}/images/'~~g')"
+	for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
+		echo "Update the release images on ${HOST}."
+	   ssh -tt ${HOST} "cd ${WWWROOT}/images/; sudo rm -f {buildinfo,latest*,steamfork*,currentcandidate,*.releasemeta,package_versions.txt}; ln -sf ${DEPLOY_DIR}/* ."
+	done
+	private_key remove
+	;;
 mirrors)
 	private_key add
 	echo "Push mirror list to ${WWWHOST}."

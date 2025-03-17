@@ -5,7 +5,6 @@ then
     exec pkexec --disable-internal-agent "$0" "$@"
 fi
 
-source /etc/os-release
 source /etc/steamfork-release
 
 ### Refresh the mirrors
@@ -33,17 +32,17 @@ else
 fi
 
 if [[ -f "/etc/manual-enroll-override" ]]; then
-    UPDATE_BRANCH_OVERRIDE=$(cat /etc/manual-enroll-override)
+    UPDATE_VERSION_OVERRIDE=$(cat /etc/manual-enroll-override)
 else
-    if [[ -n "${UPDATE_BRANCH_OVERRIDE}" ]]; then
-        echo -e "Update branch override: $UPDATE_BRANCH_OVERRIDE\n"
+    if [[ -n "${UPDATE_VERSION_OVERRIDE}" ]]; then
+        echo -e "Update version override: $UPDATE_VERSION_OVERRIDE\n"
     fi
 fi
 
-if [[ -n "${UPDATE_BRANCH_OVERRIDE}" ]]; then
-    downloadendpoint=${download_url}/images/${STEAMOS_VERSION}/${UPDATE_BRANCH_OVERRIDE}
+if [[ -n "${UPDATE_VERSION_OVERRIDE}" ]]; then
+    downloadendpoint=${download_url}/images/${UPDATE_VERSION_OVERRIDE}
 else
-    downloadendpoint=${download_url}/images/${STEAMOS_VERSION}/${UPD_BRANCH}
+    downloadendpoint=${download_url}/images
 fi
 
 
