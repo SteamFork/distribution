@@ -35,7 +35,7 @@ jobs:
             git checkout -b "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
           fi
       - name: Pull latest changes
-        run: git pull origin "${BRANCH_NAME}"
+        run: git pull --ff-only origin "${BRANCH_NAME}"
       - name: Set the tag
         id: tag
         run: echo "tag=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
