@@ -63,7 +63,6 @@ os-sync)
                 fi
                 sleep 5
             done
-            ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer/; sha256sum ${IMAGEFILE}-x86_64.iso | tee -a ${IMAGEFILE}-x86_64.iso.sha256"
             ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso steamfork-${BRANCH}-latest-x86_64.iso"
             ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso.sha256 steamfork-${BRANCH}-latest-x86_64.iso.sha256"
         fi
@@ -78,6 +77,8 @@ os-switch)
       for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
         echo "Update the ${BRANCH} images on ${HOST}."
         ssh -tt ${HOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; if [ -d "${BRANCH}.new" ]; then sudo chown -R www-data:www-data ${BRANCH}.new; sudo rm -rf ${BRANCH}; sudo mv ${BRANCH}.new ${BRANCH}; fi"
+        ssh -tt ${HOST} "cd ${WWWROOT}/images/; sudo rm -f {buildinfo,steamfork*${BRANCH}*,currentcandidate,*${BRANCH}*.releasemeta,package_versions.txt}; ln -sf ${DEPLOY_DIR}/steamfork*${BRANCH}* .; ln -sf ${DEPLOY_DIR}/*${BRANCH}*.releasemeta ."
+        ssh -tt ${HOST} "cd ${WWWROOT}/images/installer; sudo rm -f *${BRANCH}*; ln -sf ln -sf ../${DEPLOY_DIR}/installer/steamfork*${BRANCH}* ."
       done
     fi
   done
@@ -92,7 +93,8 @@ os-release)
       for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
         echo "Update the release images on ${HOST}."
         ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; if [ -d "${BRANCH}.new" ]; then chown -R www-data:www-data ${BRANCH}.new; rm -rf ${BRANCH}; mv ${BRANCH}.new ${BRANCH}; fi"
-        ssh -tt ${HOST} "cd ${WWWROOT}/images/; sudo rm -f {buildinfo,steamfork*${BRANCH}*,currentcandidate,*${BRANCH}*.releasemeta,package_versions.txt}; ln -sf ${DEPLOY_DIR}/steamfork*${BRANCH}* .; ln -sf ${DEPLOY_DIR}/*${BRANCH}*.releasemeta ."
+        ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/; sudo rm -f {buildinfo,steamfork*${BRANCH}*,currentcandidate,*${BRANCH}*.releasemeta,package_versions.txt}; ln -sf ${DEPLOY_DIR}/steamfork*${BRANCH}* .; ln -sf ${DEPLOY_DIR}/*${BRANCH}*.releasemeta ."
+        ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/installer; sudo rm -f *${BRANCH}*; ln -sf ln -sf ../${DEPLOY_DIR}/installer/steamfork*${BRANCH}* ."
       done
     fi
   done
