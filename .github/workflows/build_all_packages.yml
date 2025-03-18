@@ -34,14 +34,10 @@ jobs:
             git remote add origin https://github.com/${{ github.repository }}.git
           fi
           git fetch origin "${{ github.event.inputs.branch }}"
-          if [ "$(git branch --list "${{ github.event.inputs.branch }}")" ]; then
-            git checkout "${{ github.event.inputs.branch }}"
-          else
-            git checkout -b "${{ github.event.inputs.branch }}" origin/"${{ github.event.inputs.branch }}"
-          fi
+          git checkout -B "${{ github.event.inputs.branch }}" origin/"${{ github.event.inputs.branch }}"
 
       - name: Pull latest changes
-        run: git pull --ff-only origin "${BRANCH_NAME}"
+        run: git pull --ff-only origin "${{ github.event.inputs.branch }}"
 
       - name: Configure GPG agent
         run: |
