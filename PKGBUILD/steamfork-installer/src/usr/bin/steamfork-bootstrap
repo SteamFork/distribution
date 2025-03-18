@@ -1,7 +1,7 @@
 #!/bin/bash
 ## Installation bootstrapper
 
-sync 
+sync
 
 while [[ $# -gt 0 ]]
 do
@@ -45,115 +45,112 @@ esac
 done
 
 if [[ -n "$(blkid | grep sf)" ]]; then
-ROOTLOCATION=/tmp/sf_root
-INSTALLLOCATION=${ROOTLOCATION}/rootfs
-HOMELOCATION_TEMP=/tmp/sf_home
-SNAPSHOT_FUTURELOC=${HOMELOCATION_TEMP}/.steamos/installcontainer
-SUBVOL=$(ls /etc/install.image/*.img.zst | sed -s 's/.img.zst//g')
-SUBVOL=$(basename ${SUBVOL})
-SUBVOLLOCATION=/tmp/subvol
+    ROOTLOCATION=/tmp/sf_root
+    INSTALLLOCATION=${ROOTLOCATION}/rootfs
+    HOMELOCATION_TEMP=/tmp/sf_home
+    SNAPSHOT_FUTURELOC=${HOMELOCATION_TEMP}/.steamos/installcontainer
+    SUBVOL=$(ls /etc/install.image/*.img.zst | sed -s 's/.img.zst//g')
+    SUBVOL=$(basename ${SUBVOL})
+    SUBVOLLOCATION=/tmp/subvol
 
-echo "Bootstrapping SteamFork image $SUBVOL on $(blkid -L sf_root)..."
+    echo "Bootstrapping SteamFork image $SUBVOL on $(blkid -L sf_root)..."
 
-mkdir -p ${ROOTLOCATION} ${HOMELOCATION_TEMP}
+    mkdir -p ${ROOTLOCATION} ${HOMELOCATION_TEMP}
 
-mount -L sf_root -o compress-force=zstd:1,discard,noatime,nodiratime ${ROOTLOCATION}
-mount -L sf_home ${HOMELOCATION_TEMP}
+    mount -L sf_root -o compress-force=zstd:1,discard,noatime,nodiratime ${ROOTLOCATION}
+    mount -L sf_home ${HOMELOCATION_TEMP}
 
-# Start build deploying here
-mkdir -p ${SNAPSHOT_FUTURELOC} ${INSTALLLOCATION} ${HOMELOCATION_TEMP} ${SNAPSHOT_FUTURELOC} ${SUBVOLLOCATION}
-if [[ "${IS_RESET}" == "1" ]]; then
-    echo "Removing current copy of subvolume..."
-    btrfs subvolume delete ${INSTALLLOCATION}/${SUBVOL}
-fi
-
-if [[ ! -d "${INSTALLLOCATION}/${SUBVOL}" ]]; then
-    echo "Copying rootfs image to home partition..."
-    cp /etc/install.image/${SUBVOL}.img.zst ${SNAPSHOT_FUTURELOC}/
-    echo "Decompressing rootfs..."
-    zstd -df ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst
-    rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst
-    echo "Installing rootfs image to partition..."
-    btrfs receive ${INSTALLLOCATION} < ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img
-    echo "Removing rootfs image..."
-    rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img
-else
-    echo "Installer subvolume already exists on container, skipping bootstrap..."
-fi
-mount -L sf_root -o subvol=rootfs/${SUBVOL},compress-force=zstd:1,discard,noatime,nodiratime ${SUBVOLLOCATION}
-mount -L sf_efi ${SUBVOLLOCATION}/boot/efi
-mount -L sf_home ${SUBVOLLOCATION}/home
-mount -L sf_var ${SUBVOLLOCATION}/var
-
-echo -e "\nInstalling bootloader..."
-
-arch-chroot ${SUBVOLLOCATION} steamos-readonly disable
-arch-chroot ${SUBVOLLOCATION} mkinitcpio -P
-arch-chroot ${SUBVOLLOCATION} steamfork-grub-update
-
-echo -e "\nConfiguring swap..."
-arch-chroot ${SUBVOLLOCATION} steamfork-enable-swap
-arch-chroot ${SUBVOLLOCATION} swapoff -a
-
-mkdir -p ${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/var/overlays/etc/upper
-mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc
-echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${SUBVOLLOCATION} passwd root
-
-if [[ ! -z "${OSUSER}" ]]; then
-    echo -e "\nCreating user ${OSUSER}..."
-    ### If the user exists, kill it with fire
-    for file in /etc/group /etc/shadow /etc/passwd
-    do
-      arch-chroot ${SUBVOLLOCATION} sed -i '/^'${OSUSER}':/d' ${file}
-    done
-    arch-chroot ${SUBVOLLOCATION} rm -rf /home/${OSUSER}
-
-    arch-chroot ${SUBVOLLOCATION} groupadd -g 1000 ${OSUSER}
-    arch-chroot ${SUBVOLLOCATION} useradd --create-home -d /home/${OSUSER} -c "Steam Deck User" -s /bin/bash -u 1000 -g 1000 ${OSUSER}
-    arch-chroot ${SUBVOLLOCATION} usermod -aG wheel ${OSUSER}
-    arch-chroot ${SUBVOLLOCATION} usermod -aG video ${OSUSER}
-    arch-chroot ${SUBVOLLOCATION} usermod -aG steamos-log-submitter ${OSUSER}
-    arch-chroot ${SUBVOLLOCATION} cp -f /usr/share/icons/steam/${OSUSER}-face.icon /home/${OSUSER}/.face.icon
-    arch-chroot ${SUBVOLLOCATION} chown ${OSUSER}:${OSUSER} /home/${OSUSER}/.face.icon
-
-    echo -e "${OSPASS}\n${OSPASS}" | arch-chroot ${SUBVOLLOCATION} passwd ${OSUSER}
-
-    ### Remove the local build repo
-    arch-chroot ${SUBVOLLOCATION} sed -ie '/^\[repo\]/,+3d' /etc/pacman.conf
-
-elif [[ "${IS_RESET}" == "1" ]]; then
-    mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc
-    echo "Restoring this installation to system defaults..."
-    RESIDUE=$(find ${SUBVOLLOCATION}/var/overlays/etc/upper | sed 1d | grep -v group | grep -v passwd | grep -v shadow | grep -v sddm.conf.d | grep -v .pwd.lock)
-    if [[ ! -z "${RESIDUE}" ]]; then
-        echo "Removing residue in /etc..."
-        rm -rf ${RESIDUE}
+    # Start build deploying here
+    mkdir -p ${SNAPSHOT_FUTURELOC} ${INSTALLLOCATION} ${HOMELOCATION_TEMP} ${SNAPSHOT_FUTURELOC} ${SUBVOLLOCATION}
+    if [[ "${IS_RESET}" == "1" ]]; then
+        echo "Removing current copy of subvolume..."
+        btrfs subvolume delete ${INSTALLLOCATION}/${SUBVOL}
     fi
-    echo "Removing user folder residue..."
-    rm -rf ${SUBVOLLOCATION}/home/{*,.*}
-    USER=$(cat ${SUBVOLLOCATION}/var/overlays/etc/upper/passwd | grep /home/ | cut -d ':' -f 1)
-    arch-chroot ${SUBVOLLOCATION} mkhomedir_helper ${USER}
+
+    if [[ ! -d "${INSTALLLOCATION}/${SUBVOL}" ]]; then
+        echo "Copying rootfs image to home partition..."
+        cp /etc/install.image/${SUBVOL}.img.zst ${SNAPSHOT_FUTURELOC}/
+        echo "Decompressing rootfs..."
+        zstd -df ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst
+        rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst
+        echo "Installing rootfs image to partition..."
+        btrfs receive ${INSTALLLOCATION} < ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img
+        echo "Removing rootfs image..."
+        rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img
+    else
+        echo "Installer subvolume already exists on container, skipping bootstrap..."
+    fi
+    mount -L sf_root -o subvol=rootfs/${SUBVOL},compress-force=zstd:1,discard,noatime,nodiratime ${SUBVOLLOCATION}
+    mount -L sf_efi ${SUBVOLLOCATION}/boot/efi
+    mount -L sf_home ${SUBVOLLOCATION}/home
+    mount -L sf_var ${SUBVOLLOCATION}/var
+
+    echo -e "\nInstalling bootloader..."
+
+    arch-chroot ${SUBVOLLOCATION} steamos-readonly disable
+    arch-chroot ${SUBVOLLOCATION} mkinitcpio -P
+    arch-chroot ${SUBVOLLOCATION} steamfork-grub-update
+
+    echo -e "\nConfiguring swap..."
+    arch-chroot ${SUBVOLLOCATION} steamfork-enable-swap
+    arch-chroot ${SUBVOLLOCATION} swapoff -a
+
+    mkdir -p ${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/var/overlays/etc/upper
+    mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc
+    echo -e "${ROOTPASS}\n${ROOTPASS}" | arch-chroot ${SUBVOLLOCATION} passwd root
+
+    if [[ ! -z "${OSUSER}" ]]; then
+        echo -e "\nCreating user ${OSUSER}..."
+        for file in /etc/group /etc/shadow /etc/passwd
+        do
+            arch-chroot ${SUBVOLLOCATION} sed -i '/^'${OSUSER}':/d' ${file}
+        done
+        arch-chroot ${SUBVOLLOCATION} rm -rf /home/${OSUSER}
+
+        arch-chroot ${SUBVOLLOCATION} groupadd -g 1000 ${OSUSER}
+        arch-chroot ${SUBVOLLOCATION} useradd --create-home -d /home/${OSUSER} -c "Steam Deck User" -s /bin/bash -u 1000 -g 1000 ${OSUSER}
+        arch-chroot ${SUBVOLLOCATION} usermod -aG wheel ${OSUSER}
+        arch-chroot ${SUBVOLLOCATION} usermod -aG video ${OSUSER}
+        arch-chroot ${SUBVOLLOCATION} usermod -aG steamos-log-submitter ${OSUSER}
+        arch-chroot ${SUBVOLLOCATION} cp -f /usr/share/icons/steam/${OSUSER}-face.icon /home/${OSUSER}/.face.icon
+        arch-chroot ${SUBVOLLOCATION} chown ${OSUSER}:${OSUSER} /home/${OSUSER}/.face.icon
+
+        echo -e "${OSPASS}\n${OSPASS}" | arch-chroot ${SUBVOLLOCATION} passwd ${OSUSER}
+
+        ### Remove the local build repo
+        arch-chroot ${SUBVOLLOCATION} sed -ie '/^\[repo\]/,+3d' /etc/pacman.conf
+
+    elif [[ "${IS_RESET}" == "1" ]]; then
+        mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc
+        echo "Restoring this installation to system defaults..."
+        RESIDUE=$(find ${SUBVOLLOCATION}/var/overlays/etc/upper | sed 1d | grep -v group | grep -v passwd | grep -v shadow | grep -v sddm.conf.d | grep -v .pwd.lock)
+        if [[ ! -z "${RESIDUE}" ]]; then
+            echo "Removing residue in /etc..."
+            rm -rf ${RESIDUE}
+        fi
+        echo "Removing user folder residue..."
+        rm -rf ${SUBVOLLOCATION}/home/{*,.*}
+        USER=$(cat ${SUBVOLLOCATION}/var/overlays/etc/upper/passwd | grep /home/ | cut -d ':' -f 1)
+        arch-chroot ${SUBVOLLOCATION} mkhomedir_helper ${USER}
+    else
+        echo "No user added, assuming upgrade..."
+    fi
+
+    REALEXITCODE="$?"
+
+    if [[ "${REALEXITCODE}" -ne "0" ]]; then
+        echo "Installation failed."
+        exit 127
+    fi
+
+    sync
+    echo "Finished, unmounting filesystems..."
+    for drive in $(echo "sf_home sf_var sf_efi sf_root")
+    do
+        umount -f $(blkid -L $drive)
+    done
+    umount -l ${SUBVOLLOCATION} && umount -l ${HOMELOCATION_TEMP}
 else
-    echo "No user added, assuming upgrade..."    
-fi
-
-REALEXITCODE="$?"
-
-if [[ "${REALEXITCODE}" -ne "0" ]]; then
-	echo "Installation failed."
-	exit 127
-    sleep 5
-fi
-
-sync
-echo "Finished, unmounting filesystems..."
-for drive in $(echo "sf_home sf_var sf_efi sf_root")
-do
-    umount -f $(blkid -L $drive)
-done
-umount -l ${SUBVOLLOCATION} && umount -l ${HOMELOCATION_TEMP}
-echo "You may now close this window and reboot your device..."
-else
-echo "Partition layout not detected. Aborting bootstrap"
-exit 127
+    echo "Partition layout not detected. Aborting bootstrap"
+    exit 127
 fi

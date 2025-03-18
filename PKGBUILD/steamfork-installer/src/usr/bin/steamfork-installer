@@ -1,11 +1,11 @@
 #!/bin/bash
-if [[ $EUID -ne 0 ]];
-then
+
+if [[ $EUID -ne 0 ]]; then
     exec pkexec --disable-internal-agent "$0" "$@"
 fi
 
 function show_help() {
-  cat <<EOF
+    cat <<EOF
 SteamFork Installer
 
 Options:
@@ -21,46 +21,44 @@ Ex.
 EOF
 }
 
-if [ ! "$#" > 0 ]
-then
-  show_help
-  exit 1
-fi
-
-while [[ $# -gt 0 ]]
-do
-key="$1"
-case $key in
-    --drive)
-    DEVICE="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    --username)
-    OSUSER="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    --password)
-    OSPASS="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    --root_password)
-    ROOTPASS="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    --use_unallocated)
-    USE_UNALLOCATED=true
-    shift # past argument
-    ;;
-    *)    # unknown option
-    echo -e "Unknown option: $1\n"
+if [ ! "$#" -gt 0 ]; then
     show_help
     exit 1
-    ;;
-esac
+fi
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --drive)
+        DEVICE="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        --username)
+        OSUSER="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        --password)
+        OSPASS="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        --root_password)
+        ROOTPASS="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        --use_unallocated)
+        USE_UNALLOCATED=true
+        shift # past argument
+        ;;
+        *)    # unknown option
+        echo -e "Unknown option: $1\n"
+        show_help
+        exit 1
+        ;;
+    esac
 done
 
 ROOTLOCATION=/tmp/sf_root
@@ -70,14 +68,14 @@ SNAPSHOT_FUTURELOC=${HOMELOCATION_TEMP}/.steamos/installcontainer
 SUBVOL=$(ls /etc/install.image/*.img.zst | sed -s 's/.img.zst//g')
 SUBVOL=$(basename ${SUBVOL})
 SUBVOLLOCATION=/tmp/subvol
-	
+
 echo ${DEVICE} | grep '^/dev' >/dev/null || DEVICE="/dev/${DEVICE}"
-	
+
 INSTALLDEVICE="${DEVICE}"
-	
+
 echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop|mmcblk)"
 if [ $? -eq 0 ]; then
-	INSTALLDEVICE="${DEVICE}p"
+    INSTALLDEVICE="${DEVICE}p"
 fi
 
 echo -e "\nCreating partitions..."
@@ -120,7 +118,7 @@ if [ "${USE_UNALLOCATED}" = true ]; then
             sgdisk ${DEVICE} --delete=${PART_NUM}
         fi
     done
-    
+
     # Find the start of the largest free space and align to 1MB
     aligned_start=$(parted -s ${DEVICE} unit MB print free | 
         grep "Free Space" | sort -nk4 | tail -1 | awk '{print $1}' | tr -d 'MB' | 
