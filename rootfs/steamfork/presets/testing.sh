@@ -460,7 +460,7 @@ export STEAMOS_PKGS="7zip
                     lib32-libunistring
                     lib32-libunwind
                     lib32-libva
-                    lib32-libva-mesa-driver
+                    steamfork/lib32-libva-mesa-driver
                     lib32-libvdpau
                     lib32-libvorbis
                     lib32-libx11
@@ -682,7 +682,7 @@ export STEAMOS_PKGS="7zip
                     libutempter
                     libva
                     libva-intel-driver
-                    libva-mesa-driver
+                    steamfork/libva-mesa-driver
                     libvdpau
                     libverto
                     libvlc
