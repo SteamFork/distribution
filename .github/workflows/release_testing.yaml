@@ -27,9 +27,6 @@ jobs:
           fi
           git fetch origin "${BRANCH_NAME}"
           git checkout -B "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
-
-      - name: Pull latest changes
-        run: git pull --ff-only origin "${BRANCH_NAME}"
       - name: Set the tag
         id: tag
         run: echo "tag=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT

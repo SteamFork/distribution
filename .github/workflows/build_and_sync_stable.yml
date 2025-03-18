@@ -32,9 +32,6 @@ jobs:
           git fetch origin "${BRANCH_NAME}"
           git checkout -B "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
 
-      - name: Pull latest changes
-        run: git pull --ff-only origin "${BRANCH_NAME}"
-
       - name: Install GitHub CLI
         run: |
           sudo pacman -Sy --noconfirm github-cli

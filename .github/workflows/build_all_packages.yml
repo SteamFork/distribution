@@ -36,9 +36,6 @@ jobs:
           git fetch origin "${{ github.event.inputs.branch }}"
           git checkout -B "${{ github.event.inputs.branch }}" origin/"${{ github.event.inputs.branch }}"
 
-      - name: Pull latest changes
-        run: git pull --ff-only origin "${{ github.event.inputs.branch }}"
-
       - name: Configure GPG agent
         run: |
           mkdir -p ~/.gnupg

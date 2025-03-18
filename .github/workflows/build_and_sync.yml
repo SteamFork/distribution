@@ -33,9 +33,6 @@ jobs:
           git fetch origin "${{ github.ref_name }}"
           git checkout -B "${{ github.ref_name }}" origin/"${{ github.ref_name }}"
 
-      - name: Pull latest changes
-        run: git pull --ff-only origin "${{ github.ref_name }}"
-
       - name: Verify the repo exists, or fail.
         run: |
           if [ ! -d "$GITHUB_WORKSPACE/release/repos" ]; then
