@@ -26,13 +26,7 @@ jobs:
             git remote add origin https://github.com/${{ github.repository }}.git
           fi
           git fetch origin "${BRANCH_NAME}"
-          if [ "$(git branch --list "${BRANCH_NAME}")" ]; then
-            git checkout "${BRANCH_NAME}"
-          else
-            git checkout -b "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
-          fi
-      - name: Pull latest changes
-        run: git pull --ff-only origin "${BRANCH_NAME}"
+          git checkout -B "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
       - name: Set the tag
         id: tag
         run: echo "tag=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
@@ -44,7 +38,7 @@ jobs:
           set -e
           make image testing BUILD_VER="${{ steps.version.outputs.version }}"
   sync:
-    if: github.repository == 'SteamFork/distribution' && github.ref == 'refs/heads/3.7'
+    if: github.repository == 'SteamFork/distribution'
     timeout-minutes: 1440
     runs-on: 3.7
     needs: build
@@ -57,3 +51,7 @@ jobs:
         run: |
           set -e
           make mirrors-sync
+      - name: Switch the images to the latest
+        run: |
+          set -e
+          make images-switch
