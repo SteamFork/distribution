@@ -1,0 +1,288 @@
+#!/bin/bash
+# -*- mode: sh; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+# vim: et sts=4 sw=4
+
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  Copyright © 2019-2020 Collabora Ltd.
+#  Copyright © 2019-2020 Valve Corporation.
+#
+#  This file is part of steamos-customizations.
+#
+#  steamos-customizations is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public License as
+#  published by the Free Software Foundation; either version 2.1 of the License,
+#  or (at your option) any later version.
+
+set -euo pipefail
+
+DISK=       # --disk
+PARTSET=    # --partset
+NO_OVERLAY= # --no-overlay
+ALLOW_SELF= # --allow-self
+
+DEV_DIR=
+DEV_SHARED_LOCK_FD=
+
+SYMLINKS_DIR=/dev/disk/by-partsets
+
+# Helpers
+
+get_device_by_partlabel() {
+
+    # Get the block device for a given disk and partition label, for example:
+    # /dev/sda, efi-A -> /dev/sda2
+
+    local disk=$(realpath "$1")
+    local partlabel=$2
+
+    [ -b "$disk" ] || return
+    [ "$partlabel" ] || return
+
+    while read device name; do
+        # FIXME return first match
+        if [ "$name" == "$partlabel" ]; then echo "$device"; return; fi
+    done < <(sfdisk -ql -o device,name "$disk" | tail +2)
+}
+
+get_device_by_typeuuid() {
+
+    # Get the block device for a given disk and partition type uuid, for example:
+    # /dev/sda, c12a7328-f81f-11d2-ba4b-00a0c93ec93b -> /dev/sda1
+
+    local disk=$(realpath "$1")
+    local typeuuid=${2,,}
+
+    [ -b "$disk" ] || return
+    [ "$typeuuid" ] || return
+
+    while read device uuid; do
+        # FIXME return first match
+        if [ "${uuid,,}" == "$typeuuid" ]; then echo "$device"; return; fi
+    done < <(sfdisk -ql -o device,type-uuid "$disk" | tail +2)
+}
+
+log () { echo >&2 "$@"; }
+fail() { echo >&2 "$@"; exit 1; }
+
+usage() {
+    local status=${1-2}
+
+    if [ $status -ne 0 ]; then
+        exec >&2
+    fi
+
+    echo
+    echo "Usage: $(basename $0) [--disk DISK] [--no-overlay] [--allow-self] --partset A|B|self|other -- COMMAND"
+    echo
+    echo "Run COMMAND in a chroot. The chroot is SteamOS specific, which means"
+    echo "that the various SteamOS partitions are mounted within the chroot."
+    echo
+    echo "By default, also the overlayed /etc will be mounted. Please note that the"
+    echo "overlay can only be mounted once, so you can't re-mount the /etc overlay"
+    echo "for 'self'. To workaround this, you can use the option '--no-overlay'."
+    echo
+    echo "If you want to chroot into the already booted partset, you should explicitly"
+    echo "set the option '--allow-self'."
+    echo
+    echo "There are two use-cases for this command:"
+    echo
+    echo "1. Chroot into the 'other' SteamOS, useful for atomic update. For example:"
+    echo
+    echo "    $(basename $0) --partset other -- COMMAND"
+    echo
+    echo "2. Chroot into another SteamOS install, on another disk. For example:"
+    echo
+    echo "    $(basename $0) --disk /dev/sdb --partset A -- COMMAND"
+    echo
+    echo "The second mode works if SteamOS is installed alone on the disk, however"
+    echo "if there are other partitions on the disk then it's not guaranteed to work."
+    echo "This is because we rely on partition labels to find SteamOS partitions and"
+    echo "setup the chroot. This is too fragile, and if we're unlucky there could be"
+    echo "another partition that doesn't belong to SteamOS but uses the same partition"
+    echo "label."
+    echo
+
+    exit $status
+}
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            usage 0
+            ;;
+        -d|--disk)
+            shift
+            [ "${1:-}" ] || usage 1
+            DISK=$1
+            shift
+            ;;
+        -p|--partset)
+            shift
+            [ "${1:-}" ] || usage 1
+            PARTSET=$1
+            shift
+            ;;
+        --no-overlay)
+            NO_OVERLAY=yes
+            shift
+            ;;
+        --allow-self)
+            ALLOW_SELF=yes
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            usage 1
+            ;;
+    esac
+done
+
+[ "$PARTSET" ] || usage 1
+
+# Find devices
+
+ESP_DEVICE=
+EFI_DEVICE=
+ROOTFS_DEVICE=
+
+if [ "$DISK" ]; then
+    # A disk was provided, which means that we're chrooting into another
+    # SteamOS install. We do our best to 'guess' the partitions, ie. we
+    # mostly rely on partition labels. This is OK if SteamOS is alone on
+    # this disk, but it's fragile if it's installed along another OS.
+    [ -b "$DISK" ] || fail "'$DISK' is not a block device"
+    ROOTFS_DEVICE=$(get_device_by_partlabel $DISK rootfs-$PARTSET)
+    EFI_DEVICE=$(get_device_by_partlabel $DISK efi-$PARTSET)
+    VAR_DEVICE=$(get_device_by_partlabel $DISK var-$PARTSET)
+    ESP_DEVICE=$(get_device_by_partlabel $DISK esp)
+    if [ -z "$ESP_DEVICE" ]; then
+        ESP_DEVICE=$(get_device_by_typeuuid $DISK \
+            c12a7328-f81f-11d2-ba4b-00a0c93ec93b)
+    fi
+else
+    # No disk was provided, which means that we're chrooting into the
+    # 'other' install, A or B. We can find these partitions reliably
+    # using the existing symlinks.
+
+    if [ -z "$ALLOW_SELF" ]; then
+        BOOTED_SLOT=$(steamos-bootconf this-image)
+        if [ "$PARTSET" == "self" ] || [ "$PARTSET" == "$BOOTED_SLOT" ]; then
+            fail "Error: Partset '$PARTSET' is currently booted. If this is intentional, please use '--no-overlay --allow-self'"
+        fi
+    fi
+
+    ROOTFS_DEVICE=$(realpath $SYMLINKS_DIR/$PARTSET/rootfs)
+    EFI_DEVICE=$(realpath $SYMLINKS_DIR/$PARTSET/efi)
+    ESP_DEVICE=$(realpath $SYMLINKS_DIR/shared/esp)
+    VAR_DEVICE=$(realpath $SYMLINKS_DIR/$PARTSET/var)
+fi
+
+[ -b "$ROOTFS_DEVICE" ] || fail "'$ROOTFS_DEVICE' is not a block device"
+[ -b "$EFI_DEVICE"    ] || fail "'$EFI_DEVICE' is not a block device"
+[ -b "$ESP_DEVICE"    ] || fail "'$ESP_DEVICE' is not a block device"
+[ -b "$VAR_DEVICE"    ] || fail "'$VAR_DEVICE' is not a block device"
+
+# Do the job
+
+prepare_chroot_at() {
+
+    local dir=$1
+
+    mount -o ro "$ROOTFS_DEVICE" $dir
+
+    if [ -z "$NO_OVERLAY" ]; then
+        local dev_name=${DISK:-this}-${PARTSET}
+        local dev_lock="/run/lock/${dev_name//\//-}.flock"
+        local run_steamos_chroot="/run/steamos-chroot"
+        DEV_DIR="${run_steamos_chroot}/${dev_name}"
+
+        mkdir -p "$run_steamos_chroot"
+
+        # Get the shared lock to signal that other chroot instances should not unmount the /etc overlay
+        exec {DEV_SHARED_LOCK_FD}>$dev_lock
+        flock --shared $DEV_SHARED_LOCK_FD
+
+        if [ ! -d "$DEV_DIR" ]; then
+            local dev_exclusive_lock="/run/lock/${dev_name//\//-}-exclusive.flock"
+            local lockfd=-1
+
+            exec {lockfd}>$dev_exclusive_lock
+            flock --exclusive --timeout 3 $lockfd || fail "Failed to get the exclusive lock to mount the /etc overlay"
+
+            # Now that we have the lock, check again if the directory is still missing.
+            if [ ! -d "$DEV_DIR" ]; then
+                mkdir -p "$DEV_DIR"
+                mount -o ro "$ROOTFS_DEVICE" "$DEV_DIR"
+                mount "$VAR_DEVICE" "$DEV_DIR/var"
+                mkdir -p "${DEV_DIR}/var/lib/overlays/etc/upper"
+                mkdir -p "${DEV_DIR}/var/lib/overlays/etc/work"
+                mount -t overlay -o "lowerdir=${DEV_DIR}/etc,upperdir=${DEV_DIR}/var/lib/overlays/etc/upper,workdir=${DEV_DIR}/var/lib/overlays/etc/work" none "${DEV_DIR}/etc" || \
+                    fail "Failed to mount the /etc overlay. If it's not required, you could set the '--no-overlay' option"
+            fi
+            flock --unlock --close $lockfd
+        fi
+
+        mount --bind "$DEV_DIR/etc" "$dir/etc"
+    fi
+
+    mount --bind /dev  $dir/dev
+    mount --bind /proc $dir/proc
+    mount --bind /run  $dir/run
+    mount --bind /sys  $dir/sys
+    mount --bind /sys/firmware/efi/efivars $dir/sys/firmware/efi/efivars
+    mount -t tmpfs -o size=128M tmpfs $dir/tmp
+    mount "$EFI_DEVICE" $dir/efi
+    mount "$ESP_DEVICE" $dir/esp
+    mount "$VAR_DEVICE" $dir/var
+    if [ -d $dir/var/boot ]; then
+        mount --bind $dir/var/boot $dir/boot
+    fi
+}
+
+cleanup_chroot_at() {
+
+    local dir=$1
+
+    if mountpoint -q $dir/boot; then
+        umount $dir/boot || :
+    fi
+    if [ -z "$NO_OVERLAY" ]; then
+        umount $dir/etc  || :
+
+        if [ -n "$DEV_SHARED_LOCK_FD" ]; then
+            # Try to convert the shared lock into an exlusive one
+            flock --exclusive --timeout 1 "$DEV_SHARED_LOCK_FD" && {
+                # We are the only one that were using this /etc overlay. Clean it up.
+                umount "$DEV_DIR/etc" || :
+                umount "$DEV_DIR/var" || :
+                umount "$DEV_DIR" || :
+                rmdir "$DEV_DIR" || :
+            } || {
+                log "There are other active steamos-chroot instances, do not unmount the /etc overlay"
+            }
+            flock --unlock --close "$DEV_SHARED_LOCK_FD" || :
+        fi
+    fi
+    umount $dir/var  || :
+    umount $dir/esp  || :
+    umount $dir/efi  || :
+    umount $dir/tmp  || :
+    umount $dir/sys/firmware/efi/efivars || :
+    umount -R $dir/sys  || :
+    umount $dir/run  || :
+    umount -R $dir/proc || :
+    umount $dir/dev  || :
+    umount $dir      || :
+
+    rmdir $dir
+}
+
+CHROOTDIR=$(mktemp -d)
+trap "cleanup_chroot_at $CHROOTDIR" EXIT
+
+prepare_chroot_at $CHROOTDIR
+chroot $CHROOTDIR "$@"

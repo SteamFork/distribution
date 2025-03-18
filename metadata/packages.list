@@ -11,6 +11,7 @@ local|wayland
 local|lib32-wayland
 local|wayland-protocols
 local|xorg-xwayland
+local|sddm-wayland
 local|mesa
 local|lib32-mesa
 local|gamescope
@@ -20,9 +21,11 @@ local|steam-powerbuttond
 local|steamfork-customizations
 local|steamfork-device-support
 local|steamfork-installer
+local|steamfork-theme
 local|inputplumber
+local|steam-powerbuttond
 local|ryzenadj
-local|pikaur
+local|sequoia-sq
 local|grafana-alloy
 aur|wlr-randr
 aur|dnsmasq-git

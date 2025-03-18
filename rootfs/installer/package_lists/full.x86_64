@@ -30,7 +30,6 @@ f2fs-tools
 fatresize
 foot-terminfo
 fsarchiver
-gnu-netcat
 gpart
 gpm
 zenity
@@ -67,7 +66,6 @@ memtest86+
 memtest86+-efi
 mkinitcpio
 kdialog
-onboard
 mkinitcpio-archiso
 mkinitcpio-nfs-utils
 modemmanager
@@ -121,7 +119,7 @@ usbutils
 vim
 virtualbox-guest-utils-nox
 vpnc
-wezterm-terminfo
+wezterm
 wireless-regdb
 wireless_tools
 wpa_supplicant
@@ -153,11 +151,14 @@ noto-fonts
 wget
 git
 firefox
+maliit-keyboard
+qt6-virtualkeyboard
 
 # Steamfork dependencies
 steamdeck-kde-presets
 steamfork-device-support
 steamfork-customizations
+steamfork-theme
 steamfork-installer
 jupiter-hw-support
 jupiter-legacy-support

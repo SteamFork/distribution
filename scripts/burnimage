@@ -4,11 +4,18 @@
 # Copyright (C) 2024 SteamFork (https://github.com/SteamFork)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
 
-IMAGE_PATH="release/images/rel/images"
-source ${IMAGE_PATH}/latest_rel.releasemeta
+VERSION=${1:-3.7}
+BRANCH=${2:-stable}
+IMAGE_PATH="release/images/${VERSION}/${BRANCH}"
+if [ -f ${IMAGE_PATH}/latest_${BRANCH}.releasemeta ]
+then
+  source ${IMAGE_PATH}/latest_${BRANCH}.releasemeta
+else
+  echo "Release not found (${IMAGE_PATH}/latest_${BRANCH}.releasemeta)."
+  exit 1
+fi
 ARCH="x86_64"
 ISO="${IMAGE_PATH}/installer/${IMAGEFILE//_/-}-${ARCH}.iso"
 
@@ -42,7 +49,7 @@ then
   read -n 1 -s -r -p "PRESS CONTROL-C NOW TO ABORT, OR ANY OTHER KEY TO CONTINUE!"
   if [ -e "${ISO}" ]
   then
-    echo "Wiping ${SDDEVICE} partition data"
+    echo -e "\n\nWiping ${SDDEVICE} partition data"
     sudo wipefs -a ${SDDEVICE} 2>/dev/null ||:
     echo "Writing ${ISO} to ${SDDEVICE}"
     sudo dd if=${ISO} of=/dev/${SDDEVICE} bs=1M
