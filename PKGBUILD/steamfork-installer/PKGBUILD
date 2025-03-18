@@ -2,13 +2,13 @@
 
 pkgname=steamfork-installer
 pkgver=2025.03.18
-pkgrel=2
+pkgrel=4
 pkgdesc='Installation utility for SteamFork.'
 arch=('any')
 url='http://www.steamfork.org'
 license=('MIT')
 
-depends=('python-pyqt5')
+depends=('python-pyqt6')
 
 installit() {
   TYPE=$(file --no-sandbox "${1}")

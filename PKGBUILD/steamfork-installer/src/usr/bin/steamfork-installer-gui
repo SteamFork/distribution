@@ -1,10 +1,8 @@
 #!/usr/bin/python3
 import sys
-from PyQt5.QtWidgets import QVBoxLayout, QApplication, QMainWindow, QSizePolicy, QStackedWidget, QVBoxLayout, QWidget, QLabel, QPushButton, QComboBox, QLineEdit, QTextEdit, QHBoxLayout
-from PyQt5.QtCore import Qt, QProcess
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QVBoxLayout, QApplication, QMainWindow, QSizePolicy, QStackedWidget, QVBoxLayout, QWidget, QLabel, QPushButton, QComboBox, QLineEdit, QTextEdit, QHBoxLayout, QMessageBox
+from PyQt6.QtCore import Qt, QProcess
+from PyQt6.QtGui import QFont
 import subprocess
 import time
 
@@ -15,7 +13,7 @@ class WelcomePage(QWidget):
         super(WelcomePage, self).__init__(parent)
         layout = QVBoxLayout(self)
         label = QLabel(f"Welcome to the {DistroName} Installer!\n\nThis tool will install SteamFork onto your system, after rebooting your system will boot directly into Steam.", self)
-        label.setAlignment(Qt.AlignCenter)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         label.setWordWrap(True)
         layout.addWidget(label)
         next_button = QPushButton("Next", self)
@@ -35,9 +33,9 @@ class DriveSelectionPage(QWidget):
         self.install_type = QComboBox(self)
         self.username_var = "deck"
         self.password_var = QLineEdit(self)
-        self.password_var.setEchoMode(QLineEdit.Password)
+        self.password_var.setEchoMode(QLineEdit.EchoMode.Password)
         self.root_password_var = QLineEdit(self)
-        self.root_password_var.setEchoMode(QLineEdit.Password)
+        self.root_password_var.setEchoMode(QLineEdit.EchoMode.Password)
 
         layout.addWidget(QLabel("Installation Type:", self))
         self.install_type.addItems(["Full Disk", "Use Unallocated Space (25GB minimum required)"])
@@ -50,7 +48,7 @@ class DriveSelectionPage(QWidget):
         self.drive_info_label = QLabel("Drive Information: N/A", self)
         layout.addWidget(self.drive_info_label)
         monospace_font = QFont("Monospace")
-        monospace_font.setStyleHint(QFont.TypeWriter)
+        monospace_font.setStyleHint(QFont.StyleHint.TypeWriter)
         self.drive_info_label.setFont(monospace_font)
         #layout.addWidget(QLabel("Username: deck", self))
         layout.addWidget(QLabel("Enter a password for the user account (deck) and for the superuser (root) account below:", self))
@@ -76,34 +74,32 @@ class DriveSelectionPage(QWidget):
         self.drive_var.addItems(self.get_physical_drives())
         self.drive_var.currentIndexChanged.connect(self.update_drive_info)
 
-        # Create a layout for the page
-        page_layout = QVBoxLayout(self)
-        page_layout.setAlignment(Qt.AlignCenter)
-
-        # Set the maximum size for the page
-        self.setMaximumSize(650, 600)
-
-        # Add existing layout to the page layout
-        page_layout.addLayout(layout)
-
-        # Set size policy to expanding for vertical and horizontal directions
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # Set the layout for the page
+        self.setLayout(layout)
 
     def get_physical_drives(self):
-        process = QProcess()
-        process.start("lsblk -n -o NAME,SIZE,MODEL -d")
-        process.waitForFinished()
-        result = process.readAllStandardOutput().data().decode('utf-8')
-        drives = result.strip().split('\n')
-        formatted_drives = []
-        for drive in drives:
-            parts = drive.split()
-            if len(parts) >= 3:
-                name = parts[0]
-                size = parts[1]
-                model = ' '.join(parts[2:])
-                formatted_drives.append(f"{model} ({name})")
-        return formatted_drives
+        try:
+            result = subprocess.run(
+                ["lsblk", "-n", "-o", "NAME,SIZE,MODEL", "-d"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            drives = result.stdout.strip().split('\n')
+            formatted_drives = []
+            for drive in drives:
+                parts = drive.split()
+                if len(parts) >= 3:
+                    name = parts[0]
+                    size = parts[1]
+                    model = ' '.join(parts[2:])
+                    formatted_drive = f"{model} ({name})"
+                    print(f"Formatted drive: {formatted_drive}")  # Debug print
+                    formatted_drives.append(formatted_drive)
+            return formatted_drives
+        except subprocess.CalledProcessError as e:
+            print(f"Error: {e}")
+            return []
 
     def update_drive_info(self, index):
         drive_name = self.drive_var.currentText().split('(')[-1].strip(')')
@@ -144,7 +140,7 @@ class InstallationPage(QWidget):
         self.terminal_text = QTextEdit(self)
         self.terminal_text.setReadOnly(True)
         monospace_font = QFont("Monospace")
-        monospace_font.setStyleHint(QFont.TypeWriter)
+        monospace_font.setStyleHint(QFont.StyleHint.TypeWriter)
         self.terminal_text.setFont(monospace_font)
         layout.addWidget(self.terminal_text)
         
@@ -165,9 +161,9 @@ class InstallationPage(QWidget):
         else:
             warning_msg += f'All contents and partitions on /dev/{device_name} will BE ERASED!'
             
-        confirmation = QMessageBox.question(self, 'Confirmation', warning_msg, QMessageBox.Yes | QMessageBox.No)
+        confirmation = QMessageBox.question(self, 'Confirmation', warning_msg, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 
-        if confirmation == QMessageBox.Yes:
+        if confirmation == QMessageBox.StandardButton.Yes:
             self.log_to_terminal("Installation started...")
             self.log_to_terminal(f"Selected Drive: {device_name}")
             self.log_to_terminal(f"Username: {username}")
@@ -177,12 +173,16 @@ class InstallationPage(QWidget):
             if use_unallocated:
                 command += " --use_unallocated"
             self.process = QProcess()
-            self.process.setProcessChannelMode(QProcess.MergedChannels)
+            self.process.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
             self.process.readyReadStandardOutput.connect(self.read_output)
             self.process.start(command)
+            if not self.process.waitForStarted():
+                print("Error: steamfork-installer command did not start successfully")
+                self.log_to_terminal("Error: Installation process did not start successfully")
 
     def close_application(self):
         self.window().close()
+
     def read_output(self):
         output = self.process.readAllStandardOutput().data().decode('utf-8')
         self.log_to_terminal(output)
@@ -191,7 +191,7 @@ class InstallationPage(QWidget):
         self.terminal_text.append(message)
 
     def on_prev(self):
-        if self.process and self.process.state() == QProcess.Running:
+        if self.process and self.process.state() == QProcess.ProcessState.Running:
             self.process.terminate()
             self.process.waitForFinished()
 
@@ -229,7 +229,7 @@ class InstallerApp(QMainWindow):
             self.central_widget.setCurrentIndex(current_page - 1)
 
     def closeEvent(self, event):
-        if hasattr(self, 'process') and self.process and self.process.state() == QProcess.Running:
+        if hasattr(self, 'process') and self.process and self.process.state() == QProcess.ProcessState.Running:
             self.process.terminate()
             self.process.waitForFinished()
         event.accept()
@@ -238,4 +238,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     installer_app = InstallerApp()
     installer_app.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
