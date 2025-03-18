@@ -32,13 +32,13 @@ jobs:
           fi
           git fetch origin
           if [ "$(git branch --list ${{ github.ref_name }})" ]; then
-            git checkout "${{ github.ref_name }}""
+            git checkout "${{ github.ref_name }}"
           else
             git checkout -b "${{ github.ref_name }}" origin/"${{ github.ref_name }}"
           fi
 
       - name: Pull latest changes
-        run: git pull origin "${BRANCH_NAME}"
+        run: git pull --ff-only origin "${{ github.ref_name }}"
 
       - name: Verify the repo exists, or fail.
         run: |

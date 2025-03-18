@@ -41,7 +41,7 @@ jobs:
           fi
 
       - name: Pull latest changes
-        run: git pull origin "${BRANCH_NAME}"
+        run: git pull --ff-only origin "${BRANCH_NAME}"
 
       - name: Configure GPG agent
         run: |

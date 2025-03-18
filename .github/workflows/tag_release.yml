@@ -28,7 +28,7 @@ jobs:
           fi
 
       - name: Pull latest changes
-        run: git pull origin "${BRANCH_NAME}"
+        run: git pull --ff-only origin "${BRANCH_NAME}"
 
       - name: Define the release tag.
         id: create_tag
