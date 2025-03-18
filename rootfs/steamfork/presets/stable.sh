@@ -681,7 +681,7 @@ export STEAMOS_PKGS="7zip
                     libusbmuxd
                     libutempter
                     libva
-                    steamfork/libva-intel-driver
+                    libva-intel-driver
                     steamfork/libva-mesa-driver
                     libvdpau
                     libverto
