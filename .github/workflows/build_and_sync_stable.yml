@@ -30,14 +30,7 @@ jobs:
             git remote add origin https://github.com/${{ github.repository }}.git
           fi
           git fetch origin "${BRANCH_NAME}"
-          if [ "$(git branch --list "${BRANCH_NAME}")" ]; then
-            git checkout "${BRANCH_NAME}"
-          else
-            git checkout -b "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
-          fi
-
-      - name: Pull latest changes
-        run: git pull origin "${BRANCH_NAME}"
+          git checkout -B "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
 
       - name: Install GitHub CLI
         run: |

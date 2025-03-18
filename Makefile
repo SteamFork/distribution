@@ -42,7 +42,7 @@ clean: image-clean build-clean
 dist-clean: repo-clean image-clean build-clean
 
 repo-clean:
-	sudo rm -rf ${REPO_DIR}
+	sudo rm -rf ${WORK_DIR} ${REPO_DIR}
 
 repo-check:
 	${SCRIPT_DIR}/sync check
@@ -53,6 +53,7 @@ image-clean:
 
 build-clean:
 	sudo rm -f /var/lib/pacman/db.lck
+	sudo rm -rf ${WORK_DIR}
 	yes | sudo pacman -Scc
 
 images-all: images
@@ -89,9 +90,3 @@ mirrors-sync:
 	${SCRIPT_DIR}/sync mirrors
 
 .PHONY: release
-
-release: 
-	git merge ${UPSTREAM_REPO}/main
-	${SCRIPT_DIR}/sync check
-	git tag ${RELEASE_TAG}
-	git push ${UPSTREAM_REPO} ${RELEASE_TAG}
