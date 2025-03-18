@@ -7,7 +7,7 @@ if [ -n "${1}" ]
 then
   RELEASE_TYPE="${1}"
 else
-  RELEASE_TYPE="rel"
+  RELEASE_TYPE="stable"
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -15,8 +15,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
 
 SCRIPT="$(realpath "${0}")"
-IMAGE_DIR="${IMAGE_DIR}/${RELEASE_TYPE}/images"
 WORK_DIR="${WORK_DIR}/image"
+IMAGE_DIR="${IMAGE_DIR}/${RELEASE_TYPE}"
 
 export IMAGE_DIR WORK_DIR
 
@@ -54,6 +54,8 @@ function cleanup() {
 		/tmp/buildinfo \
 		${INSTALLER_DIR}/packages.x86_64 \
 		${WORK_DIR}/image-build
+
+  sudo rm -f /var/cache/pacman/pkg/webrtc-audio-processing*
 }
 
 # Clean up from any previous builds.
@@ -97,3 +99,5 @@ cp ${WORK_DIR}/buildwork/pacman.conf ${INSTALLER_DIR}/airootfs/etc/
 
 # Build the installation image
 sudo mkarchiso -v -w ${WORK_DIR}/image-build -o ${IMAGE_DIR}/installer ${INSTALLER_DIR}
+
+sudo rm ${IMAGE_DIR}/currentcandidate ${IMAGE_DIR}/buildinfo

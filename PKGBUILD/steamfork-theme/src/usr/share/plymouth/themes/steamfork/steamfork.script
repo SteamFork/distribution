@@ -1,0 +1,10 @@
+image = Image("steamfork.png");
+# Earlier kernel versions, lack the panel rotation quirk
+#rotated_image = image.Rotate( Math.Pi / 2.0 );
+rotated_image = image;
+
+sprite = Sprite( rotated_image );
+sprite.SetX( Window.GetWidth() / 2 - rotated_image.GetWidth() / 2 );
+sprite.SetY( Window.GetHeight() / 2 - rotated_image.GetHeight() / 2 );
+sprite.SetOpacity( 1.0 );
+sprite.SetZ( 1 );

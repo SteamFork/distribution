@@ -1,0 +1,70 @@
+#!/bin/bash
+# -*- mode: sh; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
+# vim: et sts=2 sw=2
+
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  Copyright © 2023 Valve Corporation.
+#
+#  This file is part of steamos-customizations.
+#
+#  steamos-customizations is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public License as
+#  published by the Free Software Foundation; either version 2.1 of the License,
+#  or (at your option) any later version.
+
+##
+## Dumps useful information about the system to kmsg on boot, so that it's
+## readily available for debug
+##
+set -euo pipefail
+
+if [ $EUID -ne 0 ]; then
+  echo "this must be run as root!"
+  exit 1
+fi
+
+PRETTY_NAME=
+# shellcheck disable=SC1091
+. /etc/os-release
+
+prefix="SteamOS System Info:"
+printf "$prefix %s\n" "${PRETTY_NAME:-<\$PRETTY_NAME UNSET>}"
+
+partition="$(steamos-partition 2>/dev/null)" || partition="<couldn't invoke steamos-partition>"
+printf "$prefix %s\n" "$partition"
+
+echo "$prefix Serial Numbers:"
+for s in board_serial product_serial; do
+  # This handles cases where the file doesn't exist, e.g. when in a VM,
+  # while still printing something so that it's obvious that this file
+  # is empty or doesn't exist.
+  printf "$prefix\t$s: %s\n" "$(cat /sys/class/dmi/id/$s 2>/dev/null || echo '<not readable from sysfs>')"
+done
+
+# Battery info
+# Use the first battery returned by matching in the shell
+batt_path="$(ls -d /sys/class/power_supply/BAT? 2>/dev/null)"
+echo "$prefix Battery:"
+if [ ! -d "$batt_path" ]; then
+  printf "%s\tNo battery found!\n" "$prefix"
+else
+  for prop in model_name status capacity; do
+    val="$(cat "$batt_path/$prop" || echo "<$prop not found>")"
+    printf "%s\t%s: %s\n" "$prefix" "$prop" "$val"
+  done
+fi
+
+# bootconfig
+echo "$prefix Boot Config:"
+if bootconf="$(steamos-bootconf dump-config 2>/dev/null)"; then
+  for part in A B; do
+    for param in boot-attempts boot-count boot-requested-at boot-time comment image-invalid; do
+      val="$(echo "$bootconf" | grep -e "^$part.*$param" | cut -f3)"
+      [ -z "$val" ] && continue
+      printf "%s\t%s%20s\t%s\n" "$prefix" "$part" "$param" "$val"
+    done
+  done
+else
+  printf "%s\t%s\n" "$prefix" "<couldn't invoke steamos-bootconf>"
+fi

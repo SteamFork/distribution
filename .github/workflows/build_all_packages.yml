@@ -40,6 +40,9 @@ jobs:
             git checkout -b "${{ github.event.inputs.branch }}" origin/"${{ github.event.inputs.branch }}"
           fi
 
+      - name: Pull latest changes
+        run: git pull origin "${BRANCH_NAME}"
+
       - name: Configure GPG agent
         run: |
           mkdir -p ~/.gnupg

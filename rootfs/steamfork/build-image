@@ -4,96 +4,96 @@ SCRIPT=$(realpath "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
 if [ $EUID -ne 0 ]; then
-	echo "$(basename $0) must be ran as superuser or sudo"
-	exit 1
+    echo "$(basename $0) must be ran as superuser or sudo"
+    exit 1
 fi
 
 while [[ $# -gt 0 ]]
 do
 key="$1"
 case $key in
-	--flavor)
-	BUILD_MANIFEST="${SCRIPTPATH}/presets/$2.sh"
-	BUILD_MANIFEST_ID="$2"
-	POSTCOPY_DIR="$2"
-	if [[ "${BUILD_MANIFEST_ID}" =~ "dev" ]]; then
-		BUILD_MANIFEST_ID=$(echo $2 | cut -d '-' -f 1)
-		BRANCH_OVERRIDES=$(echo $2 | cut -d '-' -f 2)
-	fi
-	echo "Manifest ID: ${BUILD_MANIFEST_ID}"
-	shift
-	shift
-	;;
-	--deployment_rel)
-	RELEASETYPE="$2.sh"
-	echo "Deployment: ${RELEASETYPE}"
-	shift
-	shift
-	;;
-	--upstream_ver)
-	STEAMOS_VERSION=$2
-	echo "Upstream Version: ${STEAMOS_VERSION}"
-	shift
-	shift
-	;;
-	--snapshot_ver)
-	SNAPSHOTVERSION="$2"
-	echo "Build version: ${SNAPSHOTVERSION}"
-	shift
-	shift
-	;;
-	--workdir)
-	WORKDIR="$2/buildwork"
-	echo "Working directory: ${WORKDIR}"
-	shift
-	shift
-	;;
-	--output-dir)
-	if [[ -z "$2" ]]; then
-		OUTPUT=${WORKDIR}
-	else
-		OUTPUT="$2"
-		if [[ -n "${BRANCH_OVERRIDES}" ]]; then
-			OUTPUT="$2/${BRANCH_OVERRIDES}"
-		fi
-	fi
-	shift
-	shift
-	;;
+    --flavor)
+    BUILD_MANIFEST="${SCRIPTPATH}/presets/$2.sh"
+    BUILD_MANIFEST_ID="$2"
+    POSTCOPY_DIR="$2"
+    if [[ "${BUILD_MANIFEST_ID}" =~ "dev" ]]; then
+        BUILD_MANIFEST_ID=$(echo $2 | cut -d '-' -f 1)
+        BRANCH_OVERRIDES=$(echo $2 | cut -d '-' -f 2)
+    fi
+    echo "Manifest ID: ${BUILD_MANIFEST_ID}"
+    shift
+    shift
+    ;;
+    --deployment_rel)
+    RELEASETYPE="$2.sh"
+    echo "Deployment: ${RELEASETYPE}"
+    shift
+    shift
+    ;;
+    --upstream_ver)
+    STEAMOS_VERSION=$2
+    echo "Upstream Version: ${STEAMOS_VERSION}"
+    shift
+    shift
+    ;;
+    --snapshot_ver)
+    SNAPSHOTVERSION="$2"
+    echo "Build version: ${SNAPSHOTVERSION}"
+    shift
+    shift
+    ;;
+    --workdir)
+    WORKDIR="$2/buildwork"
+    echo "Working directory: ${WORKDIR}"
+    shift
+    shift
+    ;;
+    --output-dir)
+    if [[ -z "$2" ]]; then
+        OUTPUT=${WORKDIR}
+    else
+        OUTPUT="$2"
+        if [[ -n "${BRANCH_OVERRIDES}" ]]; then
+            OUTPUT="$2/${BRANCH_OVERRIDES}"
+        fi
+    fi
+    shift
+    shift
+    ;;
     --add-release)
-	IS_HOME_BUILD=true
-	if [[ ! "${OUTPUT}" =~ "images" ]]; then
-		echo "Specific output directories should be preceeded with images for release images."
-		exit 255
-	fi
-	shift
-	shift
-	;;
+    IS_HOME_BUILD=true
+    if [[ ! "${OUTPUT}" =~ "images" ]]; then
+        echo "Specific output directories should be preceeded with images for release images."
+        exit 255
+    fi
+    shift
+    shift
+    ;;
     --rclone_path)
-	RC_PATH="$2"
-	shift
-	shift
-	;;
-	--rclone_root)
-	if [[ -n "${RC_PATH}" ]]; then
-		RC_ROOT="$2"
-	else
-		echo "rclone root can be used only with --rclone_path"
-		exit 255
-	fi
-	shift
-	shift
-	;;
+    RC_PATH="$2"
+    shift
+    shift
+    ;;
+    --rclone_root)
+    if [[ -n "${RC_PATH}" ]]; then
+        RC_ROOT="$2"
+    else
+        echo "rclone root can be used only with --rclone_path"
+        exit 255
+    fi
+    shift
+    shift
+    ;;
     --donotcompress)
-	NO_COMPRESS="1"
-	if [[ "${IS_HOME_BUILD}" == "true" ]]; then
-		echo "Decompressed images are not supported in shipping builds"
-		exit 127
-	fi
-	shift
-	shift
-	;;
-	*)    # unknown option
+    NO_COMPRESS="1"
+    if [[ "${IS_HOME_BUILD}" == "true" ]]; then
+        echo "Decompressed images are not supported in shipping builds"
+        exit 127
+    fi
+    shift
+    shift
+    ;;
+    *)    # unknown option
     echo "Unknown option: $1"
     exit 1
     ;;
@@ -102,16 +102,16 @@ done
 
 # Check if everything is set.
 if [[ -z "{$BUILD_MANIFEST}" ]]; then
-	echo "Build flavor was not set. Aborting."
-	exit 0
+    echo "Build flavor was not set. Aborting."
+    exit 0
 fi
 if [[ -z "${SNAPSHOTVERSION}" ]]; then
-	echo "Snapshot directory was not set. Aborting."
-	exit 0
+    echo "Snapshot directory was not set. Aborting."
+    exit 0
 fi
 if [[ -z "${WORKDIR}" ]]; then
-	echo "Workdir was not set. Aborting."
-	exit 0
+    echo "Workdir was not set. Aborting."
+    exit 0
 fi
 
 if [ -n "${SNAPSHOTVERSION}" ]
@@ -129,7 +129,7 @@ echo "Preparing to create deployment image..."
 umount -l ${ROOT_WORKDIR}
 if [ -d "${WORKDIR}" ]
 then
-	rm -rf ${WORKDIR}
+    rm -rf ${WORKDIR}
 fi
 
 # Start building here
@@ -157,9 +157,37 @@ echo "Bootstrapping main filesystem"
 mkdir -p ${ROOT_WORKDIR}/${OS_FS_PREFIX}_root/rootfs
 mkdir -p ${ROOT_WORKDIR}/var/cache/pacman/pkg
 mount --bind /var/cache/pacman/pkg/ ${ROOT_WORKDIR}/var/cache/pacman/pkg
-pacstrap -C ${PACCFG} ${ROOT_WORKDIR} ${BASE_BOOTSTRAP_PKGS}
+
+# Retry mechanism for pacstrap
+retry_pacstrap() {
+  local retries=3
+  local count=0
+  until pacstrap -C ${PACCFG} "$@"; do
+    exit_code=$?
+    count=$((count + 1))
+    if [ $count -lt $retries; then
+      echo "Retry $count/$retries..."
+      sleep 5
+    else
+      echo "Failed to download packages after $retries attempts."
+      return $exit_code
+    fi
+  done
+  return 0
+}
+
+retry_pacstrap ${ROOT_WORKDIR} ${BASE_BOOTSTRAP_PKGS}
+if [ $? -ne 0 ]; then
+  echo "Failed to bootstrap main filesystem."
+  exit 1
+fi
+
 echo "Bootstrapping kernel..."
-pacstrap -C ${PACCFG} ${ROOT_WORKDIR} ${KERNELCHOICE} ${KERNELCHOICE}-headers
+retry_pacstrap ${ROOT_WORKDIR} ${KERNELCHOICE} ${KERNELCHOICE}-headers
+if [ $? -ne 0 ]; then
+  echo "Failed to bootstrap kernel."
+  exit 1
+fi
 
 echo "Generating fstab..."
 
@@ -174,7 +202,12 @@ EOF
 sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/g' ${ROOT_WORKDIR}/etc/sudoers
 
 echo "Bootstrapping SteamFork core root.."
-pacstrap -C ${PACCFG} ${ROOT_WORKDIR} ${UI_BOOTSTRAP}
+retry_pacstrap ${ROOT_WORKDIR} ${UI_BOOTSTRAP}
+if [ $? -ne 0 ]; then
+  echo "Failed to bootstrap SteamFork core root."
+  exit 1
+fi
+
 rm ${ROOT_WORKDIR}/etc/pacman.conf
 cp ${PACCFG} ${ROOT_WORKDIR}/etc/pacman.conf
 
@@ -237,17 +270,17 @@ EOF
 
 echo "Copying postcopy items..."
 if [[ -d "${SCRIPTPATH}/postcopy" ]]; then
-	cp -r ${SCRIPTPATH}/postcopy/* ${ROOT_WORKDIR}
+    cp -r ${SCRIPTPATH}/postcopy/* ${ROOT_WORKDIR}
 fi
 
 if [[ -n "$PLYMOUTH_THEME" ]]; then
-	echo "Setting $PLYMOUTH_THEME theme for plymouth bootsplash..."
-	arch-chroot ${ROOT_WORKDIR} plymouth-set-default-theme -R $PLYMOUTH_THEME
+    echo "Setting $PLYMOUTH_THEME theme for plymouth bootsplash..."
+    arch-chroot ${ROOT_WORKDIR} plymouth-set-default-theme -R $PLYMOUTH_THEME
 fi
 
 for binary in ${POSTCOPY_BIN_EXECUTION}
 do
-	arch-chroot ${ROOT_WORKDIR} $binary && rm -rf ${ROOT_WORKDIR}/usr/bin/$binary
+    arch-chroot ${ROOT_WORKDIR} $binary && rm -rf ${ROOT_WORKDIR}/usr/bin/$binary
 done
 
 cat <<EOF > ${ROOT_WORKDIR}/usr/lib/systemd/system/var-lib-pacman.mount
@@ -318,7 +351,7 @@ echo "Fix mkinitcpio warning..."
 echo "Delete conflicting files..."
 # Delete conflicting files
 for CONFLICT in etc/X11/Xsession.d/50rotate-screen \
-		usr/lib/qt/plugins/discover/steamos-backend.so \
+        usr/lib/qt/plugins/discover/steamos-backend.so \
                 etc/sddm.conf.d/steamdeck.conf
 do
   if [ -e "${ROOT_WORKDIR}/${CONFLICT}" ]
@@ -343,30 +376,30 @@ btrfs subvolume snapshot -r ${ROOT_WORKDIR} ${ROOT_WORKDIR}/${OS_FS_PREFIX}_root
 btrfs send -f ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img ${ROOT_WORKDIR}/${OS_FS_PREFIX}_root/rootfs/${BUILDVER}
 umount -l ${ROOT_WORKDIR} && umount -l ${WORKDIR}/work.img && rm -rf ${WORKDIR} && ${WORKDIR}/work.img
 if [[ -z "${NO_COMPRESS}" ]]; then
-	echo "Compressing image..."
-	zstd -z ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img -o ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst
-	rm -rf ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img
-	chown 1000:1000 ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst
-	chmod 777 ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst
+    echo "Compressing image..."
+    zstd -z ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img -o ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst
+    rm -rf ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img
+    chown 1000:1000 ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst
+    chmod 777 ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst
 fi
 
 if [[ "${IS_HOME_BUILD}" == "true" ]]; then
-	cat <<EOF >${OUTPUT}/${FINAL_DISTRIB_IMAGE}.releasemeta
+    cat <<EOF >${OUTPUT}/${FINAL_DISTRIB_IMAGE}.releasemeta
 IMAGEFILE="${IMAGEFILE}"
 STAGING_OS_TAG=${RELEASE_TAG}
 STAGING_RELEASETYPE=$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')
 STAGING_ISINTERNAL=no
 EOF
-	cp ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.releasemeta ${OUTPUT}/latest_${BUILD_MANIFEST_ID}.releasemeta
-	sha256sum ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst | awk '{print $1'} > ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.sha256
-	chown 1000:1000 ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.sha256 ${OUTPUT}/latest_${BUILD_MANIFEST_ID}.releasemeta
-	chmod 777 ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.sha256 ${OUTPUT}/latest_${BUILD_MANIFEST_ID}.releasemeta
-	if [[ -n "${RC_PATH}" ]]; then
-		rclone mkdir ${RC_PATH}:/download/$(echo ${OUTPUT} | sed 's#.*steamfork#steamfork#g')
-		rclone copy ${OUTPUT}/latest_${BUILD_MANIFEST_ID}.releasemeta ${RC_PATH}:/download/$(echo ${OUTPUT} | sed 's#.*steamfork#steamfork#g') -L --progress
-		rclone copy ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.sha256 ${RC_PATH}:/${RC_ROOT}/$(echo ${OUTPUT} | sed 's#.*steamfork#steamfork#g') -L --progress
-		rclone copy ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst ${RC_PATH}:/${RC_ROOT}/$(echo ${OUTPUT} | sed 's#.*steamfork#steamfork#g') -L --progress
-	fi
+    cp ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.releasemeta ${OUTPUT}/latest_${BUILD_MANIFEST_ID}.releasemeta
+    sha256sum ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst | awk '{print $1'} > ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.sha256
+    chown 1000:1000 ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.sha256 ${OUTPUT}/latest_${BUILD_MANIFEST_ID}.releasemeta
+    chmod 777 ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.sha256 ${OUTPUT}/latest_${BUILD_MANIFEST_ID}.releasemeta
+    if [[ -n "${RC_PATH}" ]]; then
+        rclone mkdir ${RC_PATH}:/download/$(echo ${OUTPUT} | sed 's#.*steamfork#steamfork#g')
+        rclone copy ${OUTPUT}/latest_${BUILD_MANIFEST_ID}.releasemeta ${RC_PATH}:/download/$(echo ${OUTPUT} | sed 's#.*steamfork#steamfork#g') -L --progress
+        rclone copy ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.sha256 ${RC_PATH}:/${RC_ROOT}/$(echo ${OUTPUT} | sed 's#.*steamfork#steamfork#g') -L --progress
+        rclone copy ${OUTPUT}/${FINAL_DISTRIB_IMAGE}.img.zst ${RC_PATH}:/${RC_ROOT}/$(echo ${OUTPUT} | sed 's#.*steamfork#steamfork#g') -L --progress
+    fi
 fi
 
 echo "Build complete."

@@ -1,0 +1,5 @@
+[Wayland]
+InputMethod[$e]=/usr/share/applications/com.github.maliit.keyboard.desktop
+
+[Xwayland]
+Scale=1,25

@@ -27,6 +27,9 @@ jobs:
             git checkout -b "${BRANCH_NAME}" origin/"${BRANCH_NAME}"
           fi
 
+      - name: Pull latest changes
+        run: git pull origin "${BRANCH_NAME}"
+
       - name: Define the release tag.
         id: create_tag
         run: |

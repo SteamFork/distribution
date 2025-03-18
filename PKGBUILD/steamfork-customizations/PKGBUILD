@@ -1,8 +1,8 @@
 # Maintainer: Fewtarius
 
 pkgname=steamfork-customizations
-pkgver=2025.02.27
-pkgrel=1
+pkgver=2025.03.17
+pkgrel=2
 pkgdesc='SteamFork customizations provider.'
 arch=('any')
 url='http://www.steamfork.org'
@@ -15,6 +15,7 @@ makedepends=('file')
 
 installit() {
   TYPE=$(file --no-sandbox "${1}")
+  echo "Process ${1} ${TYPE}"
   if [[ "${TYPE}" =~ script ]] || \
      [[ "${1}" =~ desktop ]]
   then

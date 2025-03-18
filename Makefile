@@ -1,23 +1,24 @@
-export SHELL		:= /usr/bin/bash
-export BUILD_DIR	:= $(shell pwd)
-export INSTALLER_DIR	:= ${BUILD_DIR}/rootfs/installer
-export OS_DIR		:= ${BUILD_DIR}/rootfs/steamfork
-export SCRIPT_DIR	:= ${BUILD_DIR}/scripts
-export WORK_DIR		:= ${BUILD_DIR}/_work
-export IMAGE_DIR	:= ${BUILD_DIR}/release/images
-export REPO_DIR		:= ${BUILD_DIR}/release/repos
-export BUILD_VER	:= $(shell date +%Y%m%d.%H%M)
-export RELEASE_TAG	:= $(shell date +%Y%m%d)
-export UPSTREAM_REPO	:= upstream
-export OS_ARCH		:= $(shell uname -m)
-export STEAMOS_VERSION	:= 3.6
-
 RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(RUN_ARGS):;@:)
+
+export SHELL		:= /usr/bin/bash
+export BUILD_DIR	:= $(shell pwd)
+export STEAMOS_VERSION  := 3.7
+export BUILD_VER        := $(shell date +%Y%m%d.%H%M)
+export RELEASE_TAG      := $(shell date +%Y%m%d)
+export OS_ARCH		:= $(shell uname -m)
+export INSTALLER_DIR    := ${BUILD_DIR}/rootfs/installer
+export OS_DIR           := ${BUILD_DIR}/rootfs/steamfork
+export SCRIPT_DIR       := ${BUILD_DIR}/scripts
+export WORK_DIR         := ${BUILD_DIR}/_work
+export IMAGE_DIR        := ${BUILD_DIR}/release/images/${STEAMOS_VERSION}
+export REPO_DIR         := ${BUILD_DIR}/release/repos
+export UPSTREAM_REPO	:= upstream
 
 PACKAGES_LIST := $(shell cat metadata/packages.list)
 
 env:
+	@echo "RUN_ARGS=$(RUN_ARGS)"
 	@echo "export SHELL=${SHELL}"
 	@echo "export BUILD_DIR=${BUILD_DIR}"
 	@echo "export INSTALLER_DIR=${INSTALLER_DIR}"
@@ -62,10 +63,13 @@ image: image-clean
 
 images:
 	${SCRIPT_DIR}/mkimage minimal $(RUN_ARGS)
-	${SCRIPT_DIR}/mkimage rel $(RUN_ARGS)
+	${SCRIPT_DIR}/mkimage stable $(RUN_ARGS)
 
 images-sync:
 	${SCRIPT_DIR}/sync os-sync
+
+images-switch:
+	${SCRIPT_DIR}/sync os-switch
 
 images-release:
 	${SCRIPT_DIR}/sync os-release

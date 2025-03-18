@@ -1,8 +1,11 @@
 [Battery][DPMSControl]
-idleTime=300
-
-[Battery][DimDisplay]
 idleTime=300000
 
-[Battery][SuspendSession]
+[Battery][DimDisplay]
 idleTime=600000
+
+[Battery][SuspendSession]
+idleTime=900000
+
+[Migration]
+MigratedProfilesToPlasma6=powerdevilrc
