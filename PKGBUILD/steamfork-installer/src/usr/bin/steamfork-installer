@@ -1,18 +1,19 @@
 #!/bin/bash
-if [[ $EUID -ne 0 ]];
-then
+
+if [[ $EUID -ne 0 ]]; then
     exec pkexec --disable-internal-agent "$0" "$@"
 fi
 
 function show_help() {
-  cat <<EOF
+    cat <<EOF
 SteamFork Installer
 
 Options:
-  --drive          ...  Specify the disk for installation.
-  --username       ...  Non-root user to create during installation.
-  --password       ...  The password to configure for the non-root user account.
-  --root_password  ...  The password to configure for the root account.
+  --drive            ...  Specify the disk for installation.
+  --username         ...  Non-root user to create during installation.
+  --password         ...  The password to configure for the non-root user account.
+  --root_password    ...  The password to configure for the root account.
+  --use_unallocated  ...  Use unallocated space on target disk instead of the full disk. (25GB minimum required)
 
 Ex.
   steamfork-installer --drive sda --username deck --password deck --root_password deck
@@ -20,42 +21,44 @@ Ex.
 EOF
 }
 
-if [ ! "$#" > 0 ]
-then
-  show_help
-  exit 1
-fi
-
-while [[ $# -gt 0 ]]
-do
-key="$1"
-case $key in
-    --drive)
-    DEVICE="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    --username)
-    OSUSER="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    --password)
-    OSPASS="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    --root_password)
-    ROOTPASS="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    *)    # unknown option
-    echo -e "Unknown option: $1\n"
+if [ ! "$#" -gt 0 ]; then
     show_help
     exit 1
-    ;;
-esac
+fi
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --drive)
+        DEVICE="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        --username)
+        OSUSER="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        --password)
+        OSPASS="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        --root_password)
+        ROOTPASS="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        --use_unallocated)
+        USE_UNALLOCATED=true
+        shift # past argument
+        ;;
+        *)    # unknown option
+        echo -e "Unknown option: $1\n"
+        show_help
+        exit 1
+        ;;
+    esac
 done
 
 ROOTLOCATION=/tmp/sf_root
@@ -65,39 +68,115 @@ SNAPSHOT_FUTURELOC=${HOMELOCATION_TEMP}/.steamos/installcontainer
 SUBVOL=$(ls /etc/install.image/*.img.zst | sed -s 's/.img.zst//g')
 SUBVOL=$(basename ${SUBVOL})
 SUBVOLLOCATION=/tmp/subvol
-	
+
 echo ${DEVICE} | grep '^/dev' >/dev/null || DEVICE="/dev/${DEVICE}"
-	
+
 INSTALLDEVICE="${DEVICE}"
-	
+
 echo ${DEVICE} | grep -q -P "^/dev/(nvme|loop|mmcblk)"
 if [ $? -eq 0 ]; then
-	INSTALLDEVICE="${DEVICE}p"
+    INSTALLDEVICE="${DEVICE}p"
 fi
 
 echo -e "\nCreating partitions..."
-sfdisk --delete ${DEVICE}
-wipefs -a ${DEVICE}
-yes | parted ${DEVICE} mklabel gpt
-parted -a optimal ${DEVICE} mkpart primary fat32 2M 256M
-parted ${DEVICE} set 1 boot on
-parted ${DEVICE} set 1 esp on
-parted -a optimal ${DEVICE} mkpart primary btrfs 256M 20G
-parted -a optimal ${DEVICE} mkpart primary ext4 20G 21G
-parted -a optimal ${DEVICE} mkpart primary ext4 21G 100%
-root_partition="${INSTALLDEVICE}2"
-var_partition="${INSTALLDEVICE}3"
-home_partition="${INSTALLDEVICE}4"
-mkfs -t vfat ${INSTALLDEVICE}1
-fatlabel ${INSTALLDEVICE}1 sf_efi
-mkfs -t btrfs -f ${root_partition}
-btrfs filesystem label ${root_partition} sf_root
-mkfs.ext4 -F ${var_partition}
-e2label ${var_partition} sf_var
-mkfs.ext4 -F ${home_partition}
-e2label ${home_partition} sf_home
 
-sync && partprobe
+if [ "${USE_UNALLOCATED}" = true ]; then
+
+    # Safely unmount all partitions on the target device
+    echo "Unmounting all partitions on ${DEVICE}..."
+    for part in $(lsblk -o NAME,PATH -ln | grep "^$(basename ${DEVICE})" | grep -v "^$(basename ${DEVICE})$" | awk '{print $2}'); do
+        echo "Unmounting $part..."
+        umount $part 2>/dev/null
+        sleep 1
+        # Try force unmount if regular unmount fails
+        if mountpoint -q $part 2>/dev/null; then
+            echo "Force unmounting $part..."
+            umount -f $part 2>/dev/null
+            sleep 3
+            # If still mounted, try lazy unmount as last resort
+            if mountpoint -q $part 2>/dev/null; then
+                echo "Lazy unmounting $part..."
+                umount -l $part 2>/dev/null
+                sleep 5
+                # If still mounted, print an error message
+                if mountpoint -q $part 2>/dev/null; then
+                    echo "Failed to unmount $part. Please unmount it manually and try again."
+                    exit 1
+                fi
+            fi
+        fi
+    done
+
+    # Clean up any existing SteamFork partitions to avoid conflicts
+    # SteamFork cannot be installed multiple times on the same disk
+    echo "Checking for existing SteamFork partitions..."
+    for part in $(lsblk -o NAME,LABEL,PARTLABEL -ln | grep sf_ | awk '{print $1}'); do
+        # Get the partition number to delete
+        if [[ $part =~ ([0-9]+)$ ]]; then
+            PART_NUM=${BASH_REMATCH[1]}
+            echo "Deleting partition $PART_NUM from ${DEVICE}..."
+            sgdisk ${DEVICE} --delete=${PART_NUM}
+        fi
+    done
+
+    # Find the start of the largest free space and align to 1MB
+    aligned_start=$(parted -s ${DEVICE} unit MB print free | 
+        grep "Free Space" | sort -nk4 | tail -1 | awk '{print $1}' | tr -d 'MB' | 
+        xargs -I{} echo "scale=0; ({} + 1) / 1 * 1" | bc)
+    echo "Found largest free space of ${aligned_start}"
+
+    echo "Creating partitions in unallocated space..."
+
+    parted -s -a optimal ${DEVICE} unit MB mkpart sf_efi fat32 ${aligned_start} $((aligned_start + 256))
+    parted -s -a optimal ${DEVICE} unit MB mkpart sf_root btrfs $((aligned_start + 256)) $((aligned_start + 256 + 20480))
+    parted -s -a optimal ${DEVICE} unit MB mkpart sf_var ext4 $((aligned_start + 256 + 20480)) $((aligned_start + 256 + 20480 + 1024))
+    parted -s -a optimal ${DEVICE} unit MB mkpart sf_home ext4 $((aligned_start + 256 + 20480 + 1024)) 100%
+
+    EFI_PART_NUM=$(parted -s ${DEVICE} print | grep sf_efi | awk '{print $1}')
+    parted -s ${DEVICE} set ${EFI_PART_NUM} boot on
+    parted -s ${DEVICE} set ${EFI_PART_NUM} esp on
+    
+    sync && partprobe ${DEVICE}
+
+    efi_partition=$(lsblk -o NAME,LABEL,PARTLABEL -ln | grep sf_efi | awk '{print $1}')
+    root_partition=$(lsblk -o NAME,LABEL,PARTLABEL -ln | grep sf_root | awk '{print $1}')
+    var_partition=$(lsblk -o NAME,LABEL,PARTLABEL -ln | grep sf_var | awk '{print $1}')
+    home_partition=$(lsblk -o NAME,LABEL,PARTLABEL -ln | grep sf_home | awk '{print $1}')
+
+    echo "Formatting partitions..."
+    mkfs -t vfat /dev/${efi_partition}
+    fatlabel /dev/${efi_partition} sf_efi
+    mkfs -t btrfs -f /dev/${root_partition}
+    btrfs filesystem label /dev/${root_partition} sf_root
+    mkfs.ext4 -F /dev/${var_partition}
+    e2label /dev/${var_partition} sf_var
+    mkfs.ext4 -F /dev/${home_partition}
+    e2label /dev/${home_partition} sf_home
+else
+    # Full disk installation
+    sfdisk --delete ${DEVICE}
+    wipefs -a ${DEVICE}
+    yes | parted ${DEVICE} mklabel gpt
+    parted -a optimal ${DEVICE} mkpart primary fat32 2M 256M
+    parted ${DEVICE} set 1 boot on
+    parted ${DEVICE} set 1 esp on
+    parted -a optimal ${DEVICE} mkpart primary btrfs 256M 20G
+    parted -a optimal ${DEVICE} mkpart primary ext4 20G 21G
+    parted -a optimal ${DEVICE} mkpart primary ext4 21G 100%
+    root_partition="${INSTALLDEVICE}2"
+    var_partition="${INSTALLDEVICE}3"
+    home_partition="${INSTALLDEVICE}4"
+    mkfs -t vfat ${INSTALLDEVICE}1
+    fatlabel ${INSTALLDEVICE}1 sf_efi
+    mkfs -t btrfs -f ${root_partition}
+    btrfs filesystem label ${root_partition} sf_root
+    mkfs.ext4 -F ${var_partition}
+    e2label ${var_partition} sf_var
+    mkfs.ext4 -F ${home_partition}
+    e2label ${home_partition} sf_home
+fi
+
+sync && partprobe ${DEVICE}
 echo "Starting to bootstrap installation..."
 steamfork-bootstrap --username "${OSUSER}" --password "${OSPASS}" --root_password "${ROOTPASS}"
 sync
