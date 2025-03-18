@@ -49,7 +49,7 @@ jobs:
           git config --global user.name "SteamFork Release Bot"
           git config --global user.email "SteamFork Release Bot@users.noreply.github.com"
           echo "ORIGINAL_URL=$(git remote get-url origin)" >> $GITHUB_ENV
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git remote set-url origin https://x-access-token:${{ secrets.WORKFLOW_TOKEN }}@github.com/${{ github.repository }}.git
 
       - name: Create and push the release tag
         run: |
