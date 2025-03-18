@@ -460,6 +460,7 @@ export STEAMOS_PKGS="7zip
                     lib32-libunistring
                     lib32-libunwind
                     lib32-libva
+                    steamfork/lib32-libva-mesa-driver
                     lib32-libvdpau
                     lib32-libvorbis
                     lib32-libx11
@@ -480,6 +481,7 @@ export STEAMOS_PKGS="7zip
                     lib32-lm_sensors
                     lib32-mangohud
                     steamfork/lib32-mesa
+                    steamfork/lib32-mesa-vdpau
                     lib32-ncurses
                     lib32-nspr
                     lib32-nss
@@ -679,8 +681,8 @@ export STEAMOS_PKGS="7zip
                     libusbmuxd
                     libutempter
                     libva
-                    libva-intel-driver
-                    libva-mesa-driver
+                    steamfork/libva-intel-driver
+                    steamfork/libva-mesa-driver
                     libvdpau
                     libverto
                     libvlc
@@ -752,6 +754,7 @@ export STEAMOS_PKGS="7zip
                     media-player-info
                     steamfork/mesa
                     mesa-utils
+                    steamfork/mesa-vdpau
                     milou
                     minizip
                     mkinitcpio
