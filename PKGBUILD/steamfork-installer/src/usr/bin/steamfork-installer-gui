@@ -91,14 +91,22 @@ class DriveSelectionPage(QWidget):
 
     def get_physical_drives(self):
         process = QProcess()
-        process.start("lsblk -d -n -o NAME -I 8,259")
+        process.start("lsblk -n -o NAME,SIZE,MODEL -d")
         process.waitForFinished()
         result = process.readAllStandardOutput().data().decode('utf-8')
         drives = result.strip().split('\n')
-        return drives
+        formatted_drives = []
+        for drive in drives:
+            parts = drive.split()
+            if len(parts) >= 3:
+                name = parts[0]
+                size = parts[1]
+                model = ' '.join(parts[2:])
+                formatted_drives.append(f"{model} ({name})")
+        return formatted_drives
 
     def update_drive_info(self, index):
-        drive_name = self.drive_var.currentText()
+        drive_name = self.drive_var.currentText().split('(')[-1].strip(')')
         try:
             result = subprocess.run(
                 ["lsblk", "-n", "-o", "name,size,label,model", f"/dev/{drive_name}"],
@@ -148,21 +156,24 @@ class InstallationPage(QWidget):
         self.process = None
 
     def on_install(self, username, password, root_password, drive, use_unallocated):
+        # Extract the device name from the selected drive string
+        device_name = drive.split('(')[-1].strip(')')
+
         warning_msg = f'Are you sure you want to continue with the installation?\n'
         if use_unallocated:
             warning_msg += 'All SteamFork partitions will be removed! (if they exist)'
         else:
-            warning_msg += f'All contents and partitions on /dev/{drive} will BE ERASED!'
+            warning_msg += f'All contents and partitions on /dev/{device_name} will BE ERASED!'
             
         confirmation = QMessageBox.question(self, 'Confirmation', warning_msg, QMessageBox.Yes | QMessageBox.No)
 
         if confirmation == QMessageBox.Yes:
             self.log_to_terminal("Installation started...")
-            self.log_to_terminal(f"Selected Drive: {drive}")
+            self.log_to_terminal(f"Selected Drive: {device_name}")
             self.log_to_terminal(f"Username: {username}")
             self.log_to_terminal("Installing...")
 
-            command = f"steamfork-installer --drive \"{drive}\" --username \"{username}\" --password \"{password}\" --root_password \"{root_password}\""
+            command = f"steamfork-installer --drive \"{device_name}\" --username \"{username}\" --password \"{password}\" --root_password \"{root_password}\""
             if use_unallocated:
                 command += " --use_unallocated"
             self.process = QProcess()
