@@ -101,6 +101,3 @@ cp ${WORK_DIR}/buildwork/pacman.conf ${INSTALLER_DIR}/airootfs/etc/
 sudo mkarchiso -v -w ${WORK_DIR}/image-build -o ${IMAGE_DIR}/installer ${INSTALLER_DIR}
 
 sudo rm ${IMAGE_DIR}/currentcandidate ${IMAGE_DIR}/buildinfo
-
-# Generate sha256 checksum
-(cd ${IMAGE_DIR}/installer && sha256sum ${IMAGEFILE}.iso | sudo tee ${IMAGEFILE}.iso.sha256)

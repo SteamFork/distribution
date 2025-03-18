@@ -7,42 +7,42 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
 
 if [ -f "${HOME}/.SteamFork/options" ]; then
-	source "${HOME}/.SteamFork/options"
+    source "${HOME}/.SteamFork/options"
 fi
 
 for KEY in WWWHOST WWWUSER WWWROOT SIGNKEY REPO_DIR IMAGE_DIR MIRROR_HOSTS MIRROR_KEY; do
-	if [ -z "${!KEY}" ]; then
-		echo "Export ${KEY} before using this script."
-		exit 1
-	fi
+    if [ -z "${!KEY}" ]; then
+        echo "Export ${KEY} before using this script."
+        exit 1
+    fi
 done
 
 function private_key() {
-	case ${1} in
-	add)
-		echo "Copy private key to ${WWWHOST}."
-		scp ${HOME}/.SteamFork/${MIRROR_KEY} ${WWWUSER}@${WWWHOST}:.ssh
-		ssh -tt ${WWWUSER}@${WWWHOST} "chmod 0700 .ssh; chmod 0600 .ssh/${MIRROR_KEY}"
-		;;
-	remove)
-		echo "Remove private key from ${WWWHOST}"
-		ssh -tt ${WWWUSER}@${WWWHOST} "rm -f .ssh/${MIRROR_KEY}"
-		;;
-	esac
+    case ${1} in
+    add)
+        echo "Copy private key to ${WWWHOST}."
+        scp ${HOME}/.SteamFork/${MIRROR_KEY} ${WWWUSER}@${WWWHOST}:.ssh
+        ssh -tt ${WWWUSER}@${WWWHOST} "chmod 0700 .ssh; chmod 0600 .ssh/${MIRROR_KEY}"
+        ;;
+    remove)
+        echo "Remove private key from ${WWWHOST}"
+        ssh -tt ${WWWUSER}@${WWWHOST} "rm -f .ssh/${MIRROR_KEY}"
+        ;;
+    esac
 }
 
 ### Generate a mirror list.
 echo "www.steamfork.org" >/tmp/mirrorlist.txt
 for HOST in ${WEB_HOSTS[*]#*@}; do
-	echo ${HOST} >>/tmp/mirrorlist.txt
+    echo ${HOST} >>/tmp/mirrorlist.txt
 done
 
 case ${1} in
 pkgs | repo)
-	echo "Syncing repository to ${WWWHOST}."
-	rsync -av --delete --progress --stats ${REPO_DIR}/${STEAMOS_VERSION}/ ${WWWUSER}@${WWWHOST}:${WWWROOT}/repos/${STEAMOS_VERSION}/
-	ssh -tt ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/"
-	;;
+    echo "Syncing repository to ${WWWHOST}."
+    rsync -av --delete --progress --stats ${REPO_DIR}/${STEAMOS_VERSION}/ ${WWWUSER}@${WWWHOST}:${WWWROOT}/repos/${STEAMOS_VERSION}/
+    ssh -tt ${WWWUSER}@${WWWHOST} "chown -R www-data:www-data ${WWWROOT}/"
+    ;;
 os-sync)
     echo "Remove stale image directories on ${WWWHOST}."
     for BRANCH in stable testing minimal; do
@@ -63,6 +63,7 @@ os-sync)
                 fi
                 sleep 5
             done
+            ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer/; sha256sum ${IMAGEFILE}-x86_64.iso > ${IMAGEFILE}-x86_64.iso.sha256"
             ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso steamfork-${BRANCH}-latest-x86_64.iso"
             ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/${BRANCH}.new/installer/; ln -sf ${IMAGEFILE}-x86_64.iso.sha256 steamfork-${BRANCH}-latest-x86_64.iso.sha256"
         fi
@@ -71,63 +72,63 @@ os-sync)
     ssh -tt ${WWWUSER}@${WWWHOST} "mkdir -p ${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck; echo "{ }" >${WWWROOT}/meta/steamos/amd64/${STAGING_OS_TAG}.0/steamdeck/${STAGING_OS_TAG}.json"
     ;;
 os-switch)
-  for BRANCH in stable testing minimal; do
-    DEPLOY_DIR="${IMAGE_DIR}/${BRANCH}"
-    if [ -e "${DEPLOY_DIR}/latest_${BRANCH}.releasemeta" ]; then
-      for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
-        echo "Update the ${BRANCH} images on ${HOST}."
-        ssh -tt ${HOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; if [ -d "${BRANCH}.new" ]; then sudo chown -R www-data:www-data ${BRANCH}.new; sudo rm -rf ${BRANCH}; sudo mv ${BRANCH}.new ${BRANCH}; fi"
-        ssh -tt ${HOST} "cd ${WWWROOT}/images/; sudo rm -f {buildinfo,steamfork*${BRANCH}*,currentcandidate,*${BRANCH}*.releasemeta,package_versions.txt}; ln -sf ${DEPLOY_DIR}/steamfork*${BRANCH}* .; ln -sf ${DEPLOY_DIR}/*${BRANCH}*.releasemeta ."
-        ssh -tt ${HOST} "cd ${WWWROOT}/images/installer; sudo rm -f *${BRANCH}*; ln -sf ln -sf ../${DEPLOY_DIR}/installer/steamfork*${BRANCH}* ."
-      done
-    fi
-  done
-  ;;
+    for BRANCH in stable testing minimal; do
+        DEPLOY_DIR="${IMAGE_DIR}/${BRANCH}"
+        if [ -e "${DEPLOY_DIR}/latest_${BRANCH}.releasemeta" ]; then
+            for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
+                echo "Update the ${BRANCH} images on ${HOST}."
+                ssh -tt ${HOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; if [ -d "${BRANCH}.new" ]; then sudo chown -R www-data:www-data ${BRANCH}.new; sudo rm -rf ${BRANCH}; sudo mv ${BRANCH}.new ${BRANCH}; fi"
+                ssh -tt ${HOST} "cd ${WWWROOT}/images/; sudo rm -f {buildinfo,steamfork*${BRANCH}*,currentcandidate,*${BRANCH}*.releasemeta,package_versions.txt}; ln -sf ${DEPLOY_DIR}/steamfork*${BRANCH}* .; ln -sf ${DEPLOY_DIR}/*${BRANCH}*.releasemeta ."
+                ssh -tt ${HOST} "cd ${WWWROOT}/images/installer; sudo rm -f *${BRANCH}*; ln -sf ln -sf ../${DEPLOY_DIR}/installer/steamfork*${BRANCH}* ."
+            done
+        fi
+    done
+    ;;
 os-release)
-	private_key add
-  for BRANCH in stable testing minimal; do
-    DEPLOY_DIR="${IMAGE_DIR}/${BRANCH}"
-    if [ -e "${DEPLOY_DIR}/latest_${BRANCH}.releasemeta" ]; then
-      DEPLOY_DIR="${IMAGE_DIR}/${BRANCH}"
-      DEPLOY_DIR="$(echo ${DEPLOY_DIR} | sed 's~'${WWWROOT}/images/'~~g')"
-      for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
-        echo "Update the release images on ${HOST}."
-        ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; if [ -d "${BRANCH}.new" ]; then chown -R www-data:www-data ${BRANCH}.new; rm -rf ${BRANCH}; mv ${BRANCH}.new ${BRANCH}; fi"
-        ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/; sudo rm -f {buildinfo,steamfork*${BRANCH}*,currentcandidate,*${BRANCH}*.releasemeta,package_versions.txt}; ln -sf ${DEPLOY_DIR}/steamfork*${BRANCH}* .; ln -sf ${DEPLOY_DIR}/*${BRANCH}*.releasemeta ."
-        ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/installer; sudo rm -f *${BRANCH}*; ln -sf ln -sf ../${DEPLOY_DIR}/installer/steamfork*${BRANCH}* ."
-      done
-    fi
-  done
-	private_key remove
-	;;
+    private_key add
+    for BRANCH in stable testing minimal; do
+        DEPLOY_DIR="${IMAGE_DIR}/${BRANCH}"
+        if [ -e "${DEPLOY_DIR}/latest_${BRANCH}.releasemeta" ]; then
+            DEPLOY_DIR="${IMAGE_DIR}/${BRANCH}"
+            DEPLOY_DIR="$(echo ${DEPLOY_DIR} | sed 's~'${WWWROOT}/images/'~~g')"
+            for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
+                echo "Update the release images on ${HOST}."
+                ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; if [ -d "${BRANCH}.new" ]; then chown -R www-data:www-data ${BRANCH}.new; rm -rf ${BRANCH}; mv ${BRANCH}.new ${BRANCH}; fi"
+                ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/; sudo rm -f {buildinfo,steamfork*${BRANCH}*,currentcandidate,*${BRANCH}*.releasemeta,package_versions.txt}; ln -sf ${DEPLOY_DIR}/steamfork*${BRANCH}* .; ln -sf ${DEPLOY_DIR}/*${BRANCH}*.releasemeta ."
+                ssh -tt ${WWWUSER}@${WWWHOST} "cd ${WWWROOT}/images/installer; sudo rm -f *${BRANCH}*; ln -sf ln -sf ../${DEPLOY_DIR}/installer/steamfork*${BRANCH}* ."
+            done
+        fi
+    done
+    private_key remove
+    ;;
 mirrors)
-	private_key add
-	echo "Push mirror list to ${WWWHOST}."
-	scp /tmp/mirrorlist.txt ${WWWUSER}@${WWWHOST}:${WWWROOT}/
-	(
-		for MIRROR_HOST in ${MIRROR_HOSTS}; do
-			echo "Sync ${MIRROR_HOST} from ${WWWUSER}@${WWWHOST}"
-			ssh -tt ${MIRROR_HOST} "cd ${WWWROOT}; sudo rsync -av --delete --progress --stats rsync://${WWWHOST}/steamfork/ ." &
-		done
-		wait
-	)
-	private_key remove
-	;;
+    private_key add
+    echo "Push mirror list to ${WWWHOST}."
+    scp /tmp/mirrorlist.txt ${WWWUSER}@${WWWHOST}:${WWWROOT}/
+    (
+        for MIRROR_HOST in ${MIRROR_HOSTS}; do
+            echo "Sync ${MIRROR_HOST} from ${WWWUSER}@${WWWHOST}"
+            ssh -tt ${MIRROR_HOST} "cd ${WWWROOT}; sudo rsync -av --delete --progress --stats rsync://${WWWHOST}/steamfork/ ." &
+        done
+        wait
+    )
+    private_key remove
+    ;;
 check)
-	sudo pacman -Sy >/dev/null 2>&1
-	REPO_DIR="${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}"
-	for REPO_PACKAGE in ${BUILD_DIR}/PKGBUILD/*; do
-		source ${REPO_PACKAGE}/PKGBUILD
-		for TEST_PACKAGE in ${pkgname[@]}; do
-			EXISTS=$(pacman -Ss ${TEST_PACKAGE} 2>&1 | grep "${TEST_PACKAGE} ${pkgver}-${pkgrel}")
-			if [ -z "${EXISTS}" ]; then
-				echo "Error: ${TEST_PACKAGE} ${pkgver}-${pkgrel} is not in the repo."
-				exit 1
-			fi
-			unset EXISTS pkgname
-		done
-	done
-	;;
+    sudo pacman -Sy >/dev/null 2>&1
+    REPO_DIR="${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}"
+    for REPO_PACKAGE in ${BUILD_DIR}/PKGBUILD/*; do
+        source ${REPO_PACKAGE}/PKGBUILD
+        for TEST_PACKAGE in ${pkgname[@]}; do
+            EXISTS=$(pacman -Ss ${TEST_PACKAGE} 2>&1 | grep "${TEST_PACKAGE} ${pkgver}-${pkgrel}")
+            if [ -z "${EXISTS}" ]; then
+                echo "Error: ${TEST_PACKAGE} ${pkgver}-${pkgrel} is not in the repo."
+                exit 1
+            fi
+            unset EXISTS pkgname
+        done
+    done
+    ;;
 esac
 
 rm -f /tmp/mirrorlist.txt
