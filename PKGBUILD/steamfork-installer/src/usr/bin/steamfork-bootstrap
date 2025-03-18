@@ -153,9 +153,7 @@ do
 done
 umount -l ${SUBVOLLOCATION} && umount -l ${HOMELOCATION_TEMP}
 echo "You may now close this window and reboot your device..."
-sleep 10
 else
 echo "Partition layout not detected. Aborting bootstrap"
 exit 127
-sleep 10
 fi

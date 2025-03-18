@@ -1,24 +1,50 @@
 #!/usr/bin/python3
 import sys
-from PyQt6.QtWidgets import QVBoxLayout, QApplication, QMainWindow, QSizePolicy, QStackedWidget, QVBoxLayout, QWidget, QLabel, QPushButton, QComboBox, QLineEdit, QTextEdit, QHBoxLayout, QMessageBox
+from PyQt6.QtWidgets import QVBoxLayout, QApplication, QMainWindow, QSizePolicy, QStackedWidget, QWidget, QLabel, QPushButton, QComboBox, QLineEdit, QTextEdit, QHBoxLayout, QMessageBox, QSpacerItem, QTabWidget, QTabBar, QGridLayout, QFormLayout, QGroupBox
 from PyQt6.QtCore import Qt, QProcess
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QPixmap, QIcon, QGuiApplication
 import subprocess
 import time
+import argparse
 
 DistroName = "SteamFork"
+DEBUG = False  # Set to False by default
+
+def debug_print(message):
+    if DEBUG:
+        print(message)
+        sys.stdout.flush()  # Ensure the output is flushed immediately
 
 class WelcomePage(QWidget):
     def __init__(self, next_callback, parent=None):
         super(WelcomePage, self).__init__(parent)
-        layout = QVBoxLayout(self)
-        label = QLabel(f"Welcome to the {DistroName} Installer!\n\nThis tool will install SteamFork onto your system, after rebooting your system will boot directly into Steam.", self)
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        label.setWordWrap(True)
-        layout.addWidget(label)
+        welcome_layout = QVBoxLayout(self)
+
+        # Add the SteamFork logo
+        logo_label = QLabel(self)
+        pixmap = QPixmap("/usr/share/icons/steamfork/steamfork.png")
+        pixmap = pixmap.scaled(128, 128, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        logo_label.setPixmap(pixmap)
+        welcome_layout.addWidget(logo_label, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        # Create a QTextEdit widget for displaying rich text
+        welcome_text = QTextEdit(self)
+        welcome_text.setReadOnly(True)
+        welcome_text.setHtml(f"""
+            <h1>Welcome to the {DistroName} Installer</h1>
+            <p>This Setup Wizard will install <b>SteamFork</b> on your computer. If you have any problems during installation, please review our <a href="https://wiki.steamfork.org">Wiki</a> for assistance, or contact us on <a href="https://discord.gg/AQ5rtQstCf">Discord</a>.</p>
+            <p>After installation, your system will boot directly into Steam, providing you with an optimized gaming experience.</p>
+            <p>Click "Next" to proceed with the installation.</p>
+        """)
+        # Set the background color of the QTextEdit to match the rest of the window
+        welcome_text.setStyleSheet("background-color: transparent; border: none;")
+        welcome_layout.addWidget(welcome_text)
+
         next_button = QPushButton("Next", self)
         next_button.clicked.connect(next_callback)
-        layout.addWidget(next_button)
+        welcome_layout.addWidget(next_button, alignment=Qt.AlignmentFlag.AlignRight)
+
+        self.setLayout(welcome_layout)
 
 class DriveSelectionPage(QWidget):
     def __init__(self, next_callback, prev_callback, parent=None):
@@ -27,55 +53,63 @@ class DriveSelectionPage(QWidget):
         self.next_callback = next_callback
         self.prev_callback = prev_callback
 
-        layout = QVBoxLayout(self)
+        drive_selection_layout = QVBoxLayout(self)
+
+        # Installation type and drive selection group
+        install_drive_group = QGroupBox("Installation and Drive Selection")
+        install_drive_layout = QFormLayout()
+
+        self.install_type = QComboBox(self)
+        self.install_type.addItems(["Full Disk", "Use Unallocated Space (25GB minimum required)"])
+        install_drive_layout.addRow("Installation Type:", self.install_type)
 
         self.drive_var = QComboBox(self)
-        self.install_type = QComboBox(self)
-        self.username_var = "deck"
-        self.password_var = QLineEdit(self)
-        self.password_var.setEchoMode(QLineEdit.EchoMode.Password)
-        self.root_password_var = QLineEdit(self)
-        self.root_password_var.setEchoMode(QLineEdit.EchoMode.Password)
-
-        layout.addWidget(QLabel("Installation Type:", self))
-        self.install_type.addItems(["Full Disk", "Use Unallocated Space (25GB minimum required)"])
-        layout.addWidget(self.install_type)
-
-        layout.addWidget(QLabel("Select a drive for installation:", self))
-        layout.addWidget(self.drive_var)
         self.drive_var.addItem("")
-        # Additional code for displaying drive information
+        install_drive_layout.addRow("Select a drive for installation:", self.drive_var)
+
         self.drive_info_label = QLabel("Drive Information: N/A", self)
-        layout.addWidget(self.drive_info_label)
         monospace_font = QFont("Monospace")
         monospace_font.setStyleHint(QFont.StyleHint.TypeWriter)
         self.drive_info_label.setFont(monospace_font)
-        #layout.addWidget(QLabel("Username: deck", self))
-        layout.addWidget(QLabel("Enter a password for the user account (deck) and for the superuser (root) account below:", self))
-        layout.addWidget(QLabel("Password for user (deck):", self))
-        layout.addWidget(self.password_var)
-        layout.addWidget(QLabel("Password for superuser (root):", self))
-        layout.addWidget(self.root_password_var)
+        install_drive_layout.addRow("Drive Information:", self.drive_info_label)
 
+        install_drive_group.setLayout(install_drive_layout)
+        drive_selection_layout.addWidget(install_drive_group)
 
+        # Password configuration group
+        password_group = QGroupBox("Password Configuration")
+        password_layout = QFormLayout()
+
+        self.password_var = QLineEdit(self)
+        self.password_var.setEchoMode(QLineEdit.EchoMode.Password)
+        password_layout.addRow("Password for user account (deck):", self.password_var)
+
+        self.root_password_var = QLineEdit(self)
+        self.root_password_var.setEchoMode(QLineEdit.EchoMode.Password)
+        password_layout.addRow("Password for system administrator (root):", self.root_password_var)
+
+        password_group.setLayout(password_layout)
+        drive_selection_layout.addWidget(password_group)
+
+        # Buttons
         btn_layout = QHBoxLayout()
         prev_btn = QPushButton("Previous", self)
         prev_btn.clicked.connect(self.on_prev)
-        install_btn = QPushButton("Install", self)
-        install_btn.clicked.connect(self.on_install)
+        install_btn = QPushButton("Next", self)
+        install_btn.clicked.connect(self.on_next)
 
         btn_layout.addWidget(prev_btn)
         btn_layout.addStretch()
         btn_layout.addWidget(install_btn)
 
-        layout.addLayout(btn_layout)
+        drive_selection_layout.addLayout(btn_layout)
 
         # Populate the drive_var dropdown
         self.drive_var.addItems(self.get_physical_drives())
         self.drive_var.currentIndexChanged.connect(self.update_drive_info)
 
         # Set the layout for the page
-        self.setLayout(layout)
+        self.setLayout(drive_selection_layout)
 
     def get_physical_drives(self):
         try:
@@ -94,11 +128,11 @@ class DriveSelectionPage(QWidget):
                     size = parts[1]
                     model = ' '.join(parts[2:])
                     formatted_drive = f"{model} ({name})"
-                    print(f"Formatted drive: {formatted_drive}")  # Debug print
+                    debug_print(f"Formatted drive: {formatted_drive}")  # Debug print
                     formatted_drives.append(formatted_drive)
             return formatted_drives
         except subprocess.CalledProcessError as e:
-            print(f"Error: {e}")
+            debug_print(f"Error: {e}")
             return []
 
     def update_drive_info(self, index):
@@ -113,129 +147,257 @@ class DriveSelectionPage(QWidget):
             drive_info = result.stdout.strip()
             self.drive_info_label.setText(f"Drive Information:\n{drive_info}")
         except subprocess.CalledProcessError as e:
-            print(f"Error retrieving drive information: {e}")
+            debug_print(f"Error retrieving drive information: {e}")
             self.drive_info_label.setText("Drive Information: N/A")
 
     def on_prev(self):
+        debug_print("DriveSelectionPage: on_prev called")
         self.prev_callback()
 
-    def on_install(self):
-        username = self.username_var
+    def on_next(self):
+        debug_print("DriveSelectionPage: on_next called")
+        username = "deck"  # Fixed username
         password = self.password_var.text()
         root_password = self.root_password_var.text()
         drive = self.drive_var.currentText()
         use_unallocated = self.install_type.currentText().startswith("Use Unallocated")
 
-        if username and password and root_password and drive:
-            self.next_callback(username, password, root_password, drive, use_unallocated)
+        if password and root_password and drive:
+            warning_msg = f'Are you sure you want to continue with the installation?\n'
+            if use_unallocated:
+                warning_msg += 'All SteamFork partitions will be removed! (if they exist)'
+            else:
+                warning_msg += f'All contents and partitions on /dev/{drive.split("(")[-1].strip(")")} will BE ERASED!'
+                
+            confirmation = QMessageBox.question(self, 'Confirmation', warning_msg, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+
+            if confirmation == QMessageBox.StandardButton.Yes:
+                debug_print("DriveSelectionPage: User confirmed installation")
+                debug_print(f"Parameters: username={username}, password={password}, root_password={root_password}, drive={drive}, use_unallocated={use_unallocated}")
+                self.next_callback(username, password, root_password, drive, use_unallocated)
+            else:
+                debug_print("DriveSelectionPage: User canceled installation")
         else:
+            debug_print("DriveSelectionPage: Missing fields")
             QMessageBox.warning(self, 'Warning', 'Please fill in all fields.')
 
 class InstallationPage(QWidget):
     def __init__(self, parent=None):
         super(InstallationPage, self).__init__(parent)
-        layout = QVBoxLayout(self)
+        installation_layout = QVBoxLayout(self)
         
         # Add a terminal-like text area for installation logs
-        self.terminal_text = QTextEdit(self)
-        self.terminal_text.setReadOnly(True)
+        installation_text = QTextEdit(self)
+        installation_text.setReadOnly(True)
         monospace_font = QFont("Monospace")
         monospace_font.setStyleHint(QFont.StyleHint.TypeWriter)
-        self.terminal_text.setFont(monospace_font)
-        layout.addWidget(self.terminal_text)
+        installation_text.setFont(monospace_font)
+        installation_layout.addWidget(installation_text)
         
-        # Add a close button
-        close_button = QPushButton("Close", self)
-        close_button.clicked.connect(self.close_application)
-        layout.addWidget(close_button)
+        # Add a next button
+        next_button = QPushButton("Next", self)
+        next_button.clicked.connect(self.proceed_to_finish)
+        next_button.setEnabled(False)
+        installation_layout.addWidget(next_button)
         
         self.process = None
+        self.installation_text = installation_text
+        self.next_button = next_button
+        self.exit_code = 0  # Default exit code
+
+        self.setLayout(installation_layout)
 
     def on_install(self, username, password, root_password, drive, use_unallocated):
+        debug_print("InstallationPage: on_install called")
         # Extract the device name from the selected drive string
         device_name = drive.split('(')[-1].strip(')')
 
-        warning_msg = f'Are you sure you want to continue with the installation?\n'
+        self.log_to_terminal("Installation started...")
+        self.log_to_terminal(f"Selected Drive: {device_name}")
+        self.log_to_terminal(f"Username: {username}")
+        self.log_to_terminal("Installing...")
+
+        command = f"steamfork-installer --drive \"{device_name}\" --username \"{username}\" --password \"{password}\" --root_password \"{root_password}\""
         if use_unallocated:
-            warning_msg += 'All SteamFork partitions will be removed! (if they exist)'
-        else:
-            warning_msg += f'All contents and partitions on /dev/{device_name} will BE ERASED!'
-            
-        confirmation = QMessageBox.question(self, 'Confirmation', warning_msg, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            command += " --use_unallocated"
+        debug_print(f"Running command: {command}")
 
-        if confirmation == QMessageBox.StandardButton.Yes:
-            self.log_to_terminal("Installation started...")
-            self.log_to_terminal(f"Selected Drive: {device_name}")
-            self.log_to_terminal(f"Username: {username}")
-            self.log_to_terminal("Installing...")
+        try:
+            self.process = QProcess(self)
+            self.process.setProgram("bash")
+            self.process.setArguments(["-c", command])
+            self.process.readyReadStandardOutput.connect(self.handle_stdout)
+            self.process.readyReadStandardError.connect(self.handle_stderr)
+            self.process.finished.connect(self.on_process_finished)
+            self.process.start()
+            self.log_to_terminal("Process started successfully")
+            debug_print("Process started successfully")
 
-            command = f"steamfork-installer --drive \"{device_name}\" --username \"{username}\" --password \"{password}\" --root_password \"{root_password}\""
-            if use_unallocated:
-                command += " --use_unallocated"
-            self.process = QProcess()
-            self.process.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
-            self.process.readyReadStandardOutput.connect(self.read_output)
-            self.process.start(command)
-            if not self.process.waitForStarted():
-                print("Error: steamfork-installer command did not start successfully")
-                self.log_to_terminal("Error: Installation process did not start successfully")
+        except Exception as e:
+            debug_print(f"Error: {e}")
+            self.log_to_terminal(f"Error: {e}")
+            self.exit_code = 1
 
-    def close_application(self):
-        self.window().close()
+    def handle_stdout(self):
+        data = self.process.readAllStandardOutput().data().decode()
+        self.log_to_terminal(data)
 
-    def read_output(self):
-        output = self.process.readAllStandardOutput().data().decode('utf-8')
-        self.log_to_terminal(output)
+    def handle_stderr(self):
+        data = self.process.readAllStandardError().data().decode()
+        self.log_to_terminal(data)
+
+    def on_process_finished(self, exit_code, exit_status):
+        debug_print(f"Process finished with exit code {exit_code} and exit status {exit_status}")
+        self.log_to_terminal(f"Process finished with exit code {exit_code} and exit status {exit_status}")
+
+        # Enable the next button after the process finishes
+        self.next_button.setEnabled(True)
+
+        # Store the exit code for the next page
+        self.exit_code = exit_code
+
+    def proceed_to_finish(self):
+        debug_print("InstallationPage: proceed_to_finish called")
+        parent = self.parent().parent()
+        parent.setCurrentIndex(parent.currentIndex() + 1)
+        parent.setTabEnabled(parent.currentIndex(), True)
+        parent.widget(parent.currentIndex()).update_finish_page(self.exit_code)
 
     def log_to_terminal(self, message):
-        self.terminal_text.append(message)
+        debug_print(f"InstallationPage: log_to_terminal called with message: {message}")
+        self.installation_text.append(message)
 
     def on_prev(self):
-        if self.process and self.process.state() == QProcess.ProcessState.Running:
+        debug_print("InstallationPage: on_prev called")
+        if self.process and self.process.poll() is None:
             self.process.terminate()
-            self.process.waitForFinished()
+            self.process.wait()
+
+class FinishPage(QWidget):
+    def __init__(self, parent=None):
+        super(FinishPage, self).__init__(parent)
+        self.finish_layout = QVBoxLayout(self)
+        self.setLayout(self.finish_layout)
+
+    def update_finish_page(self, exit_code):
+        for i in reversed(range(self.finish_layout.count())):
+            widget = self.finish_layout.itemAt(i).widget()
+            if widget is not None:
+                widget.deleteLater()
+
+        if exit_code == 0:
+            message = f"""
+                <h1>Congratulations!</h1>
+                <p>You have successfully completed installing {DistroName}!</p>
+                <p>Please shut down your computer and remove the thumb drive before booting into {DistroName} for the first time.</p>
+            """
+        else:
+            message = f"""
+                <h1>We're sorry</h1>
+                <p>An error occurred during installation. Please try making your installation media again, and if you are still unable to install {DistroName} please review the <a href="https://wiki.steamfork.org">Wiki</a> or ask for help on <a href="https://discord.gg/AQ5rtQstCf">Discord</a>.</p>
+            """
+
+        finish_text = QTextEdit(self)
+        finish_text.setReadOnly(True)
+        finish_text.setHtml(message)
+        finish_text.setStyleSheet("background-color: transparent; border: none;")
+        self.finish_layout.addWidget(finish_text)
+
+        button_layout = QHBoxLayout()
+
+        shutdown_button = QPushButton("Shutdown", self)
+        shutdown_button.clicked.connect(self.shutdown_system)
+        button_layout.addWidget(shutdown_button)
+
+        close_button = QPushButton("Close", self)
+        close_button.clicked.connect(self.close_application)
+        button_layout.addWidget(close_button)
+
+        self.finish_layout.addLayout(button_layout)
+
+    def shutdown_system(self):
+        debug_print("FinishPage: shutdown_system called")
+        subprocess.run(["sudo", "shutdown", "now"])
+
+    def close_application(self):
+        debug_print("FinishPage: close_application called")
+        self.window().close()
 
 class InstallerApp(QMainWindow):
     def __init__(self):
         super(InstallerApp, self).__init__()
 
-        self.central_widget = QStackedWidget(self)
+        self.tab_widget = QTabWidget(self)
+        self.tab_widget.setTabPosition(QTabWidget.TabPosition.West)
+        
+        # Create instances of the specific page classes
+        welcome_page = WelcomePage(self.on_next_page, self)
+        drive_selection_page = DriveSelectionPage(self.on_next_page, self.on_prev_page, self)
+        installation_page = InstallationPage(self)
+        finish_page = FinishPage(self)
 
-        welcome_page = WelcomePage(self.on_next_page, self.central_widget)
-        drive_selection_page = DriveSelectionPage(self.on_next_page, self.on_prev_page, self.central_widget)
-        installation_page = InstallationPage(self.central_widget)
+        # Add the specific page instances to the QTabWidget
+        self.tab_widget.addTab(welcome_page, "Welcome")
+        self.tab_widget.addTab(drive_selection_page, "Preparation")
+        self.tab_widget.addTab(installation_page, "Installation")
+        self.tab_widget.addTab(finish_page, "Finish")
+        
+        self.tab_widget.setTabEnabled(1, False)
+        self.tab_widget.setTabEnabled(2, False)
+        self.tab_widget.setTabEnabled(3, False)
 
-        self.central_widget.addWidget(welcome_page)
-        self.central_widget.addWidget(drive_selection_page)
-        self.central_widget.addWidget(installation_page)
+        # Disable tab clicks
+        self.tab_widget.tabBar().setEnabled(False)
 
-        self.setCentralWidget(self.central_widget)
-        self.setMinimumSize(480, 600)
-        title=f"{DistroName} Installer"
+        self.setCentralWidget(self.tab_widget)
+        self.setMinimumSize(800, 600)  # Expand the window size
+        title = f"{DistroName} Installer"
         self.setWindowTitle(title)
 
     def on_next_page(self, username=None, password=None, root_password=None, drive=None, use_unallocated=None):
-        current_page = self.central_widget.currentIndex()
-        if current_page < self.central_widget.count() - 1:
-            self.central_widget.setCurrentIndex(current_page + 1)
-            installation_page = self.central_widget.currentWidget()
+        current_page = self.tab_widget.currentIndex()
+        debug_print(f"InstallerApp: Current page: {current_page}")
+        if current_page < self.tab_widget.count() - 1:
+            self.tab_widget.setCurrentIndex(current_page + 1)
+            self.tab_widget.setTabEnabled(current_page + 1, True)
+            next_page = self.tab_widget.widget(current_page + 1)
+            debug_print(f"InstallerApp: Next page: {self.tab_widget.currentIndex()}")
 
-            if isinstance(installation_page, InstallationPage):
-                installation_page.on_install(username, password, root_password, drive, use_unallocated)
+            if isinstance(next_page, InstallationPage):
+                debug_print("InstallerApp: Matched InstallationPage")
+                debug_print("InstallerApp: Starting installation process...")
+                debug_print(f"Parameters: username={username}, password={password}, root_password={root_password}, drive={drive}, use_unallocated={use_unallocated}")
+                next_page.on_install(username, password, root_password, drive, use_unallocated)
+            else:
+                debug_print(f"InstallerApp: Did not match InstallationPage, matched {type(next_page)}")
 
     def on_prev_page(self):
-        current_page = self.central_widget.currentIndex()
+        current_page = self.tab_widget.currentIndex()
+        debug_print(f"InstallerApp: Current page: {current_page}")
         if current_page > 0:
-            self.central_widget.setCurrentIndex(current_page - 1)
+            self.tab_widget.setCurrentIndex(current_page - 1)
+            debug_print(f"InstallerApp: Previous page: {self.tab_widget.currentIndex()}")
 
     def closeEvent(self, event):
-        if hasattr(self, 'process') and self.process and self.process.state() == QProcess.ProcessState.Running:
+        debug_print("InstallerApp: closeEvent called")
+        if hasattr(self, 'process') and self.process and self.process.poll() is None:
             self.process.terminate()
-            self.process.waitForFinished()
+            self.process.wait()
         event.accept()
 
 if __name__ == '__main__':
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="SteamFork Installer GUI")
+    parser.add_argument('--debug', action='store_true', help="Enable debug output")
+    args = parser.parse_args()
+
+    # Set debug variable based on command line argument
+    DEBUG = args.debug
+
+    debug_print("Main: Application started")
     app = QApplication(sys.argv)
+    QGuiApplication.setDesktopFileName("org.steamfork.installer.desktop")
+    app.setWindowIcon(QIcon("/usr/share/icons/steamfork/steamfork.png"))
     installer_app = InstallerApp()
     installer_app.show()
     sys.exit(app.exec())
