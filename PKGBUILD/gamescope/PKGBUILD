@@ -3,7 +3,7 @@
 pkgname=gamescope
 _srctag=3.16.2
 pkgver=${_srctag//-/.}.SteamFork
-pkgrel=8
+pkgrel=9
 pkgdesc="gaming shell based on Xwayland, powered by Vulkan and DRM"
 arch=(x86_64)
 url="https://github.com/ValveSoftware/gamescope"
@@ -37,7 +37,7 @@ source=("gamescope-session"
         0001-revert-299bc34.patch
         0002-fix-initializing-drm-formats.patch
 	)
-sha256sums=('d7e8590f288a84a6577c5953ef9c29d103011c09f6236e772b08b25b6e2ee205' # gamescope-session
+sha256sums=('5be4343b05a99463990330a3986d4cf589355586f3496de6561695f0c262e5d1' # gamescope-session
             'fe515fce8f151a6c03a89e043044bfddf8cd6ee89027d2cfbcf6f6706c78ca76'
             'e37ba6107f3a84cf47c2799b537a88583e6cb8951167a9c6a48fa1d85996206b'
             'e4add84152c3c0dfa53cf6bd2a1f15c2ce74d2312f7fa945b9476e91c8752544'
