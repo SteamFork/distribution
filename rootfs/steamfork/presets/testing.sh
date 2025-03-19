@@ -47,7 +47,7 @@ export DISABLED_SERVICES=(jupiter-controller-update.service
 export PLYMOUTH_THEME="steamfork"
 export FINAL_DISTRIB_IMAGE=${BUILDVER}
 export KERNELCHOICE="linux"
-export BASE_BOOTSTRAP_PKGS="base base-devel linux-firmware amd-ucode intel-ucode sddm-wayland dkms jq btrfs-progs core-${STEAMOS_VERSION}/grub efibootmgr openssh plymouth"
+export BASE_BOOTSTRAP_PKGS="base base-devel linux-firmware amd-ucode intel-ucode sddm dkms jq btrfs-progs core-${STEAMOS_VERSION}/grub efibootmgr openssh plymouth"
 export STEAMOS_PKGS="7zip
                     a52dec
                     aardvark-dns
@@ -975,7 +975,7 @@ export STEAMOS_PKGS="7zip
                     rubberband
                     rxvt-unicode-terminfo
                     sbc
-                    sddm-wayland
+                    sddm
                     sddm-kcm
                     sdl2
                     sdl2_ttf

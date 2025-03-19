@@ -11,7 +11,6 @@ local|wayland
 local|lib32-wayland
 local|wayland-protocols
 local|xorg-xwayland
-local|sddm-wayland
 local|mesa
 local|lib32-mesa
 local|gamescope
