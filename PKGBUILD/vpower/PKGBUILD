@@ -3,7 +3,8 @@
 #   Maintainer: Jo Bates <jo@valvesoftware.com>
 
 pkgname=vpower
-pkgver=1.4.1.SteamFork
+_srctag=1.4.1
+pkgver=${_srctag//-/.}.SteamFork
 pkgrel=2
 pkgdesc="Service that calculates battery metrics and handles critical battery scenarios"
 url=https://gitlab.steamos.cloud/jupiter/vpower
@@ -11,7 +12,7 @@ arch=(x86_64)
 license=(MIT)
 depends=(gcc-libs lm_sensors systemd-sysvcompat)
 makedepends=(rust git openssh)
-source=("git+https://gitlab.com/evlaV/vpower.git#tag=$pkgver"
+source=("git+https://gitlab.com/evlaV/vpower.git#tag=$_srctag"
         crate-libc-0.2.117.tar.gz::https://crates.io/api/v1/crates/libc/0.2.117/download
         crate-proc-macro2-1.0.36.tar.gz::https://crates.io/api/v1/crates/proc-macro2/1.0.36/download
         crate-quote-1.0.15.tar.gz::https://crates.io/api/v1/crates/quote/1.0.15/download
