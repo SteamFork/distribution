@@ -1,13 +1,13 @@
 # Maintainer: fewtarius@steamfork.org
 pkgname=steamfork-sddm
 pkgver=1.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Steamfork SDDM theme"
 arch=('any')
-depends=('qt6-5compat')
+depends=('qt6-5compat'
+	 'sddm')
 url="https://github.com/SteamFork/steamfork-sddm"
 license=('GPLv3')
-depends=('sddm')
 source=("$pkgname::git+https://github.com/SteamFork/steamfork-sddm.git")
 sha256sums=('SKIP')
 
