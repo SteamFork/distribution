@@ -3,7 +3,7 @@
 #   Maintainer: Jo Bates <jo@valvesoftware.com>
 
 pkgname=vpower
-pkgver=1.4.1
+pkgver=1.4.1.SteamFork
 pkgrel=2
 pkgdesc="Service that calculates battery metrics and handles critical battery scenarios"
 url=https://gitlab.steamos.cloud/jupiter/vpower
