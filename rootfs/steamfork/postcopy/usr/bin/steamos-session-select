@@ -20,6 +20,11 @@ if [[ $EUID != 0 ]]; then
     systemctl --user --no-block stop gamescope-session.service
     systemctl --user --no-block stop plasma-workspace.target
   fi
+  # Work around a bug in 3.7 that prevents users from switching to the desktop on 
+  # the first boot after installation unless they bounce sddm or reboot.
+  if [ ! -f "/var/tmp/.sddm-restart" ]; then
+	  sudo systemctl restart sddm && touch /var/tmp/.sddm-restart
+  fi
   exit
 fi
 
