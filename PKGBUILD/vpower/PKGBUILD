@@ -1,0 +1,77 @@
+# Maintainer: Fewtarius
+# Upstream:
+#   Maintainer: Jo Bates <jo@valvesoftware.com>
+
+pkgname=vpower
+pkgver=1.4.1
+pkgrel=2
+pkgdesc="Service that calculates battery metrics and handles critical battery scenarios"
+url=https://gitlab.steamos.cloud/jupiter/vpower
+arch=(x86_64)
+license=(MIT)
+depends=(gcc-libs lm_sensors systemd-sysvcompat)
+makedepends=(rust git openssh)
+source=("git+https://gitlab.com/evlaV/vpower.git#tag=$pkgver"
+        crate-libc-0.2.117.tar.gz::https://crates.io/api/v1/crates/libc/0.2.117/download
+        crate-proc-macro2-1.0.36.tar.gz::https://crates.io/api/v1/crates/proc-macro2/1.0.36/download
+        crate-quote-1.0.15.tar.gz::https://crates.io/api/v1/crates/quote/1.0.15/download
+        crate-serde-1.0.136.tar.gz::https://crates.io/api/v1/crates/serde/1.0.136/download
+        crate-serde_derive-1.0.136.tar.gz::https://crates.io/api/v1/crates/serde_derive/1.0.136/download
+        crate-syn-1.0.86.tar.gz::https://crates.io/api/v1/crates/syn/1.0.86/download
+        crate-toml-0.5.8.tar.gz::https://crates.io/api/v1/crates/toml/0.5.8/download
+        crate-unicode-xid-0.2.2.tar.gz::https://crates.io/api/v1/crates/unicode-xid/0.2.2/download
+	0001-Make-vpower-more-dynamic-so-it-will-read-correctly-o.patch
+)
+sha256sums=('SKIP'
+            'e74d72e0f9b65b5b4ca49a346af3976df0f9c61d550727f349ecd559f251a26c'
+            'c7342d5883fbccae1cc37a2353b09c87c9b0f3afd73f5fb9bba687a1f733b029'
+            '864d3e96a899863136fc6e99f3d7cae289dafe43bf2c5ac19b70df7210c0a145'
+            'ce31e24b01e1e524df96f1c2fdd054405f8d7376249a5110886fb4b658484789'
+            '08597e7152fcd306f41838ed3e37be9eaeed2b61c42e2117266a554fab4662f9'
+            '8a65b3f4ffa0092e9887669db0eae07941f023991ab58ea44da8fe8e2d511c6b'
+            'a31142970826733df8241ef35dc040ef98c679ab14d7c3e54d827099b3acecaa'
+            '8ccb82d61f80a663efe1f787a51b16b5a51e3314d6ac365b08639f52387b33f3'
+            '50a52312e5e1bdb7083780dd6b97fee7b67538081cbffdb6341d54a33b5a3ed6' # 0001-Make-vpower-more-dynamic-so-it-will-read-correctly-o.patch
+    )
+
+prepare() {
+  # Mark crates as already checksummed
+  for x in */.cargo_vcs_info.json vpower/Cargo.toml; do
+    echo '{"files":{}}' > "$(dirname "$x")"/.cargo-checksum.json
+  done
+  rm vpower/Cargo.lock
+
+  # Tell rust to use the pre-vendored crates
+  cd vpower
+  mkdir .cargo
+  cat << EOF >> .cargo/config.toml
+    [source.crates-io]
+    replace-with = "vendored-sources"
+
+    [source.vendored-sources]
+    directory = "${srcdir}"
+EOF
+
+  local src
+  for src in "${source[@]}"; do
+    src="${src%%::*}"
+    src="${src##*/}"
+    [[ $src = *.patch ]] || continue
+    echo "Applying patch $src..."
+    patch -Np1 < "../$src"
+  done
+}
+
+build() {
+  cd vpower
+  cargo build --offline --release
+}
+
+package() {
+  cd vpower
+  install -Dm 755 target/release/vpower -t "$pkgdir/usr/lib"
+  install -Dm 644 vpower.toml -t "$pkgdir/etc"
+  install -Dm 644 vpower.service -t "$pkgdir/usr/lib/systemd/system"
+  install -dm 755 "$pkgdir/usr/lib/systemd/system/graphical.target.wants"
+  ln -s ../vpower.service "$pkgdir/usr/lib/systemd/system/graphical.target.wants/vpower.service"
+}

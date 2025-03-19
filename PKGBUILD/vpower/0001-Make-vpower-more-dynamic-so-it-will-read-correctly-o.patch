@@ -1,0 +1,147 @@
+From 0ae829f1720b4c847a03d928164239fd6e21a748 Mon Sep 17 00:00:00 2001
+From: fewtarius <fewtarius@steamfork.org>
+Date: Wed, 19 Mar 2025 14:09:42 +0000
+Subject: [PATCH] Update vpower to work more dynamically to support a variety
+ of hardware.
+
+---
+ main.rs | 79 +++++++++++++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 65 insertions(+), 14 deletions(-)
+
+diff --git a/main.rs b/main.rs
+index df539fa..2c1db99 100644
+--- a/main.rs
++++ b/main.rs
+@@ -3,8 +3,10 @@ mod sensors;
+ use self::sensors::Sensors;
+ use serde::Deserialize;
+ use std::cmp::Ordering;
++use std::env;
+ use std::fs;
+ use std::io;
++use std::path::Path;
+ use std::process::Command;
+ use std::str::FromStr;
+ use std::thread;
+@@ -16,32 +18,73 @@ struct Config {
+     force_shutdown_timeout_secs: Option<f64>,
+ }
+ 
+-fn read_battery_string(var_name: &str) -> Option<String> {
+-    let path = format!("/sys/class/power_supply/BAT1/{var_name}");
++fn find_battery_handle() -> Option<String> {
++    let power_supply_path = "/sys/class/power_supply/";
++    match fs::read_dir(power_supply_path) {
++        Ok(entries) => {
++            for entry in entries.flatten() {
++                let file_name = entry.file_name();
++                let file_name_str = file_name.to_string_lossy();
++                println!("Found entry: {}", file_name_str);
++                if file_name_str.starts_with("BAT") {
++                    return Some(file_name_str.to_string());
++                }
++            }
++        }
++        Err(err) => eprintln!("Error reading directory {}: {}", power_supply_path, err),
++    }
++    None
++}
++
++fn should_log_errors() -> bool {
++    env::var("RUST_BACKTRACE").is_ok()
++}
++
++fn read_battery_string(battery_handle: &str, var_name: &str) -> Option<String> {
++    let path = format!("/sys/class/power_supply/{battery_handle}/{var_name}");
++    if !Path::new(&path).exists() {
++        return None;
++    }
+     match fs::read_to_string(&path) {
+         Err(err) => {
+-            eprintln!("read {path}: {err}");
++            if should_log_errors() {
++                eprintln!("read {path}: {err}");
++            }
+             None
+         }
+         Ok(string) => Some(string.trim().to_owned()),
+     }
+ }
+ 
+-fn read_battery_f64(var_name: &str) -> Option<f64> {
+-    let path = format!("/sys/class/power_supply/BAT1/{var_name}");
++fn read_battery_f64(battery_handle: &str, var_name: &str) -> Option<f64> {
++    let path = format!("/sys/class/power_supply/{battery_handle}/{var_name}");
++    if !Path::new(&path).exists() {
++        return None;
++    }
+     match fs::read_to_string(&path) {
+         Err(err) => {
+-            eprintln!("read {path}: {err}");
++            if err.kind() == std::io::ErrorKind::Other && err.raw_os_error() == Some(19) {
++                // Suppress "No such device" error (os error 19) - Ayaneo 2S and possibly others.
++                return None;
++            } else {
++                if should_log_errors() {
++                    eprintln!("read {path}: {err}");
++                }
++            }
+             None
+         }
+         Ok(string) => match f64::from_str(string.trim()) {
+             Err(err) => {
+-                eprintln!("read {path}: {err}");
++                if should_log_errors() {
++                    eprintln!("read {path}: {err}");
++                }
+                 None
+             }
+             Ok(val) => {
+                 if !val.is_finite() {
+-                    eprintln!("read {path}: {val} is not finite");
++                    if should_log_errors() {
++                        eprintln!("read {path}: {val} is not finite");
++                    }
+                     None
+                 } else {
+                     Some(val)
+@@ -113,6 +156,9 @@ fn main() {
+     // Initialize libsensors.
+     let sensors = Sensors::new();
+ 
++    // Find battery handle.
++    let battery_handle = find_battery_handle().expect("Failed to find battery handle");
++
+     // Keep for heuristics.
+     let mut prev_ac_status: Option<&str> = None;
+     let mut prev_battery_percent: Option<f64> = None;
+@@ -123,15 +169,20 @@ fn main() {
+     // Every second:
+     loop {
+         // Read battery variables.
+-        let charge_full = read_battery_f64("charge_full");
+-        let charge_now = read_battery_f64("charge_now");
+-        let current_now = read_battery_f64("current_now");
++        let charge_full = read_battery_f64(&battery_handle, "charge_full")
++            .or_else(|| read_battery_f64(&battery_handle, "energy_full"));
++        let charge_now = read_battery_f64(&battery_handle, "charge_now")
++            .or_else(|| read_battery_f64(&battery_handle, "energy_now"));
++        let current_now = read_battery_f64(&battery_handle, "current_now")
++            .or_else(|| read_battery_f64(&battery_handle, "power_now"));
++        let voltage_min_design = read_battery_f64(&battery_handle, "voltage_min_design")
++            .or_else(|| read_battery_f64(&battery_handle, "voltage_now"));
++        let voltage_now = read_battery_f64(&battery_handle, "voltage_now");
++        let status = read_battery_string(&battery_handle, "status");
++
+         let pdam = sensors.pdam();
+         let pdcs = sensors.pdcs();
+         let pdvl = sensors.pdvl();
+-        let status = read_battery_string("status");
+-        let voltage_min_design = read_battery_f64("voltage_min_design");
+-        let voltage_now = read_battery_f64("voltage_now");
+ 
+         // Derive battery variables.
+         let charge_shutdown = charge_full.map(|charge_full| {
+-- 
+2.47.1
+

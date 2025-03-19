@@ -1070,7 +1070,7 @@ export STEAMOS_PKGS="7zip
                     vlc
                     vmaf
                     volume_key
-                    vpower
+                    steamfork/vpower
                     vulkan-headers
                     vulkan-icd-loader
                     steamfork/vulkan-radeon
