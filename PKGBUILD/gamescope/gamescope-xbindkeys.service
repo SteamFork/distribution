@@ -1,0 +1,10 @@
+[Unit]
+Description=Xbindkeys for Gamescope session
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/xbindkeys -n -f /etc/xbindkeysrc
+EnvironmentFile=%t/gamescope-environment
+Slice=session.slice

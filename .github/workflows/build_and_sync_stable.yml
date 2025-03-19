@@ -17,7 +17,7 @@ on:
 
 jobs:
   trigger_build_and_sync:
-    runs-on: 3.7
+    runs-on: 3.6
     if: contains(github.ref, 'refs/heads/3.6')
 
     steps:
