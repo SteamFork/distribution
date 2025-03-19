@@ -1,0 +1,18 @@
+[Unit]
+Description=Steam Launcher
+After=graphical-session.target
+PartOf=graphical-session.target
+Wants=steam-short-session-tracker.service
+
+[Service]
+ExecStart=/usr/lib/steamos/steam-launcher
+
+# To close properly we need to kill the child of the steam wrapper, as the wrapper itself does not forward signals
+ExecStop=/bin/bash -c 'kill -TERM $(pgrep -P $MAINPID || echo $MAINPID)'
+# Disable the term signal sent from systemd, as we we handle it manually above
+# But still want systemd to kill the entire cgroup on timeout
+KillSignal=SIGCONT
+KillMode=mixed
+
+Type=exec
+EnvironmentFile=%t/gamescope-environment

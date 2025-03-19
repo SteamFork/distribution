@@ -1,5 +1,7 @@
 #!/bin/sh
 
+systemctl --user reset-failed
+
 # SDDM sets this to wayland but apps using Gamescope must use x11
 export XDG_SESSION_TYPE=x11
 
@@ -16,8 +18,16 @@ systemctl --user set-environment XDG_DESKTOP_PORTAL_DIR=""
 systemctl --user unset-environment DISPLAY XAUTHORITY
 
 # If this shell script is killed then stop gamescope-session
-trap 'systemctl --user stop gamescope-session.service' HUP INT TERM
+trap 'systemctl --user stop gamescope-session.target' HUP INT TERM
 
 # Start gamescope-session and wait
-systemctl --user --wait start gamescope-session.service &
+systemctl --user --wait start gamescope-session.target &
 wait
+logger Gamescope Session Ended - Performing Final Cleanup
+
+# The 'wait' above blocks until gamescope-session.target stops
+# We want to wait until *everything* has finished. We know systemd will have
+# queued a stop job on graphical-session-pre aleady
+# by also queuing up a job we can block until that completes
+systemctl --user stop graphical-session-pre.target
+logger Gamescope Session Ended - Cleanup Complete

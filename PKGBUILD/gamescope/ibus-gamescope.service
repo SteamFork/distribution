@@ -1,0 +1,11 @@
+[Unit]
+Description=Wrapper for Ibus
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=dbus
+ExecStart=/usr/bin/ibus-daemon -r --panel=disable --emoji-extension=disable
+BusName=org.freedesktop.IBus
+EnvironmentFile=%t/gamescope-environment
+Slice=session.slice
