@@ -1173,6 +1173,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   steamfork/steam-powerbuttond
                   steamfork-customizations
 		  steamfork-theme
+		  steamfork-sddm
                   steamfork-device-support
                   steamfork-keyring
                   vlc
