@@ -1,0 +1,17 @@
+[Unit]
+Description=Gamescope Session
+Requires=graphical-session.target
+BindsTo=graphical-session.target
+After=graphical-session.target
+PropagatesStopTo=graphical-session.target
+
+Requires=gamescope-session.service
+BindsTo=gamescope-session.service
+
+Upholds=steam-launcher.service
+
+Wants=ibus-gamescope.service
+Wants=steam-notif-daemon.service
+Wants=gamescope-xbindkeys.service
+Wants=galileo-mura-setup.service
+Wants=gamescope-mangoapp.service

@@ -1,0 +1,10 @@
+[Unit]
+Description=mangoapp
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/mangoapp
+Restart=always
+EnvironmentFile=%t/gamescope-environment
