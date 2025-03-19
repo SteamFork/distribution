@@ -3,15 +3,14 @@
 pkgname=gamescope
 _srctag=3.16.2
 pkgver=${_srctag//-/.}.SteamFork
-pkgrel=7
+pkgrel=8
 pkgdesc="gaming shell based on Xwayland, powered by Vulkan and DRM"
 arch=(x86_64)
 url="https://github.com/ValveSoftware/gamescope"
 license=('MIT')
 depends=('xorg-xwayland' 'libavif' 'aom' 'rav1e' 'libxres' 'xcb-util-errors' 'freerdp' 'xcb-util-wm' 'libxcomposite' 'pixman' 'libinput' 'seatd' 'pipewire' 'libxmu' 'libxcursor' 'libdecor' 'libei' 'luajit')
 makedepends=(openssh git meson cmake wayland-protocols ninja glslang glm vulkan-headers benchmark)
-source=("galileo-mura-setup.service"
-        "gamescope-session"
+source=("gamescope-session"
         "gamescope-wayland.desktop"
         "gamescope-mimeapps.list"
         "gamescope-session.service"
@@ -38,8 +37,7 @@ source=("galileo-mura-setup.service"
         0001-revert-299bc34.patch
         0002-fix-initializing-drm-formats.patch
 	)
-sha256sums=('941f5a16a495c9c4de0302819c0069749db6915345ac1e207a12544863391e4b'
-            'd7e8590f288a84a6577c5953ef9c29d103011c09f6236e772b08b25b6e2ee205' # gamescope-session
+sha256sums=('d7e8590f288a84a6577c5953ef9c29d103011c09f6236e772b08b25b6e2ee205' # gamescope-session
             'fe515fce8f151a6c03a89e043044bfddf8cd6ee89027d2cfbcf6f6706c78ca76'
             'e37ba6107f3a84cf47c2799b537a88583e6cb8951167a9c6a48fa1d85996206b'
             'e4add84152c3c0dfa53cf6bd2a1f15c2ce74d2312f7fa945b9476e91c8752544'
@@ -107,7 +105,6 @@ package() {
 	install -D -m 755 steam-http-loader "$pkgdir"/usr/bin/steam-http-loader
 
 	# systemd
-	install -D -m 644 galileo-mura-setup.service "$pkgdir"/usr/lib/systemd/user/galileo-mura-setup.service
 	install -D -m 644 gamescope-session.service "$pkgdir"/usr/lib/systemd/user/gamescope-session.service
 	install -D -m 644 gamescope-session.target "$pkgdir"/usr/lib/systemd/user/gamescope-session.target
 	install -D -m 644 gamescope-mangoapp.service "$pkgdir"/usr/lib/systemd/user/gamescope-mangoapp.service
