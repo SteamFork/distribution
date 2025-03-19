@@ -16,6 +16,7 @@ local|lib32-mesa
 local|gamescope
 local|gamescope-legacy
 local|ectool
+local|vpower
 local|steam-powerbuttond
 local|steamfork-customizations
 local|steamfork-device-support
