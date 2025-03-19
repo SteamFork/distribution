@@ -16,6 +16,7 @@ echo -e "$(echo ${DISTRO_NAME} | tr '[:upper:]' '[:lower:]')_$(echo ${OS_CODENAM
 export BUILDVER=$(cat /tmp/build_temp_ver)
 export IMAGEFILE="${BUILDVER}"
 export ENABLED_SERVICES=( sddm
+			accounts-daemon
                         bluetooth
                         systemd-timesyncd
                         systemd-resolved
@@ -40,6 +41,7 @@ export ENABLED_SERVICES=( sddm
                         var-log.mount
                         var-tmp.mount )
 export DISABLED_SERVICES=(jupiter-controller-update.service
+			  jupiter-fan-control.service
 			  wpa_supplicant.service
 		  	  iwd.service)
 export PLYMOUTH_THEME="steamfork"
@@ -1171,6 +1173,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
                   steamfork/steam-powerbuttond
                   steamfork-customizations
 		  steamfork-theme
+		  steamfork-sddm
                   steamfork-device-support
                   steamfork-keyring
                   vlc
