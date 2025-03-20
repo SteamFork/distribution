@@ -100,20 +100,20 @@ fi
 
 log_progress 1 "Creating partitions..."
 
-if [ "${USE_UNALLOCATED}" = true ]; then
-
+# Check if there are any partitions on the target device
+existing_partitions=$(lsblk -n -o NAME ${DEVICE} | grep -v "^$(basename ${DEVICE})$")
+if [ -n "$existing_partitions" ]; then
     # Safely unmount all partitions on the target device
-    run_command "umount $part 2>/dev/null" 2 "Unmounting all partitions on ${DEVICE}..."
     for part in $(lsblk -o NAME,PATH -ln | grep "^$(basename ${DEVICE})" | grep -v "^$(basename ${DEVICE})$" | awk '{print $2}'); do
-        run_command "umount $part 2>/dev/null" 3 "Unmounting $part..."
+        run_command "umount $part 2>/dev/null" 2 "Unmounting $part..."
         sleep 1
         # Try force unmount if regular unmount fails
         if mountpoint -q $part 2>/dev/null; then
-            run_command "umount -f $part 2>/dev/null" 4 "Force unmounting $part..."
+            run_command "umount -f $part 2>/dev/null" 3 "Force unmounting $part..."
             sleep 3
             # If still mounted, try lazy unmount as last resort
             if mountpoint -q $part 2>/dev/null; then
-                run_command "umount -l $part 2>/dev/null" 5 "Lazy unmounting $part..."
+                run_command "umount -l $part 2>/dev/null" 4 "Lazy unmounting $part..."
                 sleep 5
                 # If still mounted, print an error message
                 if mountpoint -q $part 2>/dev/null; then
@@ -123,76 +123,90 @@ if [ "${USE_UNALLOCATED}" = true ]; then
             fi
         fi
     done
+else
+    log_progress 2 "No partitions found on ${DEVICE}"
+fi
+
+if [ "${USE_UNALLOCATED}" = true ]; then
 
     # Clean up any existing SteamFork partitions to avoid conflicts
     # SteamFork cannot be installed multiple times on the same disk
-    run_command "sgdisk ${DEVICE} --delete=${PART_NUM}" 6 "Checking for existing SteamFork partitions..."
-    for part in $(lsblk -o NAME,LABEL,PARTLABEL -ln | grep sf_ | awk '{print $1}'); do
-        # Get the partition number to delete
-        if [[ $part =~ ([0-9]+)$ ]]; then
-            PART_NUM=${BASH_REMATCH[1]}
-            run_command "sgdisk ${DEVICE} --delete=${PART_NUM}" 7 "Deleting partition $PART_NUM from ${DEVICE}..."
-        fi
-    done
+    existing_partitions=$(lsblk -o NAME,LABEL,PARTLABEL -ln | grep sf_ | awk '{print $1}')
+    if [ -n "$existing_partitions" ]; then
+        for part in $existing_partitions; do
+            # Get the partition number to delete
+            if [[ $part =~ ([0-9]+)$ ]]; then
+                PART_NUM=${BASH_REMATCH[1]}
+                run_command "sgdisk ${DEVICE} --delete=${PART_NUM}" 5 "Deleting partition $PART_NUM from ${DEVICE}..."
+            fi
+        done
+    else
+        log_progress 5 "No existing SteamFork partitions found."
+    fi
 
     # Find the start of the largest free space and align to 1MB
     aligned_start=$(parted -s ${DEVICE} unit MB print free | 
         grep "Free Space" | sort -nk4 | tail -1 | awk '{print $1}' | tr -d 'MB' | 
         xargs -I{} echo "scale=0; ({} + 1) / 1 * 1" | bc)
-    log_progress 8 "Found largest free space of ${aligned_start}"
+    log_progress 6 "Found largest free space of ${aligned_start}"
 
-    log_progress 9 "Creating partitions in unallocated space..."
+    log_progress 7 "Creating partitions in unallocated space..."
 
-    run_command "parted -s -a optimal ${DEVICE} unit MB mkpart sf_efi fat32 ${aligned_start} $((aligned_start + 256))" 10 "Creating EFI partition"
-    run_command "parted -s -a optimal ${DEVICE} unit MB mkpart sf_root btrfs $((aligned_start + 256)) $((aligned_start + 256 + 20480))" 11 "Creating root partition"
-    run_command "parted -s -a optimal ${DEVICE} unit MB mkpart sf_var ext4 $((aligned_start + 256 + 20480)) $((aligned_start + 256 + 20480 + 1024))" 12 "Creating var partition"
-    run_command "parted -s -a optimal ${DEVICE} unit MB mkpart sf_home ext4 $((aligned_start + 256 + 20480 + 1024)) 100%" 13 "Creating home partition"
+    run_command "parted -s -a optimal ${DEVICE} unit MB mkpart sf_efi fat32 ${aligned_start} $((aligned_start + 256))" 8 "Creating EFI partition"
+    run_command "parted -s -a optimal ${DEVICE} unit MB mkpart sf_root btrfs $((aligned_start + 256)) $((aligned_start + 256 + 20480))" 9 "Creating root partition"
+    run_command "parted -s -a optimal ${DEVICE} unit MB mkpart sf_var ext4 $((aligned_start + 256 + 20480)) $((aligned_start + 256 + 20480 + 1024))" 10 "Creating var partition"
+    run_command "parted -s -a optimal ${DEVICE} unit MB mkpart sf_home ext4 $((aligned_start + 256 + 20480 + 1024)) 100%" 11 "Creating home partition"
 
     EFI_PART_NUM=$(parted -s ${DEVICE} print | grep sf_efi | awk '{print $1}')
-    run_command "parted -s ${DEVICE} set ${EFI_PART_NUM} boot on" 14 "Setting boot flag on EFI partition"
-    run_command "parted -s ${DEVICE} set ${EFI_PART_NUM} esp on" 15 "Setting ESP flag on EFI partition"
+    run_command "parted -s ${DEVICE} set ${EFI_PART_NUM} boot on" 12 "Setting boot flag on EFI partition"
+    run_command "parted -s ${DEVICE} set ${EFI_PART_NUM} esp on" 13 "Setting ESP flag on EFI partition"
     
-    run_command "sync && partprobe ${DEVICE}" 16 "Syncing and probing device"
+    run_command "sync && partprobe ${DEVICE}" 14 "Syncing and probing device"
 
     efi_partition=$(lsblk -o NAME,LABEL,PARTLABEL -ln | grep sf_efi | awk '{print $1}')
     root_partition=$(lsblk -o NAME,LABEL,PARTLABEL -ln | grep sf_root | awk '{print $1}')
     var_partition=$(lsblk -o NAME,LABEL,PARTLABEL -ln | grep sf_var | awk '{print $1}')
     home_partition=$(lsblk -o NAME,LABEL,PARTLABEL -ln | grep sf_home | awk '{print $1}')
 
-    log_progress 17 "Formatting partitions..."
-    run_command "mkfs -t vfat /dev/${efi_partition}" 18 "Formatting EFI partition"
-    run_command "fatlabel /dev/${efi_partition} sf_efi" 19 "Labeling EFI partition"
-    run_command "mkfs -t btrfs -f /dev/${root_partition}" 20 "Formatting root partition"
-    run_command "btrfs filesystem label /dev/${root_partition} sf_root" 21 "Labeling root partition"
-    run_command "mkfs.ext4 -F /dev/${var_partition}" 22 "Formatting var partition"
-    run_command "e2label /dev/${var_partition} sf_var" 23 "Labeling var partition"
-    run_command "mkfs.ext4 -F /dev/${home_partition}" 24 "Formatting home partition"
-    run_command "e2label /dev/${home_partition} sf_home" 25 "Labeling home partition"
+    log_progress 15 "Formatting partitions..."
+    run_command "mkfs -t vfat /dev/${efi_partition}" 16 "Formatting EFI partition"
+    run_command "fatlabel /dev/${efi_partition} sf_efi" 17 "Labeling EFI partition"
+    run_command "mkfs -t btrfs -f /dev/${root_partition}" 18 "Formatting root partition"
+    run_command "btrfs filesystem label /dev/${root_partition} sf_root" 19 "Labeling root partition"
+    run_command "mkfs.ext4 -F /dev/${var_partition}" 20 "Formatting var partition"
+    run_command "e2label /dev/${var_partition} sf_var" 21 "Labeling var partition"
+    run_command "mkfs.ext4 -F /dev/${home_partition}" 22 "Formatting home partition"
+    run_command "e2label /dev/${home_partition} sf_home" 23 "Labeling home partition"
 else
     # Full disk installation
-    run_command "sfdisk --delete ${DEVICE}" 26 "Deleting existing partitions"
-    run_command "wipefs -a ${DEVICE}" 27 "Wiping filesystem signatures"
-    run_command "yes | parted ${DEVICE} mklabel gpt" 28 "Creating GPT partition table"
-    run_command "parted -a optimal ${DEVICE} mkpart primary fat32 2M 256M" 29 "Creating EFI partition"
-    run_command "parted ${DEVICE} set 1 boot on" 30 "Setting boot flag on EFI partition"
-    run_command "parted ${DEVICE} set 1 esp on" 31 "Setting ESP flag on EFI partition"
-    run_command "parted -a optimal ${DEVICE} mkpart primary btrfs 256M 20G" 32 "Creating root partition"
-    run_command "parted -a optimal ${DEVICE} mkpart primary ext4 20G 21G" 33 "Creating var partition"
-    run_command "parted -a optimal ${DEVICE} mkpart primary ext4 21G 100%" 34 "Creating home partition"
+    existing_partitions=$(lsblk -n -o NAME ${DEVICE} | grep -v "^$(basename ${DEVICE})$")
+    if [ -n "$existing_partitions" ]; then
+        run_command "sfdisk --delete ${DEVICE}" 5 "Deleting existing partitions"
+    else
+        log_progress 5 "No existing partitions found on ${DEVICE}"
+    fi
+    run_command "wipefs -a ${DEVICE}" 6 "Wiping filesystem signatures"
+    run_command "yes | parted ${DEVICE} mklabel gpt" 7 "Creating GPT partition table"
+    run_command "parted -a optimal ${DEVICE} mkpart primary fat32 2M 256M" 8 "Creating EFI partition"
+    run_command "parted ${DEVICE} set 1 boot on" 9 "Setting boot flag on EFI partition"
+    run_command "parted ${DEVICE} set 1 esp on" 10 "Setting ESP flag on EFI partition"
+    run_command "parted -a optimal ${DEVICE} mkpart primary btrfs 256M 20G" 11 "Creating root partition"
+    run_command "parted -a optimal ${DEVICE} mkpart primary ext4 20G 21G" 12 "Creating var partition"
+    run_command "parted -a optimal ${DEVICE} mkpart primary ext4 21G 100%" 13 "Creating home partition"
     root_partition="${INSTALLDEVICE}2"
     var_partition="${INSTALLDEVICE}3"
     home_partition="${INSTALLDEVICE}4"
-    run_command "mkfs -t vfat ${INSTALLDEVICE}1" 35 "Formatting EFI partition"
-    run_command "fatlabel ${INSTALLDEVICE}1 sf_efi" 36 "Labeling EFI partition"
-    run_command "mkfs -t btrfs -f ${root_partition}" 37 "Formatting root partition"
-    run_command "btrfs filesystem label ${root_partition} sf_root" 38 "Labeling root partition"
-    run_command "mkfs.ext4 -F ${var_partition}" 39 "Formatting var partition"
-    run_command "e2label ${var_partition} sf_var" 40 "Labeling var partition"
-    run_command "mkfs.ext4 -F ${home_partition}" 41 "Formatting home partition"
-    run_command "e2label ${home_partition} sf_home" 42 "Labeling home partition"
+    run_command "mkfs -t vfat ${INSTALLDEVICE}1" 14 "Formatting EFI partition"
+    run_command "fatlabel ${INSTALLDEVICE}1 sf_efi" 15 "Labeling EFI partition"
+    run_command "mkfs -t btrfs -f ${root_partition}" 16 "Formatting root partition"
+    run_command "btrfs filesystem label ${root_partition} sf_root" 17 "Labeling root partition"
+    run_command "mkfs.ext4 -F ${var_partition}" 18 "Formatting var partition"
+    run_command "e2label ${var_partition} sf_var" 19 "Labeling var partition"
+    run_command "mkfs.ext4 -F ${home_partition}" 20 "Formatting home partition"
+    run_command "e2label ${home_partition} sf_home" 21 "Labeling home partition"
 fi
 
-run_command "sync && partprobe ${DEVICE}" 43 "Syncing and probing device"
-log_progress 50 "Starting to bootstrap installation..."
-run_command "steamfork-bootstrap --username \"${OSUSER}\" --password \"${OSPASS}\" --root_password \"${ROOTPASS}\"" 50 "Bootstrapping installation"
+run_command "sync && partprobe ${DEVICE}" 24 "Syncing and probing device"
+log_progress 25 "Starting to bootstrap installation..."
+run_command "steamfork-bootstrap --username \"${OSUSER}\" --password \"${OSPASS}\" --root_password \"${ROOTPASS}\"" 25 "Bootstrapping installation"
 sync

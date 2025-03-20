@@ -73,74 +73,74 @@ if [[ -n "$(blkid | grep sf)" ]]; then
     SUBVOL=$(basename ${SUBVOL})
     SUBVOLLOCATION=/tmp/subvol
 
-    log_progress 51 "Bootstrapping SteamFork image $SUBVOL on $(blkid -L sf_root)..."
+    log_progress 26 "Bootstrapping SteamFork image $SUBVOL on $(blkid -L sf_root)..."
 
     mkdir -p ${ROOTLOCATION} ${HOMELOCATION_TEMP}
 
-    run_command "mount -L sf_root -o compress-force=zstd:1,discard,noatime,nodiratime ${ROOTLOCATION}" 52 "Mounting root filesystem"
-    run_command "mount -L sf_home ${HOMELOCATION_TEMP}" 53 "Mounting home filesystem"
+    run_command "mount -L sf_root -o compress-force=zstd:1,discard,noatime,nodiratime ${ROOTLOCATION}" 28 "Mounting root filesystem"
+    run_command "mount -L sf_home ${HOMELOCATION_TEMP}" 30 "Mounting home filesystem"
 
     # Start build deploying here
     mkdir -p ${SNAPSHOT_FUTURELOC} ${INSTALLLOCATION} ${HOMELOCATION_TEMP} ${SNAPSHOT_FUTURELOC} ${SUBVOLLOCATION}
     if [[ "${IS_RESET}" == "1" ]]; then
-        run_command "btrfs subvolume delete ${INSTALLLOCATION}/${SUBVOL}" 54 "Removing current copy of subvolume"
+        run_command "btrfs subvolume delete ${INSTALLLOCATION}/${SUBVOL}" 32 "Removing current copy of subvolume"
     fi
 
     if [[ ! -d "${INSTALLLOCATION}/${SUBVOL}" ]]; then
-        run_command "cp /etc/install.image/${SUBVOL}.img.zst ${SNAPSHOT_FUTURELOC}/" 55 "Copying rootfs image to home partition"
-        run_command "zstd -df ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst" 56 "Decompressing rootfs"
-        run_command "rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst" 57 "Removing compressed rootfs image"
-        run_command "btrfs receive ${INSTALLLOCATION} < ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img" 58 "Installing rootfs image to partition"
-        run_command "rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img" 59 "Removing rootfs image"
+        run_command "cp /etc/install.image/${SUBVOL}.img.zst ${SNAPSHOT_FUTURELOC}/" 34 "Copying rootfs image to home partition"
+        run_command "zstd -df ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst" 36 "Decompressing rootfs"
+        run_command "rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img.zst" 38 "Removing compressed rootfs image"
+        run_command "btrfs receive ${INSTALLLOCATION} < ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img" 40 "Installing rootfs image to partition"
+        run_command "rm -rf ${SNAPSHOT_FUTURELOC}/${SUBVOL}.img" 42 "Removing rootfs image"
     else
-        log_progress 60 "Installer subvolume already exists on container, skipping bootstrap..."
+        log_progress 44 "Installer subvolume already exists on container, skipping bootstrap..."
     fi
-    run_command "mount -L sf_root -o subvol=rootfs/${SUBVOL},compress-force=zstd:1,discard,noatime,nodiratime ${SUBVOLLOCATION}" 61 "Mounting subvolume"
-    run_command "mount -L sf_efi ${SUBVOLLOCATION}/boot/efi" 62 "Mounting EFI partition"
-    run_command "mount -L sf_home ${SUBVOLLOCATION}/home" 63 "Mounting home partition"
-    run_command "mount -L sf_var ${SUBVOLLOCATION}/var" 64 "Mounting var partition"
+    run_command "mount -L sf_root -o subvol=rootfs/${SUBVOL},compress-force=zstd:1,discard,noatime,nodiratime ${SUBVOLLOCATION}" 46 "Mounting subvolume"
+    run_command "mount -L sf_efi ${SUBVOLLOCATION}/boot/efi" 48 "Mounting EFI partition"
+    run_command "mount -L sf_home ${SUBVOLLOCATION}/home" 50 "Mounting home partition"
+    run_command "mount -L sf_var ${SUBVOLLOCATION}/var" 52 "Mounting var partition"
 
-    log_progress 65 "Installing bootloader..."
+    log_progress 54 "Installing bootloader..."
 
-    run_command "arch-chroot ${SUBVOLLOCATION} steamos-readonly disable" 66 "Disabling SteamOS read-only mode"
-    run_command "arch-chroot ${SUBVOLLOCATION} mkinitcpio -P" 67 "Generating initramfs"
-    run_command "arch-chroot ${SUBVOLLOCATION} steamfork-grub-update" 68 "Updating GRUB"
+    run_command "arch-chroot ${SUBVOLLOCATION} steamos-readonly disable" 56 "Disabling SteamOS read-only mode"
+    run_command "arch-chroot ${SUBVOLLOCATION} mkinitcpio -P" 58 "Generating initramfs"
+    run_command "arch-chroot ${SUBVOLLOCATION} steamfork-grub-update" 60 "Updating GRUB"
 
-    log_progress 69 "Configuring swap..."
-    run_command "arch-chroot ${SUBVOLLOCATION} steamfork-enable-swap" 70 "Enabling swap"
-    run_command "arch-chroot ${SUBVOLLOCATION} swapoff -a" 71 "Disabling swap"
+    log_progress 62 "Configuring swap..."
+    run_command "arch-chroot ${SUBVOLLOCATION} steamfork-enable-swap" 64 "Enabling swap"
+    run_command "arch-chroot ${SUBVOLLOCATION} swapoff -a" 66 "Disabling swap"
 
     mkdir -p ${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/var/overlays/etc/upper
-    run_command "mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc" 72 "Mounting overlay filesystem"
-    run_command "echo -e \"${ROOTPASS}\n${ROOTPASS}\" | arch-chroot ${SUBVOLLOCATION} passwd root" 73 "Setting root password"
+    run_command "mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc" 68 "Mounting overlay filesystem"
+    run_command "echo -e \"${ROOTPASS}\n${ROOTPASS}\" | arch-chroot ${SUBVOLLOCATION} passwd root" 70 "Setting root password"
 
     if [[ ! -z "${OSUSER}" ]]; then
-        log_progress 74 "Creating user ${OSUSER}..."
+        log_progress 72 "Creating user ${OSUSER}..."
         for file in /etc/group /etc/shadow /etc/passwd
         do
-            run_command "arch-chroot ${SUBVOLLOCATION} sed -i '/^'${OSUSER}':/d' ${file}" 75 "Removing existing user ${OSUSER} from ${file}"
+            run_command "arch-chroot ${SUBVOLLOCATION} sed -i '/^'${OSUSER}':/d' ${file}" 74 "Removing existing user ${OSUSER} from ${file}"
         done
         run_command "arch-chroot ${SUBVOLLOCATION} rm -rf /home/${OSUSER}" 76 "Removing existing home directory for ${OSUSER}"
-        run_command "arch-chroot ${SUBVOLLOCATION} groupadd -g 1000 ${OSUSER}" 77 "Creating group for ${OSUSER}"
-        run_command "arch-chroot ${SUBVOLLOCATION} useradd --create-home -d /home/${OSUSER} -c \"Steam Deck User\" -s /bin/bash -u 1000 -g 1000 ${OSUSER}" 78 "Creating user ${OSUSER}"
-        run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG wheel ${OSUSER}" 79 "Adding ${OSUSER} to wheel group"
-        run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG video ${OSUSER}" 80 "Adding ${OSUSER} to video group"
-        run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG steamos-log-submitter ${OSUSER}" 81 "Adding ${OSUSER} to steamos-log-submitter group"
-        run_command "arch-chroot ${SUBVOLLOCATION} cp -f /usr/share/icons/steam/${OSUSER}-face.icon /home/${OSUSER}/.face.icon" 82 "Copying user icon for ${OSUSER}"
-        run_command "arch-chroot ${SUBVOLLOCATION} chown ${OSUSER}:${OSUSER} /home/${OSUSER}/.face.icon" 83 "Setting ownership of user icon for ${OSUSER}"
-        run_command "echo -e \"${OSPASS}\n${OSPASS}\" | arch-chroot ${SUBVOLLOCATION} passwd ${OSUSER}" 84 "Setting password for ${OSUSER}"
+        run_command "arch-chroot ${SUBVOLLOCATION} groupadd -g 1000 ${OSUSER}" 78 "Creating group for ${OSUSER}"
+        run_command "arch-chroot ${SUBVOLLOCATION} useradd --create-home -d /home/${OSUSER} -c \"Steam Deck User\" -s /bin/bash -u 1000 -g 1000 ${OSUSER}" 80 "Creating user ${OSUSER}"
+        run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG wheel ${OSUSER}" 82 "Adding ${OSUSER} to wheel group"
+        run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG video ${OSUSER}" 84 "Adding ${OSUSER} to video group"
+        run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG steamos-log-submitter ${OSUSER}" 86 "Adding ${OSUSER} to steamos-log-submitter group"
+        run_command "arch-chroot ${SUBVOLLOCATION} cp -f /usr/share/icons/steam/${OSUSER}-face.icon /home/${OSUSER}/.face.icon" 88 "Copying user icon for ${OSUSER}"
+        run_command "arch-chroot ${SUBVOLLOCATION} chown ${OSUSER}:${OSUSER} /home/${OSUSER}/.face.icon" 90 "Setting ownership of user icon for ${OSUSER}"
+        run_command "echo -e \"${OSPASS}\n${OSPASS}\" | arch-chroot ${SUBVOLLOCATION} passwd ${OSUSER}" 92 "Setting password for ${OSUSER}"
     elif [[ "${IS_RESET}" == "1" ]]; then
-        run_command "mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc" 86 "Mounting overlay filesystem for reset"
-        log_progress 87 "Restoring this installation to system defaults..."
+        run_command "mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc" 94 "Mounting overlay filesystem for reset"
+        log_progress 96 "Restoring this installation to system defaults..."
         RESIDUE=$(find ${SUBVOLLOCATION}/var/overlays/etc/upper | sed 1d | grep -v group | grep -v passwd | grep -v shadow | grep -v sddm.conf.d | grep -v .pwd.lock)
         if [[ ! -z "${RESIDUE}" ]]; then
-            run_command "rm -rf ${RESIDUE}" 88 "Removing residue in /etc"
+            run_command "rm -rf ${RESIDUE}" 98 "Removing residue in /etc"
         fi
-        run_command "rm -rf ${SUBVOLLOCATION}/home/{*,.*}" 89 "Removing user folder residue"
+        run_command "rm -rf ${SUBVOLLOCATION}/home/{*,.*}" 99 "Removing user folder residue"
         USER=$(cat ${SUBVOLLOCATION}/var/overlays/etc/upper/passwd | grep /home/ | cut -d ':' -f 1)
-        run_command "arch-chroot ${SUBVOLLOCATION} mkhomedir_helper ${USER}" 90 "Creating home directory for ${USER}"
+        run_command "arch-chroot ${SUBVOLLOCATION} mkhomedir_helper ${USER}" 100 "Creating home directory for ${USER}"
     else
-        log_progress 91 "No user added, assuming upgrade..."
+        log_progress 65 "No user added, assuming upgrade..."
     fi
 
     REALEXITCODE="$?"
@@ -151,12 +151,13 @@ if [[ -n "$(blkid | grep sf)" ]]; then
     fi
 
     sync
-    log_progress 99 "Finished, unmounting filesystems..."
+    log_progress 97 "Finished, unmounting filesystems..."
     for drive in $(echo "sf_home sf_var sf_efi sf_root")
     do
-        run_command "umount -f $(blkid -L $drive)" 100 "Unmounting $drive"
+        run_command "umount -f $(blkid -L $drive)" 98 "Unmounting $drive"
     done
-    run_command "umount -l ${SUBVOLLOCATION} && umount -l ${HOMELOCATION_TEMP}" 100 "Installation complete."
+    run_command "umount -l ${SUBVOLLOCATION} && umount -l ${HOMELOCATION_TEMP}" 99 "Unmounting subvolume and home location"
+    log_progress 100 "Installation complete."
     exit 0
 else
     echo "Partition layout not detected. Aborting bootstrap"
