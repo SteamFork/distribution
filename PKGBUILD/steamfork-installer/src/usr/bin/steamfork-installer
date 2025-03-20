@@ -14,10 +14,9 @@ Options:
   --password         ...  The password to configure for the non-root user account.
   --root_password    ...  The password to configure for the root account.
   --use_unallocated  ...  Use unallocated space on target disk instead of the full disk. (25GB minimum required)
-  --mode             ...  Specify the default boot mode (gamescope or desktop).
 
 Ex.
-  steamfork-installer --drive sda --username deck --password deck --root_password deck --mode gamescope
+  steamfork-installer --drive sda --username deck --password deck --root_password deck
 
 EOF
 }
@@ -53,11 +52,6 @@ while [[ $# -gt 0 ]]; do
         --use_unallocated)
         USE_UNALLOCATED=true
         shift # past argument
-        ;;
-        --mode)
-        MODE="$2"
-        shift # past argument
-        shift # past value
         ;;
         *)    # unknown option
         echo -e "Unknown option: $1\n"
@@ -184,5 +178,5 @@ fi
 
 sync && partprobe ${DEVICE}
 echo "Starting to bootstrap installation..."
-steamfork-bootstrap --username "${OSUSER}" --password "${OSPASS}" --root_password "${ROOTPASS}" --mode "${MODE}"
+steamfork-bootstrap --username "${OSUSER}" --password "${OSPASS}" --root_password "${ROOTPASS}"
 sync

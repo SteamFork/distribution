@@ -37,11 +37,6 @@ case $key in
     shift # past argument
     shift # past value
     ;;
-    --mode)
-    MODE="$2"
-    shift # past argument
-    shift # past value
-    ;;
     *)    # unknown option
     echo "Unknown option: $1"
     exit 1
@@ -124,11 +119,6 @@ if [[ -n "$(blkid | grep sf)" ]]; then
 
         ### Remove the local build repo
         arch-chroot ${SUBVOLLOCATION} sed -ie '/^\[repo\]/,+3d' /etc/pacman.conf
-
-        if [[ "${MODE}" == "desktop" ]]; then
-            echo -e "\nSwitching to desktop mode..."
-            arch-chroot ${SUBVOLLOCATION} /usr/bin/bash -c 'IN_CHROOT=true /usr/bin/steamos-session-select desktop'
-        fi
 
     elif [[ "${IS_RESET}" == "1" ]]; then
         mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc
