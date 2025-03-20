@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import sys
-from PyQt6.QtWidgets import QVBoxLayout, QApplication, QMainWindow, QSizePolicy, QStackedWidget, QWidget, QLabel, QPushButton, QComboBox, QLineEdit, QTextEdit, QHBoxLayout, QMessageBox, QSpacerItem, QTabWidget, QTabBar, QGridLayout, QFormLayout, QGroupBox
-from PyQt6.QtCore import Qt, QProcess
+from PyQt6.QtWidgets import QVBoxLayout, QApplication, QMainWindow, QSizePolicy, QStackedWidget, QWidget, QLabel, QPushButton, QComboBox, QLineEdit, QTextEdit, QHBoxLayout, QMessageBox, QSpacerItem, QTabWidget, QTabBar, QGridLayout, QFormLayout, QGroupBox, QProgressBar
+from PyQt6.QtCore import Qt, QProcess, QCoreApplication
 from PyQt6.QtGui import QFont, QPixmap, QIcon, QGuiApplication
 import subprocess
 import time
@@ -33,7 +33,7 @@ class WelcomePage(QWidget):
         welcome_text.setReadOnly(True)
         welcome_text.setHtml(f"""
             <h1>Welcome to the {DistroName} Installer</h1>
-            <p>This Setup Wizard will install <b>SteamFork</b> on your computer. If you have any problems during installation, please review our <a href="https://wiki.steamfork.org">Wiki</a> for assistance, or contact us on <a href="https://discord.gg/AQ5rtQstCf">Discord</a>.</p>
+            <p>This Setup Wizard will install <b>{DistroName}</b> on your computer. If you have any problems during installation, please review our <a href="https://wiki.steamfork.org">Wiki</a> for assistance, or contact us on <a href="https://discord.gg/AQ5rtQstCf">Discord</a>.</p>
             <p>After installation, your system will boot directly into Steam, providing you with an optimized gaming experience.</p>
             <p>Click "Next" to proceed with the installation.</p>
         """)
@@ -185,25 +185,38 @@ class PreparationPage(QWidget):
 class InstallationPage(QWidget):
     def __init__(self, parent=None):
         super(InstallationPage, self).__init__(parent)
-        installation_layout = QVBoxLayout(self)
+        installation_layout = QGridLayout(self)
         
-        # Add a terminal-like text area for installation logs
-        installation_text = QTextEdit(self)
-        installation_text.setReadOnly(True)
-        monospace_font = QFont("Monospace")
-        monospace_font.setStyleHint(QFont.StyleHint.TypeWriter)
-        installation_text.setFont(monospace_font)
-        installation_layout.addWidget(installation_text)
+        # Create a vertical layout to stack the installation title, progress bar, and label closely
+        progress_layout = QVBoxLayout()
+        
+        # Add a label for the installation title
+        self.installation_title = QLabel(f"Installing {DistroName}...", self)
+        self.installation_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        progress_layout.addWidget(self.installation_title, alignment=Qt.AlignmentFlag.AlignCenter)
+        
+        # Add a progress bar for installation progress
+        self.progress_bar = QProgressBar(self)
+        self.progress_bar.setRange(0, 100)
+        self.progress_bar.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.progress_bar.setMinimumWidth(400)  # Ensure the progress bar is wide enough
+        progress_layout.addWidget(self.progress_bar, alignment=Qt.AlignmentFlag.AlignCenter)
+        
+        # Add a label for the progress description
+        self.progress_label = QLabel("Starting installation...", self)
+        self.progress_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        progress_layout.addWidget(self.progress_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        
+        # Add the vertical layout to the grid layout
+        installation_layout.addLayout(progress_layout, 0, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
         
         # Add a next button
-        next_button = QPushButton("Next", self)
-        next_button.clicked.connect(self.proceed_to_finish)
-        next_button.setEnabled(False)
-        installation_layout.addWidget(next_button)
+        self.next_button = QPushButton("Next", self)
+        self.next_button.clicked.connect(self.proceed_to_finish)
+        self.next_button.setEnabled(False)
+        installation_layout.addWidget(self.next_button, 1, 1, alignment=Qt.AlignmentFlag.AlignRight)
         
         self.process = None
-        self.installation_text = installation_text
-        self.next_button = next_button
         self.exit_code = 0  # Default exit code
 
         self.setLayout(installation_layout)
@@ -213,10 +226,9 @@ class InstallationPage(QWidget):
         # Extract the device name from the selected drive string
         device_name = drive.split('(')[-1].strip(')')
 
-        self.log_to_terminal("Installation started...")
-        self.log_to_terminal(f"Selected Drive: {device_name}")
-        self.log_to_terminal(f"Username: {username}")
-        self.log_to_terminal("Installing...")
+        self.update_progress(0, "Starting installation...")
+        debug_print(f"Selected Drive: {device_name}")
+        debug_print(f"Username: {username}")
 
         command = f"steamfork-installer --drive \"{device_name}\" --username \"{username}\" --password \"{password}\" --root_password \"{root_password}\""
         if use_unallocated:
@@ -228,28 +240,39 @@ class InstallationPage(QWidget):
             self.process.setProgram("bash")
             self.process.setArguments(["-c", command])
             self.process.readyReadStandardOutput.connect(self.handle_stdout)
-            self.process.readyReadStandardError.connect(self.handle_stderr)
             self.process.finished.connect(self.on_process_finished)
             self.process.start()
-            self.log_to_terminal("Process started successfully")
             debug_print("Process started successfully")
 
         except Exception as e:
             debug_print(f"Error: {e}")
-            self.log_to_terminal(f"Error: {e}")
+            self.update_progress(100, f"Error: {e}")
             self.exit_code = 1
 
     def handle_stdout(self):
         data = self.process.readAllStandardOutput().data().decode()
-        self.log_to_terminal(data)
+        self.parse_progress(data)
 
-    def handle_stderr(self):
-        data = self.process.readAllStandardError().data().decode()
-        self.log_to_terminal(data)
+    def parse_progress(self, data):
+        debug_print(f"InstallationPage: parse_progress called with data: {data}")
+        # Parse the percentage and description from the data
+        if "%" in data:
+            try:
+                percentage, description = data.split("%:", 1)
+                percentage = int(percentage.strip())
+                description = description.strip()
+                self.update_progress(percentage, description)
+            except ValueError:
+                debug_print(f"Failed to parse progress data: {data}")
+
+    def update_progress(self, percentage, description):
+        debug_print(f"InstallationPage: update_progress called with percentage: {percentage}, description: {description}")
+        self.progress_bar.setValue(percentage)
+        self.progress_label.setText(description)
+        QCoreApplication.processEvents()  # Ensure the UI updates in real-time
 
     def on_process_finished(self, exit_code, exit_status):
         debug_print(f"Process finished with exit code {exit_code} and exit status {exit_status}")
-        self.log_to_terminal(f"Process finished with exit code {exit_code} and exit status {exit_status}")
 
         # Enable the next button after the process finishes
         self.next_button.setEnabled(True)
@@ -263,10 +286,6 @@ class InstallationPage(QWidget):
         parent.setCurrentIndex(parent.currentIndex() + 1)
         parent.setTabEnabled(parent.currentIndex(), True)
         parent.widget(parent.currentIndex()).update_finish_page(self.exit_code)
-
-    def log_to_terminal(self, message):
-        debug_print(f"InstallationPage: log_to_terminal called with message: {message}")
-        self.installation_text.append(message)
 
     def on_prev(self):
         debug_print("InstallationPage: on_prev called")
@@ -294,8 +313,8 @@ class FinishPage(QWidget):
             """
         else:
             message = f"""
-                <h1>We're sorry</h1>
-                <p>An error occurred during installation. Please try making your installation media again, and if you are still unable to install {DistroName} please review the <a href="https://wiki.steamfork.org">Wiki</a> or ask for help on <a href="https://discord.gg/AQ5rtQstCf">Discord</a>.</p>
+                <h1>We're Sorry!</h1>
+                <p>An error occurred during installation. Please try remaking your installation media, reboot, and try again.  If you are still unable to install {DistroName} please review the <a href="https://wiki.steamfork.org">Wiki</a> or ask for help on <a href="https://discord.gg/AQ5rtQstCf">Discord</a>.</p>
             """
 
         finish_text = QTextEdit(self)
