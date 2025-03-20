@@ -2,7 +2,7 @@
 
 pkgname=steamfork-installer
 pkgver=2025.03.20
-pkgrel=3
+pkgrel=4
 pkgdesc='Installation utility for SteamFork.'
 arch=('any')
 url='http://www.steamfork.org'
