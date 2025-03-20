@@ -323,10 +323,10 @@ do
 done
 
 echo "Enable nopasswd sudo (req by steam and other tools)"
-cat <<EOF > ${ROOT_WORKDIR}/etc/sudoers.d/999-wheel
+cat <<EOF > ${ROOT_WORKDIR}/etc/sudoers.d/zz_wheel
 %wheel ALL=(ALL) NOPASSWD:ALL
 EOF
-chmod 440 ${ROOT_WORKDIR}/etc/sudoers.d/999-wheel
+chmod 440 ${ROOT_WORKDIR}/etc/sudoers.d/zz_wheel
 
 echo "Fix runtime audio configuration."
   for AUDIO_SERVICE in pipewire wireplumber
