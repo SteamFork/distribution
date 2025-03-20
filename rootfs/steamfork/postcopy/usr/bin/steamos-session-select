@@ -10,9 +10,10 @@ CONF_FILE="/etc/sddm.conf.d/zz-steamos-autologin.conf"
 DEFAULT_SESSION="gamescope-wayland.desktop"
 
 SESSION="${1:-gamescope}"
+IN_CHROOT="${IN_CHROOT:-false}"
 
 # Become root
-if [[ $EUID != 0 ]]; then
+if [[ $EUID != 0 && $IN_CHROOT == false ]]; then
   pkexec "$(realpath $0)" "${SESSION}" --sentinel-created
   # Quit existing sessions
   if [[ "$2" != "--no-restart" ]]; then
@@ -22,7 +23,7 @@ if [[ $EUID != 0 ]]; then
   exit
 fi
 
-if [[ "$2" != "--sentinel-created" ]]; then
+if [[ "$2" != "--sentinel-created" && $IN_CHROOT == false ]]; then
   die "Running $0 as root is not allowed"
 fi
 
@@ -46,11 +47,11 @@ EOF
 }
 
 function autologin() {
-  if [ ! -f "${STEAMOS_CONF_FILE}" ]; then
+    if [ ! -f "${STEAMOS_CONF_FILE}" ]; then
     BOUNCE_SDDM=true
   fi
   create_steamos_conf "${DEFAULT_SESSION}"
-  local SESSION_LAUNCHER="$1"
+local SESSION_LAUNCHER="$1"
   cat <<EOF | tee "${CONF_FILE}" >/dev/null 2>&1
 [Autologin]
 Session=${SESSION_LAUNCHER}
@@ -79,10 +80,10 @@ function configure_rotation() {
     inverted)
       TOUCH_MATRIX="-1 0 1 0 -1 1 0 0 1"
       ;;
-  esac
-  if [ -n "${TOUCH_MATRIX}" ]; then
+      esac
+if [ -n "${TOUCH_MATRIX}" ]; then
     echo "Setting touchscreen rotation to ${ROTATION} (${TOUCH_MATRIX})"
-    cat <<EOF | sudo tee /etc/X11/xorg.conf.d/99-touchscreen_orientation.conf >/dev/null
+  cat <<EOF | sudo tee /etc/X11/xorg.conf.d/99-touchscreen_orientation.conf >/dev/null
 Section "InputClass"
   Identifier "Coordinate Transformation Matrix"
   MatchIsTouchscreen "on"
@@ -91,7 +92,7 @@ Section "InputClass"
   Option "CalibrationMatrix" "${TOUCH_MATRIX}"
 EndSection
 EOF
-  fi
+fi
 }
 
 case "${SESSION}" in
@@ -108,7 +109,7 @@ case "${SESSION}" in
     autologin "gamescope-wayland.desktop"
     ;;
   desktop)
-    cat <<EOF | sudo tee /etc/sddm.conf.d/001-rotation.conf >/dev/null 2>&1
+        cat <<EOF | sudo tee /etc/sddm.conf.d/001-rotation.conf >/dev/null 2>&1
 [XDisplay]
 DisplayCommand=/etc/X11/Xsession.d/999rotate-screen
 EOF
