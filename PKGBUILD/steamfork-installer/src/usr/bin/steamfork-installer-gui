@@ -64,11 +64,6 @@ class PreparationPage(QWidget):
         self.install_type.addItems(["Full Disk", "Use Unallocated Space (25GB minimum required)"])
         install_drive_layout.addRow("Installation Type:", self.install_type)
 
-        # Default boot mode selection
-        self.boot_mode_var = QComboBox(self)
-        self.boot_mode_var.addItems(["Game Mode", "Desktop Mode"])
-        install_drive_layout.addRow("Default Boot Mode:", self.boot_mode_var)
-
         self.drive_var = QComboBox(self)
         self.drive_var.addItem("")
         install_drive_layout.addRow("Select a drive for installation:", self.drive_var)
@@ -167,7 +162,6 @@ class PreparationPage(QWidget):
         root_password = self.root_password_var.text()
         drive = self.drive_var.currentText()
         use_unallocated = self.install_type.currentText().startswith("Use Unallocated")
-        boot_mode = self.boot_mode_var.currentText()
 
         if password and root_password and drive:
             warning_msg = f'Are you sure you want to continue with the installation?\n'
@@ -180,8 +174,8 @@ class PreparationPage(QWidget):
 
             if confirmation == QMessageBox.StandardButton.Yes:
                 debug_print("PreparationPage: User confirmed installation")
-                debug_print(f"Parameters: username={username}, password={password}, root_password={root_password}, drive={drive}, use_unallocated={use_unallocated}, boot_mode={boot_mode}")
-                self.next_callback(username, password, root_password, drive, use_unallocated, boot_mode)
+                debug_print(f"Parameters: username={username}, password={password}, root_password={root_password}, drive={drive}, use_unallocated={use_unallocated}")
+                self.next_callback(username, password, root_password, drive, use_unallocated)
             else:
                 debug_print("PreparationPage: User canceled installation")
         else:
@@ -214,7 +208,7 @@ class InstallationPage(QWidget):
 
         self.setLayout(installation_layout)
 
-    def on_install(self, username, password, root_password, drive, use_unallocated, boot_mode):
+    def on_install(self, username, password, root_password, drive, use_unallocated):
         debug_print("InstallationPage: on_install called")
         # Extract the device name from the selected drive string
         device_name = drive.split('(')[-1].strip(')')
@@ -224,8 +218,7 @@ class InstallationPage(QWidget):
         self.log_to_terminal(f"Username: {username}")
         self.log_to_terminal("Installing...")
 
-        mode = "gamescope" if boot_mode == "Game Mode" else "desktop"
-        command = f"steamfork-installer --drive \"{device_name}\" --username \"{username}\" --password \"{password}\" --root_password \"{root_password}\" --mode \"{mode}\""
+        command = f"steamfork-installer --drive \"{device_name}\" --username \"{username}\" --password \"{password}\" --root_password \"{root_password}\""
         if use_unallocated:
             command += " --use_unallocated"
         debug_print(f"Running command: {command}")
@@ -362,7 +355,7 @@ class InstallerApp(QMainWindow):
         title = f"{DistroName} Installer"
         self.setWindowTitle(title)
 
-    def on_next_page(self, username=None, password=None, root_password=None, drive=None, use_unallocated=None, boot_mode=None):
+    def on_next_page(self, username=None, password=None, root_password=None, drive=None, use_unallocated=None):
         current_page = self.tab_widget.currentIndex()
         debug_print(f"InstallerApp: Current page: {current_page}")
         if current_page < self.tab_widget.count() - 1:
@@ -374,8 +367,8 @@ class InstallerApp(QMainWindow):
             if isinstance(next_page, InstallationPage):
                 debug_print("InstallerApp: Matched InstallationPage")
                 debug_print("InstallerApp: Starting installation process...")
-                debug_print(f"Parameters: username={username}, password={password}, root_password={root_password}, drive={drive}, use_unallocated={use_unallocated}, boot_mode={boot_mode}")
-                next_page.on_install(username, password, root_password, drive, use_unallocated, boot_mode)
+                debug_print(f"Parameters: username={username}, password={password}, root_password={root_password}, drive={drive}, use_unallocated={use_unallocated}")
+                next_page.on_install(username, password, root_password, drive, use_unallocated)
             else:
                 debug_print(f"InstallerApp: Did not match InstallationPage, matched {type(next_page)}")
 
