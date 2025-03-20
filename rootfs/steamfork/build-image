@@ -273,14 +273,14 @@ if [[ -d "${SCRIPTPATH}/postcopy" ]]; then
     cp -r ${SCRIPTPATH}/postcopy/* ${ROOT_WORKDIR}
 fi
 
-if [[ -n "$PLYMOUTH_THEME" ]]; then
-    echo "Setting $PLYMOUTH_THEME theme for plymouth bootsplash..."
-    arch-chroot ${ROOT_WORKDIR} plymouth-set-default-theme -R $PLYMOUTH_THEME
+if [[ -n "${PLYMOUTH_THEME}" ]]; then
+    echo "Setting ${PLYMOUTH_THEME} theme for plymouth bootsplash..."
+    arch-chroot ${ROOT_WORKDIR} plymouth-set-default-theme -R ${PLYMOUTH_THEME}
 fi
 
-for binary in ${POSTCOPY_BIN_EXECUTION}
+for BINARY in ${POSTCOPY_BIN_EXECUTION}
 do
-    arch-chroot ${ROOT_WORKDIR} $binary && rm -rf ${ROOT_WORKDIR}/usr/bin/$binary
+    arch-chroot ${ROOT_WORKDIR} ${BINARY} && rm -f ${ROOT_WORKDIR}/usr/bin/${BINARY}
 done
 
 cat <<EOF > ${ROOT_WORKDIR}/usr/lib/systemd/system/var-lib-pacman.mount
@@ -323,10 +323,10 @@ do
 done
 
 echo "Enable nopasswd sudo (req by steam and other tools)"
-  arch-chroot ${ROOT_WORKDIR} sed -i 's~ALL$~NOPASSWD: ALL~g' /etc/sudoers.d/wheel
-
-echo "Patch Audio output to add generic devices to the filter."
-  arch-chroot ${ROOT_WORKDIR} sed -i '/matches = \[/a \      {\n\        node.name = "~alsa_output.*"\n\        alsa.card_name = "HD-Audio Generic"\n\      }' /usr/share/wireplumber/hardware-profiles/valve-jupiter/wireplumber.conf.d/alsa-card1.conf
+cat <<EOF > ${ROOT_WORKDIR}/etc/sudoers.d/999-wheel
+%wheel ALL=(ALL) NOPASSWD:ALL
+EOF
+chmod 440 ${ROOT_WORKDIR}/etc/sudoers.d/999-wheel
 
 echo "Fix runtime audio configuration."
   for AUDIO_SERVICE in pipewire wireplumber
@@ -339,9 +339,6 @@ echo "Enable systemd-resolved."
 rm -f ${ROOT_WORKDIR}/etc/resolv.conf
 ln -sf /run/systemd/resolve/stub-resolv.conf ${ROOT_WORKDIR}/etc/resolv.conf
 
-echo "Fix blank screen desktop issue."
-  sed -i '/cd "$config_dir"/a \ \ \ \ rm -rf /tmp/.ICE-unix' /usr/bin/startplasma-steamos-oneshot
-
 echo "Fix broken /var/run link."
   arch-chroot ${ROOT_WORKDIR} echo "After=systemd-tmpfiles-setup.service" >> /usr/lib/systemd/system/network-pre.target
 
@@ -351,7 +348,7 @@ echo "Fix mkinitcpio warning..."
 echo "Delete conflicting files..."
 # Delete conflicting files
 for CONFLICT in etc/X11/Xsession.d/50rotate-screen \
-        usr/lib/qt/plugins/discover/steamos-backend.so \
+                usr/lib/qt/plugins/discover/steamos-backend.so \
                 etc/sddm.conf.d/steamdeck.conf
 do
   if [ -e "${ROOT_WORKDIR}/${CONFLICT}" ]

@@ -37,6 +37,11 @@ case $key in
     shift # past argument
     shift # past value
     ;;
+    --mode)
+    MODE="$2"
+    shift # past argument
+    shift # past value
+    ;;
     *)    # unknown option
     echo "Unknown option: $1"
     exit 1
@@ -94,6 +99,11 @@ if [[ -n "$(blkid | grep sf)" ]]; then
     echo -e "\nConfiguring swap..."
     arch-chroot ${SUBVOLLOCATION} steamfork-enable-swap
     arch-chroot ${SUBVOLLOCATION} swapoff -a
+
+    if [[ "${MODE}" == "desktop" ]]; then
+        echo -e "\nSwitching to desktop mode..."
+        arch-chroot ${SUBVOLLOCATION} steamfork-session-select desktop
+    fi
 
     mkdir -p ${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/var/overlays/etc/upper
     mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc
