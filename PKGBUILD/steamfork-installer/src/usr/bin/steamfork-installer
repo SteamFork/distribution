@@ -103,26 +103,22 @@ log_progress 1 "Creating partitions..."
 # Check if there are any partitions on the target device
 existing_partitions=$(lsblk -n -o NAME ${DEVICE} | grep -v "^$(basename ${DEVICE})$")
 if [ -n "$existing_partitions" ]; then
-    # Safely unmount all partitions on the target device
-    for part in $(lsblk -o NAME,PATH -ln | grep "^$(basename ${DEVICE})" | grep -v "^$(basename ${DEVICE})$" | awk '{print $2}'); do
-        run_command "umount $part 2>/dev/null" 2 "Unmounting $part..."
-        sleep 1
-        # Try force unmount if regular unmount fails
-        if mountpoint -q $part 2>/dev/null; then
-            run_command "umount -f $part 2>/dev/null" 3 "Force unmounting $part..."
-            sleep 3
-            # If still mounted, try lazy unmount as last resort
+    # Check if the device is mounted anywhere
+    mounted_partitions=$(grep "^/dev/$(basename ${DEVICE})" /proc/mounts | awk '{print $1}' | sort -r)
+    if [ -n "$mounted_partitions" ]; then
+        # Safely unmount all mounted partitions on the target device in reverse order
+        for part in $mounted_partitions; do
+            run_command "umount $part 2>/dev/null" 2 "Unmounting $part..."
+            sleep 1
+            # If still mounted, print an error message
             if mountpoint -q $part 2>/dev/null; then
-                run_command "umount -l $part 2>/dev/null" 4 "Lazy unmounting $part..."
-                sleep 5
-                # If still mounted, print an error message
-                if mountpoint -q $part 2>/dev/null; then
-                    echo "Failed to unmount $part. Please unmount it manually and try again."
-                    exit 1
-                fi
+                log_progress 2 "Failed to unmount $part. Please unmount it manually and try again."
+                exit 1
             fi
-        fi
-    done
+        done
+    else
+        log_progress 2 "No mounted partitions found on ${DEVICE}"
+    fi
 else
     log_progress 2 "No partitions found on ${DEVICE}"
 fi
