@@ -102,7 +102,7 @@ if [[ -n "$(blkid | grep sf)" ]]; then
 
     if [[ "${MODE}" == "desktop" ]]; then
         echo -e "\nSwitching to desktop mode..."
-        arch-chroot ${SUBVOLLOCATION} steamfork-session-select desktop
+        arch-chroot ${SUBVOLLOCATION} steamos-session-select desktop
     fi
 
     mkdir -p ${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/var/overlays/etc/upper
