@@ -140,10 +140,10 @@ index 88aa57c15..d004d7291 100644
  		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONE XPLAYER"),
  		},
  		.driver_data = (void *)&lcd1200x1920_leftside_up,
-+	}, {	/* OneXPlayer OneXFly F1 Pro */
++	}, {	/* OneXPlayer OneXFly F1 series */
 +		.matches = {
 +		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK"),
-+		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONEXPLAYER F1Pro"),
++		  DMI_MATCH(DMI_PRODUCT_NAME, "ONEXPLAYER F1"),
 +		},
 +		.driver_data = (void *)&lcd1080x1920_leftside_up,
  	}, {	/* OrangePi Neo */
