@@ -1,7 +1,7 @@
 # Maintainer: fewtarius@steamfork.org
 pkgname=steamfork-sddm
 pkgver=1.2.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Steamfork SDDM theme"
 arch=('any')
 depends=('qt6-5compat'
