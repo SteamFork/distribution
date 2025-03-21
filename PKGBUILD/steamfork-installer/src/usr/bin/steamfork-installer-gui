@@ -357,35 +357,46 @@ class InstallerApp(QMainWindow):
         self.tab_widget.setTabPosition(QTabWidget.TabPosition.West)
         
         # Create instances of the specific page classes
-        welcome_page = WelcomePage(self.on_next_page, self)
-        preparation_page = PreparationPage(self.on_next_page, self.on_prev_page, self)
-        installation_page = InstallationPage(self)
-        finish_page = FinishPage(self)
+        self.welcome_page = WelcomePage(self.on_next_page, self)
+        self.preparation_page = PreparationPage(self.on_next_page, self.on_prev_page, self)
+        self.installation_page = InstallationPage(self)
+        self.finish_page = FinishPage(self)
 
         # Add the specific page instances to the QTabWidget
-        self.tab_widget.addTab(welcome_page, "Welcome")
-        self.tab_widget.addTab(preparation_page, "Preparation")
-        self.tab_widget.addTab(installation_page, "Installation")
-        self.tab_widget.addTab(finish_page, "Finish")
+        self.tab_widget.addTab(self.welcome_page, "Welcome")
+        self.tab_widget.addTab(self.preparation_page, "Preparation")
+        self.tab_widget.addTab(self.installation_page, "Installation")
+        self.tab_widget.addTab(self.finish_page, "Finish")
         
         self.tab_widget.setTabEnabled(1, False)
         self.tab_widget.setTabEnabled(2, False)
         self.tab_widget.setTabEnabled(3, False)
 
-        # Disable tab clicks
-        self.tab_widget.tabBar().setEnabled(False)
+        # Connect the currentChanged signal to a slot
+        self.tab_widget.currentChanged.connect(self.on_tab_changed)
+
+        # Apply custom stylesheet to make the active tab text bold
+        self.tab_widget.setStyleSheet("""
+            QTabBar::tab:selected {
+                font-weight: bold;
+            }
+        """)
 
         self.setCentralWidget(self.tab_widget)
         self.setMinimumSize(800, 600)  # Expand the window size
         title = f"{DistroName} Installer"
         self.setWindowTitle(title)
 
+    def on_tab_changed(self, index):
+        # Enable only the current tab and disable the others
+        for i in range(self.tab_widget.count()):
+            self.tab_widget.setTabEnabled(i, i == index)
+
     def on_next_page(self, username=None, password=None, root_password=None, drive=None, use_unallocated=None, mode=None):
         current_page = self.tab_widget.currentIndex()
         debug_print(f"InstallerApp: Current page: {current_page}")
         if current_page < self.tab_widget.count() - 1:
             self.tab_widget.setCurrentIndex(current_page + 1)
-            self.tab_widget.setTabEnabled(current_page + 1, True)
             next_page = self.tab_widget.widget(current_page + 1)
             debug_print(f"InstallerApp: Next page: {self.tab_widget.currentIndex()}")
 

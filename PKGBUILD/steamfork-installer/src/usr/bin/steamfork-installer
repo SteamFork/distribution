@@ -37,7 +37,7 @@ function run_command() {
     eval "${cmd}"
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
-        log_progress "${percentage}" "Error ${exit_code} at step: ${message}. Installation Failed..."
+        log_progress "100" "Error ${exit_code} at step: ${message}. Installation Failed..."
         exit 1
     fi
 }
