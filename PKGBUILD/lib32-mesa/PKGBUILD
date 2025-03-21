@@ -15,7 +15,7 @@ pkgname=(
   lib32-vulkan-swrast
   lib32-vulkan-virtio
 )
-pkgver=25.0.1
+pkgver=25.0.2
 pkgrel=1
 pkgdesc="Open-source OpenGL drivers - 32-bit"
 url="https://www.mesa3d.org/"
@@ -114,14 +114,11 @@ for _crate in "${!_crates[@]}"; do
 done
 
 source+=(
+    0001-fix-amd-crash.patch
     0002-gfxstream-Fix-log-format-error-on-x86.patch
-    0003-gallium-radeon-Make-sure-radeonsi-PCI-IDs-are-also-i.patch
-    0004-aco-insert-dependency-waits-in-certain-situations.patch
-    0005-radv-amdgpu-fix-device-deduplication.patch
-    001-fix-amd-crash.patch
     LICENSE)
 
-b2sums=('9a73a3321c9f1d7d4384779f647c43bcb536b316dcc9a61b8a78a6f4bfd4642366e418155db5c2190b530cebee434554c6c4d2d59f68a87bb4056467fe601825'
+b2sums=('6e387806e880d518a68b3a8d4cb25071e9d50732aee06cc8b88f717c569c2764d658d40a8710ff362820a30133d5fde6b82ea7fb552fd0f690bcdf276a6f5e67'
         'a6d47c903be6094423d89b8ec3ca899d0a84df6dbd6e76632bb6c9b9f40ad9c216f8fa400310753d392f85072756b43ac3892e0a2c4d55f87ab6463002554823'
         '9c34f1ab14ad5ae124882513e0f14b1d731d06a43203bdc37fa3b202dd3ce93dbe8ebb554d01bab475689fe6ffd3ec0cbc0d5365c9b984cb83fb34ea3e9e732e'
         'fac5cf6339dc3c0a40b100035a5c874cc7b2efeafeb31c51488d25156e392dc9db86a497e76eead351d2126f69d060422faa9c55d73407a0de9f5be18d234123'
@@ -137,16 +134,13 @@ b2sums=('9a73a3321c9f1d7d4384779f647c43bcb536b316dcc9a61b8a78a6f4bfd4642366e4181
         'dd65c69d8d0ff343d36e31e6a4f4e11aeb01b1fd23d0db06d90f506ec2f2bb2c50422f6a73b48780e16e07c8d0addb374dd09cfabaf6230d5b2ba409dd3fa6cd'
         '7681b1a7497b5711e663773c1a7e076f333c06c10d3f289079a781c36f050c1620cc279742ea8e5b15ec48f3d6038a6079bbda7fee3ae8e1128bd916d53ed43a'
         '8bc6f68ed286bea617a2cfaf3949bb699d3a0466faeca735314a51596ce950e4ee57eda88154bd562c1728cfaff4cdb5bc1ba701b9d47a9c50d4c4f011bee975'
+        '1c72078463ce9ac0dfc2ba5107112a26555492e4d87dae3b3158c008f00023bbbc5c43a9f79255219d1497d05922ed546df78371bfe6318a46696f21c316a2da' # 0001-fix-amd-crash.patch
         '3d604a2f81177f0373230af0c036acd3f0da3933cb490a9f09eb1982b91dc8709a3f67f11fc761b023df4fbbd4ea6dbc3f4dae85e084aa44270100c06948a6d5' # 0002-gfxstream-Fix-log-format-error-on-x86.patch
-        'b7911c050d25ff4cb3ce5e69a2e0d27d19b91c42bfe4561024044fa764eac8314e8176f20cef7547538b9ee129bf9b5bb878ff9b2c599be83d9aec1f49bc156a' # 0003-gallium-radeon-Make-sure-radeonsi-PCI-IDs-are-also-i.patch
-        'e71295b76584394d18ecc8263308d214599d4b4b8f6959b1de96a95f5172e46ae0d33916ac156cc65304c54c5be7bdadefd69720a8de040edb8018dba849d743' # 0004-aco-insert-dependency-waits-in-certain-situations.patch
-        'b4154879a10495a4e8f65b09bc1c87aedbe733af5918d2e4388fd2a838994537ea370115c990b4f824f7954685141b31434207c2d173f6944365ef28b0366e16' # 0005-radv-amdgpu-fix-device-deduplication.patch
-        '1c72078463ce9ac0dfc2ba5107112a26555492e4d87dae3b3158c008f00023bbbc5c43a9f79255219d1497d05922ed546df78371bfe6318a46696f21c316a2da' # 001-fix-amd-crash.patch
         '1ecf007b82260710a7bf5048f47dd5d600c168824c02c595af654632326536a6527fbe0738670ee7b921dd85a70425108e0f471ba85a8e1ca47d294ad74b4adb' # LICENSE
     )
 
 # https://docs.mesa3d.org/relnotes.html
-sha256sums=('49eb55ba5acccae91deb566573a6a73144a0f39014be1982d78c21c5b6b0bb3f'
+sha256sums=('adf904d083b308df95898600ffed435f4b5c600d95fb6ec6d4c45638627fdc97'
             'ed646292ffc8188ef8ea4d1e0e0150fb15a5c2e12ad9b8fc191ae7a8a7f3c4b9'
             'a941429fea7e08bedec25e4f6785b6ffaacc6b755da98df5ef3e7dcf4a124c4f'
             '168fb715dda47215e360912c096649d23d58bf392ac62f73919e831745e40f26'
@@ -162,11 +156,8 @@ sha256sums=('49eb55ba5acccae91deb566573a6a73144a0f39014be1982d78c21c5b6b0bb3f'
             '3c93a82e8d145725dcbaf44e5ea887c8a869efdcc28706df2d08c69e17077183'
             '692fcb63b64b1758029e0a96ee63e049ce8c5948587f2f7208df04625e5f6b56'
             '901fa70d88b9d6c98022e23b4136f9f3e54e4662c3bc1bd1d84a42a9a0f0c1e9'
+            '3ea283ce2cc5ff13b5d4de0581e2c656178ab7169fa18e5d9d1c5046590c7c49' # 0001-fix-amd-crash.patch
             'a481c2d56d91b936d0c445bf90ab4475e3c35698b2474fdaf85a8405a793bfcf' # 0002-gfxstream-Fix-log-format-error-on-x86.patch
-            'd531eb66a4b9512f9d2f3db68eba4a6b155a795c3b42ef25e357426896fe1b80' # 0003-gallium-radeon-Make-sure-radeonsi-PCI-IDs-are-also-i.patch
-            '05f6962555267a6e1607579f4a4287069726203da6237679872d09437c4299cb' # 0004-aco-insert-dependency-waits-in-certain-situations.patch
-            'f18ae4812431152bd325396e0ddce2f9dc55f3fb9d6d958b6b10de23f0ddb400' # 0005-radv-amdgpu-fix-device-deduplication.patch
-            '3ea283ce2cc5ff13b5d4de0581e2c656178ab7169fa18e5d9d1c5046590c7c49' # 001-fix-amd-crash.patch
             '7052ba73bb07ea78873a2431ee4e828f4e72bda7d176d07f770fa48373dec537' # LICENSE
         )
 
