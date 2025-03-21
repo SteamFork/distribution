@@ -1,8 +1,8 @@
 # Maintainer: Fewtarius
 
 pkgname=steamfork-installer
-pkgver=2025.03.20
-pkgrel=8
+pkgver=2025.03.21
+pkgrel=1
 pkgdesc='Installation utility for SteamFork.'
 arch=('any')
 url='http://www.steamfork.org'
@@ -10,39 +10,15 @@ license=('MIT')
 
 depends=('python-pyqt6')
 
-installit() {
-  TYPE=$(file --no-sandbox "${1}")
-  if [[ "${TYPE}" =~ script ]] || \
-     [[ "${1}" =~ desktop$ ]]
-  then
-    PERM="755"
-  elif [[ "${TYPE}" =~ link ]]
-  then
-    FILE_PATH="${pkgdir}/$(dirname "${1}")"
-    if [ ! -d "${FILE_PATH}" ]
-    then
-      echo "Mkdir ${FILE_PATH}"
-      mkdir -p "${FILE_PATH}"
-    fi
-    TARGET=$(readlink "$1")
-    echo "Changedir ${FILE_PATH}"
-    cd "${FILE_PATH}"
-    echo "Linking ${TARGET} ."
-    ln -sf ${TARGET} $(basename ${1})
-    cd -
-    return
-  else
-    PERM="644"
-  fi
-  echo "Install ${PERM}: ${1}"
-  install -Dm ${PERM} "${1}" "${pkgdir}/${1}"
-}
-
 package() {
   cd "${srcdir}" || exit 2
-  find -type f -o -type l | while read FILE
-  do
-    echo "Install ${FILE}"
-    installit "${FILE}"
-  done
+
+  install -Dm644 "home/liveuser/Desktop/install.desktop" "${pkgdir}/home/liveuser/Desktop/install.desktop"
+  install -Dm644 "home/liveuser/Desktop/upgrade.desktop" "${pkgdir}/home/liveuser/Desktop/upgrade.desktop"
+  install -Dm644 "home/liveuser/Desktop/reset.desktop" "${pkgdir}/home/liveuser/Desktop/reset.desktop"
+  install -Dm644 "home/liveuser/.face.icon" "${pkgdir}/home/liveuser/.face.icon"
+  install -Dm755 "usr/bin/steamfork-installer" "${pkgdir}/usr/bin/steamfork-installer"
+  install -Dm755 "usr/bin/steamfork-bootstrap" "${pkgdir}/usr/bin/steamfork-bootstrap"
+  install -Dm755 "usr/bin/steamfork-restrap" "${pkgdir}/usr/bin/steamfork-restrap"
+  install -Dm755 "usr/bin/steamfork-installer-gui" "${pkgdir}/usr/bin/steamfork-installer-gui"
 }
