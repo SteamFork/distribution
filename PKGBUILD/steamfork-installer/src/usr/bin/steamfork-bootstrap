@@ -18,7 +18,7 @@ function run_command() {
     eval "${cmd}"
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
-        log_progress "${percentage}" "Error ${exit_code} at step: ${message}. Installation Failed..."
+        log_progress "100" "Error ${exit_code} at step: ${message}. Installation Failed..."
         exit 1
     fi
 }
@@ -112,9 +112,13 @@ if [[ -n "$(blkid | grep sf)" ]]; then
     run_command "arch-chroot ${SUBVOLLOCATION} steamfork-grub-update" 60 "Updating GRUB"
 
     log_progress 62 "Configuring swap..."
-    run_command "arch-chroot ${SUBVOLLOCATION} steamfork-enable-swap" 64 "Enabling swap"
-    run_command "arch-chroot ${SUBVOLLOCATION} swapoff -a" 66 "Disabling swap"
-
+    # Check if swap is already enabled
+    if arch-chroot ${SUBVOLLOCATION} swapon --show | grep -q '/dev/zram0'; then
+        log_progress 63 "Swap is already enabled on the local system. Skipping swap configuration."
+    else
+        run_command "arch-chroot ${SUBVOLLOCATION} steamfork-enable-swap" 64 "Enabling swap"
+        run_command "arch-chroot ${SUBVOLLOCATION} swapoff -a" 66 "Disabling swap"
+    fi
     mkdir -p ${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/var/overlays/etc/upper
     run_command "mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc" 68 "Mounting overlay filesystem"
     run_command "echo -e \"${ROOTPASS}\n${ROOTPASS}\" | arch-chroot ${SUBVOLLOCATION} passwd root" 70 "Setting root password"
