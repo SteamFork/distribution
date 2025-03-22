@@ -348,7 +348,7 @@ echo "Fix mkinitcpio warning..."
 echo "Delete conflicting files..."
 # Delete conflicting files
 for CONFLICT in etc/X11/Xsession.d/50rotate-screen \
-                usr/lib/qt/plugins/discover/steamos-backend.so \
+                usr/lib/qt6/plugins/discover/steamos-backend.so \
                 etc/sddm.conf.d/steamdeck.conf
 do
   if [ -e "${ROOT_WORKDIR}/${CONFLICT}" ]
