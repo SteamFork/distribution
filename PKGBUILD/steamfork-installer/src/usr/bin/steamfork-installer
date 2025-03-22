@@ -146,8 +146,11 @@ OPTIMAL_IO_SIZE=$(cat /sys/block/$(basename ${DEVICE})/queue/optimal_io_size)
 ALIGNMENT_OFFSET=$(cat /sys/block/$(basename ${DEVICE})/alignment_offset)
 PHYSICAL_BLOCK_SIZE=$(cat /sys/block/$(basename ${DEVICE})/queue/physical_block_size)
 
+# Ensure the start sector is at least 34 sectors for GPT alignment
+MIN_START_SECTOR=34
+
 # Calculate the alignment start based on the kernel parameters
-ALIGNED_START=$(( (ALIGNMENT_OFFSET + OPTIMAL_IO_SIZE) / PHYSICAL_BLOCK_SIZE ))
+ALIGNED_START=$(( ((ALIGNMENT_OFFSET + OPTIMAL_IO_SIZE) / PHYSICAL_BLOCK_SIZE) < MIN_START_SECTOR ? MIN_START_SECTOR : (ALIGNMENT_OFFSET + OPTIMAL_IO_SIZE) / PHYSICAL_BLOCK_SIZE ))
 
 # Get the size of the disk
 DISK_SIZE=$(cat /sys/block/$(basename ${DEVICE})/size)
