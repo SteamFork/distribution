@@ -63,6 +63,7 @@ fi
 # Parse arguments
 REPO_FLAG=""
 PKG=""
+SOURCE_ONLY=false
 while [[ $# -gt 0 ]]; do
   case $1 in
     --repo)
@@ -78,7 +79,7 @@ done
 
 # Validate arguments
 if [[ -z "$REPO_FLAG" || -z "$PKG" ]]; then
-  log "Error: Missing required arguments. Usage: $0 --repo <repo_flag> <package>"
+  log "Error: Missing required arguments. Usage: $0 --repo <repo_flag> [--source-only] <package>"
   exit 1
 fi
 
@@ -95,6 +96,7 @@ BUILDUSER=${USER}
 PACKAGE=${PKG}
 WORK_DIR="${WORK_DIR}/packages/${PACKAGE}"
 REPO_DIR="${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}"
+SOURCE_DIR="${REPO_DIR}/../sources"
 
 log "Disabling read-only mode..."
 sudo steamos-readonly disable
@@ -112,7 +114,7 @@ fi
 
 log "Creating work and repository directories..."
 # Create the local repository if it doesn't already exist
-mkdir -p "${REPO_DIR}" "${WORK_DIR}"
+mkdir -p "${REPO_DIR}" "${SOURCE_DIR}" "${WORK_DIR}"
 sudo chown -R ${BUILDUSER}:${BUILDUSER} "${REPO_DIR}" "${WORK_DIR}"
 if [ ! -f "${REPO_DIR}/steamfork.db.tar.gz" ]
 then
@@ -194,6 +196,14 @@ log "Moving built packages to repository directory..."
 mv ${WORK_DIR}/*.pkg.tar* ${REPO_DIR}
 if [ $? -ne 0 ]; then
   log "Failed to move built packages to repository directory."
+  exit 1
+fi
+
+log "Creating source package..."
+makepkg --allsource --nobuild --syncdeps
+mv ${WORK_DIR}/*.src.tar.gz ${SOURCE_DIR}
+if [ $? -ne 0 ]; then
+  log "Failed to move source package to repository directory."
   exit 1
 fi
 
