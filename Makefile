@@ -59,11 +59,11 @@ build-clean:
 images-all: images
 
 image: image-clean
-	${SCRIPT_DIR}/mkimage $(RUN_ARGS)
+	${SCRIPT_DIR}/build_image $(RUN_ARGS)
 
 images:
-	${SCRIPT_DIR}/mkimage minimal $(RUN_ARGS)
-	${SCRIPT_DIR}/mkimage stable $(RUN_ARGS)
+	${SCRIPT_DIR}/build_image minimal $(RUN_ARGS)
+	${SCRIPT_DIR}/build_image stable $(RUN_ARGS)
 
 images-sync:
 	${SCRIPT_DIR}/sync os-sync
