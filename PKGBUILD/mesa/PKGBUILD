@@ -124,6 +124,7 @@ done
 source+=(
     0001-fix-amd-crash.patch
     0002-gfxstream-Fix-log-format-error-on-x86.patch
+    0003-revert-use-VM_ALWAYS_VALID-for-all-VRAM-and-GTT-allocations.patch
     LICENSE)
 
 b2sums=('6e387806e880d518a68b3a8d4cb25071e9d50732aee06cc8b88f717c569c2764d658d40a8710ff362820a30133d5fde6b82ea7fb552fd0f690bcdf276a6f5e67'
@@ -144,6 +145,7 @@ b2sums=('6e387806e880d518a68b3a8d4cb25071e9d50732aee06cc8b88f717c569c2764d658d40
         '8bc6f68ed286bea617a2cfaf3949bb699d3a0466faeca735314a51596ce950e4ee57eda88154bd562c1728cfaff4cdb5bc1ba701b9d47a9c50d4c4f011bee975'
         '1c72078463ce9ac0dfc2ba5107112a26555492e4d87dae3b3158c008f00023bbbc5c43a9f79255219d1497d05922ed546df78371bfe6318a46696f21c316a2da' # 0001-fix-amd-crash.patch
         '3d604a2f81177f0373230af0c036acd3f0da3933cb490a9f09eb1982b91dc8709a3f67f11fc761b023df4fbbd4ea6dbc3f4dae85e084aa44270100c06948a6d5' # 0002-gfxstream-Fix-log-format-error-on-x86.patch
+        '0b9d8dab685a9cf222aeb8a72c8c69563bd1952baf8cf390cb138bd5face73cbf8e948ae3575e9747284e2673c9b9c7ca508b4663fca49a392c0ef5ad36f4fde' # 0003-revert-use-VM_ALWAYS_VALID-for-all-VRAM-and-GTT-allocations.patch
         '1ecf007b82260710a7bf5048f47dd5d600c168824c02c595af654632326536a6527fbe0738670ee7b921dd85a70425108e0f471ba85a8e1ca47d294ad74b4adb' # LICENSE
     )
 
@@ -166,6 +168,7 @@ sha256sums=('adf904d083b308df95898600ffed435f4b5c600d95fb6ec6d4c45638627fdc97'
             '901fa70d88b9d6c98022e23b4136f9f3e54e4662c3bc1bd1d84a42a9a0f0c1e9'
             '3ea283ce2cc5ff13b5d4de0581e2c656178ab7169fa18e5d9d1c5046590c7c49' # 0001-fix-amd-crash.patch
             'a481c2d56d91b936d0c445bf90ab4475e3c35698b2474fdaf85a8405a793bfcf' # 0002-gfxstream-Fix-log-format-error-on-x86.patch
+            '4f8fdfd501ed579941e8b396d36412d9bccef207277864ce950fb44eed8a07be' # 0003-revert-use-VM_ALWAYS_VALID-for-all-VRAM-and-GTT-allocations.patch
             '7052ba73bb07ea78873a2431ee4e828f4e72bda7d176d07f770fa48373dec537' # LICENSE
         )
 
