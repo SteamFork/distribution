@@ -79,8 +79,8 @@ os-switch)
             for HOST in ${WWWUSER}@${WWWHOST} ${MIRROR_HOSTS}; do
                 echo "Update the ${BRANCH} images on ${HOST}."
                 ssh -tt ${HOST} "cd ${WWWROOT}/images/${STEAMOS_VERSION}/; if [ -d "${BRANCH}.new" ]; then sudo chown -R www-data:www-data ${BRANCH}.new; sudo rm -rf ${BRANCH}; sudo mv ${BRANCH}.new ${BRANCH}; fi"
-                ssh -tt ${HOST} "cd ${WWWROOT}/images/; sudo rm -f {buildinfo,steamfork*${BRANCH}*,currentcandidate,*${BRANCH}*.releasemeta,package_versions.txt}; ln -sf ${DEPLOY_DIR}/*${BRANCH}* ."
-                ssh -tt ${HOST} "cd ${WWWROOT}/images/installer; sudo rm -f *${BRANCH}*; ln -sf ../${DEPLOY_DIR}/installer/*${BRANCH}* ."
+                ssh -tt ${HOST} "cd ${WWWROOT}/images/; sudo rm -f {buildinfo,steamfork*${BRANCH}*,currentcandidate,*${BRANCH}*.releasemeta,package_versions.txt}; sudo ln -sf ${DEPLOY_DIR}/*${BRANCH}* ."
+                ssh -tt ${HOST} "cd ${WWWROOT}/images/installer; sudo rm -f *${BRANCH}*; sudo ln -sf ../${DEPLOY_DIR}/installer/*${BRANCH}* ."
             done
         fi
     done
