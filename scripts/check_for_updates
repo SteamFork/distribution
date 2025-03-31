@@ -8,33 +8,47 @@ eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
 
 if [ -f "${HOME}/.SteamFork/options" ]
 then
-	source ${HOME}/.SteamFork/options
+    source ${HOME}/.SteamFork/options
 else
-	echo "Please configure ${HOME}/.SteamFork/options before using this script."
-	exit 1
+    echo "Please configure ${HOME}/.SteamFork/options before using this script."
+    exit 1
 fi
 
 export EXEC_PATH=$(dirname $(realpath "${0}"))
 cd ${EXEC_PATH}
 
+DEBUG_MODE=false
+
+# Check for debug flag
+if [[ "${1}" == "--debug" ]]; then
+    DEBUG_MODE=true
+fi
+
 for KEY in WEBHOOK_URL WEBHOOK_USERNAME
 do
-	if [ -z "${!KEY}" ]
-	then
-		echo "Export ${KEY} before using this script."
-		exit 1
-	fi
+    if [ -z "${!KEY}" ]
+    then
+        echo "Export ${KEY} before using this script."
+        exit 1
+    fi
 done
 
 for SCRIPT in update.d/*
 do
-	PACKAGE="$(basename ${SCRIPT})"
-	VERSION="$(${EXEC_PATH}/${SCRIPT})"
-	if [ -n "${VERSION}" ]
-	then
-		MESSAGE="${PACKAGE} version ${VERSION} is now available upstream."
-		${EXEC_PATH}/modules/discord --webhook-url="${WEBHOOK_URL}" \
-						--username="${WEBHOOK_USERNAME}" \
-						--text="${MESSAGE}"
-	fi
+    PACKAGE="$(basename ${SCRIPT})"
+    if [ "${DEBUG_MODE}" = true ]; then
+        echo "Debug: Running script ${SCRIPT} for package ${PACKAGE}."
+    fi
+    VERSION="$(${EXEC_PATH}/${SCRIPT})"
+    if [ -n "${VERSION}" ]
+    then
+        MESSAGE="${PACKAGE} version ${VERSION} now available upstream."
+        if [ "${DEBUG_MODE}" = true ]; then
+            echo "Debug: ${MESSAGE}"
+        else
+            ${EXEC_PATH}/modules/discord --webhook-url="${WEBHOOK_URL}" \
+                            --username="${WEBHOOK_USERNAME}" \
+                            --text="${MESSAGE}"
+        fi
+    fi
 done
