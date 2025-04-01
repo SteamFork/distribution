@@ -1,4 +1,4 @@
-From 2f7cef38bfb1cde357c9578872b09022699d1f70 Mon Sep 17 00:00:00 2001
+From 96e5a9128f8f269d9dccc007a03aebe43b8d9c0c Mon Sep 17 00:00:00 2001
 From: Luke Jones <luke@ljones.dev>
 Date: Wed, 5 Mar 2025 17:40:54 +1300
 Subject: [PATCH 1/2] zotac-zone-hid: initial impl
@@ -43,14 +43,14 @@ index 1c2a6d211c21..ee1be6a42b15 100644
 +
  endif # HID_SUPPORT
 diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
-index f338c9eb4600..9dab037a2044 100644
+index f338c9eb4600..89b9c9f44577 100644
 --- a/drivers/hid/Makefile
 +++ b/drivers/hid/Makefile
 @@ -171,4 +171,6 @@ obj-$(INTEL_ISH_FIRMWARE_DOWNLOADER)	+= intel-ish-hid/
  
  obj-$(CONFIG_AMD_SFH_HID)       += amd-sfh-hid/
  
-+obj-$(CONFIG_ZOTAC_HID)  += zotac-zone-hid/
++obj-$(CONFIG_ZOTAC_ZONE_HID)  += zotac-zone-hid/
 +
  obj-$(CONFIG_SURFACE_HID_CORE)  += surface-hid/
 diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
@@ -4998,5 +4998,44 @@ index 000000000000..4723dd5680d5
 +MODULE_DESCRIPTION("Zotac Handheld Platform Driver");
 +MODULE_LICENSE("GPL");
 -- 
-2.47.1
+2.49.0
+
+
+From cf3fd438a6912473be8983748688873f6948b28c Mon Sep 17 00:00:00 2001
+From: Luke Jones <luke@ljones.dev>
+Date: Mon, 31 Mar 2025 19:54:24 +1300
+Subject: [PATCH 2/2] xpad: gate the zotac-zone PID behind #if
+ !IS_REACHABLE(CONFIG_ZOTAC_ZONE_HID)
+
+Signed-off-by: Luke Jones <luke@ljones.dev>
+---
+ drivers/input/joystick/xpad.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/input/joystick/xpad.c b/drivers/input/joystick/xpad.c
+index c33e6f33265b..7864f1f932f4 100644
+--- a/drivers/input/joystick/xpad.c
++++ b/drivers/input/joystick/xpad.c
+@@ -349,7 +349,9 @@ static const struct xpad_device {
+ 	{ 0x1bad, 0xfa01, "MadCatz GamePad", 0, XTYPE_XBOX360 },
+ 	{ 0x1bad, 0xfd00, "Razer Onza TE", 0, XTYPE_XBOX360 },
+ 	{ 0x1bad, 0xfd01, "Razer Onza", 0, XTYPE_XBOX360 },
++	#if !IS_REACHABLE(CONFIG_ZOTAC_ZONE_HID)
+ 	{ 0x1ee9, 0x1590, "ZOTAC Gaming Zone", 0, XTYPE_XBOX360 },
++	#endif /* !IS_REACHABLE(CONFIG_ZOTAC_ZONE_HID) */
+ 	{ 0x20d6, 0x2001, "BDA Xbox Series X Wired Controller", 0, XTYPE_XBOXONE },
+ 	{ 0x20d6, 0x2009, "PowerA Enhanced Wired Controller for Xbox Series X|S", 0, XTYPE_XBOXONE },
+ 	{ 0x20d6, 0x281f, "PowerA Wired Controller For Xbox 360", 0, XTYPE_XBOX360 },
+@@ -540,7 +542,9 @@ static const struct usb_device_id xpad_table[] = {
+ 	XPAD_XBOX360_VENDOR(0x1949),		/* Amazon controllers */
+ 	XPAD_XBOX360_VENDOR(0x1a86),		/* Nanjing Qinheng Microelectronics (WCH) */
+ 	XPAD_XBOX360_VENDOR(0x1bad),		/* Harmonix Rock Band guitar and drums */
++	#if !IS_REACHABLE(CONFIG_ZOTAC_ZONE_HID)
+ 	XPAD_XBOX360_VENDOR(0x1ee9),		/* ZOTAC Technology Limited */
++	#endif /* !IS_REACHABLE(CONFIG_ZOTAC_ZONE_HID) */
+ 	XPAD_XBOX360_VENDOR(0x20d6),		/* PowerA controllers */
+ 	XPAD_XBOXONE_VENDOR(0x20d6),		/* PowerA controllers */
+ 	XPAD_XBOX360_VENDOR(0x2345),		/* Machenike Controllers */
+-- 
+2.49.0
 
