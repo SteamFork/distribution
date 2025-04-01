@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.13.9
-pkgrel=1
+pkgrel=2
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -68,7 +68,6 @@ source=(
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
   0060-asus-patch-series.patch
   0061-zotac-zone.patch
-  0062-xpad-gate-the-zotac-zone-PID-behind-if-IS_REACHABLE-.patch
   0066-ASoC-acp-Support-microphone-from-Lenovo-Go-S.patch
   0070-lexar-nvme-broken-msi.patch
   0080-vblank-not-passed-vfp.patch
