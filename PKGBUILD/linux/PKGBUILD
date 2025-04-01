@@ -68,7 +68,6 @@ source=(
   0051-drm-amd-display-let-update_planes_and_stream_state-d.patch
   0060-asus-patch-series.patch
   0061-zotac-zone.patch
-  0062-xpad-gate-the-zotac-zone-PID-behind-if-IS_REACHABLE-.patch
   0066-ASoC-acp-Support-microphone-from-Lenovo-Go-S.patch
   0070-lexar-nvme-broken-msi.patch
   0080-vblank-not-passed-vfp.patch
