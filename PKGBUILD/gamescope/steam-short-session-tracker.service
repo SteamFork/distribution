@@ -9,3 +9,4 @@ Type=oneshot
 ExecStartPre=/usr/lib/steamos/steam-short-session-tracker --started
 ExecStop=/usr/lib/steamos/steam-short-session-tracker --stopped
 RemainAfterExit=true
+TimeoutStopSec=5

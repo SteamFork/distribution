@@ -13,6 +13,7 @@ ExecStop=/bin/bash -c 'kill -TERM $(pgrep -P $MAINPID || echo $MAINPID)'
 # But still want systemd to kill the entire cgroup on timeout
 KillSignal=SIGCONT
 KillMode=mixed
+TimeoutStopSec=60
 
 Type=exec
 EnvironmentFile=%t/gamescope-environment
