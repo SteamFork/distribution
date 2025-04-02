@@ -15,7 +15,7 @@ pkgname=(
   lib32-vulkan-swrast
   lib32-vulkan-virtio
 )
-pkgver=25.0.2
+pkgver=25.0.3
 pkgrel=1
 pkgdesc="Open-source OpenGL drivers - 32-bit"
 url="https://www.mesa3d.org/"
@@ -119,7 +119,7 @@ source+=(
     0003-revert-use-VM_ALWAYS_VALID-for-all-VRAM-and-GTT-allocations.patch
     LICENSE)
 
-b2sums=('6e387806e880d518a68b3a8d4cb25071e9d50732aee06cc8b88f717c569c2764d658d40a8710ff362820a30133d5fde6b82ea7fb552fd0f690bcdf276a6f5e67'
+b2sums=('8b32119756c422b780b466ed4ba60660d2c91f8f460b617f7417e5f3ae2a5cd44a95abedbcdfb8e2f38d99fb2e4f1610586e846fe13b9db979f5156dcc268614'
         'a6d47c903be6094423d89b8ec3ca899d0a84df6dbd6e76632bb6c9b9f40ad9c216f8fa400310753d392f85072756b43ac3892e0a2c4d55f87ab6463002554823'
         '9c34f1ab14ad5ae124882513e0f14b1d731d06a43203bdc37fa3b202dd3ce93dbe8ebb554d01bab475689fe6ffd3ec0cbc0d5365c9b984cb83fb34ea3e9e732e'
         'fac5cf6339dc3c0a40b100035a5c874cc7b2efeafeb31c51488d25156e392dc9db86a497e76eead351d2126f69d060422faa9c55d73407a0de9f5be18d234123'
@@ -142,7 +142,7 @@ b2sums=('6e387806e880d518a68b3a8d4cb25071e9d50732aee06cc8b88f717c569c2764d658d40
     )
 
 # https://docs.mesa3d.org/relnotes.html
-sha256sums=('adf904d083b308df95898600ffed435f4b5c600d95fb6ec6d4c45638627fdc97'
+sha256sums=('5ff426ed6ce0588fd96d18975bdff451ae2ab2fe98b5d1528842ee71ec66711b'
             'ed646292ffc8188ef8ea4d1e0e0150fb15a5c2e12ad9b8fc191ae7a8a7f3c4b9'
             'a941429fea7e08bedec25e4f6785b6ffaacc6b755da98df5ef3e7dcf4a124c4f'
             '168fb715dda47215e360912c096649d23d58bf392ac62f73919e831745e40f26'
