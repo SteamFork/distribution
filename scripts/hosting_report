@@ -233,7 +233,7 @@ cat <<EOF >> "${HTML_FILE}"
         <p>The Hosting Summary table provides a high-level overview of hosting activity:</p>
         <ul>
             <li><strong>Metrics</strong>: Unique requests for metadata, ISO files, and update files.</li>
-            <li><strong>Time Periods</strong>: Aggregated counts for biweekly, weekly, and daily downloads.</li>
+            <li><strong>Time Periods</strong>: Aggregated counts for biweekly and weekly downloads.</li>
             <li><strong>Branches</strong>: Metrics are grouped by branch (e.g., <code>rel</code>, <code>testing</code>, <code>stable</code>).</li>
         </ul>
         <table id="summary-table" class="sortable">
@@ -246,16 +246,13 @@ cat <<EOF >> "${HTML_FILE}"
                     <th>Weekly Metadata Downloads</th>
                     <th>Weekly ISO Downloads</th>
                     <th>Weekly Update Downloads</th>
-                    <th>Daily Metadata Downloads</th>
-                    <th>Daily ISO Downloads</th>
-                    <th>Daily Update Downloads</th>
                 </tr>
             </thead>
             <tbody>
 EOF
 
 # Add rows to the summary table
-tail -n +2 "${FINAL_WEEKLY_REPORT_FILE}" | while IFS=',' read -r branch biweekly_metadata biweekly_iso biweekly_update weekly_metadata weekly_iso weekly_update daily_metadata daily_iso daily_update; do
+tail -n +2 "${FINAL_WEEKLY_REPORT_FILE}" | while IFS=',' read -r branch biweekly_metadata biweekly_iso biweekly_update weekly_metadata weekly_iso weekly_update; do
     echo "                <tr>" >> "${HTML_FILE}"
     echo "                    <td>${branch}</td>" >> "${HTML_FILE}"
     echo "                    <td>${biweekly_metadata}</td>" >> "${HTML_FILE}"
@@ -264,9 +261,6 @@ tail -n +2 "${FINAL_WEEKLY_REPORT_FILE}" | while IFS=',' read -r branch biweekly
     echo "                    <td>${weekly_metadata}</td>" >> "${HTML_FILE}"
     echo "                    <td>${weekly_iso}</td>" >> "${HTML_FILE}"
     echo "                    <td>${weekly_update}</td>" >> "${HTML_FILE}"
-    echo "                    <td>${daily_metadata}</td>" >> "${HTML_FILE}"
-    echo "                    <td>${daily_iso}</td>" >> "${HTML_FILE}"
-    echo "                    <td>${daily_update}</td>" >> "${HTML_FILE}"
     echo "                </tr>" >> "${HTML_FILE}"
 done
 
