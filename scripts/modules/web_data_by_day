@@ -1,0 +1,139 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 Fewtarius
+
+# Example log schema:
+# <IP Address> - - [<Date>:<Time> <Timezone>] "<HTTP Method> <Request Path> <Protocol>" <Status Code> <Response Size> "<Referrer>" "<User-Agent>"
+# Example:
+# 127.0.0.1 - - [01/Apr/2025:06:59:27 +0000] "GET /images/installer/steamfork-rel-latest-x86_64.iso HTTP/1.1" 206 2097152 "-" "AndroidDownloadManager/15 (Linux; U; Android 15; AGT-AN00 Build/HONORAGT-AN00)"
+
+DEBUG=${DEBUG:-false}
+
+if [ -f "${HOME}/.SteamFork/options" ]; then
+    source ${HOME}/.SteamFork/options
+else
+    echo "Please configure ${HOME}/.SteamFork/options before using this script."
+    exit 1
+fi
+
+for KEY in WEB_HOSTS LOG_PATH; do
+    if [ -z "${!KEY}" ]; then
+        echo "Export ${KEY} before using this script."
+        exit 1
+    fi
+done
+
+declare -a BRANCHES=("rel" "testing" "stable")
+
+# Parse command-line arguments
+TEMP_DIR=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --source)
+            TEMP_DIR="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
+
+# Use a temporary directory if --source is not provided
+if [ -z "${TEMP_DIR}" ]; then
+    TEMP_DIR=$(mktemp -d)
+fi
+
+TEMP_FILE=$(mktemp)
+
+# Print header
+echo "Date,Instance,Branch,Metadata Count,ISO Count,IMG.ZST Count"
+
+convert_date() {
+    local date_str=$1
+    local day month year
+    IFS='/' read -r day month year <<< "$date_str"
+    local month_map=(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
+    for i in "${!month_map[@]}"; do
+        if [[ "${month_map[$i]}" == "$month" ]]; then
+            month=$(printf "%02d" $((i + 1)))
+            break
+        fi
+    done
+    echo "${year}-${month}-${day}"
+}
+
+process_logs() {
+    local branch=$1
+    local host=$2
+    local log_dir=$3
+
+    for file in ${log_dir}/access*; do
+        $DEBUG && echo "Processing file: ${file}"  # Debug statement
+
+        # Process metadata requests
+        zgrep -a -h "latest_${branch}.releasemeta" "${file}" | \
+        awk -v host="${host}" -v branch="${branch}" '{print $1, $4, host, branch, "metadata"}' | \
+        cut -d: -f1 | tr -d '[]' | sort | uniq | \
+        while read -r ip date; do
+            converted_date=$(convert_date "${date}")
+            echo "${converted_date},${host},${branch},metadata,1" >> ${TEMP_FILE}
+        done
+
+        # Process ISO requests
+        zgrep -a -h "steamfork-${branch}-.*\.iso" "${file}" | \
+        awk -v host="${host}" -v branch="${branch}" '{print $1, $4, host, branch, "iso"}' | \
+        cut -d: -f1 | tr -d '[]' | sort | uniq | \
+        while read -r ip date; do
+            converted_date=$(convert_date "${date}")
+            echo "${converted_date},${host},${branch},iso,1" >> ${TEMP_FILE}
+        done
+
+        # Process IMG.ZST requests
+        zgrep -a -h "steamfork_${branch}_.*\.img.zst" "${file}" | \
+        awk -v host="${host}" -v branch="${branch}" '{print $1, $4, host, branch, "img.zst"}' | \
+        cut -d: -f1 | tr -d '[]' | sort | uniq | \
+        while read -r ip date; do
+            converted_date=$(convert_date "${date}")
+            echo "${converted_date},${host},${branch},img.zst,1" >> ${TEMP_FILE}
+        done
+    done
+}
+
+for branch in "${BRANCHES[@]}"; do
+    for host in ${WEB_HOSTS[@]}; do
+        log_dir="${TEMP_DIR}/$(basename ${host})"
+        $DEBUG && echo "Processing logs for branch: ${branch}, host: ${host}"  # Debug statement
+        process_logs "${branch}" "${host}" "${log_dir}"
+    done
+done
+
+# Sort the temporary file by date
+sort -t, -k1,1 ${TEMP_FILE} -o ${TEMP_FILE}
+
+# Generate CSV output
+awk -F, '
+{
+    key = $1","$2","$3
+    if ($4 == "metadata") {
+        metadata[key] += $5
+    } else if ($4 == "iso") {
+        iso[key] += $5
+    } else if ($4 == "img.zst") {
+        imgzst[key] += $5
+    }
+    keys[key] = 1
+}
+END {
+    for (key in keys) {
+        split(key, arr, ",")
+        date = arr[1]
+        host = arr[2]
+        branch = arr[3]
+        metadata_count = (key in metadata ? metadata[key] : 0)
+        iso_count = (key in iso ? iso[key] : 0)
+        imgzst_count = (key in imgzst ? imgzst[key] : 0)
+        print date","host","branch","metadata_count","iso_count","imgzst_count
+    }
+}' ${TEMP_FILE} | sort -t, -k1,1
