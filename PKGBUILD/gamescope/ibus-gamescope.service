@@ -9,3 +9,4 @@ ExecStart=/usr/bin/ibus-daemon -r --panel=disable --emoji-extension=disable
 BusName=org.freedesktop.IBus
 EnvironmentFile=%t/gamescope-environment
 Slice=session.slice
+TimeoutStopSec=5

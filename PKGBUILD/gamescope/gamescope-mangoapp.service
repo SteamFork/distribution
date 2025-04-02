@@ -8,3 +8,4 @@ Type=exec
 ExecStart=/usr/bin/mangoapp
 Restart=always
 EnvironmentFile=%t/gamescope-environment
+TimeoutStopSec=5

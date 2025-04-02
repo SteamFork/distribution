@@ -3,7 +3,7 @@
 pkgname=gamescope
 _srctag=3.16.2
 pkgver=${_srctag//-/.}.SteamFork
-pkgrel=9
+pkgrel=10
 pkgdesc="gaming shell based on Xwayland, powered by Vulkan and DRM"
 arch=(x86_64)
 url="https://github.com/ValveSoftware/gamescope"
@@ -38,27 +38,27 @@ source=("gamescope-session"
         0002-fix-initializing-drm-formats.patch
 	)
 sha256sums=('5be4343b05a99463990330a3986d4cf589355586f3496de6561695f0c262e5d1' # gamescope-session
-            'fe515fce8f151a6c03a89e043044bfddf8cd6ee89027d2cfbcf6f6706c78ca76'
-            'e37ba6107f3a84cf47c2799b537a88583e6cb8951167a9c6a48fa1d85996206b'
-            'e4add84152c3c0dfa53cf6bd2a1f15c2ce74d2312f7fa945b9476e91c8752544'
-            'ce7e26d4145b44a1161d8ec050fb97f3c8786b7c5b719f36aa1dfb984b5863c1'
-            'b74f4515a3ed793973b3be6eca145d7ba862dbf50218c694fb478ba725bfd025'
-            '2cba6cd1a89767ef1b8a5044faa43394b9d1b24d0a64e24df1c42ec88e54cd60'
-            '7a651035b786da325b2fbce7dec314d1a6a5d602ed053cb768c37bb5e3e1fd9d'
-            '60e3701b96d1f7083d4a3c48b6c9ce372da55f65bab92ee2fff694158541a445'
-            '2cadeb1ffc90e8a19fc87d187a2ed069c944f2a7af56b9e54520add65977bb8b'
-            'bc2e16bbff2357091f04b7049b9fa40d3fc8d75e909c09310ebe39acc5c09621'
-            'c9bf7bcb0c3fd7ad9787621c471e4dadb6d0c1cfe54d39991917495d4287f415'
-            '41115eb48d3bb5b821f0a7eec186e45020a1cbeedb2604499b65140dcd8249e3'
-            'ec7aea652cae955089c58d4ad2b53d0b2caedcf63239a73587f4311f89150a30'
-            'b028629e3d41ccbad4af46d491b72340e221abbcb4af608627f6d0bd7d1c0d12'
-            '525060896abef2da9db8d8294253b7444d60e48cf6cc0496ca48fc7084cc8590'
-            'dea09abb47c3d907c00ff7f36967b599f3caca554ac6eb7b7dc6d2d78651dd44'
-            '928b91e4ee11d9b7f7cdc092632f6337da2ae1bb394089663df5a45699ab1b9b'
-            'SKIP'
-            'SKIP'
-            '03726f2fb44ae79e6a398e8f9aaaf8054800dda9b8298726157522fe5f7296b1'
-            'e39e0c91b297bfd707afcda84ecdc15a08c22e2ad4c347fc3533b1ed98fb3f85'
+            'fe515fce8f151a6c03a89e043044bfddf8cd6ee89027d2cfbcf6f6706c78ca76' # gamescope-wayland.desktop
+            'e37ba6107f3a84cf47c2799b537a88583e6cb8951167a9c6a48fa1d85996206b' # gamescope-mimeapps.list
+            'e4add84152c3c0dfa53cf6bd2a1f15c2ce74d2312f7fa945b9476e91c8752544' # gamescope-session.service
+            'ce7e26d4145b44a1161d8ec050fb97f3c8786b7c5b719f36aa1dfb984b5863c1' # gamescope-session.target
+            'b74f4515a3ed793973b3be6eca145d7ba862dbf50218c694fb478ba725bfd025' # gamescope-portals.conf
+            'd9a8e593bea8ea0afc96cec3849c48e87b686d263a5d7a09a272237cc35acb52' # gamescope-xbindkeys.service
+            '81da49a733a757a4848a5c95011c3f9d3e584373244722ed9b26687ae0126793' # gamescope-mangoapp.service
+            'd010a36f52f2122b51f8a0bdc983560a553759f85c2eb5a9ccb2b1a6de367059' # ibus-gamescope.service
+            '2cadeb1ffc90e8a19fc87d187a2ed069c944f2a7af56b9e54520add65977bb8b' # start-gamescope-session
+            'bc2e16bbff2357091f04b7049b9fa40d3fc8d75e909c09310ebe39acc5c09621' # steam-launcher
+            'eed4e14ff49e5812c48311c9f177710dac29bde2ece60174b96e546c54a0d016' # steam-launcher.service
+            '609da4097f9addc83f07647cc6e5c75493ddc8372853868c033d1c71c5c0cce9' # steam-notif-daemon.service
+            'ec7aea652cae955089c58d4ad2b53d0b2caedcf63239a73587f4311f89150a30' # steam-short-session-tracker
+            '7ad42dfd12a8d429b9d29dbf58131cf2c7e1740ff4e6830df1d9524c95fa2582' # steam-short-session-tracker.service
+            '525060896abef2da9db8d8294253b7444d60e48cf6cc0496ca48fc7084cc8590' # steam_http_loader.desktop
+            'dea09abb47c3d907c00ff7f36967b599f3caca554ac6eb7b7dc6d2d78651dd44' # steam-http-loader
+            '928b91e4ee11d9b7f7cdc092632f6337da2ae1bb394089663df5a45699ab1b9b' # git+https://github.com/ValveSoftware/gamescope.git#tag=$_srctag
+            'SKIP' # git+https://github.com/Joshua-Ashton/wlroots.git
+            'SKIP' # git+https://gitlab.freedesktop.org/emersion/libliftoff.git
+            '03726f2fb44ae79e6a398e8f9aaaf8054800dda9b8298726157522fe5f7296b1' # git+https://github.com/Joshua-Ashton/GamescopeShaders.git#tag=v0.1
+            'e39e0c91b297bfd707afcda84ecdc15a08c22e2ad4c347fc3533b1ed98fb3f85' # git+https://github.com/nothings/stb.git#commit=af1a5bc352164740c1cc1354942b1c6b72eacb8a
             'a550ef98fd55e142d2bca9f9fe893172bb9140edfc6df232698324c9d5e4625c' # 0001-revert-299bc34.patch
             '31d86f1ee58288d3fe7477dd0dfd23be89b1568b8e893d39ce30642785991d7a' # 0002-fix-initializing-drm-formats.patch
     )
