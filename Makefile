@@ -86,6 +86,12 @@ package-aur:
 packages-sync:
 	${SCRIPT_DIR}/sync repo
 
+hosting-report:
+	${SCRIPT_DIR}/hosting_report
+
+hosting-report-sync:
+	${SCRIPT_DIR}/sync reports-sync
+
 mirrors-sync:
 	${SCRIPT_DIR}/sync mirrors
 

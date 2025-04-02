@@ -2,35 +2,508 @@
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2024 Fewtarius
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
-
-if [ -f "${HOME}/.SteamFork/options" ]
-then
-        source ${HOME}/.SteamFork/options
+if [ -f "${HOME}/.SteamFork/options" ]; then
+    source ${HOME}/.SteamFork/options
 else
-        echo "Please configure ${HOME}/.SteamFork/options before using this script."
-        exit 1
+    echo "Please configure ${HOME}/.SteamFork/options before using this script."
+    exit 1
 fi
 
-export EXEC_PATH=$(dirname $(realpath "${0}"))
-SERVER_REPORT="/tmp/server_report.txt"
-
-cd ${EXEC_PATH}
-for KEY in WEBHOOK_URL WEBHOOK_USERNAME
-do
-	if [ -z "${!KEY}" ]
-	then
-		echo "Export ${KEY} before using this script."
-		exit 1
-	fi
+for KEY in WEB_HOSTS LOG_PATH; do
+    if [ -z "${!KEY}" ]; then
+        echo "Export ${KEY} before using this script."
+        exit 1
+    fi
 done
 
-${EXEC_PATH}/modules/get_report > ${SERVER_REPORT}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
 
-MESSAGE="${PACKAGE} version ${VERSION} is now available upstream."
-${EXEC_PATH}/modules/discord --webhook-url="${WEBHOOK_URL}" \
-				--username="${WEBHOOK_USERNAME}" \
-				--text="$(cat ${SERVER_REPORT})"
-rm -f ${SERVER_REPORT}
+# Define branch versions
+VERSION_REL="3.6"
+VERSION_TESTING="3.7"
+VERSION_STABLE="3.7"
+
+# Get today's date
+TODAY=$(date +%Y-%m-%d)
+
+# Create a temporary working directory
+TEMP_DIR=$(mktemp -d)
+mkdir -p "${TEMP_DIR}"
+
+# Define a destination path for the output files
+DEST_PATH="release/reports"
+mkdir -p "${DEST_PATH}"
+
+# Sync data from the webhosts
+for HOST in ${WEB_HOSTS[@]}; do
+    rsync -avz ${HOST}:${LOG_PATH}/ ${TEMP_DIR}/$(basename ${HOST})/ >/dev/null 2>&1
+done
+
+# Run web_data_by_day to generate the data
+REPORT_FILE="${TEMP_DIR}/report.csv"
+${SCRIPT_DIR}/modules/web_data_by_day --source ${TEMP_DIR} > "${REPORT_FILE}"
+
+# Run web_data_by_week to generate the weekly data
+WEEKLY_REPORT_FILE="${TEMP_DIR}/weekly_report.csv"
+${SCRIPT_DIR}/modules/web_data_by_week --source ${TEMP_DIR} > "${WEEKLY_REPORT_FILE}"
+
+# Filter out today's data and clean the instance field
+HOSTING_REPORT_DATA_FILE="${TEMP_DIR}/hosting_report_data.csv"
+grep -v "^${TODAY}," "${REPORT_FILE}" | sed 's/,.*@/,/g' > "${HOSTING_REPORT_DATA_FILE}"
+
+# Define subdirectories for data and CSS
+DATA_DIR="${DEST_PATH}/data"
+CSS_DIR="${DEST_PATH}/css"
+
+# Create the subdirectories
+mkdir -p "${DATA_DIR}" "${CSS_DIR}"
+
+# Preserve the hosting report data file
+FINAL_HOSTING_REPORT_DATA_FILE="${DATA_DIR}/hosting_report_data-${TODAY}.csv"
+mv "${HOSTING_REPORT_DATA_FILE}" "${FINAL_HOSTING_REPORT_DATA_FILE}"
+
+# Preserve the weekly report file
+FINAL_WEEKLY_REPORT_FILE="${DATA_DIR}/hosting_report_weekly-${TODAY}.csv"
+mv "${WEEKLY_REPORT_FILE}" "${FINAL_WEEKLY_REPORT_FILE}"
+
+# Generate the styles.css file
+STYLES_FILE="${TEMP_DIR}/styles.css"
+cat <<EOF > "${STYLES_FILE}"
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+header {
+    background-color: #24292e;
+    color: #FFFFFF;
+    padding: 15px 20px;
+    text-align: center;
+}
+header img {
+    max-height: 50px;
+    vertical-align: middle;
+}
+header h1 {
+    display: inline-block;
+    margin: 0;
+    font-size: 28px;
+    vertical-align: middle;
+    color: #FFFFFF;
+}
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+h1, h2 {
+    color: #24292e;
+}
+h3 {
+    color: #333;
+}
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #24292e;
+    color: white;
+    margin-top: 50px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+}
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+}
+th {
+    background-color: #f4f4f4;
+}
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+tr:hover {
+    background-color: #f1f1f1;
+}
+EOF
+
+# Generate HTML report
+HTML_FILE="${TEMP_DIR}/report.html"
+
+# Write the static HTML structure
+cat <<EOF > "${HTML_FILE}"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SteamFork Hosting Report - ${TODAY}</title>
+    <script src="https://cdn.plot.ly/plotly-2.24.2.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <img src="https://wiki.steamfork.org/_inc/images/logo.png" alt="SteamFork Logo">
+        <h1>SteamFork Hosting Report - ${TODAY}</h1>
+    </header>
+    <main>
+        <p>Welcome to the SteamFork Hosting Report for <strong>${TODAY}</strong>. This report provides a comprehensive overview of hosting activity, including:</p>
+        <ul>
+            <li><strong>Branch Information</strong>: Details about each branch, including versions and descriptions.</li>
+            <li><strong>Hosting Summary</strong>: Aggregated metrics for biweekly, weekly, and daily downloads.</li>
+            <li><strong>Branch Metrics Timeline</strong>: Interactive charts showing trends over time.</li>
+            <li><strong>Daily Hosting Metrics</strong>: A sortable table with granular daily activity.</li>
+        </ul>
+        <p><strong>Note</strong>: Data for today (${TODAY}) has been excluded to ensure all logs are complete.</p>
+EOF
+
+# Add the Table of Contents
+cat <<EOF >> "${HTML_FILE}"
+        <h2>Table of Contents</h2>
+        <div class="toc">
+            <ul>
+                <li><a href="#branch-information">Branch Information</a></li>
+                <li><a href="#hosting-summary">Hosting Summary</a></li>
+                <li><a href="#charts">Branch Metrics Over Time</a>
+                    <ul>
+EOF
+
+# Add branches to the ToC
+branches=$(cut -d',' -f3 "${FINAL_HOSTING_REPORT_DATA_FILE}" | grep -v "^Branch$" | sort | uniq)
+for branch in ${branches}; do
+    branch_id=$(echo "${branch}" | sed 's/ /_/g')
+    echo "                        <li><a href=\"#chart-${branch_id}\">Timeline Chart for Branch \"${branch}\"</a></li>" >> "${HTML_FILE}"
+done
+
+cat <<EOF >> "${HTML_FILE}"
+                    </ul>
+                </li>
+                <li><a href="#sortable-data-table">Hosting Metrics By Day</a></li>
+            </ul>
+        </div>
+EOF
+
+# Add the Branch Information section
+cat <<EOF >> "${HTML_FILE}"
+        <h2 id="branch-information">Branch Information</h2>
+        <p>This section provides an overview of the branches used in SteamFork hosting:</p>
+        <ul>
+            <li><strong>Branch</strong>: The name of the branch (e.g., <code>rel</code>, <code>testing</code>, <code>stable</code>).</li>
+            <li><strong>Version</strong>: The current version of the branch.</li>
+            <li><strong>Description</strong>: A brief explanation of the branch's purpose and status.</li>
+        </ul>
+        <table id="branch-info-table">
+            <thead>
+                <tr>
+                    <th>Branch</th>
+                    <th>Version</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>rel</strong></td>
+                    <td>${VERSION_REL}</td>
+                    <td>Represents the release branch. This branch will be deprecated after version ${VERSION_REL} is no longer maintained.</td>
+                </tr>
+                <tr>
+                    <td><strong>testing</strong></td>
+                    <td>${VERSION_TESTING}</td>
+                    <td>Represents the testing branch. This branch is used for pre-release testing.</td>
+                </tr>
+                <tr>
+                    <td><strong>stable</strong></td>
+                    <td>${VERSION_STABLE}</td>
+                    <td>Represents the stable branch. This branch is used for production-ready releases.</td>
+                </tr>
+            </tbody>
+        </table>
+EOF
+
+# Add the Hosting Summary
+cat <<EOF >> "${HTML_FILE}"
+        <h2 id="hosting-summary">Hosting Summary</h2>
+        <p>The Hosting Summary table provides a high-level overview of hosting activity:</p>
+        <ul>
+            <li><strong>Metrics</strong>: Unique requests for metadata, ISO files, and update files.</li>
+            <li><strong>Time Periods</strong>: Aggregated counts for biweekly, weekly, and daily downloads.</li>
+            <li><strong>Branches</strong>: Metrics are grouped by branch (e.g., <code>rel</code>, <code>testing</code>, <code>stable</code>).</li>
+        </ul>
+        <table id="summary-table" class="sortable">
+            <thead>
+                <tr>
+                    <th>Branch</th>
+                    <th>Biweekly Metadata Downloads</th>
+                    <th>Biweekly ISO Downloads</th>
+                    <th>Biweekly Update Downloads</th>
+                    <th>Weekly Metadata Downloads</th>
+                    <th>Weekly ISO Downloads</th>
+                    <th>Weekly Update Downloads</th>
+                    <th>Daily Metadata Downloads</th>
+                    <th>Daily ISO Downloads</th>
+                    <th>Daily Update Downloads</th>
+                </tr>
+            </thead>
+            <tbody>
+EOF
+
+# Add rows to the summary table
+tail -n +2 "${FINAL_WEEKLY_REPORT_FILE}" | while IFS=',' read -r branch biweekly_metadata biweekly_iso biweekly_update weekly_metadata weekly_iso weekly_update daily_metadata daily_iso daily_update; do
+    echo "                <tr>" >> "${HTML_FILE}"
+    echo "                    <td>${branch}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${biweekly_metadata}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${biweekly_iso}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${biweekly_update}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${weekly_metadata}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${weekly_iso}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${weekly_update}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${daily_metadata}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${daily_iso}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${daily_update}</td>" >> "${HTML_FILE}"
+    echo "                </tr>" >> "${HTML_FILE}"
+done
+
+cat <<EOF >> "${HTML_FILE}"
+            </tbody>
+        </table>
+EOF
+
+# Add the timeline charts
+cat <<EOF >> "${HTML_FILE}"
+        <h2 id="charts">Branch Metrics Timeline</h2>
+        <p>The Branch Metrics Timeline section visualizes trends in metadata, ISO, and update downloads for each branch over time. Each branch has its own set of interactive charts, allowing you to explore patterns and fluctuations in hosting activity.</p>
+        <div id="charts-container"></div>
+        <script>
+            const data = \`
+EOF
+
+# Append the filtered data into the JavaScript block
+cat "$FINAL_HOSTING_REPORT_DATA_FILE" >> "$HTML_FILE"
+
+# Continue the JavaScript block
+cat <<EOF >> "${HTML_FILE}"
+            \`;
+
+            const lines = data.trim().split('\n');
+            const headers = lines[0].split(',');
+            const rows = lines.slice(1).map(line => line.split(','));
+
+            const branches = [...new Set(rows.map(row => row[2]))];
+
+           
+            const types = ['Metadata Downloads', 'ISO File Downloads', 'Update File Downloads'];
+
+            branches.forEach((branch, branchIndex) => {
+                const branchId = branch.replace(/ /g, '_');
+                const branchData = rows.filter(row => row[2] === branch);
+                const dates = [...new Set(branchData.map(row => row[0]))].sort();
+
+                if (dates.length === 0) {
+                    console.error(\`No dates found for branch: \${branch}\`);
+                    return;
+                }
+
+                document.getElementById('charts-container').innerHTML += \`
+                    <div class="chart-container" id="chart-\${branchId}">
+                        <h3>Timeline Chart for Branch: \${branch}</h3>
+                    </div>
+                \`;
+
+                const DEBUG = false; // Set to true to enable logging
+
+                types.forEach((type, typeIndex) => {
+                    const counts = dates.map(date => {
+                        const entries = branchData.filter(row => row[0] === date);
+                        return entries.reduce((sum, row) => sum + (parseInt(row[typeIndex + 3], 10) || 0), 0);
+                    });
+
+                    if (DEBUG) {
+                        console.log(\`Processing chart for type: \${type}\`);
+                        console.log(\`Dates:\`, dates);
+                        console.log(\`Counts:\`, counts);
+                    }
+
+                    const chartId = \`chart_\${branchId}_\${type.replace(/ /g, '_')}_\${branchIndex}_\${typeIndex}\`;
+                    document.getElementById(\`chart-\${branchId}\`).innerHTML += \`
+                        <h4>\${type}</h4>
+                        <div id="\${chartId}" style="width:800px;height:400px;"></div>
+                    \`;
+
+                    const chartElement = document.getElementById(chartId);
+                    if (!chartElement) {
+                        if (DEBUG) console.error(\`Chart element not found: \${chartId}\`);
+                        return;
+                    }
+
+                    if (DEBUG) console.log(\`Chart element found: \${chartId}\`);
+
+                    let plotData, layout;
+
+                    if (dates.length === 0 || counts.every(count => count === 0)) {
+                        if (DEBUG) console.warn(\`No valid data for chart: \${chartId}\`);
+                        plotData = [{
+                            x: [0],
+                            y: [0],
+                            mode: 'text',
+                            text: ['No data available'],
+                            textfont: { size: 20 },
+                            type: 'scatter'
+                        }];
+                        layout = {
+                            title: \`Timeline for Branch: \${branch} - \${type}\`,
+                            xaxis: { visible: false },
+                            yaxis: { visible: false }
+                        };
+                    } else {
+                        plotData = [{
+                            x: dates,
+                            y: counts,
+                            mode: 'lines+markers',
+                            name: type
+                        }];
+                        layout = {
+                            title: \`Timeline for Branch: \${branch} - \${type}\`,
+                            xaxis: { title: 'Date', type: 'date' },
+                            yaxis: { title: 'Counts', range: [0, Math.max(...counts) * 1.1] }
+                        };
+                    }
+
+                    const config = {
+                        displayModeBar: true,
+                        displaylogo: false,
+                        scrollZoom: true
+                    };
+
+                    if (DEBUG) {
+                        console.log(\`Plotly data for chart: \${chartId}\`, plotData);
+                        console.log(\`Plotly layout for chart: \${chartId}\`, layout);
+                        console.log(\`Plotly config for chart: \${chartId}\`, config);
+                    }
+
+                    setTimeout(() => {
+                        try {
+                            Plotly.newPlot(chartId, plotData, layout, config).then(() => {
+                                Plotly.relayout(chartId, { scrollZoom: true });
+                                if (DEBUG) console.log(\`Chart rendered successfully: \${chartId}\`);
+                            }).catch(error => {
+                                document.getElementById(chartId).innerHTML = \`
+                                    <p>Error rendering chart for \${type}. Please try again later.</p>
+                                \`;
+                            });
+                        } catch (error) {
+                            document.getElementById(chartId).innerHTML = \`
+                                <p>Unexpected error occurred while rendering chart for \${type}.</p>
+                            \`;
+                        }
+                    }, 100);
+                });
+            });
+        </script>
+EOF
+
+# Add the sortable data table
+cat <<EOF >> "${HTML_FILE}"
+        <h2 id="sortable-data-table">Hosting Metrics By Day</h2>
+        <p>The Hosting Metrics By Day table provides a detailed breakdown of unique requests for metadata, ISO files, and update files on a daily basis. The data is organized by host and branch, offering granular insights into daily hosting activity.</p>
+        <table id="data-table">
+            <thead>
+                <tr>
+EOF
+
+# Add table headers dynamically
+headers=$(head -n 1 "${FINAL_HOSTING_REPORT_DATA_FILE}")
+IFS=',' read -r -a header_array <<< "${headers}"
+for header in "${header_array[@]}"; do
+    echo "                    <th onclick=\"sortTable(this)\">${header}</th>" >> "${HTML_FILE}"
+done
+
+cat <<EOF >> "${HTML_FILE}"
+                </tr>
+            </thead>
+            <tbody>
+EOF
+
+# Add table rows dynamically
+tail -n +2 "${FINAL_HOSTING_REPORT_DATA_FILE}" | while IFS=',' read -r date instance branch metadata iso img_zst; do
+    echo "                <tr>" >> "${HTML_FILE}"
+    echo "                    <td>${date}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${instance}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${branch}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${metadata}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${iso}</td>" >> "${HTML_FILE}"
+    echo "                    <td>${img_zst}</td>" >> "${HTML_FILE}"
+    echo "                </tr>" >> "${HTML_FILE}"
+done
+
+cat <<EOF >> "${HTML_FILE}"
+            </tbody>
+        </table>
+        <script>
+            function sortTable(header) {
+                const table = header.closest('table');
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                const columnIndex = Array.from(header.parentNode.children).indexOf(header);
+                const isAscending = header.dataset.sortOrder !== 'asc';
+
+                rows.sort((rowA, rowB) => {
+                    const cellA = rowA.children[columnIndex].textContent.trim();
+                    const cellB = rowB.children[columnIndex].textContent.trim();
+
+                    if (!isNaN(cellA) && !isNaN(cellB)) {
+                        return isAscending ? cellA - cellB : cellB - cellA;
+                    }
+                    return isAscending
+                        ? cellA.localeCompare(cellB, undefined, { numeric: true })
+                        : cellB.localeCompare(cellA, undefined, { numeric: true });
+                });
+
+                rows.forEach(row => tbody.appendChild(row));
+                header.dataset.sortOrder = isAscending ? 'asc' : 'desc';
+            }
+
+           
+            document.addEventListener('DOMContentLoaded', () => {
+                const firstHeader = document.querySelector('#data-table thead th');
+                if (firstHeader) {
+                    sortTable(firstHeader);
+                }
+            });
+        </script>
+EOF
+
+cat <<EOF >> "${HTML_FILE}"
+    </main>
+    <footer>
+        <p>Generated by Branch Timeline Report Tool</p>
+    </footer>
+</body>
+</html>
+EOF
+
+# Move the stylesheet to the CSS directory
+FINAL_STYLES_FILE="${CSS_DIR}/styles.css"
+mv "${STYLES_FILE}" "${FINAL_STYLES_FILE}"
+
+# Move the final HTML report to the destination directory
+FINAL_HTML_FILE="${DEST_PATH}/hosting_report-${TODAY}.html"
+mv "${HTML_FILE}" "${FINAL_HTML_FILE}"
+
+# Create a symlink for the current hosting report
+ln -sf "hosting_report-${TODAY}.html" "${DEST_PATH}/index.html"
+
+# Clean up the temporary directory
+rm -rf "${TEMP_DIR}"
+
+# Output the locations of the generated files
+echo "HTML report generated: ${FINAL_HTML_FILE}"
+echo "CSS file generated: ${FINAL_STYLES_FILE}"
+echo "Data files generated in: ${DATA_DIR}"
+echo "Symlink created: ${DEST_PATH}/index.html -> hosting_report-${TODAY}.html"

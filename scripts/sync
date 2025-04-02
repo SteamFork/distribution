@@ -114,6 +114,10 @@ mirrors)
     )
     private_key remove
     ;;
+reports-sync)
+    echo "Syncing reports to ${WWWHOST}."
+    rsync -av --delete release/reports/ ${WWWUSER}@${WWWHOST}:${WWWROOT}/reports/
+    ;;
 check)
     sudo pacman -Sy >/dev/null 2>&1
     REPO_DIR="${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}"
