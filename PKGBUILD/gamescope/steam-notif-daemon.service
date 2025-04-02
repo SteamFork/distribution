@@ -8,3 +8,4 @@ ExecStart=/usr/bin/steam_notif_daemon
 Restart=no
 EnvironmentFile=%t/gamescope-environment
 Slice=session.slice
+TimeoutStopSec=5

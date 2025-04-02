@@ -8,3 +8,4 @@ Type=exec
 ExecStart=/usr/bin/xbindkeys -n -f /etc/xbindkeysrc
 EnvironmentFile=%t/gamescope-environment
 Slice=session.slice
+TimeoutStopSec=5
