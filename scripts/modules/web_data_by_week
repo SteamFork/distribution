@@ -95,17 +95,13 @@ function total_count() {
 OUTPUT_FILE=$(mktemp)
 
 # Print the header
-echo "Branch,Biweekly Metadata Downloads,Biweekly ISO Downloads,Biweekly Update Downloads,Weekly Metadata Downloads,Weekly ISO Downloads,Weekly Update Downloads,Daily Metadata Downloads,Daily ISO Downloads,Daily Update Downloads" > "${OUTPUT_FILE}"
+echo "Branch,Biweekly Metadata Downloads,Biweekly ISO Downloads,Biweekly Update Downloads,Weekly Metadata Downloads,Weekly ISO Downloads,Weekly Update Downloads" > "${OUTPUT_FILE}"
 
 # Iterate over branches in the correct order
 for BRANCH in "${BRANCHES[@]}"; do
-    TODAY=$(date -d "yesterday" +"%d/%b/%Y")
     WEEK_START=$(date -d "7 days ago" +"%d/%b/%Y")
     BIWEEK_START=$(date -d "14 days ago" +"%d/%b/%Y")
-
-    METADATA_COUNT_DAILY=$(total_count "latest_${BRANCH}.releasemeta" "${TODAY}" "${TODAY}")
-    ISO_DOWNLOADS_DAILY=$(total_count "steamfork-${BRANCH}-.*\.iso" "${TODAY}" "${TODAY}")
-    UPDATE_DOWNLOADS_DAILY=$(total_count "steamfork_${BRANCH}_.*\.img.zst" "${TODAY}" "${TODAY}")
+    TODAY=$(date -d "yesterday" +"%d/%b/%Y")
 
     METADATA_COUNT_WEEKLY=$(total_count "latest_${BRANCH}.releasemeta" "${WEEK_START}" "${TODAY}")
     ISO_DOWNLOADS_WEEKLY=$(total_count "steamfork-${BRANCH}-.*\.iso" "${WEEK_START}" "${TODAY}")
@@ -115,11 +111,10 @@ for BRANCH in "${BRANCHES[@]}"; do
     ISO_DOWNLOADS_BIWEEKLY=$(total_count "steamfork-${BRANCH}-.*\.iso" "${BIWEEK_START}" "${TODAY}")
     UPDATE_DOWNLOADS_BIWEEKLY=$(total_count "steamfork_${BRANCH}_.*\.img.zst" "${BIWEEK_START}" "${TODAY}")
 
-    printf "%s,%d,%d,%d,%d,%d,%d,%d,%d,%d\n" \
+    printf "%s,%d,%d,%d,%d,%d,%d\n" \
         "${BRANCH}" \
         "${METADATA_COUNT_BIWEEKLY}" "${ISO_DOWNLOADS_BIWEEKLY}" "${UPDATE_DOWNLOADS_BIWEEKLY}" \
-        "${METADATA_COUNT_WEEKLY}" "${ISO_DOWNLOADS_WEEKLY}" "${UPDATE_DOWNLOADS_WEEKLY}" \
-        "${METADATA_COUNT_DAILY}" "${ISO_DOWNLOADS_DAILY}" "${UPDATE_DOWNLOADS_DAILY}" >> "${OUTPUT_FILE}"
+        "${METADATA_COUNT_WEEKLY}" "${ISO_DOWNLOADS_WEEKLY}" "${UPDATE_DOWNLOADS_WEEKLY}" >> "${OUTPUT_FILE}"
 done
 
 # Print the output
