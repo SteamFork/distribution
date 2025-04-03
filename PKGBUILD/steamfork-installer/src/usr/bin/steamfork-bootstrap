@@ -135,6 +135,7 @@ if [[ -n "$(blkid | grep sf)" ]]; then
         run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG wheel ${OSUSER}" 82 "Adding ${OSUSER} to wheel group"
         run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG video ${OSUSER}" 84 "Adding ${OSUSER} to video group"
         run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG steamos-log-submitter ${OSUSER}" 86 "Adding ${OSUSER} to steamos-log-submitter group"
+	run_command "arch-chroot ${SUBVOLLOCATION} xdg-user-dirs-update
         run_command "arch-chroot ${SUBVOLLOCATION} cp -f /usr/share/icons/steam/${OSUSER}-face.icon /home/${OSUSER}/.face.icon" 88 "Copying user icon for ${OSUSER}"
         run_command "arch-chroot ${SUBVOLLOCATION} chown ${OSUSER}:${OSUSER} /home/${OSUSER}/.face.icon" 90 "Setting ownership of user icon for ${OSUSER}"
         run_command "echo -e \"${OSPASS}\n${OSPASS}\" | arch-chroot ${SUBVOLLOCATION} passwd ${OSUSER}" 92 "Setting password for ${OSUSER}"
