@@ -3,7 +3,7 @@
 pkgname=steamdeck-kde-presets
 _srctag=0.28
 pkgver=${_srctag}.SteamFork
-pkgrel=1
+pkgrel=2
 arch=('any')
 url=""
 pkgdesc="Steamdeck KDE Presets"
