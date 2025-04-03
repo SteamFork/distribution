@@ -1,0 +1,38 @@
+# Maintainer David Edmundson (bluesystems@davidedmundson.co.uk)
+
+pkgname=steamdeck-kde-presets
+_srctag=0.28
+pkgver=${_srctag}.SteamFork
+pkgrel=1
+arch=('any')
+url=""
+pkgdesc="Steamdeck KDE Presets"
+license=('GPL2')
+depends=('kdialog')
+makedepends=('git' 'openssh')
+source=("git+https://gitlab.com/evlaV/steamdeck-kde-presets.git#tag=$_srctag"
+	0001-fix-plasma-theme.patch
+)
+
+sha256sums=(
+	'SKIP'
+	'e19fc8819f17f5aeb96568645c63fd837f79e6d8762cbf346e19174cce075ec9' # 0001-fix-plasma-theme.patch
+)
+
+prepare() {
+	cd ${pkgname}
+        local src
+        for src in "${source[@]}"; do
+                src="${src%%::*}"
+                src="${src##*/}"
+                [[ $src = *.patch ]] || continue
+                echo "Applying patch $src..."
+                patch -Np1 < "../$src"
+        done
+}
+
+package() {
+  cp -R "$srcdir"/steamdeck-kde-presets/* "$pkgdir"
+  install -d -m0755 "$pkgdir/usr/lib/systemd/system/multi-user.target.wants/"
+  ln -s ../steamos-set-plasma-theme.service "$pkgdir/usr/lib/systemd/system/multi-user.target.wants/"
+}
