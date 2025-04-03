@@ -15,8 +15,9 @@ concurrency:
 
 jobs:
   generate-and-sync:
+    if: github.repository == 'SteamFork/distribution' # Ensure the workflow runs only for this repository
     timeout-minutes: 1440
-    runs-on: 3.7 #
+    runs-on: 3.7
     steps:
       - name: Set up Git
         env:
