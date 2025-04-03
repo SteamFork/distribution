@@ -155,7 +155,7 @@ maliit-keyboard
 qt6-virtualkeyboard
 
 # Steamfork dependencies
-steamdeck-kde-presets
+steamfork/steamdeck-kde-presets
 steamfork-device-support
 steamfork-customizations
 steamfork-theme

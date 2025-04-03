@@ -1013,7 +1013,7 @@ export STEAMOS_PKGS="7zip
                     steam-jupiter-stable
                     steam_notif_daemon
                     steamdeck-dsp
-                    steamdeck-kde-presets
+                    steamfork/steamdeck-kde-presets
                     steamos-atomupd-client
                     steamos-customizations-jupiter
                     steamos-devkit-service
