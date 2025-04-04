@@ -1,9 +1,9 @@
 # Maintainer: Pierre-Loup A. Griffais <pgriffais@valvesoftware.com>
 
 pkgname=gamescope
-_srctag=3.16.3
+_srctag=3.16.2
 pkgver=${_srctag//-/.}.SteamFork
-pkgrel=2
+pkgrel=10
 pkgdesc="gaming shell based on Xwayland, powered by Vulkan and DRM"
 arch=(x86_64)
 url="https://github.com/ValveSoftware/gamescope"
@@ -52,7 +52,7 @@ sha256sums=('5be4343b05a99463990330a3986d4cf589355586f3496de6561695f0c262e5d1' #
             '7ad42dfd12a8d429b9d29dbf58131cf2c7e1740ff4e6830df1d9524c95fa2582' # steam-short-session-tracker.service
             '525060896abef2da9db8d8294253b7444d60e48cf6cc0496ca48fc7084cc8590' # steam_http_loader.desktop
             'dea09abb47c3d907c00ff7f36967b599f3caca554ac6eb7b7dc6d2d78651dd44' # steam-http-loader
-            '8a9b0b2f2fe1274f7bf99778a86be0da5f1e70413c68c4904c63312c8734ec7a' # git+https://github.com/ValveSoftware/gamescope.git#tag=$_srctag
+            '928b91e4ee11d9b7f7cdc092632f6337da2ae1bb394089663df5a45699ab1b9b' # git+https://github.com/ValveSoftware/gamescope.git#tag=$_srctag
             'SKIP' # git+https://github.com/Joshua-Ashton/wlroots.git
             'SKIP' # git+https://gitlab.freedesktop.org/emersion/libliftoff.git
             '03726f2fb44ae79e6a398e8f9aaaf8054800dda9b8298726157522fe5f7296b1' # git+https://github.com/Joshua-Ashton/GamescopeShaders.git#tag=v0.1
@@ -63,15 +63,6 @@ install=gamescope.install
 
 prepare() {
 	cd "$pkgname"
-
-        local src
-        for src in "${source[@]}"; do
-                src="${src%%::*}"
-                src="${src##*/}"
-                [[ $src = *.patch ]] || continue
-                echo "Applying patch $src..."
-                patch -Np1 < "../$src"
-        done
 
 	# git submodules
 	sed -i 's~https://gitlab.freedesktop.org/emersion/libliftoff.git~https://github.com/ardera/libliftoff.git~g' $srcdir/gamescope/.gitmodules
