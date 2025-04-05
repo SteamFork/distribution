@@ -1,8 +1,8 @@
 # Maintainer: Fewtarius
 
 pkgname=steamfork-installer
-pkgver=2025.04.03
-pkgrel=3
+pkgver=2025.04.05
+pkgrel=1
 pkgdesc='Installation utility for SteamFork.'
 arch=('any')
 url='http://www.steamfork.org'
