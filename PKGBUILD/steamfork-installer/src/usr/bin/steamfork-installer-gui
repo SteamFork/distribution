@@ -169,6 +169,11 @@ class PreparationPage(QWidget):
         use_unallocated = self.install_type.currentText().startswith("Use Unallocated")
         mode = "gamescope" if self.mode_var.currentText() == "Game Mode" else "desktop"
 
+        if not drive or "Select a drive..." in drive:
+            debug_print("PreparationPage: Invalid drive selected")
+            QMessageBox.warning(self, 'Warning', 'Please select a valid drive for installation.')
+            return
+
         if password and root_password and drive:
             warning_msg = f'Are you sure you want to continue with the installation?\n'
             if use_unallocated:
@@ -426,7 +431,7 @@ if __name__ == '__main__':
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="SteamFork Installer GUI")
     parser.add_argument('--debug', action='store_true', help="Enable debug output")
-    args = parser.parse_args()
+    args = argparse.ArgumentParser()
 
     # Set debug variable based on command line argument
     DEBUG = args.debug
