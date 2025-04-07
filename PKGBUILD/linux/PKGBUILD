@@ -6,8 +6,8 @@
 #             Mikael Eriksson <mikael_eriksson@miffe.org>
 
 pkgbase=linux
-pkgver=6.13.9
-pkgrel=2
+pkgver=6.13.10
+pkgrel=1
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -81,7 +81,7 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
 )
 sha256sums=('SKIP'
-  'f6051fafcf9fbab571b0e477571fa83b9d68451fe0bdd3a7cfb347a08a569972' # config
+  '632355b46aec2757504fa95fddebe1009e3f3cb99b1f2ae3fc079b8051e5a1c5' # config
   '8ea46d255adc150d9545940c59d3f83203127eb41a6595664bc906f101c8e7e9' # 0001-drm-panel-orientation-quirks.patch
   '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
   '02f5eaede065b7d68ccf469c9f54eab3ce3f0d852624a3430d83bcd6e2bd7dbb' # 0006-Ayaneo-geek-headset-patch.patch
