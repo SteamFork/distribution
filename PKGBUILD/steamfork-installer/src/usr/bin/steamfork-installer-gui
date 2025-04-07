@@ -431,7 +431,7 @@ if __name__ == '__main__':
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="SteamFork Installer GUI")
     parser.add_argument('--debug', action='store_true', help="Enable debug output")
-    args = argparse.ArgumentParser()
+    args = parser.parse_args()
 
     # Set debug variable based on command line argument
     DEBUG = args.debug
