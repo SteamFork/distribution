@@ -207,7 +207,7 @@ if [ "${USE_UNALLOCATED}" = true ]; then
     HOME_PARTITION=$(lsblk -o NAME,LABEL,PARTLABEL -ln | grep sf_home | awk '{print $1}')
 
     log_progress 15 "Formatting partitions..."
-    run_command "mkfs -t vfat /dev/${EFI_PARTITION}" 16 "Formatting EFI partition"
+    run_command "mkfs.fat -F32 /dev/${EFI_PARTITION}" 16 "Formatting EFI partition"
     run_command "fatlabel /dev/${EFI_PARTITION} sf_efi" 17 "Labeling EFI partition"
     run_command "mkfs -t btrfs -f /dev/${ROOT_PARTITION}" 18 "Formatting root partition"
     run_command "btrfs filesystem label /dev/${ROOT_PARTITION} sf_root" 19 "Labeling root partition"
@@ -251,7 +251,7 @@ else
     ROOT_PARTITION="${INSTALLDEVICE}2"
     VAR_PARTITION="${INSTALLDEVICE}3"
     HOME_PARTITION="${INSTALLDEVICE}4"
-    run_command "mkfs -t vfat ${INSTALLDEVICE}1" 15 "Formatting EFI partition"
+    run_command "mkfs.fat -F32 ${INSTALLDEVICE}1" 15 "Formatting EFI partition"
     run_command "fatlabel ${INSTALLDEVICE}1 sf_efi" 16 "Labeling EFI partition"
     run_command "mkfs -t btrfs -f ${ROOT_PARTITION}" 17 "Formatting root partition"
     run_command "btrfs filesystem label ${ROOT_PARTITION} sf_root" 18 "Labeling root partition"
