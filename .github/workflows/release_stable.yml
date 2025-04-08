@@ -39,7 +39,7 @@ jobs:
       - name: Build Release Images
         run: |
           set -e
-          make image stable BUILD_VER="${{ steps.version.outputs.version }}"
+          make image rel BUILD_VER="${{ steps.version.outputs.version }}"
   sync:
     if: github.repository == 'SteamFork/distribution' && startsWith(github.ref, 'refs/tags/2')
     timeout-minutes: 1440
