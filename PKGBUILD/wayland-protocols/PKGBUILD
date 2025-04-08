@@ -6,7 +6,7 @@
 #   Contributor Sébastien Luttringer <seblu@seblu.net>
 
 pkgname=wayland-protocols
-pkgver=1.42
+pkgver=1.43
 pkgrel=1
 pkgdesc='Specifications of extended Wayland protocols'
 arch=('any')
