@@ -332,13 +332,19 @@ chmod 440 ${ROOT_WORKDIR}/etc/sudoers.d/zz_wheel
 echo "Fix runtime audio configuration."
   for AUDIO_SERVICE in pipewire wireplumber
   do
-    arch-chroot ${ROOT_WORKDIR} sed -i 's~multi-user.target~local-fs.target~g' /usr/lib/systemd/system/${AUDIO_SERVICE}-sysconf.service
+       sed -i 's~multi-user.target~local-fs.target~g' /usr/lib/systemd/system/${AUDIO_SERVICE}-sysconf.service
     arch-chroot ${ROOT_WORKDIR} systemctl enable ${AUDIO_SERVICE}-sysconf.service
   done
 
 echo "Enable systemd-resolved."
 rm -f ${ROOT_WORKDIR}/etc/resolv.conf
 ln -sf /run/systemd/resolve/stub-resolv.conf ${ROOT_WORKDIR}/etc/resolv.conf
+
+echo "Ensure Xwayland starts in desktop mode."
+for SESSION in plasma-steamos-wayland-oneshot.desktop plasma.desktop
+do
+  arch-chroot ${ROOT_WORKDIR} sed -i 's~startplasma-steamos-oneshot~startplasma-steamos-oneshot --xwayland~g' /usr/share/wayland-sessions/${SESSION}
+done
 
 echo "Fix broken /var/run link."
   arch-chroot ${ROOT_WORKDIR} echo "After=systemd-tmpfiles-setup.service" >> /usr/lib/systemd/system/network-pre.target
