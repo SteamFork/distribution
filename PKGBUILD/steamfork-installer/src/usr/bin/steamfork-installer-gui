@@ -1,34 +1,39 @@
 #!/usr/bin/env python
 
 import sys
-from PyQt6.QtWidgets import QVBoxLayout, QApplication, QMainWindow, QSizePolicy, QStackedWidget, QWidget, QLabel, QPushButton, QComboBox, QLineEdit, QTextEdit, QHBoxLayout, QMessageBox, QSpacerItem, QTabWidget, QTabBar, QGridLayout, QFormLayout, QGroupBox, QProgressBar
+from PyQt6.QtWidgets import (
+    QVBoxLayout, QApplication, QMainWindow, QStackedWidget, QWidget, QLabel,
+    QPushButton, QComboBox, QLineEdit, QTextEdit, QHBoxLayout, QMessageBox,
+    QFormLayout, QGroupBox, QProgressBar, QTabWidget
+)
 from PyQt6.QtCore import Qt, QProcess, QCoreApplication
 from PyQt6.QtGui import QFont, QPixmap, QIcon, QGuiApplication
 import subprocess
-import time
 import argparse
 
 DistroName = "SteamFork"
 DEBUG = False  # Set to False by default
 
+
 def debug_print(message):
     if DEBUG:
         print(message)
-        sys.stdout.flush()  # Ensure the output is flushed immediately
+        sys.stdout.flush()
+
 
 class WelcomePage(QWidget):
     def __init__(self, next_callback, parent=None):
         super(WelcomePage, self).__init__(parent)
-        welcome_layout = QVBoxLayout(self)
+        layout = QVBoxLayout(self)
 
         # Add the SteamFork logo
         logo_label = QLabel(self)
         pixmap = QPixmap("/usr/share/icons/steamfork/steamfork.png")
         pixmap = pixmap.scaled(128, 128, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
         logo_label.setPixmap(pixmap)
-        welcome_layout.addWidget(logo_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(logo_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        # Create a QTextEdit widget for displaying rich text
+        # Add welcome text
         welcome_text = QTextEdit(self)
         welcome_text.setReadOnly(True)
         welcome_text.setHtml(f"""
@@ -37,15 +42,16 @@ class WelcomePage(QWidget):
             <p>After installation, your system will boot directly into Steam, providing you with an optimized gaming experience.</p>
             <p>Click "Next" to proceed with the installation.</p>
         """)
-        # Set the background color of the QTextEdit to match the rest of the window
         welcome_text.setStyleSheet("background-color: transparent; border: none;")
-        welcome_layout.addWidget(welcome_text)
+        layout.addWidget(welcome_text)
 
+        # Add next button
         next_button = QPushButton("Next", self)
         next_button.clicked.connect(next_callback)
-        welcome_layout.addWidget(next_button, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(next_button, alignment=Qt.AlignmentFlag.AlignRight)
 
-        self.setLayout(welcome_layout)
+        self.setLayout(layout)
+
 
 class PreparationPage(QWidget):
     def __init__(self, next_callback, prev_callback, parent=None):
@@ -54,56 +60,55 @@ class PreparationPage(QWidget):
         self.next_callback = next_callback
         self.prev_callback = prev_callback
 
-        preparation_layout = QVBoxLayout(self)
+        layout = QVBoxLayout(self)
 
-        # Installation type and drive selection group
-        install_drive_group = QGroupBox("Installation Preferences")
-        install_drive_layout = QFormLayout()
+        # Installation preferences
+        install_group = QGroupBox("Installation Preferences")
+        install_layout = QFormLayout()
 
         self.install_type = QComboBox(self)
         self.install_type.addItems(["Full Disk", "Use Unallocated Space (25GB minimum required)"])
-        install_drive_layout.addRow("Installation Type:", self.install_type)
+        install_layout.addRow("Installation Type:", self.install_type)
 
-        # Desktop mode selection
         self.mode_var = QComboBox(self)
         self.mode_var.addItems(["Game Mode", "Desktop Mode"])
         self.mode_var.currentIndexChanged.connect(self.update_username_field)
-        install_drive_layout.addRow("Mode:", self.mode_var)
+        install_layout.addRow("Mode:", self.mode_var)
 
         self.drive_var = QComboBox(self)
         self.drive_var.addItem("Select a drive...")
-        install_drive_layout.addRow("Select a drive for installation:", self.drive_var)
+        install_layout.addRow("Select a drive for installation:", self.drive_var)
 
         self.drive_info_label = QLabel("Drive Information: N/A", self)
         monospace_font = QFont("Monospace")
         monospace_font.setStyleHint(QFont.StyleHint.TypeWriter)
         self.drive_info_label.setFont(monospace_font)
-        install_drive_layout.addRow("Drive Information:", self.drive_info_label)
+        install_layout.addRow("Drive Information:", self.drive_info_label)
 
-        install_drive_group.setLayout(install_drive_layout)
-        preparation_layout.addWidget(install_drive_group)
+        install_group.setLayout(install_layout)
+        layout.addWidget(install_group)
 
-        # User configuration group
-        self.username_group = QGroupBox("User Configuration")
-        username_layout = QFormLayout()
+        # User configuration
+        user_group = QGroupBox("User Configuration")
+        user_layout = QFormLayout()
 
         self.username_var = QLineEdit(self)
         self.username_var.setPlaceholderText("Enter username")
         self.username_var.setText("deck")
-        username_layout.addRow("Username:", self.username_var)
+        user_layout.addRow("Username:", self.username_var)
 
         self.password_var = QLineEdit(self)
         self.password_var.setEchoMode(QLineEdit.EchoMode.Password)
-        username_layout.addRow("User Password:", self.password_var)
+        user_layout.addRow("User Password:", self.password_var)
 
         self.password_confirm_var = QLineEdit(self)
         self.password_confirm_var.setEchoMode(QLineEdit.EchoMode.Password)
-        username_layout.addRow("Confirm Password:", self.password_confirm_var)
+        user_layout.addRow("Confirm Password:", self.password_confirm_var)
 
-        self.username_group.setLayout(username_layout)
-        preparation_layout.addWidget(self.username_group)
+        user_group.setLayout(user_layout)
+        layout.addWidget(user_group)
 
-        # System administrator configuration group
+        # System administrator configuration
         admin_group = QGroupBox("System Administrator Configuration")
         admin_layout = QFormLayout()
 
@@ -116,7 +121,7 @@ class PreparationPage(QWidget):
         admin_layout.addRow("Confirm Password:", self.root_password_confirm_var)
 
         admin_group.setLayout(admin_layout)
-        preparation_layout.addWidget(admin_group)
+        layout.addWidget(admin_group)
 
         # Buttons
         btn_layout = QHBoxLayout()
@@ -129,17 +134,57 @@ class PreparationPage(QWidget):
         btn_layout.addStretch()
         btn_layout.addWidget(install_btn)
 
-        preparation_layout.addLayout(btn_layout)
+        layout.addLayout(btn_layout)
 
-        # Populate the drive_var dropdown
+        # Populate drive dropdown
         self.drive_var.addItems(self.get_physical_drives())
         self.drive_var.currentIndexChanged.connect(self.update_drive_info)
 
-        # Set the layout for the page
-        self.setLayout(preparation_layout)
-
-        # Initialize the username field visibility
+        self.setLayout(layout)
         self.update_username_field()
+
+    def update_username_field(self):
+        if self.mode_var.currentText() == "Game Mode":
+            self.username_var.setText("deck")
+            self.username_var.setEnabled(False)
+        else:
+            self.username_var.setEnabled(True)
+
+    def on_prev(self):
+        self.prev_callback()
+
+    def on_next(self):
+        username = self.username_var.text().strip() or "deck"
+        password = self.password_var.text()
+        password_confirm = self.password_confirm_var.text()
+        root_password = self.root_password_var.text()
+        root_password_confirm = self.root_password_confirm_var.text()
+        drive = self.drive_var.currentText()
+        use_unallocated = self.install_type.currentText().startswith("Use Unallocated")
+        mode = "gamescope" if self.mode_var.currentText() == "Game Mode" else "desktop"
+
+        if password != password_confirm:
+            QMessageBox.warning(self, 'Warning', 'The passwords for the user account do not match.')
+            return
+
+        if root_password != root_password_confirm:
+            QMessageBox.warning(self, 'Warning', 'The passwords for the system administrator (root) do not match.')
+            return
+
+        if not drive or "Select a drive..." in drive:
+            QMessageBox.warning(self, 'Warning', 'Please select a valid drive for installation.')
+            return
+
+        warning_msg = f'Are you sure you want to continue with the installation?\n'
+        if use_unallocated:
+            warning_msg += 'All SteamFork partitions will be removed! (if they exist)'
+        else:
+            warning_msg += f'All contents and partitions on /dev/{drive.split("(")[-1].strip(")")} will BE ERASED!'
+
+        confirmation = QMessageBox.question(self, 'Confirmation', warning_msg, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+
+        if confirmation == QMessageBox.StandardButton.Yes:
+            self.next_callback(username, password, root_password, drive, use_unallocated, mode)
 
     def get_physical_drives(self):
         try:
@@ -180,62 +225,6 @@ class PreparationPage(QWidget):
             debug_print(f"Error retrieving drive information: {e}")
             self.drive_info_label.setText("Drive Information: N/A")
 
-    def update_username_field(self):
-        """Enable or disable the username field based on the selected mode."""
-        if self.mode_var.currentText() == "Game Mode":
-            self.username_var.setText("deck")
-            self.username_var.setEnabled(False)
-        else:
-            self.username_var.setEnabled(True)
-
-    def on_prev(self):
-        debug_print("PreparationPage: on_prev called")
-        self.prev_callback()
-
-    def on_next(self):
-        debug_print("PreparationPage: on_next called")
-        username = self.username_var.text().strip() or "deck"
-        password = self.password_var.text()
-        password_confirm = self.password_confirm_var.text()
-        root_password = self.root_password_var.text()
-        root_password_confirm = self.root_password_confirm_var.text()
-        drive = self.drive_var.currentText()
-        use_unallocated = self.install_type.currentText().startswith("Use Unallocated")
-        mode = "gamescope" if self.mode_var.currentText() == "Game Mode" else "desktop"
-
-        # Validate passwords
-        if password != password_confirm:
-            QMessageBox.warning(self, 'Warning', 'The passwords for the user account do not match.')
-            return
-
-        if root_password != root_password_confirm:
-            QMessageBox.warning(self, 'Warning', 'The passwords for the system administrator (root) do not match.')
-            return
-
-        # Validate the selected drive
-        if not drive or "Select a drive..." in drive:
-            debug_print("PreparationPage: Invalid drive selected")
-            QMessageBox.warning(self, 'Warning', 'Please select a valid drive for installation.')
-            return
-
-        if password and root_password and drive:
-            warning_msg = f'Are you sure you want to continue with the installation?\n'
-            if use_unallocated:
-                warning_msg += 'All SteamFork partitions will be removed! (if they exist)'
-            else:
-                warning_msg += f'All contents and partitions on /dev/{drive.split("(")[-1].strip(")")} will BE ERASED!'
-                
-            confirmation = QMessageBox.question(self, 'Confirmation', warning_msg, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-
-            if confirmation == QMessageBox.StandardButton.Yes:
-                debug_print("PreparationPage: User confirmed installation")
-                debug_print(f"Parameters: username={username}, password={password}, root_password={root_password}, drive={drive}, use_unallocated={use_unallocated}, mode={mode}")
-                self.next_callback(username, password, root_password, drive, use_unallocated, mode)
-            else:
-                debug_print("PreparationPage: User canceled installation")
-        else:
-            debug_print("PreparationPage: Missing fields")
-            QMessageBox.warning(self, 'Warning', 'Please fill in all fields.')
 
 class InstallationPage(QWidget):
     def __init__(self, parent=None):
@@ -348,6 +337,7 @@ class InstallationPage(QWidget):
             self.process.terminate()
             self.process.wait()
 
+
 class FinishPage(QWidget):
     def __init__(self, parent=None):
         super(FinishPage, self).__init__(parent)
@@ -397,6 +387,7 @@ class FinishPage(QWidget):
     def close_application(self):
         debug_print("FinishPage: close_application called")
         self.window().close()
+
 
 class InstallerApp(QMainWindow):
     def __init__(self):
