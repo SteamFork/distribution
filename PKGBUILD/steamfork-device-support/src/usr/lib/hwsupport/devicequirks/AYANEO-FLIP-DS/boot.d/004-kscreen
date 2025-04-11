@@ -3,13 +3,17 @@
 # Make sure kscreen files match the default, or else delete and overwrite them
 # TODO: Find literally any other way to do this
 
-for SKELFILE in $( find /etc/skel/.local/share/kscreen/ -type f ); do
-  HOMEFILE="/home/deck/$( echo ${SKELFILE} | cut -f4- -d'/' )"
-  if [ "$( md5sum ${SKELFILE} | cut -f1 -d' ' )" !=  "$( md5sum ${HOMEFILE} | cut -f1 -d' ' )" ]; then
-    rm -rf /home/deck/.local/share/kscreen/
-    mkdir -p /home/deck/.local/share/kscreen/
-    cp -r /etc/skel/.local/share/kscreen/* /home/deck/.local/share/kscreen
-    chown -R deck:deck /home/deck/.local
-    break
-  fi
+
+for USER in $(awk 'BEGIN {FS=":"} {print $1}' /etc/passwd)
+do
+	for SKELFILE in $( find /etc/skel/.local/share/kscreen/ -type f ); do
+	HOMEFILE="/home/${USER}/$( echo ${SKELFILE} | cut -f4- -d'/' )"
+	if [ "$( md5sum ${SKELFILE} | cut -f1 -d' ' )" !=  "$( md5sum ${HOMEFILE} | cut -f1 -d' ' )" ]; then
+		rm -rf /home/${USER}/.local/share/kscreen/
+		mkdir -p /home/${USER}/.local/share/kscreen/
+		cp -r /etc/skel/.local/share/kscreen/* /home/${USER}/.local/share/kscreen
+		chown -R ${USER}:${USER} /home/${USER}/.local
+		break
+	fi
+	done
 done

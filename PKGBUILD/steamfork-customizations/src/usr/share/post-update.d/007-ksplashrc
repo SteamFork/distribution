@@ -1,13 +1,16 @@
 #!/bin/bash
 
-FILE_PATH="/home/deck/.config/kwinrc"
-if [ ! -f "${FILE_PATH}" ]
-then
-	cat <<EOF >${FILE_PATH}
+for USER in $(awk 'BEGIN {FS=":"} {print $1}' /etc/passwd)
+do
+	FILE_PATH="/home/${USER}/.config/kwinrc"
+	if [ ! -f "${FILE_PATH}" ]
+	then
+		cat <<EOF >${FILE_PATH}
 [KSplash]
 Theme=com.valve.vapor.deck.desktop
 EOF
 fi
 
-chown deck:deck ${FILE_PATH}
-chmod 0640 ${FILE_PATH}
+	chown ${USER}:${USER} ${FILE_PATH}
+	chmod 0640 ${FILE_PATH}
+done
