@@ -67,6 +67,7 @@ class PreparationPage(QWidget):
         # Desktop mode selection
         self.mode_var = QComboBox(self)
         self.mode_var.addItems(["Game Mode", "Desktop Mode"])
+        self.mode_var.currentIndexChanged.connect(self.update_username_field)
         install_drive_layout.addRow("Mode:", self.mode_var)
 
         self.drive_var = QComboBox(self)
@@ -82,28 +83,40 @@ class PreparationPage(QWidget):
         install_drive_group.setLayout(install_drive_layout)
         preparation_layout.addWidget(install_drive_group)
 
-        # Password configuration group
-        password_group = QGroupBox("Password Configuration")
-        password_layout = QFormLayout()
+        # User configuration group
+        self.username_group = QGroupBox("User Configuration")
+        username_layout = QFormLayout()
+
+        self.username_var = QLineEdit(self)
+        self.username_var.setPlaceholderText("Enter username")
+        self.username_var.setText("deck")
+        username_layout.addRow("Username:", self.username_var)
 
         self.password_var = QLineEdit(self)
         self.password_var.setEchoMode(QLineEdit.EchoMode.Password)
-        password_layout.addRow("Password for user account (deck):", self.password_var)
+        username_layout.addRow("User Password:", self.password_var)
 
         self.password_confirm_var = QLineEdit(self)
         self.password_confirm_var.setEchoMode(QLineEdit.EchoMode.Password)
-        password_layout.addRow("Confirm password for user account (deck):", self.password_confirm_var)
+        username_layout.addRow("Confirm Password:", self.password_confirm_var)
+
+        self.username_group.setLayout(username_layout)
+        preparation_layout.addWidget(self.username_group)
+
+        # System administrator configuration group
+        admin_group = QGroupBox("System Administrator Configuration")
+        admin_layout = QFormLayout()
 
         self.root_password_var = QLineEdit(self)
         self.root_password_var.setEchoMode(QLineEdit.EchoMode.Password)
-        password_layout.addRow("Password for system administrator (root):", self.root_password_var)
+        admin_layout.addRow("Root Password:", self.root_password_var)
 
         self.root_password_confirm_var = QLineEdit(self)
         self.root_password_confirm_var.setEchoMode(QLineEdit.EchoMode.Password)
-        password_layout.addRow("Confirm password for system administrator (root):", self.root_password_confirm_var)
+        admin_layout.addRow("Confirm Password:", self.root_password_confirm_var)
 
-        password_group.setLayout(password_layout)
-        preparation_layout.addWidget(password_group)
+        admin_group.setLayout(admin_layout)
+        preparation_layout.addWidget(admin_group)
 
         # Buttons
         btn_layout = QHBoxLayout()
@@ -124,6 +137,9 @@ class PreparationPage(QWidget):
 
         # Set the layout for the page
         self.setLayout(preparation_layout)
+
+        # Initialize the username field visibility
+        self.update_username_field()
 
     def get_physical_drives(self):
         try:
@@ -164,13 +180,21 @@ class PreparationPage(QWidget):
             debug_print(f"Error retrieving drive information: {e}")
             self.drive_info_label.setText("Drive Information: N/A")
 
+    def update_username_field(self):
+        """Enable or disable the username field based on the selected mode."""
+        if self.mode_var.currentText() == "Game Mode":
+            self.username_var.setText("deck")
+            self.username_var.setEnabled(False)
+        else:
+            self.username_var.setEnabled(True)
+
     def on_prev(self):
         debug_print("PreparationPage: on_prev called")
         self.prev_callback()
 
     def on_next(self):
         debug_print("PreparationPage: on_next called")
-        username = "deck"  # Fixed username
+        username = self.username_var.text().strip() or "deck"
         password = self.password_var.text()
         password_confirm = self.password_confirm_var.text()
         root_password = self.root_password_var.text()
@@ -181,7 +205,7 @@ class PreparationPage(QWidget):
 
         # Validate passwords
         if password != password_confirm:
-            QMessageBox.warning(self, 'Warning', 'The passwords for the user account (deck) do not match.')
+            QMessageBox.warning(self, 'Warning', 'The passwords for the user account do not match.')
             return
 
         if root_password != root_password_confirm:
