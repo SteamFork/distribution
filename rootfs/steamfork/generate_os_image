@@ -343,7 +343,7 @@ ln -sf /run/systemd/resolve/stub-resolv.conf ${ROOT_WORKDIR}/etc/resolv.conf
 echo "Ensure Xwayland starts in desktop mode."
 for SESSION in plasma-steamos-wayland-oneshot.desktop plasma.desktop
 do
-  arch-chroot ${ROOT_WORKDIR} sed -i 's~startplasma-steamos-oneshot~startplasma-steamos-oneshot --xwayland~g' /usr/share/wayland-sessions/${SESSION}
+  arch-chroot ${ROOT_WORKDIR} sed -i 's~startplasma-wayland~startplasma-wayland --xwayland~g' /usr/share/wayland-sessions/${SESSION}
 done
 
 echo "Fix broken /var/run link."

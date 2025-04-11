@@ -90,9 +90,17 @@ class PreparationPage(QWidget):
         self.password_var.setEchoMode(QLineEdit.EchoMode.Password)
         password_layout.addRow("Password for user account (deck):", self.password_var)
 
+        self.password_confirm_var = QLineEdit(self)
+        self.password_confirm_var.setEchoMode(QLineEdit.EchoMode.Password)
+        password_layout.addRow("Confirm password for user account (deck):", self.password_confirm_var)
+
         self.root_password_var = QLineEdit(self)
         self.root_password_var.setEchoMode(QLineEdit.EchoMode.Password)
         password_layout.addRow("Password for system administrator (root):", self.root_password_var)
+
+        self.root_password_confirm_var = QLineEdit(self)
+        self.root_password_confirm_var.setEchoMode(QLineEdit.EchoMode.Password)
+        password_layout.addRow("Confirm password for system administrator (root):", self.root_password_confirm_var)
 
         password_group.setLayout(password_layout)
         preparation_layout.addWidget(password_group)
@@ -164,11 +172,23 @@ class PreparationPage(QWidget):
         debug_print("PreparationPage: on_next called")
         username = "deck"  # Fixed username
         password = self.password_var.text()
+        password_confirm = self.password_confirm_var.text()
         root_password = self.root_password_var.text()
+        root_password_confirm = self.root_password_confirm_var.text()
         drive = self.drive_var.currentText()
         use_unallocated = self.install_type.currentText().startswith("Use Unallocated")
         mode = "gamescope" if self.mode_var.currentText() == "Game Mode" else "desktop"
 
+        # Validate passwords
+        if password != password_confirm:
+            QMessageBox.warning(self, 'Warning', 'The passwords for the user account (deck) do not match.')
+            return
+
+        if root_password != root_password_confirm:
+            QMessageBox.warning(self, 'Warning', 'The passwords for the system administrator (root) do not match.')
+            return
+
+        # Validate the selected drive
         if not drive or "Select a drive..." in drive:
             debug_print("PreparationPage: Invalid drive selected")
             QMessageBox.warning(self, 'Warning', 'Please select a valid drive for installation.')
