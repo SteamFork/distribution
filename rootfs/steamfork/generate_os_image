@@ -298,8 +298,8 @@ WantedBy=steamos-offload.target
 EOF
 
 echo "Copy pacman.conf..."
-cp ${PACCFG} ${ROOT_WORKDIR}/etc/
 sed -i 's/^#IgnorePkg.*$/IgnorePkg   = grub amd-ucode-neptune linux-firmware-neptune linux-firmware-neptune-rtw-debug linux-firmware-neptune-whence/' ${ROOT_WORKDIR}/etc/pacman.conf
+cp ${PACCFG} ${ROOT_WORKDIR}/etc/
 
 echo "Set repository path..."
 sed -i 's~@RELEASE_TYPE@~${RELEASE_TYPE}~g' ${ROOT_WORKDIR}/etc/pacman.d/steamfork-mirrorlist
