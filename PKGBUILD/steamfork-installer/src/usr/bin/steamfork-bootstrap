@@ -135,12 +135,14 @@ if [[ -n "$(blkid | grep sf)" ]]; then
         run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG wheel ${OSUSER}" 82 "Adding ${OSUSER} to wheel group"
         run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG video ${OSUSER}" 84 "Adding ${OSUSER} to video group"
         run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG steamos-log-submitter ${OSUSER}" 86 "Adding ${OSUSER} to steamos-log-submitter group"
-        run_command "arch-chroot ${SUBVOLLOCATION} cp -f /usr/share/icons/steam/${OSUSER}-face.icon /home/${OSUSER}/.face.icon" 88 "Copying user icon for ${OSUSER}"
+        run_command "arch-chroot ${SUBVOLLOCATION} cp -f /usr/share/icons/steam/deck-face.icon /home/${OSUSER}/.face.icon" 88 "Copying user icon for ${OSUSER}"
         run_command "arch-chroot ${SUBVOLLOCATION} chown ${OSUSER}:${OSUSER} /home/${OSUSER}/.face.icon" 90 "Setting ownership of user icon for ${OSUSER}"
         run_command "echo -e \"${OSPASS}\n${OSPASS}\" | arch-chroot ${SUBVOLLOCATION} passwd ${OSUSER}" 92 "Setting password for ${OSUSER}"
 
         if [[ "${MODE}" == "desktop" ]]; then
             run_command "arch-chroot ${SUBVOLLOCATION} /usr/bin/bash -c 'IN_CHROOT=true /usr/bin/steamos-session-select desktop'" 94 "Switching to desktop mode"
+	    run_command "echo plasma-wayland-persistent >${SUBVOLLOCATION}/etc/steamfork-default-session"
+	    run_command "rm -f /home/${OSUSER}/Desktop/Return.desktop"
         fi
     elif [[ "${IS_RESET}" == "1" ]]; then
         run_command "mount -t overlay ${SUBVOLLOCATION}/etc -o index=off,metacopy=off,lowerdir=${SUBVOLLOCATION}/etc,upperdir=${SUBVOLLOCATION}/var/overlays/etc/upper,workdir=${SUBVOLLOCATION}/var/overlays/etc/work ${SUBVOLLOCATION}/etc" 96 "Mounting overlay filesystem for reset"
