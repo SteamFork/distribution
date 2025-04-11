@@ -9,11 +9,20 @@ STEAMOS_CONF_FILE="/etc/sddm.conf.d/steamos.conf"
 CONF_FILE="/etc/sddm.conf.d/zz-steamos-autologin.conf"
 DEFAULT_SESSION="gamescope-wayland.desktop"
 
+if [ -e "/tmp/steamos-session-select.user" ]
+then
+	CURRENT_USER="$(cat /tmp/steamos-session-select.user)"
+else
+	echo "${USER}" >/tmp/steamos-session-select.user
+fi
+
 if [ -e "/etc/steamfork-default-session" ]
 then
 	DEFAULT_SESSION="$(cat /etc/steamfork-default-session)"
+	AUTOLOGIN=false
 else
 	DEFAULT_SESSION="gamescope"
+	AUTOLOGIN=true
 fi
 
 SESSION="${1:-${DEFAULT_SESSION}}"
@@ -36,15 +45,17 @@ fi
 
 function create_steamos_conf() {
   DISPLAY_SESSION=${1}
+  AUTOLOGIN=${2}
+  CURRENT_USER=${3}
   cat <<EOF | tee "$STEAMOS_CONF_FILE" >/dev/null 2>&1
 # This file is managed by steamfork-session-select
 [General]
 DisplayServer=wayland
 
 [Autologin]
-Relogin=true
+Relogin=${AUTOLOGIN}
 Session=${DISPLAY_SESSION}
-User=deck
+User=${CURRENT_USER}
 
 [X11]
 # Janky workaround for wayland sessions not stopping in sddm, kills
@@ -57,7 +68,7 @@ function autologin() {
     if [ ! -f "${STEAMOS_CONF_FILE}" ]; then
     BOUNCE_SDDM=true
   fi
-  create_steamos_conf "${DEFAULT_SESSION}"
+  create_steamos_conf "${DEFAULT_SESSION}" "${AUTOLOGIN}" "${CURRENT_USER}"
 local SESSION_LAUNCHER="$1"
   cat <<EOF | tee "${CONF_FILE}" >/dev/null 2>&1
 [Autologin]
@@ -90,7 +101,7 @@ function configure_rotation() {
       esac
 if [ -n "${TOUCH_MATRIX}" ]; then
     echo "Setting touchscreen rotation to ${ROTATION} (${TOUCH_MATRIX})"
-  cat <<EOF | sudo tee /etc/X11/xorg.conf.d/99-touchscreen_orientation.conf >/dev/null
+  cat <<EOF | tee /etc/X11/xorg.conf.d/99-touchscreen_orientation.conf >/dev/null
 Section "InputClass"
   Identifier "Coordinate Transformation Matrix"
   MatchIsTouchscreen "on"
@@ -115,18 +126,19 @@ case "${SESSION}" in
   gamescope)
     autologin "gamescope-wayland.desktop"
     ;;
-  desktop)
-        cat <<EOF | sudo tee /etc/sddm.conf.d/001-rotation.conf >/dev/null 2>&1
-[XDisplay]
-DisplayCommand=/etc/X11/Xsession.d/999rotate-screen
-EOF
-    configure_rotation "${X11_ROTATION}"
-    rm -f "${STEAMOS_CONF_FILE}" "${CONF_FILE}"
-    echo "Desktop session selected."
-    ;;
   *)
     echo >&2 "!! Unrecognized session '${SESSION}'"
     exit 1
     ;;
 esac
 
+if [ ! "${DEFAULT_SESSION}" = "gamescope" ]
+then
+    cat <<EOF | tee /etc/sddm.conf.d/001-rotation.conf >/dev/null 2>&1
+[XDisplay]
+DisplayCommand=/etc/X11/Xsession.d/999rotate-screen
+EOF
+    configure_rotation "${X11_ROTATION}"
+fi
+
+rm -f /tmp/steamos-session-select.user
