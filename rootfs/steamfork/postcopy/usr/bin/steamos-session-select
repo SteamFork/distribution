@@ -9,7 +9,14 @@ STEAMOS_CONF_FILE="/etc/sddm.conf.d/steamos.conf"
 CONF_FILE="/etc/sddm.conf.d/zz-steamos-autologin.conf"
 DEFAULT_SESSION="gamescope-wayland.desktop"
 
-SESSION="${1:-gamescope}"
+if [ -e "/etc/steamfork-default-session" ]
+then
+	DEFAULT_SESSION="$(cat /etc/steamfork-default-session)"
+else
+	DEFAULT_SESSION="gamescope"
+fi
+
+SESSION="${1:-${DEFAULT_SESSION}}"
 IN_CHROOT="${IN_CHROOT:-false}"
 
 # Become root
