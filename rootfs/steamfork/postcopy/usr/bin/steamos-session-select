@@ -47,8 +47,8 @@ function create_steamos_conf() {
   DISPLAY_SESSION=${1}
   AUTOLOGIN=${2}
   CURRENT_USER=${3}
-  cat <<EOF | tee "$STEAMOS_CONF_FILE" >/dev/null 2>&1
-# This file is managed by steamfork-session-select
+  cat <<EOF | tee "${STEAMOS_CONF_FILE}" >/dev/null 2>&1
+# This file is managed by steamos-session-select
 [General]
 DisplayServer=wayland
 
@@ -69,11 +69,10 @@ function autologin() {
     BOUNCE_SDDM=true
   fi
   create_steamos_conf "${DEFAULT_SESSION}" "${AUTOLOGIN}" "${CURRENT_USER}"
-local SESSION_LAUNCHER="$1"
-  cat <<EOF | tee "${CONF_FILE}" >/dev/null 2>&1
-[Autologin]
-Session=${SESSION_LAUNCHER}
-EOF
+  local SESSION_LAUNCHER="$1"
+  if [ -e "${CONF_FILE}" ]; then
+    rm -f "${CONF_FILE}"
+  fi
   if [ "${BOUNCE_SDDM}" = true ]; then
     echo "Restarting sddm to apply changes..."
     systemctl restart sddm
