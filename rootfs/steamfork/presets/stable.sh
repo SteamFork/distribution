@@ -1176,6 +1176,7 @@ export UI_BOOTSTRAP="${STEAMOS_PKGS}
 		  steamfork-sddm
                   steamfork-device-support
                   steamfork-keyring
+		  system-config-printer
                   vlc
                   steamfork/vulkan-intel
                   wlroots
