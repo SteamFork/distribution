@@ -16,12 +16,13 @@ else
 	echo "${USER}" >/tmp/steamos-session-select.user
 fi
 
-if [ -e "/etc/steamfork-default-session" ]
+if [ -e "/etc/steamfork-default-session" ] && \
+   [ ! "${1}" = "gamescope" ]
 then
 	DEFAULT_SESSION="$(cat /etc/steamfork-default-session)"
 	AUTOLOGIN=false
 else
-	DEFAULT_SESSION="gamescope"
+	DEFAULT_SESSION="gamescope-wayland.desktop"
 	AUTOLOGIN=true
 fi
 
