@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+die() { echo >&2 "!! $*"; exit 1; }
+
+if [ -f "/etc/steamfork-default-session" ]; then
+        DEFAULT_SESSION="$(cat /etc/steamfork-default-session)"
+else
+        DEFAULT_SESSION="gamescope"
+fi
+
+/usr/bin/steamos-session-select ${DEFAULT_SESSION} --no-restart
+exec $@
