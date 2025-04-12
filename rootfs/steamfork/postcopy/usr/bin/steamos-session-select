@@ -16,17 +16,18 @@ else
 	echo "${USER}" >/tmp/steamos-session-select.user
 fi
 
-if [ -e "/etc/steamfork-default-session" ] && \
-   [ ! "${1}" = "gamescope" ]
+if [ -e "/etc/steamfork-default-session" ]
 then
 	DEFAULT_SESSION="$(cat /etc/steamfork-default-session)"
 	AUTOLOGIN=false
-else
-	DEFAULT_SESSION="gamescope-wayland.desktop"
+elif [ ! ${1} ]
+then
+	DEFAULT_SESSION="gamescope"
 	AUTOLOGIN=true
 fi
 
 SESSION="${1:-${DEFAULT_SESSION}}"
+AUTOLOGIN="${AUTOLOGIN:-true}"
 IN_CHROOT="${IN_CHROOT:-false}"
 
 # Become root
@@ -69,7 +70,7 @@ function autologin() {
     if [ ! -f "${STEAMOS_CONF_FILE}" ]; then
     BOUNCE_SDDM=true
   fi
-  create_steamos_conf "${DEFAULT_SESSION}" "${AUTOLOGIN}" "${CURRENT_USER}"
+  create_steamos_conf "$1" "${AUTOLOGIN}" "${CURRENT_USER}"
   local SESSION_LAUNCHER="$1"
   if [ -e "${CONF_FILE}" ]; then
     rm -f "${CONF_FILE}"
