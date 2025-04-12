@@ -131,7 +131,7 @@ if [[ -n "$(blkid | grep sf)" ]]; then
         done
         run_command "arch-chroot ${SUBVOLLOCATION} rm -rf /home/${OSUSER}" 76 "Removing existing home directory for ${OSUSER}"
         run_command "arch-chroot ${SUBVOLLOCATION} groupadd -g 1000 ${OSUSER}" 78 "Creating group for ${OSUSER}"
-        run_command "arch-chroot ${SUBVOLLOCATION} useradd --create-home -d /home/${OSUSER} -c \"Steam Deck User\" -s /bin/bash -u 1000 -g 1000 ${OSUSER}" 80 "Creating user ${OSUSER}"
+        run_command "arch-chroot ${SUBVOLLOCATION} useradd --create-home -d /home/${OSUSER} -c \"SteamFork  User\" -s /bin/bash -u 1000 -g 1000 ${OSUSER}" 80 "Creating user ${OSUSER}"
         run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG wheel ${OSUSER}" 82 "Adding ${OSUSER} to wheel group"
         run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG video ${OSUSER}" 84 "Adding ${OSUSER} to video group"
         run_command "arch-chroot ${SUBVOLLOCATION} usermod -aG steamos-log-submitter ${OSUSER}" 86 "Adding ${OSUSER} to steamos-log-submitter group"
