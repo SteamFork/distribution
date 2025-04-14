@@ -101,7 +101,25 @@ index 4a73821b8..88aa57c15 100644
  		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "OrangePi"),
 -- 
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 88aa57c15..d004d7291 100644
+index c554ad8f246b..858f114cd3b5 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -485,6 +485,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONE XPLAYER"),
+ 		},
+ 		.driver_data = (void *)&lcd1200x1920_leftside_up,
++	}, {	/* Zotac Gaming Zone (OLED) */
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ZOTAC"),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ZOTAC GAMING ZONE"),
++		},
++		.driver_data = (void *)&lcd1080x1920_leftside_up,
+ 	}, {	/* OrangePi Neo */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "OrangePi"),
+-- 
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index 858f114cd3b5..087b6ae86c2a 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
 @@ -178,6 +178,12 @@ static const struct dmi_system_id orientation_data[] = {
@@ -117,7 +135,7 @@ index 88aa57c15..d004d7291 100644
  	}, {	/* Asus T100HA */
  		.matches = {
  		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-@@ -202,10 +208,16 @@ static const struct dmi_system_id orientation_data[] = {
+@@ -202,12 +208,18 @@ static const struct dmi_system_id orientation_data[] = {
  		  DMI_MATCH(DMI_PRODUCT_NAME, "AYANEO 2"),
  		},
  		.driver_data = (void *)&lcd1200x1920_rightside_up,
@@ -127,19 +145,34 @@ index 88aa57c15..d004d7291 100644
  		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYADEVICE"),
 -		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "AYA NEO 2021"),
 +		  DMI_MATCH(DMI_PRODUCT_NAME, "AYA NEO"),
-+		},
-+		.driver_data = (void *)&lcd800x1280_rightside_up,
+ 		},
+ 		.driver_data = (void *)&lcd800x1280_rightside_up,
 +	}, {	/* AYA NEO 2021 series (alternate vendor id) */
 +		.matches = {
 +		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYANEO"),
 +		  DMI_MATCH(DMI_PRODUCT_NAME, "NEO 2021"),
- 		},
- 		.driver_data = (void *)&lcd800x1280_rightside_up,
++ 		},
++ 		.driver_data = (void *)&lcd800x1280_rightside_up,
  	}, {	/* AYA NEO AIR */
-@@ -485,6 +497,12 @@ static const struct dmi_system_id orientation_data[] = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONE XPLAYER"),
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYANEO"),
+@@ -329,6 +341,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_BOARD_NAME, "Default string"),
  		},
- 		.driver_data = (void *)&lcd1200x1920_leftside_up,
+ 		.driver_data = (void *)&gpd_pocket2,
++	}, {	/* GPD Pocket 4 */
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "GPD"),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "G1628-04"),
++		},
++		.driver_data = (void *)&lcd1600x2560_rightside_up,
+ 	}, {	/* GPD Win (same note on DMI match as GPD Pocket) */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
+@@ -491,6 +509,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ZOTAC GAMING ZONE"),
+ 		},
+ 		.driver_data = (void *)&lcd1080x1920_leftside_up,
 +	}, {	/* OneXPlayer OneXFly F1 series */
 +		.matches = {
 +		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK"),
@@ -149,16 +182,16 @@ index 88aa57c15..d004d7291 100644
  	}, {	/* OrangePi Neo */
  		.matches = {
  		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "OrangePi"),
-@@ -497,6 +515,12 @@ static const struct dmi_system_id orientation_data[] = {
+@@ -503,6 +527,12 @@ static const struct dmi_system_id orientation_data[] = {
  		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Galaxy Book 10.6"),
  		},
  		.driver_data = (void *)&lcd1280x1920_rightside_up,
 +	}, {    /* Tectoy Zeenix Lite (AYN Loki Zero Rebadge) */
-+                .matches = {
-+                        DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Tectoy"),
-+                        DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Zeenix Lite"),
-+                },
-+                .driver_data = (void *)&lcd1080x1920_leftside_up,
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Tectoy"),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Zeenix Lite"),
++		},
++		.driver_data = (void *)&lcd1080x1920_leftside_up,
  	}, {	/* Valve Steam Deck (Jupiter) */
  		.matches = {
  		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Valve"),
