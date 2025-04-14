@@ -101,7 +101,25 @@ index 4a73821b8..88aa57c15 100644
  		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "OrangePi"),
 -- 
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index c554ad8f246b..a5140fc87861 100644
+index c554ad8f246b..858f114cd3b5 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -485,6 +485,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONE XPLAYER"),
+ 		},
+ 		.driver_data = (void *)&lcd1200x1920_leftside_up,
++	}, {	/* Zotac Gaming Zone (OLED) */
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ZOTAC"),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ZOTAC GAMING ZONE"),
++		},
++		.driver_data = (void *)&lcd1080x1920_leftside_up,
+ 	}, {	/* OrangePi Neo */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "OrangePi"),
+-- 
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index 858f114cd3b5..087b6ae86c2a 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
 @@ -178,6 +178,12 @@ static const struct dmi_system_id orientation_data[] = {
@@ -151,10 +169,10 @@ index c554ad8f246b..a5140fc87861 100644
  	}, {	/* GPD Win (same note on DMI match as GPD Pocket) */
  		.matches = {
  		  DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
-@@ -485,6 +503,12 @@ static const struct dmi_system_id orientation_data[] = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONE XPLAYER"),
+@@ -491,6 +509,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ZOTAC GAMING ZONE"),
  		},
- 		.driver_data = (void *)&lcd1200x1920_leftside_up,
+ 		.driver_data = (void *)&lcd1080x1920_leftside_up,
 +	}, {	/* OneXPlayer OneXFly F1 series */
 +		.matches = {
 +		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK"),
@@ -164,7 +182,7 @@ index c554ad8f246b..a5140fc87861 100644
  	}, {	/* OrangePi Neo */
  		.matches = {
  		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "OrangePi"),
-@@ -497,6 +521,12 @@ static const struct dmi_system_id orientation_data[] = {
+@@ -503,6 +527,12 @@ static const struct dmi_system_id orientation_data[] = {
  		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Galaxy Book 10.6"),
  		},
  		.driver_data = (void *)&lcd1280x1920_rightside_up,
