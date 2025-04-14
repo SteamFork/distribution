@@ -7,7 +7,7 @@
 
 pkgbase=linux
 pkgver=6.13.11
-pkgrel=2
+pkgrel=3
 pkgdesc="Linux Stable"
 arch=(x86_64)
 url="https://kernel.org/"
@@ -82,7 +82,7 @@ validpgpkeys=(
 )
 sha256sums=('SKIP'
   '632355b46aec2757504fa95fddebe1009e3f3cb99b1f2ae3fc079b8051e5a1c5' # config
-  '15be28c9ded2244373392973e2fb3c4ad422676f7337414d0bb1d36c6de06e91' # 0001-drm-panel-orientation-quirks.patch
+  '5711959a3aeafeb8bb231ee6ac6392fdcd11fce91204e97de7ab2b46bfcbab41' # 0001-drm-panel-orientation-quirks.patch
   '71d093c5c95d7bd594dd8dcd804eabe2f6b95398c519ded42b7d8994f384e4d8' # 0002-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
   '02f5eaede065b7d68ccf469c9f54eab3ce3f0d852624a3430d83bcd6e2bd7dbb' # 0006-Ayaneo-geek-headset-patch.patch
   '3805f3b8b39d9d49586fb5d2a445a9ee54cf00cd1cdedd226e727420196cc568' # 0007-ayaneo-2-headphone-fix.patch
