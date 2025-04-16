@@ -93,6 +93,12 @@ case $key in
     shift
     shift
     ;;
+    --local-repo)
+    LOCAL_REPO_DIR="$2"
+    echo "Using local repository: ${LOCAL_REPO_DIR}"
+    shift
+    shift
+    ;;
     *)    # unknown option
     echo "Unknown option: $1"
     exit 1
@@ -158,6 +164,43 @@ mkdir -p ${ROOT_WORKDIR}/${OS_FS_PREFIX}_root/rootfs
 mkdir -p ${ROOT_WORKDIR}/var/cache/pacman/pkg
 mount --bind /var/cache/pacman/pkg/ ${ROOT_WORKDIR}/var/cache/pacman/pkg
 
+# Function to setup local repository
+setup_local_repository() {
+    local repo_dir="$1"
+    local pacconf="$2"
+    
+    echo "Setting up local repository at ${repo_dir}..."
+    
+    # Validate repository
+    if [ ! -f "${repo_dir}/steamfork.db" ] && [ ! -f "${repo_dir}/steamfork.db.tar.gz" ]; then
+        echo "Warning: Repository database not found at ${repo_dir}"
+        echo "Skipping local repository setup."
+        return 1
+    fi
+    
+    # Check if steamfork repository section exists
+    if ! grep -q "^\[steamfork\]" "${pacconf}"; then
+        echo "Error: No [steamfork] section found in ${pacconf}"
+        echo "Cannot setup local repository."
+        return 1
+    fi
+    
+    # Backup original pacman configuration if not already done
+    if [ ! -f "${pacconf}.original" ]; then
+        cp "${pacconf}" "${pacconf}.original"
+    fi
+    
+    # Update the pacman configuration to use the local repository
+    # Remove any existing Server lines in the [steamfork] section
+    sed -i '/^\[steamfork\]/,/^\[/ {/^Server/d;}' "${pacconf}"
+    
+    # Add the local repository as the first server in the [steamfork] section
+    sed -i '/^\[steamfork\]/a Server = file://'"${repo_dir}" "${pacconf}"
+    
+    echo "Local repository configured in ${pacconf}"
+    return 0
+}
+
 # Retry mechanism for pacstrap
 retry_pacstrap() {
   local retries=3
@@ -175,6 +218,14 @@ retry_pacstrap() {
   done
   return 0
 }
+
+if [ -n "${LOCAL_REPO_DIR}" ]; then
+    if setup_local_repository "${LOCAL_REPO_DIR}" "${PACCFG}"; then
+        echo "Using local repository for bootstrap"
+    else
+        echo "Failed to setup local repository, continuing with default repositories"
+    fi
+fi
 
 retry_pacstrap ${ROOT_WORKDIR} ${BASE_BOOTSTRAP_PKGS}
 if [ $? -ne 0 ]; then
@@ -222,6 +273,14 @@ then
   mkdir -p ${ROOT_WORKDIR}/usr/share/defaults
 fi
 cp ${PACCFG} ${ROOT_WORKDIR}/usr/share/defaults
+
+if [ -n "${LOCAL_REPO_DIR}" ]; then
+    echo "Configuring local repository in target system..."
+    setup_local_repository "${LOCAL_REPO_DIR}" "${ROOT_WORKDIR}/etc/pacman.conf"
+    
+    # Also update the default pacman.conf
+    setup_local_repository "${LOCAL_REPO_DIR}" "${ROOT_WORKDIR}/usr/share/defaults/pacman.conf"
+fi
 
 RELEASE_TYPE="$(echo ${OS_CODENAME} | tr '[:upper:]' '[:lower:]')"
 
