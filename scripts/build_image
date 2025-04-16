@@ -6,11 +6,37 @@
 if [ -n "${1}" ]
 then
   RELEASE_TYPE="${1}"
-else
-  RELEASE_TYPE="stable"
 fi
 
+# Parse additional arguments
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Parse arguments
+USE_LOCAL_REPO=false
+LOCAL_REPO_DIR=""
+
+# Process additional arguments
+shift_count=0
+for arg in "$@"; do
+  if [ $shift_count -gt 0 ]; then
+    shift_count=$((shift_count-1))
+    continue
+  fi
+  
+  case "$arg" in
+    --local-repo)
+      USE_LOCAL_REPO=true
+      LOCAL_REPO_DIR="${2}"
+      shift_count=1
+      ;;
+  esac
+  shift
+done
+
+# Set RELEASE_TYPE default if not set
+if [ -z "${RELEASE_TYPE}" ]; then
+  RELEASE_TYPE="stable"
+fi
 
 eval $(make -s -f "${SCRIPT_DIR}/../Makefile" env)
 
@@ -33,6 +59,8 @@ SCRIPT_DIR: "${SCRIPT_DIR}"
 WORK_DIR: "${WORK_DIR}"
 IMAGE_DIR: "${IMAGE_DIR}"
 REPO_DIR: "${REPO_DIR}"
+USE_LOCAL_REPO: "${USE_LOCAL_REPO}"
+LOCAL_REPO_DIR: "${LOCAL_REPO_DIR}"
 
 EOF
 
@@ -42,20 +70,63 @@ then
   sudo steamos-readonly disable
 fi
 
+function setup_local_repository() {
+  local repo_dir="$1"
+  local pacconf="$2"
+  
+  echo "Setting up local repository at ${repo_dir}..."
+  
+  # Validate repository
+  if [ ! -f "${repo_dir}/steamfork.db" ] && [ ! -f "${repo_dir}/steamfork.db.tar.gz" ]; then
+    echo "Warning: Repository database not found at ${repo_dir}"
+    echo "Skipping local repository setup."
+    return 1
+  fi
+  
+  # Check if steamfork repository section exists
+  if ! grep -q "^\[steamfork\]" "${pacconf}"; then
+    echo "Error: No [steamfork] section found in ${pacconf}"
+    echo "Cannot setup local repository."
+    return 1
+  fi
+  
+  # Backup original pacman configuration if not already done
+  if [ ! -f "${pacconf}.orig" ]; then
+    sudo cp "${pacconf}" "${pacconf}.orig"
+  fi
+  
+  # Update the pacman configuration to use the local repository
+  # Remove any existing Server lines in the [steamfork] section
+  sudo sed -i '/^\[steamfork\]/,/^\[/ {/^Server/d;}' "${pacconf}"
+  
+  # Add the local repository as the first server in the [steamfork] section
+  sudo sed -i '/^\[steamfork\]/a Server = file://'"${repo_dir}" "${pacconf}"
+  
+  echo "Local repository configured in ${pacconf}"
+  return 0
+}
+
 function cleanup() {
   sudo umount -R ${WORK_DIR}/buildwork/rootfs_mnt/var/cache/pacman/pkg \
-	         ${WORK_DIR}/buildwork/rootfs_mnt ||:
+             ${WORK_DIR}/buildwork/rootfs_mnt ||:
 
   sudo rm -rf	${IMAGE_DIR} \
-		${INSTALLER_DIR}/airootfs/etc/install.image \
-		${INSTALLER_DIR}/airootfs/etc/pacman.conf \
-		${INSTALLER_DIR}/airootfs/etc/pacman.d/steamfork-mirrorlist \
-		${INSTALLER_DIR}/buildinfo \
-		/tmp/buildinfo \
-		${INSTALLER_DIR}/packages.x86_64 \
-		${WORK_DIR}/image-build
+        ${INSTALLER_DIR}/airootfs/etc/install.image \
+        ${INSTALLER_DIR}/airootfs/etc/pacman.conf* \
+        ${INSTALLER_DIR}/airootfs/etc/pacman.d/steamfork-mirrorlist \
+        ${INSTALLER_DIR}/buildinfo \
+        /tmp/buildinfo \
+        ${INSTALLER_DIR}/packages.x86_64 \
+        ${WORK_DIR}/image-build
 
   sudo rm -f /var/cache/pacman/pkg/webrtc-audio-processing*
+  
+  # Restore original pacman.conf files if they exist
+  for conf_file in /etc/pacman.conf ${WORK_DIR}/buildwork/pacman.conf; do
+    if [ -f "${conf_file}.orig" ]; then
+      sudo mv "${conf_file}.orig" "${conf_file}"
+    fi
+  done
 }
 
 # Clean up from any previous builds.
@@ -66,6 +137,12 @@ sudo pacman-key --add /usr/share/pacman/keyrings/steamfork.gpg
 
 # Import the SteamOS keys
 sudo pacman-key --add /usr/share/pacman/keyrings/holo.gpg
+
+# Configure local repository if requested
+if [ "${USE_LOCAL_REPO}" = true ] && [ -n "${LOCAL_REPO_DIR}" ]; then
+  echo "Configuring local repository for host system..."
+  setup_local_repository "${LOCAL_REPO_DIR}" "/etc/pacman.conf"
+fi
 
 # Update cache
 sudo pacman -Sy
@@ -81,8 +158,27 @@ fi
 cp -f ${INSTALLER_DIR}/package_lists/${PACKAGESET}.x86_64 ${INSTALLER_DIR}/packages.x86_64
 sed -i 's~@STEAMOS_VERSION@~'${STEAMOS_VERSION}'~g' ${INSTALLER_DIR}/packages.x86_64
 
-# Build the SteamFork image
-sudo rootfs/steamfork/generate_os_image --flavor ${RELEASE_TYPE} --deployment_rel ${RELEASE_TYPE} --upstream_ver "${STEAMOS_VERSION}" --snapshot_ver "${BUILD_VER}" --workdir "${WORK_DIR}" --output-dir "${IMAGE_DIR}" --add-release
+# Add a variable to store the path to generate_os_image
+GENERATE_SCRIPT="${OS_DIR}/generate_os_image"
+
+# Ensure the script exists and is executable
+if [ ! -x "${GENERATE_SCRIPT}" ]; then
+  echo "Error: ${GENERATE_SCRIPT} not found or not executable"
+  exit 1
+fi
+
+# Build the SteamFork image with local repository if requested
+if [ "${USE_LOCAL_REPO}" = true ] && [ -n "${LOCAL_REPO_DIR}" ]; then
+  echo "Building OS image with local repository: ${LOCAL_REPO_DIR}"
+  sudo "${GENERATE_SCRIPT}" --flavor ${RELEASE_TYPE} --deployment_rel ${RELEASE_TYPE} \
+    --upstream_ver "${STEAMOS_VERSION}" --snapshot_ver "${BUILD_VER}" \
+    --workdir "${WORK_DIR}" --output-dir "${IMAGE_DIR}" \
+    --local-repo "${LOCAL_REPO_DIR}" --add-release
+else
+  sudo "${GENERATE_SCRIPT}" --flavor ${RELEASE_TYPE} --deployment_rel ${RELEASE_TYPE} \
+    --upstream_ver "${STEAMOS_VERSION}" --snapshot_ver "${BUILD_VER}" \
+    --workdir "${WORK_DIR}" --output-dir "${IMAGE_DIR}" --add-release
+fi
 
 # Prep for the installation image
 source ${IMAGE_DIR}/latest_${RELEASE_TYPE}.releasemeta
@@ -97,7 +193,25 @@ cp -f ${WORK_DIR}/buildwork/steamfork-mirrorlist ${INSTALLER_DIR}/airootfs/etc/p
 
 cp ${WORK_DIR}/buildwork/pacman.conf ${INSTALLER_DIR}/airootfs/etc/
 
+# Configure local repository for installer if requested
+if [ "${USE_LOCAL_REPO}" = true ] && [ -n "${LOCAL_REPO_DIR}" ]; then
+  echo "Configuring local repository for installer image..."
+  setup_local_repository "${LOCAL_REPO_DIR}" "${INSTALLER_DIR}/airootfs/etc/pacman.conf"
+fi
+
 # Build the installation image
 sudo mkarchiso -v -w ${WORK_DIR}/image-build -o ${IMAGE_DIR}/installer ${INSTALLER_DIR}
 
 sudo rm ${IMAGE_DIR}/currentcandidate ${IMAGE_DIR}/buildinfo
+
+# Restore original pacman.conf files if they exist
+for conf_file in /etc/pacman.conf ${WORK_DIR}/buildwork/pacman.conf ${INSTALLER_DIR}/airootfs/etc/pacman.conf; do
+  if [ -f "${conf_file}.orig" ]; then
+    sudo mv "${conf_file}.orig" "${conf_file}"
+  fi
+done
+
+echo "Build complete! Images are available in: ${IMAGE_DIR}"
+if [ "${USE_LOCAL_REPO}" = true ]; then
+  echo "Note: Images were built using local repository: ${LOCAL_REPO_DIR}"
+fi

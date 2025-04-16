@@ -65,6 +65,21 @@ images:
 	${SCRIPT_DIR}/build_image minimal $(RUN_ARGS)
 	${SCRIPT_DIR}/build_image stable $(RUN_ARGS)
 
+# Local image builds using local repository
+local-image: image-clean
+	${SCRIPT_DIR}/build_image $(RUN_ARGS) --local-repo ${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}
+
+local-images:
+	${SCRIPT_DIR}/build_image minimal $(RUN_ARGS) --local-repo ${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}
+	${SCRIPT_DIR}/build_image stable $(RUN_ARGS) --local-repo ${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}
+
+# Add a specific target for testing builds with local repo
+local-image-testing: image-clean
+	${SCRIPT_DIR}/build_image testing --local-repo ${REPO_DIR}/${STEAMOS_VERSION}/os/${OS_ARCH}
+
+# All-in-one local build (build packages and then build image)
+local-build: packages-local local-image
+
 images-sync:
 	${SCRIPT_DIR}/sync os-sync
 
