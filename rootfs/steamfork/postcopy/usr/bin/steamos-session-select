@@ -2,107 +2,196 @@
 
 set -e
 
+# Debug mode - set to true to enable debug output
+DEBUG="${DEBUG:-false}"
+
+# Debug function
+debug() {
+    if [ "${DEBUG}" = "true" ]; then
+        echo "[DEBUG] $(date '+%Y-%m-%d %H:%M:%S') - $*" >&2
+    fi
+}
+
 die() { echo >&2 "!! $*"; exit 1; }
+
+debug "Script started"
 
 # File this script will modify
 STEAMOS_CONF_FILE="/etc/sddm.conf.d/steamos.conf"
 CONF_FILE="/etc/sddm.conf.d/zz-steamos-autologin.conf"
 DEFAULT_SESSION="gamescope-wayland.desktop"
+IN_CHROOT="${IN_CHROOT:-false}"
+NO_RESTART=false
 
-if [ -e "/tmp/steamos-session-select.user" ]
-then
-	CURRENT_USER="$(cat /tmp/steamos-session-select.user)"
-else
-	echo "${USER}" >/tmp/steamos-session-select.user
-fi
+debug "Configuration files set: STEAMOS_CONF_FILE=${STEAMOS_CONF_FILE}, CONF_FILE=${CONF_FILE}"
+debug "Default session: ${DEFAULT_SESSION}"
 
 if [ -e "/etc/steamfork-default-session" ]
 then
-	DEFAULT_SESSION="$(cat /etc/steamfork-default-session)"
-	AUTOLOGIN=false
-elif [ ! ${1} ]
-then
-	DEFAULT_SESSION="gamescope"
-	AUTOLOGIN=true
+  AUTOLOGIN=false
+else
+  AUTOLOGIN=true
+fi
+debug "AUTOLOGIN set to ${AUTOLOGIN}"
+
+# First, save the user
+if [ -e "/tmp/steamos-session-select.user" ]; then
+    CURRENT_USER="$(cat /tmp/steamos-session-select.user)"
+    debug "Found existing user file, setting CURRENT_USER=${CURRENT_USER}"
+else
+    echo "${USER}" >/tmp/steamos-session-select.user
+    CURRENT_USER="${USER}"
+    debug "Created new user file with USER=${USER}"
 fi
 
-SESSION="${1:-${DEFAULT_SESSION}}"
-AUTOLOGIN="${AUTOLOGIN:-true}"
-IN_CHROOT="${IN_CHROOT:-false}"
+# Process command line arguments
+args=()
+for arg in "$@"; do
+    case "${arg}" in
+        --sentinel-created)
+            SENTINEL=true
+            debug "Detected sentinel parameter"
+            ;;
+        --no-restart)
+            NO_RESTART=true
+            debug "No restart flag set"
+            ;;
+        *)
+            SESSION="${arg}"
+            ;;
+    esac
+done
+
+# Determine the default session and autologin behavior if no session was specified
+if [ -z "${SESSION}" ]; then
+    if [ -e "/etc/steamfork-default-session" ]; then
+        DEFAULT_SESSION="$(cat /etc/steamfork-default-session)"
+        # Important: Always set AUTOLOGIN=false for desktop mode when no explicit session is given
+        debug "Found steamfork-default-session file, setting DEFAULT_SESSION=${DEFAULT_SESSION}, AUTOLOGIN=false"
+    else
+        DEFAULT_SESSION="gamescope"
+        debug "No default session file, using DEFAULT_SESSION=${DEFAULT_SESSION}, AUTOLOGIN=true"
+    fi
+    SESSION="${DEFAULT_SESSION}"
+    debug "No session specified, using default: ${SESSION}"
+fi
+
+debug "Final settings: SESSION=${SESSION}, AUTOLOGIN=${AUTOLOGIN}, IN_CHROOT=${IN_CHROOT}"
 
 # Become root
 if [[ $EUID != 0 && $IN_CHROOT == false ]]; then
-  pkexec "$(realpath $0)" "${SESSION}" --sentinel-created
-  # Quit existing sessions
-  if [[ "$2" != "--no-restart" ]]; then
-    systemctl --user --no-block stop gamescope-session.service
-    systemctl --user --no-block stop plasma-workspace.target
-  fi
-  exit
+    debug "Current EUID is not 0, escalating privileges with pkexec"
+    if [ "${NO_RESTART}" = true ]; then
+        pkexec "$(realpath $0)" "${SESSION}" --sentinel-created --no-restart
+    else
+        pkexec "$(realpath $0)" "${SESSION}" --sentinel-created
+        # Quit existing sessions
+        debug "Stopping existing sessions"
+        systemctl --user --no-block stop gamescope-session.service
+        systemctl --user --no-block stop plasma-workspace.target
+    fi
+    debug "Exiting after privilege escalation"
+    exit
 fi
 
-if [[ "$2" != "--sentinel-created" && $IN_CHROOT == false ]]; then
-  die "Running $0 as root is not allowed"
+if [[ "${SENTINEL}" != "true" && $IN_CHROOT == false ]]; then
+    debug "Attempting to run as root without sentinel, failing"
+    die "Running $0 as root is not allowed"
 fi
 
 function create_steamos_conf() {
-  DISPLAY_SESSION=${1}
-  AUTOLOGIN=${2}
-  CURRENT_USER=${3}
-  cat <<EOF | tee "${STEAMOS_CONF_FILE}" >/dev/null 2>&1
+    DISPLAY_SESSION=${1}
+    AUTOLOGIN=${2}
+    CURRENT_USER=${3}
+    debug "Creating steamos.conf with DISPLAY_SESSION=${DISPLAY_SESSION}, AUTOLOGIN=${AUTOLOGIN}, CURRENT_USER=${CURRENT_USER}"
+    
+    cat <<EOF | tee "${STEAMOS_CONF_FILE}" >/dev/null 2>&1
 # This file is managed by steamos-session-select
 [General]
 DisplayServer=wayland
-
+EOF
+    debug "Basic configuration written to ${STEAMOS_CONF_FILE}"
+    
+    if [ "${AUTOLOGIN}" = "true" ]; then
+        debug "Adding autologin configuration"
+        cat <<EOF | tee -a "${STEAMOS_CONF_FILE}" >/dev/null 2>&1
 [Autologin]
 Relogin=${AUTOLOGIN}
 Session=${DISPLAY_SESSION}
 User=${CURRENT_USER}
+EOF
+    else
+        debug "Skipping autologin configuration (AUTOLOGIN is not true)"
+    fi
 
+    cat <<EOF | tee -a "${STEAMOS_CONF_FILE}" >/dev/null 2>&1
 [X11]
 # Janky workaround for wayland sessions not stopping in sddm, kills
 # all active sddm-helper sessions on teardown
 DisplayStopCommand=/usr/bin/gamescope-wayland-teardown-workaround
 EOF
+    debug "Added X11 teardown workaround configuration"
 }
 
 function autologin() {
+    debug "autologin function called with argument: $1"
     if [ ! -f "${STEAMOS_CONF_FILE}" ]; then
-    BOUNCE_SDDM=true
-  fi
-  create_steamos_conf "$1" "${AUTOLOGIN}" "${CURRENT_USER}"
-  local SESSION_LAUNCHER="$1"
-  if [ -e "${CONF_FILE}" ]; then
-    rm -f "${CONF_FILE}"
-  fi
-  if [ "${BOUNCE_SDDM}" = true ]; then
-    echo "Restarting sddm to apply changes..."
-    systemctl restart sddm
-  fi
-  echo "Autologin configured for session ${SESSION_LAUNCHER}"
+        BOUNCE_SDDM=true
+        debug "STEAMOS_CONF_FILE does not exist, setting BOUNCE_SDDM=true"
+    else
+        debug "STEAMOS_CONF_FILE exists"
+    fi
+    
+    create_steamos_conf "$1" "${AUTOLOGIN}" "${CURRENT_USER}"
+    local SESSION_LAUNCHER="$1"
+    
+    if [ -e "${CONF_FILE}" ]; then
+        debug "Removing existing CONF_FILE: ${CONF_FILE}"
+        rm -f "${CONF_FILE}"
+    else
+        debug "CONF_FILE does not exist, no need to remove"
+    fi
+    
+    if [ "${BOUNCE_SDDM}" = true ]; then
+        debug "BOUNCE_SDDM is true, restarting sddm"
+        echo "Restarting sddm to apply changes..."
+        systemctl restart sddm
+    else
+        debug "BOUNCE_SDDM is not true, skipping sddm restart"
+    fi
+    
+    echo "Configured for session ${SESSION_LAUNCHER}"
+    debug "Configuration complete for session ${SESSION_LAUNCHER}"
 }
 
 function configure_rotation() {
-  local ROTATION="$1"
-  local TOUCH_MATRIX=""
+    local ROTATION="$1"
+    local TOUCH_MATRIX=""
+    debug "configure_rotation called with ROTATION=${ROTATION}"
 
-  case "${ROTATION}" in
-    left)
-      TOUCH_MATRIX="0 -1 1 1 0 0 0 0 1"
-      ;;
-    right)
-      TOUCH_MATRIX="0 1 0 -1 0 1 0 0 1"
-      ;;
-    normal)
-      TOUCH_MATRIX="1 0 0 0 1 0 0 0 1"
-      ;;
-    inverted)
-      TOUCH_MATRIX="-1 0 1 0 -1 1 0 0 1"
-      ;;
-      esac
-if [ -n "${TOUCH_MATRIX}" ]; then
-    echo "Setting touchscreen rotation to ${ROTATION} (${TOUCH_MATRIX})"
-  cat <<EOF | tee /etc/X11/xorg.conf.d/99-touchscreen_orientation.conf >/dev/null
+    case "${ROTATION}" in
+        left)
+            TOUCH_MATRIX="0 -1 1 1 0 0 0 0 1"
+            debug "Setting rotation matrix for left: ${TOUCH_MATRIX}"
+            ;;
+        right)
+            TOUCH_MATRIX="0 1 0 -1 0 1 0 0 1"
+            debug "Setting rotation matrix for right: ${TOUCH_MATRIX}"
+            ;;
+        normal)
+            TOUCH_MATRIX="1 0 0 0 1 0 0 0 1"
+            debug "Setting rotation matrix for normal: ${TOUCH_MATRIX}"
+            ;;
+        inverted)
+            TOUCH_MATRIX="-1 0 1 0 -1 1 0 0 1"
+            debug "Setting rotation matrix for inverted: ${TOUCH_MATRIX}"
+            ;;
+    esac
+    
+    if [ -n "${TOUCH_MATRIX}" ]; then
+        echo "Setting touchscreen rotation to ${ROTATION} (${TOUCH_MATRIX})"
+        debug "Creating touchscreen orientation config file"
+        cat <<EOF | tee /etc/X11/xorg.conf.d/99-touchscreen_orientation.conf >/dev/null
 Section "InputClass"
   Identifier "Coordinate Transformation Matrix"
   MatchIsTouchscreen "on"
@@ -111,35 +200,50 @@ Section "InputClass"
   Option "CalibrationMatrix" "${TOUCH_MATRIX}"
 EndSection
 EOF
-fi
+        debug "Touchscreen orientation config file created"
+    else
+        debug "No touch matrix set, skipping touchscreen orientation config"
+    fi
 }
 
+debug "Processing session: ${SESSION}"
 case "${SESSION}" in
-  plasma-wayland-persistent)
-    autologin "plasma.desktop"
-    ;;
-  plasma-x11-persistent)
-    autologin "plasmax11.desktop"
-    ;;
-  plasma*)
-    autologin "plasma-steamos-wayland-oneshot.desktop"
-    ;;
-  gamescope)
-    autologin "gamescope-wayland.desktop"
-    ;;
-  *)
-    echo >&2 "!! Unrecognized session '${SESSION}'"
-    exit 1
-    ;;
+    plasma-wayland-persistent)
+        debug "Selected plasma-wayland-persistent session"
+        autologin "plasma.desktop"
+        ;;
+    plasma-x11-persistent)
+        debug "Selected plasma-x11-persistent session"
+        autologin "plasmax11.desktop"
+        ;;
+    plasma*)
+        debug "Selected plasma* session"
+        autologin "plasma-steamos-wayland-oneshot.desktop"
+        ;;
+    gamescope)
+        debug "Selected gamescope session"
+        autologin "gamescope-wayland.desktop"
+        ;;
+    *)
+        debug "Unrecognized session: ${SESSION}"
+        echo >&2 "!! Unrecognized session '${SESSION}'"
+        exit 1
+        ;;
 esac
 
-if [ ! "${DEFAULT_SESSION}" = "gamescope" ]
-then
+if [ ! "${DEFAULT_SESSION}" = "gamescope" ]; then
+    debug "DEFAULT_SESSION is not gamescope, configuring rotation settings"
     cat <<EOF | tee /etc/sddm.conf.d/001-rotation.conf >/dev/null 2>&1
 [XDisplay]
 DisplayCommand=/etc/X11/Xsession.d/999rotate-screen
 EOF
+    debug "Created 001-rotation.conf"
     configure_rotation "${X11_ROTATION}"
+else
+    debug "DEFAULT_SESSION is gamescope, skipping rotation configuration"
 fi
 
+debug "Removing temporary file: /tmp/steamos-session-select.user"
 rm -f /tmp/steamos-session-select.user
+
+debug "Script completed successfully"
